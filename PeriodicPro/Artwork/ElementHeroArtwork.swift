@@ -37,15 +37,23 @@ struct ElementHeroArtwork: View {
         )
         .frame(width: canvasWidth, height: canvasHeight)
         .mask {
-            // Clear through the card, fading in past its edge. Nothing is ever
-            // drawn behind the symbol, the atomic number, the name or the mass,
-            // for any family color and in either appearance — which is what
-            // makes this safe without a contrast measurement per element.
+            // Clear through the card, fading in over a short band just past
+            // its edge. Nothing is ever drawn behind the symbol, the atomic
+            // number, the name or the mass, for any family color and in either
+            // appearance — which is what makes this safe without a contrast
+            // measurement per element.
+            //
+            // Two stops, not four. A gradient's stops are spread evenly across
+            // the radius range, so [clear, clear, black, black] over
+            // 0.40 to 1.05 of the hero left the mask fully transparent out to
+            // 121 points and fully opaque only past 163 — while the forms
+            // themselves sit between 92 and 138, so most of them were erased.
+            // The card's half-width is 98 points; the band below straddles it.
             RadialGradient(
-                colors: [.clear, .clear, .black, .black],
+                colors: [.clear, .black],
                 center: .center,
-                startRadius: heroSize * 0.40,
-                endRadius: heroSize * 1.05
+                startRadius: heroSize * 0.42,
+                endRadius: heroSize * 0.55
             )
         }
         .opacity(isRevealed ? 1 : 0)

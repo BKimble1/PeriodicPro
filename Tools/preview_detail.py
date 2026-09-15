@@ -134,9 +134,14 @@ def draw_artwork(image, element, center, hero, tint):
 
     layer = layer.filter(ImageFilter.GaussianBlur(px(1.5)))
 
-    mask = Image.new("L", (px(width), px(height)), 0)
+    # Opaque outside the ramp: a RadialGradient continues with its last color
+    # past endRadius, so anything further out than `outer` is fully shown.
+    # Starting this at zero instead quietly erased every form beyond the band.
+    mask = Image.new("L", (px(width), px(height)), 255)
     mask_draw = ImageDraw.Draw(mask)
-    inner, outer = hero * 0.40, hero * 1.05
+    # Mirrors the two-stop RadialGradient in ElementHeroArtwork: a linear ramp
+    # from clear at `inner` to opaque at `outer`.
+    inner, outer = hero * 0.42, hero * 0.55
     steps = 40
     for step in range(steps, 0, -1):
         radius = inner + (outer - inner) * step / steps
