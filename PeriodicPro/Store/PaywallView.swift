@@ -352,7 +352,11 @@ struct PaywallView: View {
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .frame(height: 52)
+                // A minimum rather than a fixed height: at an accessibility
+                // text size "Continue" is taller than 52 points and a hard
+                // frame clips it.
+                .frame(minHeight: 52)
+                .padding(.vertical, 2)
                 .background {
                     RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                         .fill(selectedProduct == nil ? AppColor.secondaryText : AppColor.accent)

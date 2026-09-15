@@ -215,7 +215,17 @@ struct StudyScreen: View {
             }
             .padding(.horizontal, Theme.Spacing.screenMargin)
 
-            HStack(alignment: .top, spacing: Theme.Spacing.m) {
+            // Four across normally, two at accessibility sizes: a quarter of a
+            // 375-point screen is 75 points, and "Smart Review" at forty points
+            // does not go in it.
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: Theme.Spacing.m),
+                    count: dynamicTypeSize.isAccessibilitySize ? 2 : 4
+                ),
+                alignment: .leading,
+                spacing: Theme.Spacing.m
+            ) {
                 ForEach(StudyMode.allCases) { mode in
                     PracticeModeTile(
                         mode: mode,

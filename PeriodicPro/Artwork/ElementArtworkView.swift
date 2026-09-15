@@ -18,13 +18,28 @@ struct ElementArtworkView: View {
     let accent: Color
     var prominence: ElementArtworkProminence = .hero
 
+    @Environment(\.colorScheme) private var colorScheme
+
     private var tint: Color {
         guard let hex = descriptor.tintHex else { return accent }
-        return Color(
-            red: Double((hex >> 16) & 0xFF) / 255,
-            green: Double((hex >> 8) & 0xFF) / 255,
-            blue: Double(hex & 0xFF) / 255
-        )
+        var red = Double((hex >> 16) & 0xFF) / 255
+        var green = Double((hex >> 8) & 0xFF) / 255
+        var blue = Double(hex & 0xFF) / 255
+
+        // The named tints are the colors these elements actually are, which
+        // makes several of them dark: graphite carbon is 0x3A4048. On a
+        // near-black canvas at a quarter opacity that is invisible, so a dark
+        // tint is lifted toward white in dark mode. Light tints are left alone.
+        if colorScheme == .dark {
+            let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
+            if luminance < 0.45 {
+                let lift = 0.55
+                red += (1 - red) * lift
+                green += (1 - green) * lift
+                blue += (1 - blue) * lift
+            }
+        }
+        return Color(red: red, green: green, blue: blue)
     }
 
     var body: some View {
@@ -281,12 +296,13 @@ struct ArtworkLayout {
             let side = base * CGFloat(scale)
 
             // Alternating sides, fanned within three quarters of a radian of
-            // horizontal, and far enough out that the mask's clear core does
-            // not swallow them.
-            let side: Double = index.isMultiple(of: 2) ? 0 : .pi
+            // horizontal, far enough out that the mask's clear core does not
+            // swallow them, and near enough in that the largest form still
+            // clears the canvas edge rather than being sliced by it.
+            let axis: Double = index.isMultiple(of: 2) ? 0 : .pi
             let fan = (Double(index / 2) / Double(max(1, count / 2)) - 0.4) * 1.5
-            let angle = side + fan + unit(-0.18, 0.18)
-            let reach = unit(0.55, 0.90)
+            let angle = axis + fan + unit(-0.18, 0.18)
+            let reach = unit(0.52, 0.78)
             let center = CGPoint(
                 x: size.width * 0.5 + CGFloat(cos(angle) * reach) * size.width * 0.5,
                 y: size.height * 0.5 + CGFloat(sin(angle) * reach) * size.height * 0.5

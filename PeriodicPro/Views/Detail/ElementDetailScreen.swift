@@ -167,7 +167,10 @@ struct ElementDetailScreen: View {
                 Image(systemName: isFavorite ? "heart.fill" : "heart")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(isFavorite ? element.category.accentColor : AppColor.secondaryText)
-                    .symbolEffect(.bounce, value: isFavorite)
+                    // Under Reduce Motion the value never changes, so the
+                    // symbol never bounces — without changing view identity,
+                    // which a conditional modifier here would.
+                    .symbolEffect(.bounce, value: reduceMotion ? false : isFavorite)
                     .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
                     .contentShape(Rectangle())
             }

@@ -86,7 +86,10 @@ struct StructureCard: View {
     /// scene, and this way the picture here and the model there can never
     /// disagree about what the element looks like.
     private var elementalForm: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+        // Bound once. `scene` is a computed property and this view's body runs
+        // on every step of the detail page's scroll handoff.
+        let scene = scene
+        return VStack(alignment: .leading, spacing: Theme.Spacing.m) {
             StructurePreview(scene: scene, accent: element.category.accentColor)
                 .frame(height: stacksVertically ? 132 : 156)
                 .frame(maxWidth: .infinity)

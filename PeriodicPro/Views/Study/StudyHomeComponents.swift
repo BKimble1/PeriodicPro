@@ -50,12 +50,15 @@ struct StudyStatusCard<Leading: View>: View {
                     .strokeBorder(AppColor.hairline, lineWidth: 0.7)
             }
             .contentShape(Rectangle())
+            // Combined on the label, not on the Button. Applying
+            // `children: .ignore` to a Button replaces its accessibility
+            // element with a plain one that no longer carries the activation,
+            // so VoiceOver can read it but not press it.
+            .accessibilityElement(children: .ignore)
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(title) \(caption)")
         .accessibilityHint("Opens Progress")
-        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -147,11 +150,10 @@ struct StudyHeroCard: View {
             }
             .themeShadow(Theme.Shadow.card)
             .contentShape(Rectangle())
+            .accessibilityElement(children: .ignore)
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(title). \(message)")
-        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -195,13 +197,12 @@ struct PracticeModeTile: View {
                     .minimumScaleFactor(0.75)
             }
             .contentShape(Rectangle())
+            .accessibilityElement(children: .ignore)
         }
         .buttonStyle(ElementTileButtonStyle())
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel(showsProBadge
                             ? "\(mode.title), Periodic Pro feature. \(mode.subtitle)"
                             : "\(mode.title). \(mode.subtitle)")
-        .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("study.mode.\(mode.rawValue)")
     }
 }

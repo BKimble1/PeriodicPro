@@ -36,7 +36,8 @@ struct StructureCanvasView: View {
                 }
             }
         }
-        .drawingGroup(opaque: false)
+        // No drawingGroup: Canvas already rasterizes efficiently, and an extra
+        // offscreen render target per preview is a cost with no benefit here.
         .accessibilityHidden(true)
     }
 
