@@ -19,6 +19,7 @@ run() {
 
 run "Element dataset"        python3 Tools/validate_elements.py
 run "Swift source hygiene"   python3 Tools/lint_sources.py
+run "Xcode project structure" python3 Tools/validate_project.py
 run "Table layout at three device widths" python3 Tools/preview_table.py
 
 printf '\n\033[1m==> US English spelling\033[0m\n'

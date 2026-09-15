@@ -37,6 +37,9 @@ jobs:
       - name: Lint Swift sources
         run: python3 Tools/lint_sources.py
 
+      - name: Validate Xcode project structure
+        run: python3 Tools/validate_project.py
+
       - name: Check spelling is normalized
         run: |
           set -euo pipefail
