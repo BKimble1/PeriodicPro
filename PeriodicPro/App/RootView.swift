@@ -30,6 +30,9 @@ struct RootView: View {
                         .tag(AppTab.progress)
                 }
                 .accessibilityIdentifier("root.tabView")
+                .environment(\.selectTab) { tab in
+                    selection = tab
+                }
             }
         }
         .fullScreenCover(isPresented: shouldShowOnboarding) {

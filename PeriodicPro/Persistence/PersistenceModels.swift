@@ -45,10 +45,18 @@ final class RecentSearchRecord {
 final class StudyDayRecord {
     @Attribute(.unique) var dayKey: String
     var answeredCount: Int
+    /// Rounds finished on this day, which is what the free daily allowance is
+    /// measured against. Counted only when a round reaches its summary, so
+    /// abandoning one half way through never costs an attempt.
+    ///
+    /// Declared with a default so adding it is a lightweight SwiftData
+    /// migration rather than a schema break for anyone already on a build.
+    var completedRounds: Int = 0
 
-    init(dayKey: String, answeredCount: Int = 0) {
+    init(dayKey: String, answeredCount: Int = 0, completedRounds: Int = 0) {
         self.dayKey = dayKey
         self.answeredCount = answeredCount
+        self.completedRounds = completedRounds
     }
 }
 

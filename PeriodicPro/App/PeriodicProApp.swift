@@ -17,7 +17,13 @@ struct PeriodicProApp: App {
             RootView(catalogError: services.catalogError)
                 .environment(\.elementCatalog, services.catalog)
                 .environment(services.progress)
+                .environment(services.store)
                 .tint(AppColor.accent)
+                // Starting the StoreKit listener here rather than in
+                // `AppServices.init` keeps the initializer synchronous and
+                // means a transaction that completed while the app was closed
+                // is picked up as soon as there is a scene to show it in.
+                .task { services.store.start() }
         }
     }
 }
@@ -29,6 +35,9 @@ struct PeriodicProApp: App {
 final class AppServices {
     let catalog: ElementCatalog
     let progress: ProgressStore
+    /// The app's only StoreKit connection. Views read entitlement state from
+    /// here; none of them talks to StoreKit directly.
+    let store: SubscriptionManager
     /// Non-nil when `elements.json` could not be read, which drives the
     /// data-unavailable screen instead of an empty, silent table.
     let catalogError: String?
@@ -50,5 +59,6 @@ final class AppServices {
         }
 
         self.progress = ProgressStore(container: outcome.container, storage: outcome.storage)
+        self.store = SubscriptionManager()
     }
 }

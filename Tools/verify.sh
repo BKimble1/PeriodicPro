@@ -22,6 +22,8 @@ run "Swift source hygiene"   python3 Tools/lint_sources.py
 run "Xcode project structure" python3 Tools/validate_project.py
 run "Initializer call sites"  python3 Tools/check_initializers.py
 run "Colour contrast"        python3 Tools/check_contrast.py
+run "StoreKit configuration" python3 Tools/check_storekit.py
+run "Artwork and structure routing" python3 Tools/check_visual_routing.py
 run "Table layout at three device widths" python3 Tools/preview_table.py
 
 printf '\n\033[1m==> US English spelling\033[0m\n'

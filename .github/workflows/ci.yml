@@ -45,6 +45,12 @@ jobs:
       - name: Check color contrast
         run: python3 Tools/check_contrast.py
 
+      - name: Check StoreKit configuration
+        run: python3 Tools/check_storekit.py
+
+      - name: Check artwork and structure routing
+        run: python3 Tools/check_visual_routing.py
+
       - name: Check spelling is normalized
         run: |
           set -euo pipefail

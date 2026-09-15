@@ -14,9 +14,12 @@ struct ElementDetailScreen: View {
     let element: ChemicalElement
 
     @Environment(ProgressStore.self) private var progress: ProgressStore
+    @Environment(SubscriptionManager.self) private var store: SubscriptionManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var showsMoreProperties = false
+    @State private var showsExplorer = false
+    @State private var paywall: PaywallContext?
 
     /// 0 at the top of the page, 1 once the hero has fully handed the page over
     /// to the navigation bar.
@@ -32,6 +35,10 @@ struct ElementDetailScreen: View {
 
     private var isFavorite: Bool { progress.isFavorite(element.atomicNumber) }
 
+    private var isStructureUnlocked: Bool {
+        store.isUnlocked(.interactiveStructure(atomicNumber: element.atomicNumber))
+    }
+
     private func updateHandoff(forOffset offset: CGFloat) {
         let raw = min(max(offset / Self.heroHandoff, 0), 1)
         let stepped = reduceMotion
@@ -44,6 +51,12 @@ struct ElementDetailScreen: View {
         ScrollView {
             VStack(spacing: Theme.Spacing.l) {
                 ElementHero(element: element)
+                    // A `.background` takes no part in its host's layout, so
+                    // however large the artwork draws, the hero card keeps its
+                    // exact square and the zoom transition still lands on it.
+                    // Placed before `.scrollTransition` so the decoration
+                    // scales and drifts with the hero as one object.
+                    .background { ElementHeroArtwork(element: element) }
                     .padding(.top, Theme.Spacing.s)
                     .padding(.bottom, Theme.Spacing.xs)
                     .scrollTransition(.interactive, axis: .vertical) { content, phase in
@@ -55,7 +68,12 @@ struct ElementDetailScreen: View {
                             .offset(y: reduceMotion ? 0 : -phase.value * 14)
                     }
 
-                StructureCard(element: element).softRise(enabled: !reduceMotion)
+                StructureCard(
+                    element: element,
+                    isStructureUnlocked: isStructureUnlocked,
+                    onExplore: openExplorer
+                )
+                .softRise(enabled: !reduceMotion)
                 QuickFactsCard(element: element, showsMoreProperties: $showsMoreProperties)
                     .softRise(enabled: !reduceMotion)
                 AboutCard(element: element).softRise(enabled: !reduceMotion)
@@ -85,7 +103,23 @@ struct ElementDetailScreen: View {
         // the element name has taken over, so controls are always legible.
         .toolbarBackground(handoff > 0.6 ? Visibility.visible : Visibility.hidden,
                            for: .navigationBar)
+        .fullScreenCover(isPresented: $showsExplorer) {
+            StructureExplorerView(element: element)
+        }
+        .sheet(item: $paywall) { context in
+            PaywallView(context: context)
+        }
         .accessibilityIdentifier("detail.screen")
+    }
+
+    /// Opens the explorer, or the paywall when this element is not one of the
+    /// six that are free to explore.
+    private func openExplorer() {
+        if isStructureUnlocked {
+            showsExplorer = true
+        } else {
+            paywall = .structureExplorer
+        }
     }
 
     private var backdrop: some View {

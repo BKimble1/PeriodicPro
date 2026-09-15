@@ -1,18 +1,32 @@
 import Foundation
 
-/// The three study modes shipped in V1.
+/// The practice modes.
+///
+/// Three card formats — reveal, multiple choice, and name-it-from-its-structure
+/// — plus Smart Review, which is the flashcard format run over the elements the
+/// learner keeps getting wrong rather than over the whole table.
 enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     case flashcards
     case quiz
     case identify
+    case smartReview
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .flashcards: return "Flashcards"
-        case .quiz: return "Quick Quiz"
+        case .quiz: return "Quiz"
         case .identify: return "Identify"
+        case .smartReview: return "Smart Review"
+        }
+    }
+
+    /// The longer name, used where there is room for it.
+    var fullTitle: String {
+        switch self {
+        case .quiz: return "Quick Quiz"
+        default: return title
         }
     }
 
@@ -21,6 +35,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .flashcards: return "Reveal and self-rate"
         case .quiz: return "10 multiple-choice questions"
         case .identify: return "Name it from its structure"
+        case .smartReview: return "The elements you keep missing"
         }
     }
 
@@ -29,16 +44,23 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .flashcards: return "rectangle.on.rectangle.angled"
         case .quiz: return "questionmark.circle.fill"
         case .identify: return "eye.fill"
+        // A crosshair: the right idea for a mode that aims at weak spots.
+        // (The obvious name for that symbol does not exist in SF Symbols.)
+        case .smartReview: return "scope"
         }
     }
 
-    /// Mixed into the session seed so the three modes do not draw the same ten
+    /// Smart Review is the one mode behind Pro.
+    var requiresPro: Bool { self == .smartReview }
+
+    /// Mixed into the session seed so the modes do not draw the same ten
     /// elements, in the same order, on the same day.
     var seedSalt: UInt64 {
         switch self {
         case .flashcards: return 0x9E37_79B9_7F4A_7C15
         case .quiz: return 0x85EB_CA6B_C2B2_AE35
         case .identify: return 0x27D4_EB2F_1656_67C5
+        case .smartReview: return 0x1F83_D9AB_FB41_BD6B
         }
     }
 }

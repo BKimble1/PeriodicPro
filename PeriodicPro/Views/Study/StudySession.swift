@@ -4,13 +4,24 @@ import SwiftUI
 struct StudySessionContainer: View {
     let mode: StudyMode
     let catalog: ElementCatalog
+    /// Called when a round finishes and the learner has no free rounds left.
+    /// The caller presents the paywall once this cover has gone — never over a
+    /// round, which would discard the learner's position.
+    var onAllowanceSpent: () -> Void = {}
 
     @Environment(\.dismiss) private var dismiss
     @Environment(ProgressStore.self) private var progress: ProgressStore
+    @Environment(SubscriptionManager.self) private var store: SubscriptionManager
 
     @State private var result: StudyResult?
     /// Bumped by "Study again" so a fresh round gets a fresh deck.
     @State private var round = 0
+    /// The seed for the round in progress.
+    ///
+    /// Snapshotted rather than computed, because `SeededGenerator.dailySeed()`
+    /// reads the clock: a round that crossed local midnight was silently
+    /// re-dealt from a new seed while the card index carried on counting.
+    @State private var roundSeed: UInt64 = 0
 
     /// Practice draws from the least-familiar elements first, but keeps a wide
     /// enough pool that a round is never the same ten tiles twice over.
@@ -23,14 +34,31 @@ struct StudySessionContainer: View {
     /// still moves with `round`, so "Study again" deals a different hand.
     @State private var pool: [ChemicalElement]
 
-    init(mode: StudyMode, queue: [ChemicalElement], catalog: ElementCatalog) {
+    init(
+        mode: StudyMode,
+        queue: [ChemicalElement],
+        catalog: ElementCatalog,
+        onAllowanceSpent: @escaping () -> Void = {}
+    ) {
         self.mode = mode
         self.catalog = catalog
+        self.onAllowanceSpent = onAllowanceSpent
         _pool = State(initialValue: Array(queue.prefix(StudyDeckBuilder.defaultPoolSize)))
+        _roundSeed = State(initialValue: Self.seed(round: 0, mode: mode))
     }
 
-    private var seed: UInt64 {
+    private static func seed(round: Int, mode: StudyMode) -> UInt64 {
         SeededGenerator.dailySeed() &+ UInt64(round) &* 7_919 &+ mode.seedSalt
+    }
+
+    private var seed: UInt64 { roundSeed }
+
+    /// Whether another round may start straight away from the summary.
+    private var canStudyAgain: Bool {
+        DailyStudyLimiter.canStartRound(
+            completedToday: progress.completedRoundsToday,
+            isPro: store.isPro
+        )
     }
 
     var body: some View {
@@ -39,9 +67,15 @@ struct StudySessionContainer: View {
                 if let result {
                     SessionSummaryView(
                         result: result,
+                        canStudyAgain: canStudyAgain,
                         onRepeat: {
                             round += 1
+                            roundSeed = Self.seed(round: round, mode: mode)
                             self.result = nil
+                        },
+                        onUnlock: {
+                            onAllowanceSpent()
+                            dismiss()
                         },
                         onDone: { dismiss() }
                     )
@@ -77,12 +111,15 @@ struct StudySessionContainer: View {
     @ViewBuilder
     private var session: some View {
         switch mode {
-        case .flashcards:
+        // Smart Review is the flashcard format over a pool of the elements the
+        // learner keeps missing — the pool is what makes it different, and it
+        // was already chosen before this view was presented.
+        case .flashcards, .smartReview:
             CardSessionView(
                 mode: mode,
                 cards: StudyDeckBuilder.flashcards(pool: pool, seed: seed),
                 onAnswer: record,
-                onFinish: { result = $0 }
+                onFinish: finish
             )
             .id(round)
         case .identify:
@@ -90,18 +127,19 @@ struct StudySessionContainer: View {
                 mode: mode,
                 cards: StudyDeckBuilder.identifyCards(pool: pool, seed: seed),
                 onAnswer: record,
-                onFinish: { result = $0 }
+                onFinish: finish
             )
             .id(round)
         case .quiz:
             QuizSessionView(
+                mode: mode,
                 questions: QuizGenerator.makeQuiz(
                     pool: pool,
                     distractors: catalog.elements,
                     seed: seed
                 ),
                 onAnswer: record,
-                onFinish: { result = $0 }
+                onFinish: finish
             )
             .id(round)
         }
@@ -109,6 +147,17 @@ struct StudySessionContainer: View {
 
     private func record(atomicNumber: Int, correct: Bool) {
         progress.recordAnswer(atomicNumber: atomicNumber, correct: correct)
+    }
+
+    /// The one place a round is counted as complete, for all four modes.
+    ///
+    /// `onFinish` fires exactly once per round, and only when the last card is
+    /// rated or the last quiz question is confirmed. Exiting part way through
+    /// never reaches here, so an interrupted round never costs the learner part
+    /// of the free daily allowance.
+    private func finish(_ result: StudyResult) {
+        self.result = result
+        progress.recordCompletedRound()
     }
 }
 
@@ -283,15 +332,20 @@ struct CardSessionView: View {
                 .multilineTextAlignment(.center)
                 .padding(Theme.Spacing.l)
         case .structure:
-            // The symbol — and the family color — appear only once the learner
-            // has committed to an answer; before that the diagram has to carry
-            // the question alone.
-            AtomicStructureView(
-                element: card.element,
-                diameter: 150,
-                showsSymbol: isRevealed,
-                tint: concealsFamily(card) ? AppColor.secondaryText : nil
+            // A glossy model of the atom itself: the shell counts are what
+            // make it a fair clue, since they identify the element uniquely.
+            //
+            // Drawn in neutral gray until the learner commits. The family
+            // palette is taught on onboarding page one, so a lavender model
+            // would narrow 118 candidates to seven before a single shell had
+            // been counted.
+            StructurePreview(
+                scene: StructureSceneBuilder.scene(for: card.element, representation: .atom),
+                accent: card.element.category.accentColor,
+                usesElementColor: !concealsFamily(card),
+                animates: false
             )
+            .frame(height: 168)
             .padding(Theme.Spacing.m)
         case .description(let text):
             Text(text)
@@ -401,6 +455,10 @@ struct CardSessionView: View {
 /// Ten multiple-choice questions. Options lock once answered so the learner
 /// sees which one was right before moving on.
 struct QuizSessionView: View {
+    /// Passed in rather than assumed: reporting `.quiz` for whatever mode
+    /// presented this view would mislabel the result the moment another mode
+    /// reuses the multiple-choice format.
+    let mode: StudyMode
     let questions: [QuizQuestion]
     let onAnswer: (Int, Bool) -> Void
     let onFinish: (StudyResult) -> Void
@@ -543,7 +601,7 @@ struct QuizSessionView: View {
         guard selection != nil else { return }
         if index + 1 >= questions.count {
             Haptics.sessionComplete()
-            onFinish(StudyResult(mode: .quiz, correct: correctCount, total: questions.count))
+            onFinish(StudyResult(mode: mode, correct: correctCount, total: questions.count))
         } else {
             selection = nil
             index += 1
@@ -556,7 +614,12 @@ struct QuizSessionView: View {
 /// End of a round: the score, and a calm, factual line about it.
 struct SessionSummaryView: View {
     let result: StudyResult
+    /// False once the free daily allowance is spent. The primary button then
+    /// says what it will actually do rather than letting the learner tap
+    /// "Study again" and be refused.
+    var canStudyAgain: Bool = true
     let onRepeat: () -> Void
+    var onUnlock: () -> Void = {}
     let onDone: () -> Void
 
     var body: some View {
@@ -599,9 +662,9 @@ struct SessionSummaryView: View {
             VStack(spacing: Theme.Spacing.s) {
                 Button {
                     Haptics.tap()
-                    onRepeat()
+                    if canStudyAgain { onRepeat() } else { onUnlock() }
                 } label: {
-                    Text("Study again")
+                    Text(canStudyAgain ? "Study again" : "Get Periodic Pro")
                         .font(.system(.body, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -613,6 +676,14 @@ struct SessionSummaryView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("summary.again")
+
+                if !canStudyAgain {
+                    Text("That was your last free round today.")
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
                 Button {
                     Haptics.tap()

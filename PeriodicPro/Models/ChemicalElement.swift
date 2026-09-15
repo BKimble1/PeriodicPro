@@ -86,6 +86,22 @@ extension ChemicalElement {
 
     var blockDisplay: String { "\(block)-block" }
 
+    /// Just the formula from `elementalForm`, which the dataset stores as
+    /// "O\u{2082} \u{2014} diatomic gas". Used as the short label above a 3D
+    /// structure, where the descriptive half is already carried by the caption.
+    var elementalFormFormula: String {
+        let separator = " \u{2014} "
+        guard let range = elementalForm.range(of: separator) else { return elementalForm }
+        return String(elementalForm[..<range.lowerBound])
+    }
+
+    /// The descriptive half of `elementalForm`, or nil when there is not one.
+    var elementalFormDescription: String? {
+        let separator = " \u{2014} "
+        guard let range = elementalForm.range(of: separator) else { return nil }
+        return String(elementalForm[range.upperBound...])
+    }
+
     /// Lanthanides and actinides live on the two detached rows beneath the table.
     var isInnerTransition: Bool { gridY > 7 }
 

@@ -30,6 +30,11 @@ enum RuntimeFlags {
     /// Set by the UI test bundle: skips onboarding, uses an in-memory store and
     /// silences haptics so runs are independent and deterministic.
     static let isUITesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
+
+    /// Set alongside `-uiTesting` to exercise the Pro paths. StoreKit is never
+    /// contacted during a UI test — a sandbox purchase sheet cannot be driven
+    /// reliably from XCUITest — so entitlement is decided here instead.
+    static let forcesProEntitlement = ProcessInfo.processInfo.arguments.contains("-proEntitled")
 }
 
 /// Environment storage for the bundled dataset.
@@ -37,11 +42,26 @@ private struct ElementCatalogKey: EnvironmentKey {
     static let defaultValue = ElementCatalog(elements: [])
 }
 
+/// Lets a screen move the learner to another tab.
+///
+/// The Study tab's streak and mastery cards lead to Progress, which is where
+/// those numbers live in full. Passing an action rather than a binding keeps
+/// `RootView` the only owner of the selection.
+private struct SelectTabKey: EnvironmentKey {
+    static let defaultValue: (AppTab) -> Void = { _ in }
+}
+
 extension EnvironmentValues {
     /// The bundled element dataset, injected once at launch.
     var elementCatalog: ElementCatalog {
         get { self[ElementCatalogKey.self] }
         set { self[ElementCatalogKey.self] = newValue }
+    }
+
+    /// Switches the visible tab. Injected by `RootView`.
+    var selectTab: (AppTab) -> Void {
+        get { self[SelectTabKey.self] }
+        set { self[SelectTabKey.self] = newValue }
     }
 }
 

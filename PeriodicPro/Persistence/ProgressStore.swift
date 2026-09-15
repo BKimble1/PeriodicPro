@@ -28,6 +28,11 @@ final class ProgressStore {
     private(set) var recentSearches: [String] = []
     private(set) var studyDayKeys: Set<String> = []
 
+    /// Rounds finished today, which is what the free daily allowance counts.
+    /// Published separately from `studyDayKeys` so the Study screen re-renders
+    /// the moment a round completes.
+    private(set) var completedRoundsToday: Int = 0
+
     /// Set when a write could not be saved, so the UI can say so instead of
     /// quietly losing the change.
     private(set) var writeFailureMessage: String?
@@ -95,7 +100,10 @@ final class ProgressStore {
             let fetched = try context.fetch(FetchDescriptor<StudyDayRecord>())
             dayRecords = Dictionary(fetched.map { ($0.dayKey, $0) },
                                     uniquingKeysWith: { first, _ in first })
-            studyDayKeys = Set(dayRecords.keys)
+            // A day counts toward the streak because cards were answered on it.
+            // Resetting progress zeroes those counts but keeps today's row, so
+            // the row alone must not resurrect the streak.
+            studyDayKeys = Set(dayRecords.filter { $0.value.answeredCount > 0 }.keys)
         } catch {
             failures.append("study history")
             PersistenceController.logger.error(
@@ -106,6 +114,7 @@ final class ProgressStore {
             ? nil
             : "Some saved data could not be read (\(failures.joined(separator: ", ")))."
 
+        refreshCompletedRoundsToday()
         save()
     }
 
@@ -156,6 +165,12 @@ final class ProgressStore {
         catalog.elements(in: category).filter { mastery(for: $0.atomicNumber) == .mastered }.count
     }
 
+    /// The elements the learner is weakest on, worst first. Smart Review draws
+    /// from this; the regular modes use `MasteryEngine.studyPriority`.
+    func weakestSnapshots() -> [ElementProgressSnapshot] {
+        SmartReviewBuilder.ranked(Array(snapshots.values))
+    }
+
     // MARK: - Writes
 
     @discardableResult
@@ -174,6 +189,33 @@ final class ProgressStore {
         apply(snapshot, save: false)
         registerStudyDay(on: date)
         save()
+    }
+
+    /// Called once, when a round reaches its summary.
+    ///
+    /// A round that the learner exits half way through never reaches here, so
+    /// an interrupted session cannot consume part of the free daily allowance.
+    func recordCompletedRound(date: Date = Date()) {
+        // No `studyDayKeys` insert here: a round can only complete after cards
+        // were answered, and `registerStudyDay` already recorded the day.
+        let key = StreakCalculator.dayKey(for: date, calendar: calendar)
+
+        if let existing = dayRecords[key] {
+            existing.completedRounds += 1
+        } else if let context {
+            let record = StudyDayRecord(dayKey: key, answeredCount: 0, completedRounds: 1)
+            context.insert(record)
+            dayRecords[key] = record
+        }
+        refreshCompletedRoundsToday(on: date)
+        save()
+    }
+
+    /// Recomputed rather than incremented so it is correct after a reload, and
+    /// after midnight passes while the app is open.
+    func refreshCompletedRoundsToday(on date: Date = Date()) {
+        let key = StreakCalculator.dayKey(for: date, calendar: calendar)
+        completedRoundsToday = dayRecords[key]?.completedRounds ?? 0
     }
 
     func recordSearch(_ rawTerm: String) {
@@ -233,11 +275,18 @@ final class ProgressStore {
                 : nil
         }
 
-        for record in dayRecords.values {
+        // Today's row survives, with its answer count zeroed but its completed
+        // rounds intact. Wiping it would turn "Reset progress" into a way to
+        // refill the free daily allowance, and the streak still drops to zero
+        // because the streak counts days on which cards were answered.
+        let todayKey = StreakCalculator.dayKey(for: Date(), calendar: calendar)
+        for (key, record) in dayRecords where key != todayKey {
             context?.delete(record)
+            dayRecords.removeValue(forKey: key)
         }
-        dayRecords = [:]
+        dayRecords[todayKey]?.answeredCount = 0
         studyDayKeys = []
+        refreshCompletedRoundsToday()
         save()
     }
 

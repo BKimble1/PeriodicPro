@@ -6,8 +6,13 @@ import SwiftUI
 /// the model honest: shells are an energy-level bookkeeping device, not orbits.
 struct StructureCard: View {
     let element: ChemicalElement
+    /// Whether the full interactive explorer is available for this element.
+    /// Six elements are free; the rest are part of Periodic Pro.
+    var isStructureUnlocked: Bool = true
+    var onExplore: () -> Void = {}
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Side by side normally; stacked once the text is large enough that a
     /// 140-point diagram would squeeze the facts into a column of fragments.
@@ -66,18 +71,41 @@ struct StructureCard: View {
         }
     }
 
+    private var scene: StructureScene {
+        StructureSceneBuilder.scene(
+            for: element,
+            representation: StructureSceneBuilder.representations(for: element).first ?? .atom
+        )
+    }
+
+    /// The elemental-form section: a glossy preview of the real structure, the
+    /// honest label for it, and the way into the interactive explorer.
+    ///
+    /// The preview is the same `StructureScene` the explorer renders, drawn with
+    /// `Canvas` rather than RealityKit. A scrolling card must not stand up a 3D
+    /// scene, and this way the picture here and the model there can never
+    /// disagree about what the element looks like.
     private var elementalForm: some View {
-        HStack(alignment: .center, spacing: Theme.Spacing.m) {
-            ElementalFormView(element: element, size: CGSize(width: 104, height: 74))
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            StructurePreview(scene: scene, accent: element.category.accentColor)
+                .frame(height: stacksVertically ? 132 : 156)
+                .frame(maxWidth: .infinity)
                 .background {
                     RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
-                        .fill(AppColor.surfaceMuted)
+                        .fill(element.category.tileFill.opacity(0.5))
                 }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(
+                    StructureFactsBuilder.summary(of: scene, element: element)
+                )
 
             VStack(alignment: .leading, spacing: 3) {
-                Text("Elemental form")
-                    .font(AppFont.caption)
-                    .foregroundStyle(AppColor.secondaryText)
+                HStack(spacing: Theme.Spacing.s) {
+                    Text("Elemental form")
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.secondaryText)
+                    if scene.isSimplified { SimplifiedBadge() }
+                }
                 Text(element.elementalForm)
                     .font(.system(.subheadline, weight: .semibold))
                     .foregroundStyle(AppColor.primaryText)
@@ -86,10 +114,82 @@ struct StructureCard: View {
                     .font(AppFont.caption2)
                     .foregroundStyle(AppColor.tertiaryText)
             }
-            Spacer(minLength: 0)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .combine)
+
+            exploreButton
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Elemental form: \(element.elementalForm), \(element.structure.displayName)")
+    }
+
+    private var exploreButton: some View {
+        Button {
+            Haptics.tap()
+            onExplore()
+        } label: {
+            HStack(spacing: Theme.Spacing.s) {
+                Image(systemName: "cube.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                Text("Explore in 3D")
+                    .font(.system(.subheadline, weight: .semibold))
+                if !isStructureUnlocked { ProBadge() }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+            }
+            .foregroundStyle(AppColor.accent)
+            .padding(.horizontal, Theme.Spacing.l)
+            .frame(maxWidth: .infinity, minHeight: Theme.minimumTouchTarget)
+            .background {
+                RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                    .fill(AppColor.accent.opacity(0.10))
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isStructureUnlocked
+                            ? "Explore \(element.name) in 3D"
+                            : "Explore \(element.name) in 3D, Periodic Pro feature")
+        .accessibilityIdentifier("detail.explore3D")
+    }
+}
+
+/// A slowly turning, glossy preview of a structure.
+///
+/// Separated from `StructureCard` so the timeline that drives the rotation only
+/// re-renders this small canvas, not the whole card, and so the rotation can be
+/// switched off in one place under Reduce Motion.
+struct StructurePreview: View {
+    let scene: StructureScene
+    let accent: Color
+    var usesElementColor: Bool = true
+    /// Identify passes `false`. A question does not need to move, the extra
+    /// motion is a distraction while the learner is thinking, and an atom model
+    /// can hold well over a hundred particles — redrawing those twenty times a
+    /// second to decorate a quiz card is not a trade worth making.
+    var animates: Bool = true
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var isPaused: Bool { reduceMotion || !animates }
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: isPaused)) { context in
+            StructureCanvasView(
+                scene: scene,
+                atomColor: accent,
+                bondColor: AppColor.secondaryText,
+                usesElementColor: usesElementColor,
+                yaw: isPaused ? 0.6 : Self.yaw(at: context.date),
+                pitch: 0.32
+            )
+            .padding(Theme.Spacing.s)
+        }
+    }
+
+    /// One turn every forty seconds, derived from the timeline's own clock so
+    /// there is no accumulating state to drift or leak.
+    static func yaw(at date: Date) -> Double {
+        date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 40) / 40 * 2 * .pi
     }
 }
 

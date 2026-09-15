@@ -51,6 +51,41 @@ final class PeriodicProUITests: XCTestCase {
         tab.tap()
     }
 
+    /// Scrolls until the element can actually be tapped.
+    ///
+    /// The Study tab is taller than a 4.7-inch screen, so a control that exists
+    /// is not necessarily on screen. Tapping a non-hittable element fails in a
+    /// way that looks like a missing feature rather than a scroll position.
+    @discardableResult
+    private func scrollTo(_ element: XCUIElement,
+                          file: StaticString = #filePath,
+                          line: UInt = #line) -> XCUIElement {
+        waitFor(element, 10, file: file, line: line)
+        var attempts = 0
+        while !element.isHittable && attempts < 6 {
+            app.swipeUp()
+            attempts += 1
+        }
+        XCTAssertTrue(element.isHittable,
+                      "\(element) never became tappable", file: file, line: line)
+        return element
+    }
+
+    private func tap(_ element: XCUIElement,
+                     file: StaticString = #filePath,
+                     line: UInt = #line) {
+        scrollTo(element, file: file, line: line).tap()
+    }
+
+    /// Relaunches with Pro entitled. StoreKit is never contacted in a UI test —
+    /// a sandbox purchase sheet cannot be driven reliably — so the entitlement
+    /// comes from a launch argument instead.
+    private func relaunchAsPro() {
+        app.terminate()
+        app.launchArguments = ["-uiTesting", "-proEntitled"]
+        app.launch()
+    }
+
     private func openElement(_ symbol: String) {
         let tile = app.buttons["element.\(symbol)"]
         waitFor(tile)
@@ -192,9 +227,7 @@ final class PeriodicProUITests: XCTestCase {
 
     func testFlashcardRoundRevealsAndAdvances() {
         openTab("Study")
-        let mode = app.buttons["study.mode.flashcards"]
-        waitFor(mode)
-        mode.tap()
+        tap(app.buttons["study.mode.flashcards"])
 
         let reveal = app.buttons["session.reveal"]
         waitFor(reveal)
@@ -212,7 +245,7 @@ final class PeriodicProUITests: XCTestCase {
 
     func testCompletingAFlashcardRoundShowsASummary() {
         openTab("Study")
-        app.buttons["study.mode.flashcards"].tap()
+        tap(app.buttons["study.mode.flashcards"])
 
         for _ in 0..<10 {
             let reveal = app.buttons["session.reveal"]
@@ -231,9 +264,7 @@ final class PeriodicProUITests: XCTestCase {
 
     func testQuizQuestionAcceptsAnAnswerAndAdvances() {
         openTab("Study")
-        let mode = app.buttons["study.mode.quiz"]
-        waitFor(mode)
-        mode.tap()
+        tap(app.buttons["study.mode.quiz"])
 
         waitFor(el("quiz.prompt"))
         let option = app.buttons["quiz.option.0"]
@@ -251,9 +282,7 @@ final class PeriodicProUITests: XCTestCase {
 
     func testIdentifyRoundRuns() {
         openTab("Study")
-        let mode = app.buttons["study.mode.identify"]
-        waitFor(mode)
-        mode.tap()
+        tap(app.buttons["study.mode.identify"])
 
         let reveal = app.buttons["session.reveal"]
         waitFor(reveal)
@@ -267,7 +296,7 @@ final class PeriodicProUITests: XCTestCase {
 
     func testProgressScreenReflectsAnsweredCards() {
         openTab("Study")
-        app.buttons["study.mode.flashcards"].tap()
+        tap(app.buttons["study.mode.flashcards"])
         let reveal = app.buttons["session.reveal"]
         waitFor(reveal)
         reveal.tap()
@@ -281,6 +310,202 @@ final class PeriodicProUITests: XCTestCase {
         XCTAssertTrue(el("progress.answered").exists)
         XCTAssertTrue(labelContaining("Alkali Metals").exists,
                       "The per-family breakdown should be on screen")
+    }
+
+    // MARK: - Study layout
+
+    func testStudyScreenShowsTheRedesignedHierarchy() {
+        openTab("Study")
+        waitFor(app.navigationBars["Study"])
+
+        // Greeting, two status cards, then the strongest card on the page.
+        XCTAssertTrue(el("study.greeting").exists, "The greeting should head the Study tab")
+        XCTAssertTrue(el("study.streakCard").exists)
+        XCTAssertTrue(el("study.masteryCard").exists)
+        XCTAssertTrue(el("study.heroCard").exists, "Flashcards should be the hero card")
+
+        // Four practice tiles, Smart Review included.
+        for mode in ["flashcards", "quiz", "identify", "smartReview"] {
+            XCTAssertTrue(app.buttons["study.mode.\(mode)"].exists,
+                          "\(mode) tile is missing")
+        }
+    }
+
+    func testStatusCardsShowRealValuesForANewLearner() {
+        openTab("Study")
+        // A brand new in-memory store: no invented streak, no invented mastery.
+        XCTAssertTrue(labelContaining("0 Day streak").waitForExistence(timeout: 6),
+                      "A new learner should see a zero streak, not a demo value")
+        XCTAssertTrue(labelContaining("0% Elements mastered").exists)
+    }
+
+    func testStatusCardOpensProgress() {
+        openTab("Study")
+        tap(el("study.streakCard"))
+        XCTAssertTrue(app.navigationBars["Progress"].waitForExistence(timeout: 6),
+                      "The streak card should lead to Progress")
+    }
+
+    func testHeroCardStartsAFlashcardRound() {
+        openTab("Study")
+        tap(el("study.heroCard"))
+        XCTAssertTrue(app.buttons["session.reveal"].waitForExistence(timeout: 6))
+        app.buttons["session.exit"].tap()
+    }
+
+    func testFreeAllowanceIsShownAndCountsDown() {
+        openTab("Study")
+        XCTAssertTrue(labelContaining("3 free rounds left today").waitForExistence(timeout: 6),
+                      "A free learner should be told how much study is left")
+
+        tap(app.buttons["study.mode.flashcards"])
+        for _ in 0..<10 {
+            let reveal = app.buttons["session.reveal"]
+            guard reveal.waitForExistence(timeout: 6) else { break }
+            reveal.tap()
+            let knew = app.buttons["session.knewThis"]
+            guard knew.waitForExistence(timeout: 6) else { break }
+            knew.tap()
+        }
+        waitFor(app.buttons["summary.done"])
+        app.buttons["summary.done"].tap()
+
+        XCTAssertTrue(labelContaining("2 free rounds left today").waitForExistence(timeout: 6),
+                      "Finishing a round should consume exactly one of the free rounds")
+    }
+
+    func testAbandoningARoundDoesNotConsumeTheAllowance() {
+        openTab("Study")
+        tap(app.buttons["study.mode.flashcards"])
+        let reveal = app.buttons["session.reveal"]
+        waitFor(reveal)
+        reveal.tap()
+        app.buttons["session.knewThis"].tap()
+        // Leave part way through.
+        app.buttons["session.exit"].tap()
+
+        XCTAssertTrue(labelContaining("3 free rounds left today").waitForExistence(timeout: 6),
+                      "Quitting part way through must not cost a free round")
+    }
+
+    // MARK: - Pro
+
+    func testSmartReviewIsMarkedProAndOpensThePaywall() {
+        openTab("Study")
+        let smartReview = app.buttons["study.mode.smartReview"]
+        scrollTo(smartReview)
+        XCTAssertTrue(smartReview.label.contains("Periodic Pro"),
+                      "Smart Review should be marked as a Pro feature for a free learner")
+
+        smartReview.tap()
+        waitFor(el("paywall"))
+        XCTAssertTrue(app.buttons["paywall.restore"].exists,
+                      "The paywall must offer Restore Purchases")
+        XCTAssertTrue(app.buttons["paywall.close"].exists)
+        app.buttons["paywall.close"].tap()
+        XCTAssertTrue(app.navigationBars["Study"].waitForExistence(timeout: 6),
+                      "Closing the paywall should return to Study")
+    }
+
+    func testPaywallShowsItsLegalLinks() {
+        openTab("Study")
+        tap(app.buttons["study.mode.smartReview"])
+        waitFor(el("paywall"))
+        XCTAssertTrue(app.buttons["paywall.privacy"].exists)
+        XCTAssertTrue(app.buttons["paywall.terms"].exists)
+        XCTAssertTrue(labelContaining("renews automatically").exists,
+                      "Auto-renewal terms must be stated on the paywall")
+        app.buttons["paywall.close"].tap()
+    }
+
+    func testSmartReviewIsNotMarkedProForASubscriber() {
+        relaunchAsPro()
+        openTab("Study")
+        let smartReview = app.buttons["study.mode.smartReview"]
+        scrollTo(smartReview)
+        XCTAssertFalse(smartReview.label.contains("Periodic Pro"),
+                       "A subscriber should not see a Pro badge")
+        XCTAssertFalse(el("study.allowance").exists,
+                       "A subscriber should not see a free-round counter")
+    }
+
+    // MARK: - 3D structures
+
+    func testDemoElementOpensTheStructureExplorer() {
+        // Gold is one of the six elements that are free to explore.
+        openElement("Au")
+        let explore = app.buttons["detail.explore3D"]
+        scrollTo(explore)
+        XCTAssertFalse(explore.label.contains("Periodic Pro"),
+                       "Gold is a free demo element and must not be marked Pro")
+        explore.tap()
+
+        waitFor(el("explorer.viewer"))
+        XCTAssertTrue(el("explorer.parts").exists,
+                      "The explorer should list selectable parts for accessibility")
+        app.buttons["explorer.done"].tap()
+        XCTAssertTrue(app.buttons["detail.favoriteButton"].waitForExistence(timeout: 6))
+    }
+
+    func testNonDemoElementShowsThePaywallInstead() {
+        openElement("Ne")
+        let explore = app.buttons["detail.explore3D"]
+        scrollTo(explore)
+        XCTAssertTrue(explore.label.contains("Periodic Pro"),
+                      "Neon is not a demo element, so its explorer should be marked Pro")
+        explore.tap()
+
+        waitFor(el("paywall"))
+        app.buttons["paywall.close"].tap()
+    }
+
+    func testSubscriberCanExploreAnyElement() {
+        relaunchAsPro()
+        openElement("Ne")
+        tap(app.buttons["detail.explore3D"])
+        waitFor(el("explorer.viewer"))
+        XCTAssertTrue(el("explorer.summary").exists,
+                      "The explorer should describe what is being shown")
+        app.buttons["explorer.done"].tap()
+    }
+
+    func testStructureExplorerSelectsAPart() {
+        openElement("O")
+        tap(app.buttons["detail.explore3D"])
+        waitFor(el("explorer.parts"))
+
+        // Selecting from the parts row is the accessible equivalent of tapping
+        // the model, and drives exactly the same selection.
+        let atom = app.buttons["Atom 1"]
+        if atom.waitForExistence(timeout: 5) {
+            atom.tap()
+            XCTAssertTrue(el("explorer.inspector").waitForExistence(timeout: 6),
+                          "Selecting a part should open the inspector")
+        }
+        app.buttons["explorer.done"].tap()
+    }
+
+    // MARK: - Recent searches
+
+    func testRecentSearchesAppearOnStudy() {
+        let field = app.searchFields.firstMatch
+        waitFor(field)
+        field.tap()
+        field.typeText("sodium")
+        waitFor(app.buttons["searchResult.Na"])
+        app.buttons["searchResult.Na"].tap()
+        waitFor(app.buttons["detail.favoriteButton"])
+        goBack()
+
+        openTab("Study")
+        let section = el("study.recentSearches")
+        scrollTo(section)
+        XCTAssertTrue(labelContaining("Searched for sodium").exists,
+                      "A search should be recorded on the Study tab")
+
+        tap(app.buttons["study.clearSearches"])
+        XCTAssertFalse(app.staticTexts["sodium"].waitForExistence(timeout: 3),
+                       "Clear should empty the recent searches list")
     }
 
     func testProgressMenuOffersAboutAndReset() {

@@ -75,25 +75,82 @@ short paragraph, four common uses, and a memory hook.
 
 ### Study
 
-Three modes, ten cards each:
+A greeting, two status cards that lead to Progress, one strong card into a
+round, and four practice tiles:
 
 - **Flashcards** — name → symbol and symbol → name, reveal, then rate yourself
-- **Quick Quiz** — four multiple-choice question types
-- **Identify** — a shell diagram, an atomic number or a written clue
+- **Quiz** — four multiple-choice question types
+- **Identify** — a glossy model of the atom, an atomic number, or a written clue
+- **Smart Review** — ten cards drawn from the elements you keep getting wrong
 
-Identify draws its shell diagrams in a neutral color until you answer. The app
-teaches the family palette during onboarding, so a lavender nucleus would narrow
-118 candidates to seven before you had counted a single shell.
+Identify draws its model in neutral gray until you answer. The app teaches the
+family palette during onboarding, so a lavender model would narrow 118
+candidates to seven before you had counted a single shell.
 
 Rounds start with the elements you know least well. Favorites and recently
-studied elements sit on the same screen; an element you have favorited appears
-only in Favorites, so the two rows never show the same tile twice.
+studied elements sit lower on the same screen; an element you have favorited
+appears only in Favorites, so the two rows never show the same tile twice.
+
+Every number on the screen is read from the stored progress. A new learner sees
+a 0-day streak and 0% mastered, not a demo value.
 
 ### Progress
 
 Elements mastered out of 118 on a progress ring, a streak, cards answered, and a
 per-family breakdown. No dashboard, no fake statistics — every number is derived
 from something you actually did.
+
+### Element artwork
+
+Each expanded element hero carries a quiet decorative layer: gold gets soft
+metallic nuggets, carbon gets cut facets, mercury gets reflective beads, neon
+gets a luminous bloom. Ten treatments cover all 118 elements, chosen from the
+`structure`, `phase` and `category` the dataset already carries, with a short
+list of named exceptions for the elements people can already picture.
+
+It is all procedural — `Canvas`, gradients and polygons seeded from the atomic
+number, so an element always looks the same and nothing is downloaded. It is
+masked to a clear core so nothing is ever drawn behind the symbol, and it fades
+in *after* the zoom transition settles so the shape the tile grows into is still
+the plain card you tapped.
+
+### Interactive 3D structures
+
+Every element's structure can be opened in a RealityKit explorer: drag to turn,
+pinch to zoom, double tap to reframe, tap any atom, bond or particle to select
+it. Selecting brings that part to the middle of the view, dims the rest, and
+opens a panel about it. Two representations are offered — the elemental form
+(molecule, lattice or network) and the atom itself, where protons, neutrons and
+electrons are individually selectable.
+
+Geometry is generated from the dataset by `StructureSceneBuilder`, which is pure
+Swift with no RealityKit import, so all of it is unit-tested: 118 elements, no
+empty scenes, unique identifiers, bonds that reference real atoms, and geometry
+normalized so nothing can render off-screen.
+
+Scientific honesty is enforced in code and asserted by tests:
+
+- a metallic lattice is never called a molecule, and its struts are marked as
+  contacts rather than bonds, so the inspector cannot describe them as covalent
+- nitrogen gets a triple bond and oxygen a double one, because that is what they
+  have
+- a noble gas is shown as one atom, not an invented dimer
+- the atom model spreads electrons over a sphere rather than around a ring, is
+  always labeled a simplification, and says outright that electrons do not
+  follow fixed paths
+- a nucleus too large to draw particle-for-particle says how many it is showing
+
+The detail page shows a lightweight `Canvas` preview of the same scene rather
+than standing up a 3D view inside a scrolling card.
+
+### Periodic Pro
+
+An optional subscription. The table, all 118 elements, search, filters,
+favorites, every fact and all three original practice modes stay free.
+
+Pro adds unlimited study rounds (free is three a day), the interactive explorer
+for every element rather than six, and Smart Review. See **MONETIZATION.md** for
+the product identifiers, what to create in App Store Connect, and how to test it.
 
 ---
 
@@ -196,13 +253,16 @@ PeriodicPro/
 ├── Persistence/            SwiftData models, container recovery, ProgressStore
 ├── DesignSystem/           Spacing, radii, colors, type ramp, family palette
 ├── Components/             ElementTile, cards, diagrams, progress ring
-├── StudyEngine/            Quiz and deck generation, mastery, streaks, RNG
+├── Artwork/                Procedural decorative element artwork
+├── Structure3D/            Scene description, Canvas preview, RealityKit explorer
+├── Store/                  StoreKit 2, entitlement, gating rules, paywall
+├── StudyEngine/            Quiz and deck generation, mastery, Smart Review, RNG
 ├── Services/               Haptics
 ├── Utilities/              SF Symbol allowlist
 ├── Views/
 │   ├── Table/              The periodic table screen, grid, filters, search
 │   ├── Detail/             Element hero and detail cards
-│   ├── Study/              Study hub and the three session modes
+│   ├── Study/              Study hub and the four session modes
 │   ├── Progress/           Mastery ring, activity, family breakdown
 │   └── Onboarding/         Three skippable pages, shown once
 ├── Assets.xcassets/        App icon (light/dark/tinted) and accent color
@@ -210,7 +270,7 @@ PeriodicPro/
 
 PeriodicProTests/           Swift Testing unit tests
 PeriodicProUITests/         XCUITest end-to-end flows
-Config/                     xcconfig build settings and Info.plist
+Config/                     xcconfig, Info.plist, StoreKit configuration
 Tools/                      Dataset generation, validation and icon rendering
 .github/workflows/          CI and TestFlight pipelines
 ```
@@ -363,8 +423,11 @@ python3 Tools/validate_elements.py
 
 **Unit tests** (Swift Testing) cover the 118-element dataset, search ranking,
 filtering, quiz and deck generation determinism, mastery transitions, streak
-arithmetic, the progress store against an in-memory SwiftData container, and
-presentation formatting.
+arithmetic, the progress store against an in-memory SwiftData container,
+presentation formatting, artwork resolution for all 118 elements, structure
+scene geometry and chemistry, Smart Review ranking, and every free/Pro gating
+combination. Nothing in the test suite contacts StoreKit — entitlement is
+injected.
 
 **Local checks** (`Tools/verify.sh`) run on any machine in a couple of seconds
 and are the same checks CI's `validate-data` job runs. They catch the class of
@@ -376,7 +439,10 @@ table that would overflow the screen.
 favoriting and seeing it appear in Study, searching by name, symbol and atomic
 number, the empty search state, family filters, the filter sheet, a full
 flashcard round through to its summary, answering a quiz question, an identify
-round, and the Progress screen. Every query goes through an accessibility
+round, the Progress screen, the redesigned Study layout, the free daily
+allowance counting down (and not counting an abandoned round), the Pro badge,
+the paywall opening and closing with its Restore and legal links, and the 3D
+explorer opening for a free element while a gated one shows the paywall. Every query goes through an accessibility
 identifier — no pixel coordinates.
 
 ---

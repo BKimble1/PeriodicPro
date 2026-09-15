@@ -1,10 +1,16 @@
 import SwiftUI
 
-/// The learning hub: pick up where you left off, jump to a favorite, or start
-/// one of the three practice modes.
+/// The learning hub.
+///
+/// Laid out to the reference concept: a greeting, two compact status cards, one
+/// strong card into a round, four pastel practice tiles, then recent searches
+/// and the element shelves. Every number on it is read from `ProgressStore` —
+/// a new learner sees a 0-day streak and 0% mastered, not a demo value.
 struct StudyScreen: View {
     @Environment(\.elementCatalog) private var catalog
+    @Environment(\.selectTab) private var selectTab
     @Environment(ProgressStore.self) private var progress: ProgressStore
+    @Environment(SubscriptionManager.self) private var store: SubscriptionManager
 
     @State private var path: [ChemicalElement] = []
     @State private var activeMode: StudyMode?
@@ -13,6 +19,12 @@ struct StudyScreen: View {
     /// passing it live handed the running session a freshly shuffled pool after
     /// each card and the deck changed under the learner mid-round.
     @State private var sessionQueue: [ChemicalElement] = []
+    @State private var paywall: PaywallContext?
+    /// Shown when Smart Review is unlocked but has nothing to review yet.
+    @State private var smartReviewNotice: String?
+    /// Set when a round ends with the allowance spent. The paywall is only
+    /// presented once the session cover has actually gone, never over a round.
+    @State private var paywallAfterSession: PaywallContext?
     @Namespace private var studyNamespace
 
     private var favorites: [ChemicalElement] {
@@ -35,166 +47,215 @@ struct StudyScreen: View {
         MasteryEngine.studyPriority(catalog.elements) { progress.mastery(for: $0) }
     }
 
+    private var masteryFraction: Double {
+        catalog.count == 0 ? 0 : Double(progress.masteredCount) / Double(catalog.count)
+    }
+
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.section) {
-                    Text("Explore. Practice. Remember.")
-                        .font(AppFont.subheadline)
-                        .foregroundStyle(AppColor.secondaryText)
-                        .padding(.horizontal, Theme.Spacing.screenMargin)
-
-                    continueCard
-                        .padding(.horizontal, Theme.Spacing.screenMargin)
-
-                    modesSection
-                        .padding(.horizontal, Theme.Spacing.screenMargin)
-
+                    greeting
+                    statusCards
+                    heroCard
+                    practiceSection
+                    recentSearchesSection
                     favoritesSection
-
-                    if !recentlyStudied.isEmpty {
-                        recentSection
-                    }
+                    if !recentlyStudied.isEmpty { recentSection }
                 }
-                .padding(.top, Theme.Spacing.xs)
+                .padding(.top, Theme.Spacing.s)
                 .padding(.bottom, Theme.Spacing.xxxl)
             }
             .background(AppColor.canvas)
             .navigationTitle("Study")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: ChemicalElement.self) { element in
                 ElementDetailScreen(element: element)
                     .zoomTransition(id: element.atomicNumber, namespace: studyNamespace)
             }
             .fullScreenCover(item: $activeMode) { mode in
-                StudySessionContainer(mode: mode, queue: sessionQueue, catalog: catalog)
+                StudySessionContainer(
+                    mode: mode,
+                    queue: sessionQueue,
+                    catalog: catalog,
+                    onAllowanceSpent: { paywallAfterSession = .dailyLimit }
+                )
+            }
+            .sheet(item: $paywall) { context in
+                PaywallView(context: context)
+            }
+            .alert(
+                "Not enough history yet",
+                isPresented: Binding(
+                    get: { smartReviewNotice != nil },
+                    set: { if !$0 { smartReviewNotice = nil } }
+                )
+            ) {
+                Button("OK", role: .cancel) { smartReviewNotice = nil }
+            } message: {
+                Text(smartReviewNotice ?? "")
+            }
+            // Presenting the paywall only after the cover has gone avoids the
+            // two presentations racing, and means the paywall never appears
+            // over a round in progress.
+            .onChange(of: activeMode) { _, newValue in
+                guard newValue == nil, let pending = paywallAfterSession else { return }
+                paywallAfterSession = nil
+                paywall = pending
             }
         }
         .tint(AppColor.accent)
     }
 
-    // MARK: - Continue
+    // MARK: - Greeting
 
-    private var continueCard: some View {
-        Button {
-            Haptics.tap()
-            start(.flashcards)
-        } label: {
-            HStack(alignment: .center, spacing: Theme.Spacing.l) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(progress.totalAnswered == 0 ? "Start studying" : "Continue studying")
-                        .font(.system(.title3, weight: .semibold))
-                        .foregroundStyle(AppColor.primaryText)
-                    Text(continueSubtitle)
+    private var greeting: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("\(StudyGreeting.salutation())!")
+                .font(.system(.largeTitle, weight: .bold))
+                .foregroundStyle(AppColor.primaryText)
+            Text(StudyGreeting.encouragement(
+                masteredCount: progress.masteredCount,
+                streak: progress.currentStreak,
+                hasStudied: progress.totalAnswered > 0
+            ))
+            .font(.system(.largeTitle, weight: .bold))
+            .foregroundStyle(AppColor.primaryText)
+            Text(StudyGreeting.supportingLine)
+                .font(AppFont.subheadline)
+                .foregroundStyle(AppColor.secondaryText)
+                .padding(.top, 2)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, Theme.Spacing.screenMargin)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("study.greeting")
+    }
+
+    // MARK: - Status
+
+    private var statusCards: some View {
+        HStack(alignment: .top, spacing: Theme.Spacing.m) {
+            StudyStatusCard(
+                title: "\(progress.currentStreak)",
+                caption: "Day streak",
+                action: { selectTab(.progress) }
+            ) {
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(AppColor.warning)
+            }
+            .accessibilityIdentifier("study.streakCard")
+
+            StudyStatusCard(
+                title: "\(Int((masteryFraction * 100).rounded()))%",
+                caption: "Elements mastered",
+                action: { selectTab(.progress) }
+            ) {
+                MiniProgressRing(progress: masteryFraction)
+            }
+            .accessibilityIdentifier("study.masteryCard")
+        }
+        .padding(.horizontal, Theme.Spacing.screenMargin)
+    }
+
+    // MARK: - Hero
+
+    private var heroCard: some View {
+        StudyHeroCard(
+            title: StudyMode.flashcards.title,
+            message: "Memorize, quiz and reinforce your knowledge.",
+            symbolName: StudyMode.flashcards.symbolName,
+            action: { start(.flashcards) }
+        )
+        .padding(.horizontal, Theme.Spacing.screenMargin)
+        .accessibilityIdentifier("study.heroCard")
+    }
+
+    // MARK: - Practice
+
+    private static let modeTints: [StudyMode: ElementCategory] = [
+        .flashcards: .metalloid,
+        .quiz: .lanthanide,
+        .identify: .alkalineEarthMetal,
+        .smartReview: .alkaliMetal,
+    ]
+
+    private var practiceSection: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            StudySectionHeader(title: "Practice modes") {
+                // Where the reference concept has a "See All" link. All four
+                // modes are already on screen, so a link would go nowhere;
+                // what belongs in that slot is how much free study is left.
+                if let allowance = DailyStudyLimiter.allowanceDescription(
+                    completedToday: progress.completedRoundsToday,
+                    isPro: store.isPro
+                ) {
+                    Text(allowance)
                         .font(AppFont.footnote)
                         .foregroundStyle(AppColor.secondaryText)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("study.allowance")
                 }
-                Spacer(minLength: Theme.Spacing.s)
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 42, height: 42)
-                    .background { Circle().fill(AppColor.accent) }
             }
-            .padding(Theme.Spacing.l)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background {
-                RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                AppColor.accent.opacity(0.14),
-                                ElementCategory.nobleGas.tileFill.opacity(0.9),
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                    .strokeBorder(AppColor.accent.opacity(0.16), lineWidth: 1)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("study.continueCard")
-        .accessibilityHint("Starts a flashcard round")
-    }
+            .padding(.horizontal, Theme.Spacing.screenMargin)
 
-    private var continueSubtitle: String {
-        let streak = progress.currentStreak
-        if progress.totalAnswered == 0 {
-            return "Ten quick flashcards, starting with the elements you have not seen yet."
-        }
-        if streak > 1 {
-            return "\(streak)-day streak \u{00B7} \(progress.masteredCount) of \(catalog.count) mastered"
-        }
-        return "\(progress.masteredCount) of \(catalog.count) mastered \u{00B7} pick up where you left off"
-    }
-
-    /// Snapshots the queue, then presents the round. Both happen in one pass so
-    /// the session never sees a queue that changes beneath it.
-    private func start(_ mode: StudyMode) {
-        sessionQueue = studyQueue
-        activeMode = mode
-    }
-
-    // MARK: - Modes
-
-    private var modesSection: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-            SectionHeader(title: "Practice", subtitle: "Short rounds of ten")
-            VStack(spacing: Theme.Spacing.s) {
+            HStack(alignment: .top, spacing: Theme.Spacing.m) {
                 ForEach(StudyMode.allCases) { mode in
-                    Button {
-                        Haptics.tap()
-                        start(mode)
-                    } label: {
-                        HStack(spacing: Theme.Spacing.m) {
-                            Image(systemName: mode.symbolName)
-                                .font(.system(size: 17, weight: .medium))
-                                .foregroundStyle(AppColor.accent)
-                                .frame(width: 40, height: 40)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 11, style: .continuous)
-                                        .fill(AppColor.accent.opacity(0.10))
-                                }
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(mode.title)
-                                    .font(.system(.body, weight: .semibold))
-                                    .foregroundStyle(AppColor.primaryText)
-                                Text(mode.subtitle)
-                                    .font(AppFont.caption)
-                                    .foregroundStyle(AppColor.secondaryText)
-                            }
-                            Spacer(minLength: 0)
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(AppColor.tertiaryText)
-                        }
-                        .padding(Theme.Spacing.m)
-                        .frame(minHeight: 64)
-                        .background {
-                            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
-                                .fill(AppColor.surface)
-                        }
-                        .overlay {
-                            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
-                                .strokeBorder(AppColor.hairline, lineWidth: 0.7)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("study.mode.\(mode.rawValue)")
+                    PracticeModeTile(
+                        mode: mode,
+                        tint: Self.modeTints[mode] ?? .metalloid,
+                        showsProBadge: mode.requiresPro && !store.isPro,
+                        action: { start(mode) }
+                    )
                 }
             }
+            .padding(.horizontal, Theme.Spacing.screenMargin)
         }
     }
 
-    // MARK: - Favorites
+    // MARK: - Recent searches
+
+    @ViewBuilder
+    private var recentSearchesSection: some View {
+        if !progress.recentSearches.isEmpty {
+            VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+                StudySectionHeader(title: "Recent searches") {
+                    Button("Clear") {
+                        Haptics.tap()
+                        progress.clearRecentSearches()
+                    }
+                    .font(.system(.footnote, weight: .medium))
+                    .frame(minHeight: Theme.minimumTouchTarget)
+                    .accessibilityIdentifier("study.clearSearches")
+                }
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+
+                VStack(spacing: 0) {
+                    ForEach(Array(progress.recentSearches.enumerated()), id: \.offset) { index, term in
+                        if index > 0 {
+                            Divider()
+                                .overlay(AppColor.hairline)
+                                .padding(.leading, Theme.Spacing.xxl)
+                        }
+                        RecentSearchRow(term: term)
+                    }
+                }
+                .background {
+                    RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                        .fill(AppColor.surface)
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                        .strokeBorder(AppColor.hairline, lineWidth: 0.7)
+                }
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+            }
+            .accessibilityIdentifier("study.recentSearches")
+        }
+    }
+
+    // MARK: - Favorites and recents
 
     @ViewBuilder
     private var favoritesSection: some View {
@@ -210,7 +271,7 @@ struct StudyScreen: View {
                     EmptyStateView(
                         symbolName: "heart",
                         title: "No favorites yet",
-                        message: "Tap the heart on any element to keep it here for quick review."
+                        message: "Tap the heart on any element to keep it here."
                     )
                 }
                 .padding(.horizontal, Theme.Spacing.screenMargin)
@@ -229,7 +290,10 @@ struct StudyScreen: View {
         }
     }
 
-    private func elementCarousel(_ elements: [ChemicalElement], identifierPrefix: String) -> some View {
+    private func elementCarousel(
+        _ elements: [ChemicalElement],
+        identifierPrefix: String
+    ) -> some View {
         ScrollView(.horizontal) {
             HStack(spacing: Theme.Spacing.m) {
                 ForEach(elements) { element in
@@ -268,5 +332,40 @@ struct StudyScreen: View {
             .padding(.vertical, 2)
         }
         .scrollIndicators(.hidden)
+    }
+
+    // MARK: - Starting a round
+
+    /// The single gate for beginning a round from this screen.
+    ///
+    /// Snapshots the queue and presents in one pass, so the session never sees
+    /// a queue that changes beneath it. Everything that could stop a round —
+    /// the Pro-only mode, the free daily allowance, and Smart Review not having
+    /// enough history yet — is decided here, before anything is presented, and
+    /// never once a round is running.
+    private func start(_ mode: StudyMode) {
+        if mode.requiresPro, !store.isPro {
+            paywall = .smartReview
+            return
+        }
+        if !DailyStudyLimiter.canStartRound(
+            completedToday: progress.completedRoundsToday,
+            isPro: store.isPro
+        ) {
+            paywall = .dailyLimit
+            return
+        }
+        // Smart Review with no history would just be Flashcards under another
+        // name, which is not what the learner paid for. Say so instead.
+        if mode == .smartReview,
+           let reason = SmartReviewBuilder.unavailableReason(snapshots: progress.snapshots) {
+            smartReviewNotice = reason
+            return
+        }
+
+        sessionQueue = mode == .smartReview
+            ? SmartReviewBuilder.queue(elements: catalog.elements, snapshots: progress.snapshots)
+            : studyQueue
+        activeMode = mode
     }
 }

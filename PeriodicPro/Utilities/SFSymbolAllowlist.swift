@@ -53,6 +53,9 @@ enum SFSymbolAllowlist {
         "circle.dotted", "circle.lefthalf.filled", "circle.righthalf.filled",
         "rectangle.on.rectangle.angled", "questionmark.circle.fill", "eye.fill",
         "chart.bar.fill", "flame.fill", "book.fill",
+        // Pro, the paywall and the 3D structure explorer
+        "xmark", "infinity", "scope", "cube.fill", "sparkles", "lock.fill",
+        "arrow.up.right",
     ]
 
     /// Everything the app can ask UIKit to draw.

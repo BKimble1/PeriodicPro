@@ -8,25 +8,13 @@ import SwiftUI
 struct AtomicStructureView: View {
     let element: ChemicalElement
     var diameter: CGFloat = 188
-    /// Identify mode turns this off: there the diagram *is* the question, and a
-    /// symbol in the nucleus would print the answer in the middle of it.
-    var showsSymbol: Bool = true
-    /// Overrides the family accent. Identify mode passes a neutral color for
-    /// the same reason it hides the symbol: the palette is a legend the app
-    /// teaches on page one, so a lavender nucleus narrows 118 candidates to
-    /// seven before the learner has counted a single shell.
-    var tint: Color?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var shells: [Int] { element.shellElectrons.filter { $0 > 0 } }
 
-    private var drawingTint: Color { tint ?? element.category.accentColor }
-    /// `AppColor.surface` is white on light and near-black on dark, so it reads
-    /// against the neutral nucleus as well as the family's own ink does.
-    private var symbolTint: Color {
-        tint == nil ? element.category.onAccentColor : AppColor.surface
-    }
+    private var drawingTint: Color { element.category.accentColor }
+    private var symbolTint: Color { element.category.onAccentColor }
 
     private var nucleusDiameter: CGFloat { diameter * 0.235 }
     private var innerRadius: CGFloat { diameter * 0.185 }
@@ -65,14 +53,12 @@ struct AtomicStructureView: View {
                 )
                 .frame(width: nucleusDiameter, height: nucleusDiameter)
                 .overlay {
-                    if showsSymbol {
-                        Text(element.symbol)
-                            .font(.system(size: nucleusDiameter * 0.44, weight: .semibold))
-                            .foregroundStyle(symbolTint)
-                            .minimumScaleFactor(0.5)
-                            .lineLimit(1)
-                            .padding(2)
-                    }
+                    Text(element.symbol)
+                        .font(.system(size: nucleusDiameter * 0.44, weight: .semibold))
+                        .foregroundStyle(symbolTint)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .padding(2)
                 }
                 .themeShadow(Theme.Shadow.subtle)
         }
@@ -85,8 +71,7 @@ struct AtomicStructureView: View {
         let breakdown = shells.enumerated()
             .map { "shell \($0.offset + 1): \($0.element)" }
             .joined(separator: ", ")
-        let subject = showsSymbol ? element.name : "an unnamed element"
-        return "Simplified shell diagram for \(subject). "
+        return "Simplified shell diagram for \(element.name). "
             + "\(shells.count) electron shells. \(breakdown)."
     }
 }
