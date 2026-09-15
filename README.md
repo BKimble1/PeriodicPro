@@ -371,12 +371,17 @@ identifier — no pixel coordinates.
 
 `.github/workflows/ci.yml` runs on every pull request and push to `main`:
 
-1. **validate-data** (Ubuntu) — `Tools/validate_elements.py`, in seconds
+1. **validate-data** (Ubuntu) — every check in `Tools/verify.sh`, in seconds
 2. **build-and-test** (macOS) — build for testing, unit tests, UI tests, then an
    unsigned Release build to catch optimiser-only failures
 3. **smaller-and-larger-phones** (macOS, matrix) — launch and layout tests on a
    small iPhone and a Pro Max, asserting the fitted table never overflows the
    screen width
+
+Simulator destinations are resolved at run time by `Tools/pick_simulators.py`
+from whatever the runner image actually has, rather than hard-coded by name —
+GitHub rotates its device set, and a missing `iPhone 17 Pro` should not fail a
+pipeline.
 
 It never signs and never uploads.
 

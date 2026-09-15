@@ -16,7 +16,6 @@ env:
   # App Store Connect requires builds made with Xcode 26 or newer, so the whole
   # pipeline is pinned to that toolchain.
   XCODE_VERSION: "26.0"
-  SIMULATOR: "iPhone 17 Pro"
 
 jobs:
   validate-data:
@@ -82,6 +81,15 @@ jobs:
       - name: Show destinations
         run: xcodebuild -project "$PROJECT" -scheme "$SCHEME" -showdestinations || true
 
+      - name: Resolve simulators
+        run: |
+          set -euo pipefail
+          # GitHub rotates the device set in its macOS images, so the
+          # destinations are resolved from what the machine actually has rather
+          # than hard-coded by name.
+          xcrun simctl list devices available --json \
+            | python3 Tools/pick_simulators.py >> "$GITHUB_ENV"
+
       - name: Resolve dependencies
         run: |
           # The app ships with no third-party packages; this keeps the step
@@ -95,7 +103,7 @@ jobs:
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -destination "id=${SIM_DEFAULT}" \
             -derivedDataPath build/DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer github-actions
@@ -107,7 +115,7 @@ jobs:
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -destination "id=${SIM_DEFAULT}" \
             -derivedDataPath build/DerivedData \
             -only-testing:PeriodicProTests \
             -resultBundlePath build/UnitTests.xcresult \
@@ -121,7 +129,7 @@ jobs:
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -destination "id=${SIM_DEFAULT}" \
             -derivedDataPath build/DerivedData \
             -only-testing:PeriodicProUITests \
             -resultBundlePath build/UITests.xcresult \
@@ -150,15 +158,13 @@ jobs:
           if-no-files-found: ignore
 
   smaller-and-larger-phones:
-    name: Layout check (${{ matrix.simulator }})
+    name: Layout check (${{ matrix.size }})
     runs-on: macos-15
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        simulator:
-          - "iPhone 16e"
-          - "iPhone 17 Pro Max"
+        size: [SIM_SMALL, SIM_LARGE]
     steps:
       - uses: actions/checkout@v4
 
@@ -173,14 +179,28 @@ jobs:
       - name: Ensure xcbeautify is available
         run: which xcbeautify || brew install xcbeautify
 
+      - name: Resolve simulators
+        run: |
+          set -euo pipefail
+          # GitHub rotates the device set in its macOS images, so the
+          # destinations are resolved from what the machine actually has rather
+          # than hard-coded by name.
+          xcrun simctl list devices available --json \
+            | python3 Tools/pick_simulators.py >> "$GITHUB_ENV"
+
       - name: Launch-and-layout UI tests
         run: |
+          set -euo pipefail
           set -o pipefail
+          KEY="${{ matrix.size }}"
+          UDID="${!KEY}"
+          NAME_KEY="${KEY}_NAME"
+          echo "Running on ${!NAME_KEY} ($UDID)"
           xcodebuild test \
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=${{ matrix.simulator }}" \
+            -destination "id=$UDID" \
             -derivedDataPath build/DerivedData \
             -only-testing:PeriodicProUITests/PeriodicProLaunchTests \
             CODE_SIGNING_ALLOWED=NO \

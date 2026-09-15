@@ -19,7 +19,6 @@ env:
   PROJECT: PeriodicPro.xcodeproj
   # App Store Connect only accepts builds made with Xcode 26 or newer.
   XCODE_VERSION: "26.0"
-  SIMULATOR: "iPhone 17 Pro"
   ARCHIVE_PATH: build/PeriodicPro.xcarchive
   EXPORT_PATH: build/export
 
@@ -48,6 +47,15 @@ jobs:
 
       - name: Ensure xcbeautify is available
         run: which xcbeautify || brew install xcbeautify
+
+      - name: Resolve simulators
+        run: |
+          set -euo pipefail
+          # GitHub rotates the device set in its macOS images, so the
+          # destinations are resolved from what the machine actually has rather
+          # than hard-coded by name.
+          xcrun simctl list devices available --json \
+            | python3 Tools/pick_simulators.py >> "$GITHUB_ENV"
 
       - name: Check required configuration
         env:
@@ -143,7 +151,7 @@ jobs:
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -destination "id=${SIM_DEFAULT}" \
             -derivedDataPath build/DerivedData \
             -only-testing:PeriodicProTests \
             CODE_SIGNING_ALLOWED=NO \
