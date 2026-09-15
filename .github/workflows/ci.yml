@@ -1,0 +1,165 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SCHEME: PeriodicPro
+  PROJECT: PeriodicPro.xcodeproj
+  # App Store Connect requires builds made with Xcode 26 or newer, so the whole
+  # pipeline is pinned to that toolchain.
+  XCODE_VERSION: "26.0"
+  SIMULATOR: "iPhone 17 Pro"
+
+jobs:
+  validate-data:
+    name: Validate element dataset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Runs the same structural checks the Swift unit tests run, but without
+      # needing a Mac — so a bad dataset fails in seconds on every push.
+      - name: Validate elements.json
+        run: python3 Tools/validate_elements.py
+
+  build-and-test:
+    name: Build and test
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          set -euo pipefail
+          echo "Available Xcode versions:"
+          ls /Applications | grep -i '^Xcode' || true
+          if [ -d "/Applications/Xcode_${XCODE_VERSION}.app" ]; then
+            sudo xcode-select -s "/Applications/Xcode_${XCODE_VERSION}.app"
+          else
+            echo "::warning::Xcode ${XCODE_VERSION} not found on this runner; using the default toolchain."
+          fi
+          xcodebuild -version
+          swift --version
+
+      - name: Ensure xcbeautify is available
+        run: which xcbeautify || brew install xcbeautify
+
+      - name: Show destinations
+        run: xcodebuild -project "$PROJECT" -scheme "$SCHEME" -showdestinations || true
+
+      - name: Resolve dependencies
+        run: |
+          # The app ships with no third-party packages; this keeps the step
+          # honest if one is ever added.
+          xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
+
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -derivedDataPath build/DerivedData \
+            -only-testing:PeriodicProTests \
+            -resultBundlePath build/UnitTests.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Run UI tests
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -derivedDataPath build/DerivedData \
+            -only-testing:PeriodicProUITests \
+            -resultBundlePath build/UITests.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Build Release (unsigned) to catch optimiser-only failures
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresults
+          path: build/*.xcresult
+          retention-days: 7
+          if-no-files-found: ignore
+
+  smaller-and-larger-phones:
+    name: Layout check (${{ matrix.simulator }})
+    runs-on: macos-15
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        simulator:
+          - "iPhone 16e"
+          - "iPhone 17 Pro Max"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          set -euo pipefail
+          if [ -d "/Applications/Xcode_${XCODE_VERSION}.app" ]; then
+            sudo xcode-select -s "/Applications/Xcode_${XCODE_VERSION}.app"
+          fi
+          xcodebuild -version
+
+      - name: Ensure xcbeautify is available
+        run: which xcbeautify || brew install xcbeautify
+
+      - name: Launch-and-layout UI tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${{ matrix.simulator }}" \
+            -derivedDataPath build/DerivedData \
+            -only-testing:PeriodicProUITests/PeriodicProLaunchTests \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions

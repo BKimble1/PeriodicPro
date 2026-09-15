@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcarchive
+*.xcresult
+
+# Local, per-developer configuration (Team ID, personal bundle identifier).
+# Never commit this file.
+Config/Local.xcconfig
+
+# Signing material — must only ever exist as GitHub secrets.
+*.p12
+*.p8
+*.mobileprovision
+*.cer
+*.certSigningRequest
+ExportOptions.plist
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Packages/
+Package.resolved
+
+# Python tooling
+__pycache__/
+*.pyc
+.venv/
+
+# Fastlane, if it is ever added
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output

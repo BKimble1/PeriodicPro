@@ -1,0 +1,10 @@
+// Copy to Config/Local.xcconfig (git-ignored) to build on your own device
+// without editing Shared.xcconfig.
+//
+//   cp Config/Local.xcconfig.sample Config/Local.xcconfig
+//
+// APP_DEVELOPMENT_TEAM is your 10-character Apple Developer Team ID, visible at
+// https://developer.apple.com/account under Membership details.
+
+APP_DEVELOPMENT_TEAM = ABCDE12345
+PRODUCT_BUNDLE_IDENTIFIER_BASE = com.yourcompany.periodicpro

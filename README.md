@@ -1,1 +1,438 @@
-# PeriodicPro
+# Periodic Pro
+
+A native iPhone app for exploring and memorizing the periodic table.
+
+All 118 elements, laid out correctly, in a table that fits the screen. Tap any
+element and its tile expands into a full detail page. When you are ready to
+remember rather than browse, three short practice modes turn what you read into
+recall.
+
+Built entirely in Swift and SwiftUI. No backend, no account, no network request,
+no third-party dependencies. The whole thing works on a plane.
+
+---
+
+## Contents
+
+- [What it does](#what-it-does)
+- [Requirements](#requirements)
+- [Getting started](#getting-started)
+- [Architecture](#architecture)
+- [Folder structure](#folder-structure)
+- [How element data works](#how-element-data-works)
+- [How study progress works](#how-study-progress-works)
+- [Design system](#design-system)
+- [Accessibility](#accessibility)
+- [Testing](#testing)
+- [Continuous integration](#continuous-integration)
+- [TestFlight](#testflight)
+- [Configuration](#configuration)
+- [Screenshots](#screenshots)
+- [Not in v1](#not-in-v1)
+
+---
+
+## What it does
+
+### Table
+
+The primary screen. The full 18-column table, correctly positioned, with the
+lanthanide and actinide rows detached beneath it as they should be. Families are
+colour-coded with restrained washes, and each family also carries a distinct
+glyph so the table is readable without relying on colour.
+
+Search sits in the navigation bar and matches names, symbols and atomic numbers
+instantly — `oxygen`, `O` and `8` all land on the same element. Filter chips cut
+the table to metals, nonmetals or metalloids; a compact filter sheet exposes all
+ten families. The legend under the table is tappable and filters too.
+
+Two layouts: **fitted**, where every tile is on screen at once, and
+**comfortable**, which scrolls horizontally with full-size tiles showing atomic
+number, symbol and name. Accessibility text sizes switch to comfortable
+automatically.
+
+### The expansion transition
+
+Tapping an element is the app's signature interaction. The tile physically
+becomes the detail page, using the native iOS 18 zoom navigation transition
+(`matchedTransitionSource` + `navigationTransition(.zoom:)`). The hero card on
+the destination deliberately mirrors the tile's shape, corner style and fill, so
+the eye reads one object growing rather than two views cross-fading. Under
+Reduce Motion it falls back to a standard push.
+
+### Element detail
+
+A large hero that scales, fades and softens as it leaves the top; cards that
+rise into place as they enter the viewport; a tinted backdrop that recedes
+toward the page background; and the element's name sliding into the navigation
+bar once the hero is gone. All of it driven by the native scroll APIs
+(`scrollTransition`, `onScrollGeometryChange`) rather than manual offset maths.
+
+The content is deliberately restrained: an animated shell diagram with the three
+facts people actually look up, a separate honest diagram of the element's
+*elemental form*, four more quick facts with the rest behind a disclosure, a
+short paragraph, four common uses, and a memory hook.
+
+### Study
+
+Three modes, ten cards each:
+
+- **Flashcards** — name → symbol and symbol → name, reveal, then rate yourself
+- **Quick Quiz** — four multiple-choice question types
+- **Identify** — a shell diagram, an atomic number or a written clue
+
+Rounds start with the elements you know least well. Favourites and recently
+studied elements sit on the same screen.
+
+### Progress
+
+Elements mastered out of 118 on a progress ring, a streak, cards answered, and a
+per-family breakdown. No dashboard, no fake statistics — every number is derived
+from something you actually did.
+
+---
+
+## Requirements
+
+| | |
+| --- | --- |
+| Xcode | **26.0 or newer** (App Store Connect rejects older toolchains) |
+| iOS | 18.0 or newer |
+| Devices | iPhone, portrait and landscape |
+| Swift | Swift 5 language mode on the Swift 6 toolchain |
+| Dependencies | none |
+
+iOS 18 is the floor because the zoom navigation transition, `onGeometryChange`
+and `onScrollGeometryChange` are all iOS 18 APIs, and they are what the app's
+two best moments are built from.
+
+---
+
+## Getting started
+
+```bash
+git clone <this repository>
+cd PeriodicPro
+open PeriodicPro.xcodeproj
+```
+
+Select the **PeriodicPro** scheme and any iPhone simulator, then ⌘R. It builds
+and runs with no further setup.
+
+To run on your own device, add your Team ID:
+
+```bash
+cp Config/Local.xcconfig.sample Config/Local.xcconfig
+$EDITOR Config/Local.xcconfig     # set APP_DEVELOPMENT_TEAM
+```
+
+`Config/Local.xcconfig` is git-ignored.
+
+---
+
+## Architecture
+
+Plain SwiftUI with a small amount of structure where it earns its place, and
+none where it does not.
+
+```
+                 ElementCatalog                ProgressStore
+              (immutable, bundled)     (@Observable, SwiftData-backed)
+                        │                            │
+                        └────────────┬───────────────┘
+                                     │  injected once at launch
+                              ┌──────┴──────┐
+                              │  RootView   │
+                              └──────┬──────┘
+                    ┌────────────────┼────────────────┐
+                 Table             Study            Progress
+                    │                │
+              ElementDetail    Study sessions
+                                     │
+                          QuizGenerator / StudyDeckBuilder
+                                (pure, seeded, testable)
+```
+
+**No view models.** SwiftUI views own their own ephemeral state (`@State` for
+search text, filter, disclosure). Anything that outlives a view lives in
+`ProgressStore`. Adding an `ObservableObject` per screen would be ceremony
+without separation — MVVM is used only where it actually improves things, which
+here is nowhere.
+
+**Two dependencies, injected at the root.** `ElementCatalog` goes into the
+environment as a value type; `ProgressStore` goes in as an `@Observable` object.
+Both are created once in `AppServices` at launch.
+
+**The engine is pure.** `QuizGenerator`, `StudyDeckBuilder`, `MasteryEngine` and
+`StreakCalculator` are free functions over value types, seeded by
+`SeededGenerator` (SplitMix64). Same seed, same quiz — which is what makes them
+testable at all.
+
+**The store is a façade, not a passthrough.** `ProgressStore` keeps an in-memory
+dictionary of value-typed snapshots that views read from, and writes through to
+SwiftData. That keeps the 118-tile table from re-rendering because an unrelated
+row changed.
+
+**Performance choices worth knowing about.** The table positions its 118 tiles
+absolutely inside three `ZStack`s rather than through nested stacks or a lazy
+grid — 118 leaf views, no per-tile `GeometryReader`, and an exact layout at any
+tile size. The whole screen uses exactly one geometry observation, on the scroll
+view, to derive tile size from the screen width.
+
+---
+
+## Folder structure
+
+```
+PeriodicPro/
+├── App/                    Entry point, service container, root tab view
+├── Models/                 ChemicalElement, ElementCategory, MasteryLevel
+├── Data/                   elements.json, the catalog, search and filtering
+├── Persistence/            SwiftData models, container recovery, ProgressStore
+├── DesignSystem/           Spacing, radii, colours, type ramp, family palette
+├── Components/             ElementTile, cards, diagrams, progress ring
+├── StudyEngine/            Quiz and deck generation, mastery, streaks, RNG
+├── Services/               Haptics
+├── Utilities/              SF Symbol allowlist
+├── Views/
+│   ├── Table/              The periodic table screen, grid, filters, search
+│   ├── Detail/             Element hero and detail cards
+│   ├── Study/              Study hub and the three session modes
+│   ├── Progress/           Mastery ring, activity, family breakdown
+│   └── Onboarding/         Three skippable pages, shown once
+├── Assets.xcassets/        App icon (light/dark/tinted) and accent colour
+└── PrivacyInfo.xcprivacy   Privacy manifest
+
+PeriodicProTests/           Swift Testing unit tests
+PeriodicProUITests/         XCUITest end-to-end flows
+Config/                     xcconfig build settings and Info.plist
+Tools/                      Dataset generation, validation and icon rendering
+.github/workflows/          CI and TestFlight pipelines
+```
+
+---
+
+## How element data works
+
+The dataset is **bundled, not fetched**. `PeriodicPro/Data/elements.json` holds
+one record per element with its identity, position, physical properties and
+editorial copy. It is loaded once at launch into `ElementCatalog`, which builds
+lookup indexes by atomic number and symbol.
+
+Structure is generated, not typed. `Tools/backbone.py` derives every element's
+family, group, period, block and table coordinates from its atomic number, so a
+hand edit can never move an element on the table. `Tools/build_elements.py`
+merges the authored fields onto that backbone, and the backbone always wins.
+
+Two validators guard it:
+
+- `Tools/validate_elements.py` — runs on every push, on Linux, in seconds
+- `PeriodicProTests/ElementDataTests.swift` — the same checks inside the app's
+  own test bundle
+
+Between them they assert 118 unique elements with contiguous atomic numbers,
+unique symbols and table positions, shell counts that sum to Z and respect the
+2n² limit, electron configurations that parse and account for exactly Z
+electrons (including the twenty well-known anomalies), correct room-temperature
+phases, plausible and correctly ordered physical properties, and complete
+editorial copy within its length budgets.
+
+Sources, conventions and the reasoning behind contested classifications are in
+[`DATA_SOURCES.md`](DATA_SOURCES.md).
+
+To change the data:
+
+```bash
+$EDITOR PeriodicPro/Data/elements.json
+python3 Tools/validate_elements.py        # must pass before committing
+```
+
+---
+
+## How study progress works
+
+Four levels per element, stored as an integer:
+
+```
+0  Not Started   →   1  Learning   →   2  Familiar   →   3  Mastered
+```
+
+A correct answer moves one step up, capped at Mastered. An incorrect answer
+moves one step down, but never below Learning — attempting an element always
+counts as having started it. Three correct answers take an element from
+untouched to mastered; one miss costs a step.
+
+Deliberately **not** spaced repetition. A small honest score is enough to order
+the study queue (least familiar first) and to drive the Progress screen, and it
+is something a learner can actually reason about. Real scheduling can come later
+without changing the storage.
+
+Everything is stored locally in SwiftData:
+
+| Model | Holds |
+| --- | --- |
+| `ElementProgressRecord` | favourite flag, mastery level, correct/incorrect counts, last reviewed |
+| `RecentSearchRecord` | the last eight search terms |
+| `StudyDayRecord` | one row per day you answered a card, which drives the streak |
+
+If the store cannot be opened, `PersistenceController` deletes it and retries
+once, then falls back to an in-memory container and the Progress screen says so
+plainly — the app never launches into a crash or a silent lie about saved data.
+
+---
+
+## Design system
+
+Everything visual comes from tokens in `DesignSystem/`:
+
+- **Spacing** — an 8-point rhythm with a named screen margin and section gap
+- **Radii** — 5 for a table tile, 14 for a control, 20 for a card, 28 for a hero
+- **Shadows** — three levels, all soft enough that stacked cards stay light
+- **Colours** — semantic surfaces (canvas, surface, hairline, three text levels)
+  plus a ten-family palette. Each family exposes three roles: a saturated accent
+  for glyphs and strokes, a pale fill for tiles, and a readable on-fill colour
+- **Type** — system fonts throughout, so Dynamic Type, tracking and optical
+  sizing behave the way iOS expects
+
+Dark mode is hand-tuned, not inverted. Surfaces keep separation from the
+background instead of collapsing into flat grey, and family fills become
+low-luminance versions of the same hue so an element still reads as belonging to
+its family.
+
+Haptics are sparse on purpose: selecting an element, favouriting, revealing a
+card, and the outcome of an answer. Nothing fires on scroll or navigation.
+
+---
+
+## Accessibility
+
+- Every element tile carries a spoken label — name, symbol spelled out letter by
+  letter, atomic number, family — so VoiceOver does not try to pronounce "Na"
+- Family is never communicated by colour alone: each carries a distinct glyph
+- Reduce Motion replaces the zoom transition with a standard push, stops the
+  electrons, and disables every scroll transition
+- Accessibility text sizes switch the table to the comfortable layout
+  automatically, so tiles never become unreadably small
+- Controls outside the fitted table meet the 44-point target; the fitted table
+  is an explicit, reversible trade the learner can opt out of
+- Shell diagrams describe themselves ("5 electron shells, shell 1: 2, …")
+- Accessibility identifiers on every interactive element, which is what the UI
+  tests query
+
+---
+
+## Testing
+
+```bash
+# Everything
+xcodebuild test \
+  -project PeriodicPro.xcodeproj \
+  -scheme PeriodicPro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+
+# Unit tests only
+xcodebuild test \
+  -project PeriodicPro.xcodeproj -scheme PeriodicPro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  -only-testing:PeriodicProTests
+
+# Dataset validation, no Mac required
+python3 Tools/validate_elements.py
+```
+
+**Unit tests** (Swift Testing) cover the 118-element dataset, search ranking,
+filtering, quiz and deck generation determinism, mastery transitions, streak
+arithmetic, the progress store against an in-memory SwiftData container, and
+presentation formatting.
+
+**UI tests** (XCUITest) cover launch, tapping an element into its detail page,
+favouriting and seeing it appear in Study, searching by name, symbol and atomic
+number, the empty search state, family filters, the filter sheet, a full
+flashcard round through to its summary, answering a quiz question, an identify
+round, and the Progress screen. Every query goes through an accessibility
+identifier — no pixel coordinates.
+
+---
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every pull request and push to `main`:
+
+1. **validate-data** (Ubuntu) — `Tools/validate_elements.py`, in seconds
+2. **build-and-test** (macOS) — build for testing, unit tests, UI tests, then an
+   unsigned Release build to catch optimiser-only failures
+3. **smaller-and-larger-phones** (macOS, matrix) — launch and layout tests on a
+   small iPhone and a Pro Max, asserting the fitted table never overflows the
+   screen width
+
+It never signs and never uploads.
+
+---
+
+## TestFlight
+
+`.github/workflows/testflight.yml` archives, signs and uploads. It runs on a
+`v*` tag or on demand.
+
+By default it uses **Xcode cloud signing** driven by an App Store Connect API
+key, so only four secrets are required:
+
+| Secret | From |
+| --- | --- |
+| `APP_STORE_CONNECT_KEY_ID` | App Store Connect → Integrations → Team Keys |
+| `APP_STORE_CONNECT_ISSUER_ID` | the same page |
+| `APP_STORE_CONNECT_PRIVATE_KEY` | the downloaded `.p8`, contents verbatim |
+| `APPLE_TEAM_ID` | developer.apple.com → Membership details |
+
+Plus a repository **variable** `BUNDLE_IDENTIFIER` set to an identifier you own.
+
+A manual-signing path exists for organisations that forbid cloud signing; it
+activates automatically when `BUILD_CERTIFICATE_BASE64` is present.
+
+Full walkthrough, including the App Store Connect setup and a troubleshooting
+table: [`TESTFLIGHT.md`](TESTFLIGHT.md).
+
+---
+
+## Configuration
+
+Everything you might want to change is in `Config/Shared.xcconfig`:
+
+| Setting | Default | What it is |
+| --- | --- | --- |
+| `APP_DISPLAY_NAME` | `Periodic Pro` | Name under the icon |
+| `PRODUCT_BUNDLE_IDENTIFIER_BASE` | `com.example.periodicpro` | **Placeholder.** Replace with one you own |
+| `MARKETING_VERSION` | `1.0.0` | Semantic version |
+| `CURRENT_PROJECT_VERSION` | `1` | Build number; CI overrides it |
+| `APP_DEVELOPMENT_TEAM` | *(empty)* | Your Team ID, via `Config/Local.xcconfig` or CI |
+| `IPHONEOS_DEPLOYMENT_TARGET` | `18.0` | Minimum iOS version |
+
+The bundle identifier and team are left deliberately blank or obviously fake so
+a build can never quietly sign with the wrong identity.
+
+---
+
+## Screenshots
+
+> Replace these with real captures before submitting to the App Store. The
+> launch UI test already attaches a full-screen capture of the table
+> (`PeriodicProUITests/PeriodicProLaunchTests.swift`), which is a good starting
+> point. App Store Connect needs 6.9" and 6.5" sets.
+
+| Table | Element detail | Study | Progress |
+| --- | --- | --- | --- |
+| _screenshot pending_ | _screenshot pending_ | _screenshot pending_ | _screenshot pending_ |
+
+---
+
+## Not in v1
+
+Deliberately absent, and not accidentally missing: accounts, cloud sync, social
+features, an AI tutor, subscriptions, ads, analytics, achievements, chemistry
+calculators, AR, 3D scenes, and a settings screen. The goal was one thing done
+properly — explore, understand, memorize.
+
+## Privacy
+
+Nothing is collected. Everything you do stays on the device.
+See [`PRIVACY.md`](PRIVACY.md).

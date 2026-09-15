@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Every other Info.plist key is generated from INFOPLIST_KEY_* build
+	     settings (see the project's build configurations). This file holds only
+	     keys Xcode does not generate.
+
+	     The app performs no network requests and uses no encryption beyond what
+	     the operating system provides, so it qualifies for the standard export
+	     compliance exemption. Declaring it here means TestFlight never stops to
+	     ask before distributing a build. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+</dict>
+</plist>
