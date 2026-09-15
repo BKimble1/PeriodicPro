@@ -81,8 +81,13 @@ Three modes, ten cards each:
 - **Quick Quiz** — four multiple-choice question types
 - **Identify** — a shell diagram, an atomic number or a written clue
 
+Identify draws its shell diagrams in a neutral color until you answer. The app
+teaches the family palette during onboarding, so a lavender nucleus would narrow
+118 candidates to seven before you had counted a single shell.
+
 Rounds start with the elements you know least well. Favorites and recently
-studied elements sit on the same screen.
+studied elements sit on the same screen; an element you have favorited appears
+only in Favorites, so the two rows never show the same tile twice.
 
 ### Progress
 
