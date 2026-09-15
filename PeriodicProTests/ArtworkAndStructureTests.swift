@@ -227,17 +227,51 @@ struct StructureSceneTests {
 
     @Test("The atom model counts protons and electrons correctly")
     func atomModelParticleCounts() {
-        for symbol in ["H", "He", "C", "O", "Na", "Fe"] {
+        for symbol in ["H", "He", "C", "O", "Na", "Fe", "Au"] {
             let element = TestCatalog.element(symbol)
             let scene = StructureSceneBuilder.scene(for: element, representation: .atom)
             let electrons = scene.nodes.filter { $0.role == .electron }.count
             let protons = scene.nodes.filter { $0.role == .proton }.count
+            let neutrons = scene.nodes.filter { $0.role == .neutron }.count
+
+            // Electrons are always exact: the shell counts are the whole point
+            // of the picture, and there are never more than 118 of them.
             #expect(electrons == element.shellElectrons.reduce(0, +),
                     "\(symbol) should show every electron in its shells")
-            // Below the nucleon cap the proton count is exact.
-            #expect(protons == element.atomicNumber,
-                    "\(symbol) should show \(element.atomicNumber) protons")
             #expect(scene.isSimplified, "the atom model is always labeled a simplification")
+
+            if scene.nucleonSampleNote == nil {
+                // A nucleus small enough to draw in full is drawn in full.
+                #expect(protons == element.atomicNumber,
+                        "\(symbol) should show \(element.atomicNumber) protons")
+            } else {
+                // Iron's 56 nucleons and gold's 197 are past the cap, so the
+                // nucleus is a proportional sample — and must say so rather
+                // than quietly showing the wrong number.
+                #expect(protons + neutrons == StructureSceneBuilder.maximumDrawnNucleons)
+                #expect(protons < element.atomicNumber)
+                #expect(protons > 0, "a sampled nucleus must still contain protons")
+            }
+        }
+    }
+
+    @Test("A sampled nucleus keeps the real proton-to-neutron proportion")
+    func sampledNucleiStayProportional() {
+        for symbol in ["Fe", "Au", "U", "Og"] {
+            let element = TestCatalog.element(symbol)
+            let scene = StructureSceneBuilder.scene(for: element, representation: .atom)
+            let protons = Double(scene.nodes.filter { $0.role == .proton }.count)
+            let neutrons = Double(scene.nodes.filter { $0.role == .neutron }.count)
+            guard protons + neutrons > 0 else {
+                Issue.record("\(symbol) drew no nucleons")
+                continue
+            }
+            let massNumber = Double(max(element.atomicNumber,
+                                        Int(element.atomicMass.rounded())))
+            let realShare = Double(element.atomicNumber) / massNumber
+            let drawnShare = protons / (protons + neutrons)
+            #expect(abs(drawnShare - realShare) < 0.03,
+                    "\(symbol): drew \(drawnShare) protons but the real share is \(realShare)")
         }
     }
 
