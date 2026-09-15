@@ -156,7 +156,7 @@ final class PeriodicProUITests: XCTestCase {
         waitFor(field)
         field.tap()
         field.typeText("zzzzzz")
-        XCTAssertTrue(el("search.emptyState").waitForExistence(timeout: 6),
+        XCTAssertTrue(labelContaining("No matches").waitForExistence(timeout: 6),
                       "An unmatched query should explain itself rather than show nothing")
     }
 

@@ -17,16 +17,21 @@ final class PeriodicProLaunchTests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Periodic Table"].waitForExistence(timeout: 10),
                       "The app should open straight into the table")
 
-        // The table must fit without the page scrolling sideways.
-        let grid = app.descendants(matching: .any)
-            .matching(identifier: "periodicTable.grid").firstMatch
-        if grid.exists {
-            XCTAssertLessThanOrEqual(
-                grid.frame.width,
-                app.windows.firstMatch.frame.width + 1,
-                "The fitted table must not overflow the screen width"
-            )
-        }
+        // The fitted table must not overflow the screen. Hydrogen sits in the
+        // first column and oganesson in the eighteenth, so their frames bound
+        // the whole grid — and unlike a container view, both are real
+        // accessibility elements on every device size.
+        let window = app.windows.firstMatch.frame
+        let hydrogen = app.buttons["element.H"]
+        let oganesson = app.buttons["element.Og"]
+        XCTAssertTrue(hydrogen.waitForExistence(timeout: 10), "Hydrogen tile missing")
+        XCTAssertTrue(oganesson.exists, "Oganesson tile missing")
+        XCTAssertGreaterThanOrEqual(hydrogen.frame.minX, -1,
+                                    "The table is clipped on the leading edge")
+        XCTAssertLessThanOrEqual(oganesson.frame.maxX, window.maxX + 1,
+                                 "The table overflows the trailing edge")
+        XCTAssertGreaterThan(hydrogen.frame.width, 12,
+                             "Tiles collapsed to an unusable size")
 
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Periodic Table"
