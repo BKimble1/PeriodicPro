@@ -256,8 +256,11 @@ struct ArtworkForm {
 
 /// Scatters forms across the canvas from a fixed seed.
 ///
-/// Placement is biased toward the trailing edge and the corners, so the middle
-/// of the canvas — where a hero card and its symbol sit — stays clear.
+/// Forms are placed to the left and right of the middle rather than evenly
+/// around it. The middle is where the hero card sits, and above and below it
+/// are the family badge and the tagline, neither of which has an opaque
+/// backing — so the only place decoration can go without competing with text
+/// is beside the card, which is also where the reference concept puts it.
 struct ArtworkLayout {
     private var generator: SeededGenerator
     private let size: CGSize
@@ -272,13 +275,18 @@ struct ArtworkLayout {
 
         let base = min(size.width, size.height)
         return (0..<count).map { index in
-            let scale = unit(0.32, 0.68)
+            // Small: these are nuggets and shards scattered beside the card, not
+            // a wash behind it. At 0.3 of the canvas they merged into one blob.
+            let scale = unit(0.14, 0.26)
             let side = base * CGFloat(scale)
 
-            // Forms are pushed outward from the center: the closer to the
-            // middle a candidate lands, the further it is nudged away.
-            let angle = Double(index) / Double(count) * 2 * .pi + unit(-0.5, 0.5)
-            let reach = unit(0.42, 0.72)
+            // Alternating sides, fanned within three quarters of a radian of
+            // horizontal, and far enough out that the mask's clear core does
+            // not swallow them.
+            let side: Double = index.isMultiple(of: 2) ? 0 : .pi
+            let fan = (Double(index / 2) / Double(max(1, count / 2)) - 0.4) * 1.5
+            let angle = side + fan + unit(-0.18, 0.18)
+            let reach = unit(0.55, 0.90)
             let center = CGPoint(
                 x: size.width * 0.5 + CGFloat(cos(angle) * reach) * size.width * 0.5,
                 y: size.height * 0.5 + CGFloat(sin(angle) * reach) * size.height * 0.5

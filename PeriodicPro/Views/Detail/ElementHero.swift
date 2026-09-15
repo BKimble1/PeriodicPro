@@ -65,6 +65,15 @@ struct ElementHero: View {
         }
         .frame(width: size, height: size)
         .themeShadow(Theme.Shadow.raised)
+        // Attached to the card, and after the shadow.
+        //
+        // A `.background` takes no part in its host's layout, so however large
+        // the artwork draws, the card keeps its exact square and the zoom
+        // transition still lands on it. After the shadow, because a shadow is
+        // cast from the composited alpha of everything above it in the chain —
+        // artwork inside that subtree would turn a crisp card shadow into a
+        // halo.
+        .background { ElementHeroArtwork(element: element, heroSize: size) }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(element.accessibilityDescription)
         .accessibilityIdentifier("detail.hero")

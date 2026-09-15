@@ -60,8 +60,8 @@ enum ElementArtworkProminence: Sendable {
 
     var opacity: Double {
         switch self {
-        case .hero: return 0.30
-        case .card: return 0.20
+        case .hero: return 0.24
+        case .card: return 0.16
         }
     }
 
@@ -202,15 +202,15 @@ enum ElementArtwork {
     /// How many forms a treatment scatters. Sparse on purpose.
     static func formCount(for kind: ElementArtworkKind) -> Int {
         switch kind {
-        case .nuggets: return 5
-        case .facetedGems: return 4
+        case .nuggets: return 6
+        case .facetedGems: return 5
         case .lattice: return 7
-        case .pairedSpheres: return 3
-        case .droplets: return 6
-        case .crystalShards: return 5
+        case .pairedSpheres: return 4
+        case .droplets: return 7
+        case .crystalShards: return 6
         case .luminousGas: return 4
-        case .metallicSheen: return 4
-        case .hexPlates: return 5
+        case .metallicSheen: return 5
+        case .hexPlates: return 6
         case .orbitalArcs: return 3
         }
     }

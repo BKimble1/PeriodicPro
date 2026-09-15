@@ -13,7 +13,7 @@ import json
 import math
 import os
 import sys
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ELEMENTS = os.path.join(ROOT, "PeriodicPro", "Data", "elements.json")
@@ -91,6 +91,68 @@ def card(draw, x, y, width, height, radius=20):
                            radius=px(radius), fill=SURFACE, outline=HAIRLINE, width=px(0.8))
 
 
+ARTWORK_TINTS = {
+    "Au": (217, 164, 65), "Cu": (200, 123, 69), "Ag": (197, 204, 211),
+    "C": (58, 64, 72), "S": (227, 192, 55), "Hg": (183, 190, 198),
+    "Na": (185, 194, 204), "Fe": (154, 164, 174), "Si": (201, 210, 218),
+}
+
+
+def draw_artwork(image, element, center, hero, tint):
+    # Mirrors ElementHeroArtwork + ElementArtworkView closely enough to judge
+    # whether the decoration ever competes with the hero text: same seeded
+    # outward scatter, same blur, same clear-core mask, same 30% prominence.
+    width, height = int(hero * 1.8), int(hero * 1.12)
+    layer = Image.new("RGBA", (px(width), px(height)), (0, 0, 0, 0))
+    art = ImageDraw.Draw(layer)
+    color = ARTWORK_TINTS.get(element["symbol"], tint)
+
+    state = (element["atomicNumber"] * 0x9E3779B9 + 0x7F4A7C15) & 0xFFFFFFFFFFFFFFFF
+
+    def rand():
+        nonlocal state
+        state = (state * 6364136223846793005 + 1442695040888963407) & 0xFFFFFFFFFFFFFFFF
+        return ((state >> 33) & 0xFFFFFF) / 0xFFFFFF
+
+    base = min(width, height)
+    count = 6
+    for index in range(count):
+        side = base * (0.14 + rand() * 0.12)
+        fan = (index // 2 / max(1, count // 2) - 0.4) * 1.5
+        angle = (0 if index % 2 == 0 else math.pi) + fan + (rand() - 0.5) * 0.36
+        reach = 0.55 + rand() * 0.35
+        cx = width / 2 + math.cos(angle) * reach * width / 2
+        cy = height / 2 + math.sin(angle) * reach * height / 2
+        art.rounded_rectangle(
+            [px(cx - side / 2), px(cy - side / 2), px(cx + side / 2), px(cy + side / 2)],
+            radius=px(side * 0.38), fill=color + (242,),
+        )
+        hi = side * 0.30
+        art.ellipse([px(cx - side * 0.22 - hi / 2), px(cy - side * 0.24 - hi / 2),
+                     px(cx - side * 0.22 + hi / 2), px(cy - side * 0.24 + hi / 2)],
+                    fill=(255, 255, 255, 170))
+
+    layer = layer.filter(ImageFilter.GaussianBlur(px(1.5)))
+
+    mask = Image.new("L", (px(width), px(height)), 0)
+    mask_draw = ImageDraw.Draw(mask)
+    inner, outer = hero * 0.40, hero * 1.05
+    steps = 40
+    for step in range(steps, 0, -1):
+        radius = inner + (outer - inner) * step / steps
+        mask_draw.ellipse(
+            [px(width / 2 - radius), px(height / 2 - radius),
+             px(width / 2 + radius), px(height / 2 + radius)],
+            fill=int(255 * step / steps),
+        )
+    mask_draw.ellipse([px(width / 2 - inner), px(height / 2 - inner),
+                       px(width / 2 + inner), px(height / 2 + inner)], fill=0)
+
+    alpha = layer.getchannel("A").point(lambda a: int(a * 0.24))
+    layer.putalpha(Image.composite(alpha, Image.new("L", alpha.size, 0), mask))
+    image.paste(layer, (px(center[0] - width / 2), px(center[1] - height / 2)), layer)
+
+
 def centered(draw, text, fnt, color, center_x, y):
     width = draw.textlength(text, font=fnt)
     draw.text((px(center_x) - width / 2, px(y)), text, font=fnt, fill=color)
@@ -115,6 +177,8 @@ def render(element):
     # --- hero ---------------------------------------------------------------
     hero = 196
     hx = (WIDTH - hero) / 2
+    # Decorative artwork sits behind the card, masked to a clear core.
+    draw_artwork(image, element, center=(WIDTH / 2, y + hero / 2), hero=hero, tint=accent)
     # Mirrors ElementTileShape.cornerRadius(for:) so the preview shows the same
     # silhouette the zoom transition grows.
     draw.rounded_rectangle([px(hx), px(y), px(hx + hero), px(y + hero)],

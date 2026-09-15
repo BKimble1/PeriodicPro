@@ -25,6 +25,7 @@ run "Colour contrast"        python3 Tools/check_contrast.py
 run "StoreKit configuration" python3 Tools/check_storekit.py
 run "Artwork and structure routing" python3 Tools/check_visual_routing.py
 run "Table layout at three device widths" python3 Tools/preview_table.py
+run "Study layout at three device widths" python3 Tools/preview_study.py
 
 printf '\n\033[1m==> US English spelling\033[0m\n'
 before=$(git status --porcelain)

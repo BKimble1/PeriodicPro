@@ -51,12 +51,6 @@ struct ElementDetailScreen: View {
         ScrollView {
             VStack(spacing: Theme.Spacing.l) {
                 ElementHero(element: element)
-                    // A `.background` takes no part in its host's layout, so
-                    // however large the artwork draws, the hero card keeps its
-                    // exact square and the zoom transition still lands on it.
-                    // Placed before `.scrollTransition` so the decoration
-                    // scales and drifts with the hero as one object.
-                    .background { ElementHeroArtwork(element: element) }
                     .padding(.top, Theme.Spacing.s)
                     .padding(.bottom, Theme.Spacing.xs)
                     .scrollTransition(.interactive, axis: .vertical) { content, phase in

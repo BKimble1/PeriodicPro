@@ -14,15 +14,20 @@ import SwiftUI
 /// * it never exceeds `ElementArtworkProminence.hero` opacity.
 struct ElementHeroArtwork: View {
     let element: ChemicalElement
-    /// Matches `ElementHero`'s default card size. The artwork is drawn to a
-    /// larger canvas so its forms break past the card's edges the way the
-    /// reference concept does.
+    /// Matches `ElementHero`'s default card size.
     var heroSize: CGFloat = 196
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isRevealed = false
 
-    private var canvasSize: CGFloat { heroSize * 1.85 }
+    /// Wide but barely taller than the card.
+    ///
+    /// The forms belong beside the tile, the way the reference concept places
+    /// them — not above or below it. The family badge sits 16 points under the
+    /// card and the tagline under that, and neither has an opaque backing, so
+    /// vertical overflow is kept to 12 points and can never reach them.
+    private var canvasWidth: CGFloat { heroSize * 1.8 }
+    private var canvasHeight: CGFloat { heroSize * 1.12 }
 
     var body: some View {
         ElementArtworkView(
@@ -30,17 +35,17 @@ struct ElementHeroArtwork: View {
             accent: element.category.accentColor,
             prominence: .hero
         )
-        .frame(width: canvasSize, height: canvasSize)
+        .frame(width: canvasWidth, height: canvasHeight)
         .mask {
-            // Clear through the card's footprint, opaque outside it. This is
-            // what guarantees the hero's text never has artwork behind it, and
-            // it holds for every family color and both appearances without
-            // needing a contrast measurement per element.
+            // Clear through the card, fading in past its edge. Nothing is ever
+            // drawn behind the symbol, the atomic number, the name or the mass,
+            // for any family color and in either appearance — which is what
+            // makes this safe without a contrast measurement per element.
             RadialGradient(
                 colors: [.clear, .clear, .black, .black],
                 center: .center,
-                startRadius: heroSize * 0.34,
-                endRadius: heroSize * 0.92
+                startRadius: heroSize * 0.40,
+                endRadius: heroSize * 1.05
             )
         }
         .opacity(isRevealed ? 1 : 0)
