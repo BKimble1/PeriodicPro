@@ -32,6 +32,13 @@ final class ProgressStore {
     /// quietly losing the change.
     private(set) var writeFailureMessage: String?
 
+    /// Set when saved data could not be read back at launch. Kept separate from
+    /// `writeFailureMessage` because the two clear on different events: a
+    /// successful save says nothing about whether the read that preceded it
+    /// worked, and folding them together let `reload()`'s own trailing `save()`
+    /// erase the warning it had just raised.
+    private(set) var readFailureMessage: String?
+
     let storage: PersistenceController.Storage
 
     static let recentSearchLimit = 8
@@ -95,7 +102,7 @@ final class ProgressStore {
                 "Study day reload failed: \(String(describing: error), privacy: .public)")
         }
 
-        writeFailureMessage = failures.isEmpty
+        readFailureMessage = failures.isEmpty
             ? nil
             : "Some saved data could not be read (\(failures.joined(separator: ", ")))."
 

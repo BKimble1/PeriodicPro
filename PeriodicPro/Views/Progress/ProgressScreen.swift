@@ -203,6 +203,9 @@ struct ProgressScreen: View {
                     """
             )
         }
+        if let failure = progress.readFailureMessage {
+            notice(title: "Some saved data could not be read", message: failure)
+        }
         if let failure = progress.writeFailureMessage {
             notice(title: "Something could not be saved", message: failure)
         }

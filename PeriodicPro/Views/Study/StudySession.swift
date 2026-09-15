@@ -3,7 +3,6 @@ import SwiftUI
 /// Hosts a single study round and owns the transition into the summary.
 struct StudySessionContainer: View {
     let mode: StudyMode
-    let queue: [ChemicalElement]
     let catalog: ElementCatalog
 
     @Environment(\.dismiss) private var dismiss
@@ -13,14 +12,25 @@ struct StudySessionContainer: View {
     /// Bumped by "Study again" so a fresh round gets a fresh deck.
     @State private var round = 0
 
-    private var seed: UInt64 {
-        SeededGenerator.dailySeed() &+ UInt64(round) &* 7_919 &+ mode.seedSalt
-    }
-
     /// Practice draws from the least-familiar elements first, but keeps a wide
     /// enough pool that a round is never the same ten tiles twice over.
-    private var pool: [ChemicalElement] {
-        Array(queue.prefix(40))
+    ///
+    /// Captured once, in `init`, and deliberately never refreshed: the incoming
+    /// queue is ordered by mastery, so re-deriving it after an answer reshuffles
+    /// every position and the learner's remaining cards change underneath them.
+    /// `State(initialValue:)` only takes effect the first time this view's
+    /// identity appears, which is exactly the guarantee wanted here. The seed
+    /// still moves with `round`, so "Study again" deals a different hand.
+    @State private var pool: [ChemicalElement]
+
+    init(mode: StudyMode, queue: [ChemicalElement], catalog: ElementCatalog) {
+        self.mode = mode
+        self.catalog = catalog
+        _pool = State(initialValue: Array(queue.prefix(StudyDeckBuilder.defaultPoolSize)))
+    }
+
+    private var seed: UInt64 {
+        SeededGenerator.dailySeed() &+ UInt64(round) &* 7_919 &+ mode.seedSalt
     }
 
     var body: some View {

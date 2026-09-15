@@ -248,6 +248,7 @@ struct ProgressStoreTests {
     func healthyStoreHasNoWarnings() {
         let store = makeTestStore()
         #expect(store.writeFailureMessage == nil)
+        #expect(store.readFailureMessage == nil)
         #expect(!store.storage.discardedPreviousProgress)
         #expect(!store.storage.losesProgressOnQuit)
     }

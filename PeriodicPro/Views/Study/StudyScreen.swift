@@ -8,6 +8,11 @@ struct StudyScreen: View {
 
     @State private var path: [ChemicalElement] = []
     @State private var activeMode: StudyMode?
+    /// Captured when a round starts. `studyQueue` is ordered by mastery, which
+    /// changes on every answer, and `StudyScreen.body` observes that — so
+    /// passing it live handed the running session a freshly shuffled pool after
+    /// each card and the deck changed under the learner mid-round.
+    @State private var sessionQueue: [ChemicalElement] = []
     @Namespace private var studyNamespace
 
     private var favorites: [ChemicalElement] {
@@ -62,7 +67,7 @@ struct StudyScreen: View {
                     .zoomTransition(id: element.atomicNumber, namespace: studyNamespace)
             }
             .fullScreenCover(item: $activeMode) { mode in
-                StudySessionContainer(mode: mode, queue: studyQueue, catalog: catalog)
+                StudySessionContainer(mode: mode, queue: sessionQueue, catalog: catalog)
             }
         }
         .tint(AppColor.accent)
@@ -73,7 +78,7 @@ struct StudyScreen: View {
     private var continueCard: some View {
         Button {
             Haptics.tap()
-            activeMode = .flashcards
+            start(.flashcards)
         } label: {
             HStack(alignment: .center, spacing: Theme.Spacing.l) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -130,6 +135,13 @@ struct StudyScreen: View {
         return "\(progress.masteredCount) of \(catalog.count) mastered \u{00B7} pick up where you left off"
     }
 
+    /// Snapshots the queue, then presents the round. Both happen in one pass so
+    /// the session never sees a queue that changes beneath it.
+    private func start(_ mode: StudyMode) {
+        sessionQueue = studyQueue
+        activeMode = mode
+    }
+
     // MARK: - Modes
 
     private var modesSection: some View {
@@ -139,7 +151,7 @@ struct StudyScreen: View {
                 ForEach(StudyMode.allCases) { mode in
                     Button {
                         Haptics.tap()
-                        activeMode = mode
+                        start(mode)
                     } label: {
                         HStack(spacing: Theme.Spacing.m) {
                             Image(systemName: mode.symbolName)

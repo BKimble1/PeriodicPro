@@ -5,6 +5,11 @@ import Foundation
 enum StudyDeckBuilder {
     static let defaultCardCount = 10
 
+    /// How many elements one round draws from. Wide enough that ten cards are
+    /// never the same ten twice over, narrow enough to stay focused on what the
+    /// learner knows least well.
+    static let defaultPoolSize = 40
+
     /// Alternates name→symbol and symbol→name so a deck never feels repetitive.
     static func flashcards(
         pool: [ChemicalElement],

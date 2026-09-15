@@ -3,7 +3,10 @@ import XCTest
 /// Launch-time checks across the device sizes the app must support. The
 /// screenshot attachment gives the App Store screenshot pass a starting point.
 final class PeriodicProLaunchTests: XCTestCase {
-    override var runsForEachTargetApplicationUIConfiguration: Bool { true }
+    // XCTestCase declares this as a class property. As an instance `var` it
+    // overrides nothing, which is a compile error in the UI test target — and
+    // would silently not run the per-configuration launches even if it built.
+    override class var runsForEachTargetApplicationUIConfiguration: Bool { true }
 
     override func setUpWithError() throws {
         continueAfterFailure = false

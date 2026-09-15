@@ -244,15 +244,79 @@ struct StudyModeSeedTests {
         #expect(identify != quiz, "Identify and the quiz should not be the same ten")
     }
 
-    @Test("A structure clue never names its own element")
-    func structureCluesDoNotLeakTheAnswer() {
-        let deck = StudyDeckBuilder.identifyCards(pool: catalog.elements, count: 9, seed: 5)
-        for card in deck where card.clue == .structure {
-            #expect(!card.question.contains(card.element.name))
-            #expect(!card.question.contains(card.element.symbol))
-            #expect(card.answerTitle == card.element.name,
-                    "The answer is only revealed after the learner commits")
+    /// Regression cover for the mid-round reshuffle. `StudyScreen` used to pass
+    /// `studyPriority(...)` into a running session live. A session's pool is the
+    /// 40 least-familiar elements, and `pick` shuffles that whole pool — so the
+    /// moment one answer changed the pool's membership, every remaining card was
+    /// re-dealt underneath the learner. The session now snapshots its pool in
+    /// `init`; this test pins the property that made the old arrangement unsafe.
+    @Test("One answer changes which 40 elements a session would draw from")
+    func oneAnswerChangesTheStudyPool() throws {
+        let all = catalog.elements
+        var mastery: [Int: MasteryLevel] = [:]
+        func pool() -> [Int] {
+            MasteryEngine.studyPriority(all) { mastery[$0] ?? .notStarted }
+                .prefix(StudyDeckBuilder.defaultPoolSize)
+                .map(\.atomicNumber)
         }
-        #expect(deck.contains { $0.clue == .structure }, "The deck should include structure clues")
+
+        let before = pool()
+        #expect(before.count == StudyDeckBuilder.defaultPoolSize)
+
+        // The learner gets one card right. Everything else is still .notStarted,
+        // so this element now sorts behind all 117 others and leaves the pool
+        // entirely — which pulls a new element in behind it.
+        let answered = try #require(before.first)
+        mastery[answered] = .learning
+
+        let after = pool()
+        #expect(!after.contains(answered),
+                "An answered element should drop out of the least-familiar pool")
+        #expect(Set(before) != Set(after),
+                "A live queue would hand the running session a different pool")
+    }
+
+    @Test("No Identify card shows its own answer before the reveal")
+    func identifyCluesDoNotLeakTheAnswer() {
+        // Every seed, not one: the clue a given element draws depends on where
+        // it lands in the shuffle, so a single deck only ever exercises a third
+        // of the pool. Substring-matching the *question* would be both vacuous
+        // (it is a constant) and a trap — "What element is this?" contains a
+        // capital W, so it would fail the day tungsten landed on a structure
+        // index. The face that can actually leak is the clue.
+        for seed in UInt64(0)..<40 {
+            let deck = StudyDeckBuilder.identifyCards(pool: catalog.elements, count: 9, seed: seed)
+            #expect(deck.contains { $0.clue == .structure },
+                    "Every deck of nine should include structure clues")
+
+            for card in deck {
+                switch card.clue {
+                case .structure:
+                    // The diagram carries the question alone: no text at all.
+                    #expect(card.question == "What element is this?")
+                case .text(let shown):
+                    // The atomic-number clue may show the number and nothing else.
+                    #expect(shown == "\(card.element.atomicNumber)")
+                case .description(let hint):
+                    #expect(!hint.localizedCaseInsensitiveContains(card.element.name),
+                            "\(card.element.name)'s hint names it: \(hint)")
+                    #expect(!containsSymbolAsWord(hint, card.element.symbol),
+                            "\(card.element.name)'s hint gives away \(card.element.symbol): \(hint)")
+                }
+
+                // The answer face is where the name and symbol belong.
+                #expect(card.answerTitle == card.element.name)
+                #expect(card.answerDetail.contains(card.element.symbol))
+            }
+        }
+    }
+
+    /// Matches a symbol only as a standalone word. A plain `contains` would
+    /// report four false leaks against the real hints: N inside "Nonmetal",
+    /// La inside "Lanthanide", Po inside "Post-Transition" and Ac inside
+    /// "Actinide".
+    private func containsSymbolAsWord(_ text: String, _ symbol: String) -> Bool {
+        text.split(whereSeparator: { !$0.isLetter && !$0.isNumber })
+            .contains { String($0) == symbol }
     }
 }
