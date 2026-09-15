@@ -78,6 +78,10 @@ class Report:
     def __init__(self) -> None:
         self.errors: list[str] = []
         self.warnings: list[str] = []
+        self.notes: list[str] = []
+
+    def note(self, message: str) -> None:
+        self.notes.append(message)
 
     def error(self, message: str) -> None:
         self.errors.append(message)
@@ -136,6 +140,89 @@ def check_configuration(element: dict, report: Report) -> None:
         )
 
 
+SWIFT_PROPERTY = re.compile(r"^\s+let (\w+): ([\w\[\]?]+)$")
+
+
+def swift_model_shape() -> dict[str, str]:
+    """Reads the stored properties of `ChemicalElement` out of the Swift source.
+
+    JSONDecoder tolerates extra keys but fails the whole launch on a missing
+    non-optional key or a type mismatch, so the shape is worth checking here
+    rather than discovering it on a device.
+    """
+    source = open(
+        os.path.join(ROOT, "PeriodicPro", "Models", "ChemicalElement.swift"),
+        encoding="utf-8",
+    ).read()
+    start = source.index("struct ChemicalElement")
+    end = source.index("\n}", start)
+    shape: dict[str, str] = {}
+    for line in source[start:end].split("\n"):
+        match = SWIFT_PROPERTY.match(line)
+        if match:
+            shape[match.group(1)] = match.group(2)
+    return shape
+
+
+def json_matches_swift(value, base: str) -> bool:
+    """Python's bool is a subclass of int, so each Swift type is checked
+    explicitly rather than with a lookup table."""
+    if base == "Bool":
+        return isinstance(value, bool)
+    if base == "Int":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if base == "Double":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if base in ("String", "ElementCategory", "MatterPhase", "ElementStructure"):
+        return isinstance(value, str)
+    if base in ("[Int]", "[ElementUse]"):
+        return isinstance(value, list)
+    return True
+
+
+def check_model_shape(elements: list, report: Report) -> None:
+    shape = swift_model_shape()
+    if not shape:
+        report.error("could not read ChemicalElement's properties from the Swift source")
+        return
+    report.note(f"checked against {len(shape)} properties declared on ChemicalElement")
+
+    for element in elements:
+        label = element.get("symbol", element.get("atomicNumber", "?"))
+        for name, swift_type in shape.items():
+            optional = swift_type.endswith("?")
+            base = swift_type.rstrip("?")
+            if name not in element:
+                report.error(f"{label}: JSON is missing '{name}', which decoding requires")
+                continue
+            value = element[name]
+            if value is None:
+                if not optional:
+                    report.error(f"{label}: '{name}' is null but Swift declares it non-optional")
+                continue
+            if not json_matches_swift(value, base):
+                report.error(
+                    f"{label}: '{name}' is {type(value).__name__}, Swift expects {base}"
+                )
+                continue
+            if base == "[Int]" and not all(
+                isinstance(item, int) and not isinstance(item, bool) for item in value
+            ):
+                report.error(f"{label}: '{name}' contains a non-integer")
+            if base == "[ElementUse]":
+                for item in value:
+                    if not isinstance(item, dict):
+                        report.error(f"{label}: '{name}' contains a non-object")
+                        continue
+                    for key in ("title", "detail", "symbolName"):
+                        if not isinstance(item.get(key), str):
+                            report.error(f"{label}: a use has a non-string '{key}'")
+
+        for name in element:
+            if name not in shape:
+                report.warn(f"{label}: JSON key '{name}' is not read by the Swift model")
+
+
 def validate(path: str) -> Report:
     report = Report()
 
@@ -148,6 +235,13 @@ def validate(path: str) -> Report:
 
     if len(elements) != 118:
         report.error(f"expected 118 elements, found {len(elements)}")
+
+    # Shape first: if a field has the wrong Swift type the value checks below
+    # cannot run meaningfully, and the app would fail to decode at launch.
+    check_model_shape(elements, report)
+    if report.errors:
+        report.error("stopping: fix the decoding problems above before the value checks can run")
+        return report
 
     expected = {row["atomicNumber"]: row for row in backbone()}
     allowlist = load_allowlist()
@@ -370,6 +464,8 @@ def main() -> int:
 
     report = validate(path)
 
+    for note in report.notes:
+        print(f"note: {note}")
     for warning in report.warnings:
         print(f"warning: {warning}")
     for error in report.errors:
