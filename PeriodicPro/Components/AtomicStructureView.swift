@@ -25,9 +25,9 @@ struct AtomicStructureView: View {
 
     var body: some View {
         ZStack {
-            ForEach(Array(shells.enumerated()), id: \.offset) { index, count in
+            ForEach(Array(shells.indices), id: \.self) { index in
                 ShellRing(
-                    electronCount: count,
+                    electronCount: shells[index],
                     radius: radius(for: index),
                     tint: element.category.accentColor,
                     period: 26 + Double(index) * 9,

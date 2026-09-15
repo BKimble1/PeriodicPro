@@ -98,13 +98,13 @@ final class ProgressStore {
     /// Most recently reviewed elements, newest first.
     func recentlyStudied(limit: Int = 8) -> [Int] {
         snapshots.values
-            .compactMap { snapshot -> (Int, Date)? in
+            .compactMap { snapshot -> (atomicNumber: Int, date: Date)? in
                 guard let date = snapshot.lastReviewed else { return nil }
                 return (snapshot.atomicNumber, date)
             }
-            .sorted { $0.1 > $1.1 }
+            .sorted { $0.date > $1.date }
             .prefix(limit)
-            .map(\.0)
+            .map { $0.atomicNumber }
     }
 
     func masteredCount(in category: ElementCategory, catalog: ElementCatalog) -> Int {

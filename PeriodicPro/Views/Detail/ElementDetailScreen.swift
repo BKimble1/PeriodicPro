@@ -4,7 +4,7 @@ import SwiftUI
 ///
 /// Scroll choreography, all driven by native scroll APIs rather than manual
 /// offset maths:
-/// * the hero scales down, fades and softens as it leaves the top
+/// * the hero scales down, fades and drifts as it leaves the top
 ///   (`scrollTransition(.interactive)`)
 /// * every card below rises and fades in as it becomes visible
 /// * the tinted backdrop recedes toward the page background
@@ -17,16 +17,27 @@ struct ElementDetailScreen: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var showsMoreProperties = false
-    @State private var scrollOffset: CGFloat = 0
+
+    /// 0 at the top of the page, 1 once the hero has fully handed the page over
+    /// to the navigation bar.
+    ///
+    /// Stored in 5% steps rather than continuously: the scroll callback fires on
+    /// every frame, and quantising means the view body is only re-evaluated
+    /// about twenty times across the whole handoff instead of sixty times a
+    /// second. The short easing below hides the steps.
+    @State private var handoff: CGFloat = 0
 
     private static let heroHandoff: CGFloat = 150
+    private static let handoffSteps: CGFloat = 20
 
     private var isFavorite: Bool { progress.isFavorite(element.atomicNumber) }
 
-    /// 0 at the top of the page, 1 once the hero has fully handed over.
-    private var handoff: CGFloat {
-        guard !reduceMotion else { return scrollOffset > Self.heroHandoff ? 1 : 0 }
-        return min(max(scrollOffset / Self.heroHandoff, 0), 1)
+    private func updateHandoff(forOffset offset: CGFloat) {
+        let raw = min(max(offset / Self.heroHandoff, 0), 1)
+        let stepped = reduceMotion
+            ? (raw > 0.5 ? 1 : 0)
+            : (raw * Self.handoffSteps).rounded() / Self.handoffSteps
+        if stepped != handoff { handoff = stepped }
     }
 
     var body: some View {
@@ -39,7 +50,9 @@ struct ElementDetailScreen: View {
                         content
                             .opacity(reduceMotion ? 1 : 1 - abs(phase.value) * 0.9)
                             .scaleEffect(reduceMotion ? 1 : 1 + phase.value * 0.07, anchor: .top)
-                            .blur(radius: reduceMotion ? 0 : abs(phase.value) * 2.5)
+                            // A little parallax: the hero drifts slower than the
+                            // cards rising past it.
+                            .offset(y: reduceMotion ? 0 : -phase.value * 14)
                     }
 
                 StructureCard(element: element).softRise(enabled: !reduceMotion)
@@ -63,7 +76,7 @@ struct ElementDetailScreen: View {
         .onScrollGeometryChange(for: CGFloat.self) { geometry in
             geometry.contentOffset.y + geometry.contentInsets.top
         } action: { _, newValue in
-            scrollOffset = newValue
+            updateHandoff(forOffset: newValue)
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -128,6 +141,7 @@ struct ElementDetailScreen: View {
 
 // MARK: - Scroll transition helper
 
+/// Cards rise and fade into place as they enter the viewport.
 private struct SoftRiseModifier: ViewModifier {
     let enabled: Bool
 

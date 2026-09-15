@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Semantic surface colors. Light mode is the primary visual direction; the
 /// dark variants are hand-tuned rather than inverted so cards keep separation

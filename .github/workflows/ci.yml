@@ -20,7 +20,7 @@ env:
 
 jobs:
   validate-data:
-    name: Validate element dataset
+    name: Validate data and sources
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +33,21 @@ jobs:
       # needing a Mac — so a bad dataset fails in seconds on every push.
       - name: Validate elements.json
         run: python3 Tools/validate_elements.py
+
+      - name: Lint Swift sources
+        run: python3 Tools/lint_sources.py
+
+      - name: Check spelling is normalized
+        run: |
+          set -euo pipefail
+          python3 Tools/normalize_spelling.py \
+            PeriodicPro/Data/elements.json \
+            $(find PeriodicPro PeriodicProTests PeriodicProUITests -name '*.swift')
+          if ! git diff --quiet; then
+            echo "::error::Sources contain British spellings. Run Tools/normalize_spelling.py and commit."
+            git --no-pager diff --stat
+            exit 1
+          fi
 
   build-and-test:
     name: Build and test

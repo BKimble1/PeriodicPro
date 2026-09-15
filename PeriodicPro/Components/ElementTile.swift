@@ -29,7 +29,7 @@ struct ElementTile: View {
         switch density {
         case .minimal: return size * 0.46
         case .standard: return size * 0.40
-        case .detailed: return size * 0.34
+        case .detailed: return size * 0.36
         }
     }
 
@@ -66,7 +66,7 @@ struct ElementTile: View {
         case .standard:
             VStack(spacing: size * 0.02) {
                 Text("\(element.atomicNumber)")
-                    .font(AppFont.tileNumber(size * 0.19))
+                    .font(AppFont.tileNumber(size * 0.22))
                     .foregroundStyle(element.category.onTileColor.opacity(0.7))
                 Text(element.symbol)
                     .font(AppFont.tileSymbol(symbolSize))
@@ -77,7 +77,7 @@ struct ElementTile: View {
         case .detailed:
             VStack(spacing: size * 0.02) {
                 Text("\(element.atomicNumber)")
-                    .font(AppFont.tileNumber(size * 0.16))
+                    .font(AppFont.tileNumber(size * 0.17))
                     .foregroundStyle(element.category.onTileColor.opacity(0.7))
                 Text(element.symbol)
                     .font(AppFont.tileSymbol(symbolSize))
@@ -85,7 +85,7 @@ struct ElementTile: View {
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
                 Text(element.name)
-                    .font(AppFont.tileNumber(size * 0.115))
+                    .font(AppFont.tileNumber(size * 0.15))
                     .foregroundStyle(element.category.onTileColor.opacity(0.75))
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)

@@ -90,7 +90,10 @@ struct ProgressScreen: View {
                         .font(.system(.title3, weight: .semibold))
                         .foregroundStyle(AppColor.primaryText)
                         .multilineTextAlignment(.center)
-                    Text("An element becomes mastered after three correct answers, and slips back a step whenever you miss one.")
+                    Text("""
+                        An element becomes mastered after three correct answers, and slips \
+                        back a step whenever you miss one.
+                        """)
                         .font(AppFont.caption)
                         .foregroundStyle(AppColor.secondaryText)
                         .multilineTextAlignment(.center)
@@ -173,7 +176,10 @@ struct ProgressScreen: View {
                     Text("Progress is not being saved")
                         .font(AppFont.cardTitle)
                         .foregroundStyle(AppColor.primaryText)
-                    Text("The on-device store could not be opened, so this session's progress will be lost when the app closes. Restarting the app usually fixes it.")
+                    Text("""
+                        The on-device store could not be opened, so this session's progress \
+                        will be lost when the app closes. Restarting the app usually fixes it.
+                        """)
                         .font(AppFont.caption)
                         .foregroundStyle(AppColor.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -202,19 +208,33 @@ struct AboutSheet: View {
                 Section("The data") {
                     LabeledContent("Elements", value: "\(catalog.count)")
                     LabeledContent("Atomic weights", value: "IUPAC 2021")
-                    Text("Standard atomic weights follow the IUPAC 2021 table. Elements with no stable isotope show the mass number of their most stable known isotope instead. Properties for elements 104 and above are largely predicted rather than measured.")
+                    Text("""
+                        Standard atomic weights follow the IUPAC 2021 table. Elements with no \
+                        stable isotope show the mass number of their most stable known isotope \
+                        instead. Properties for elements 104 and above are largely predicted \
+                        rather than measured.
+                        """)
                         .font(AppFont.footnote)
                         .foregroundStyle(AppColor.secondaryText)
                 }
 
                 Section("Privacy") {
-                    Text("Everything you do stays on this device. There is no account, no analytics and no network request \u{2014} favorites, familiarity scores and recent searches are stored locally and are removed when you delete the app.")
+                    Text("""
+                        Everything you do stays on this device. There is no account, no \
+                        analytics and no network request \u{2014} favorites, familiarity \
+                        scores and recent searches are stored locally, and are removed when \
+                        you delete the app.
+                        """)
                         .font(AppFont.footnote)
                         .foregroundStyle(AppColor.secondaryText)
                 }
 
                 Section("Diagrams") {
-                    Text("Shell diagrams are educational simplifications. They show how many electrons occupy each energy level; electrons do not orbit the nucleus on fixed circular paths.")
+                    Text("""
+                        Shell diagrams are educational simplifications. They show how many \
+                        electrons occupy each energy level; electrons do not travel around \
+                        the nucleus on fixed circular paths.
+                        """)
                         .font(AppFont.footnote)
                         .foregroundStyle(AppColor.secondaryText)
                 }

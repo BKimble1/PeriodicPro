@@ -40,6 +40,7 @@ struct SearchResultsView: View {
     }
 }
 
+/// One element in the search results: tile, name, number and family.
 private struct SearchResultRow: View {
     let element: ChemicalElement
     let isFavorite: Bool

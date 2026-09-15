@@ -358,6 +358,8 @@ struct CardSessionView: View {
 
 // MARK: - Quiz
 
+/// Ten multiple-choice questions. Options lock once answered so the learner
+/// sees which one was right before moving on.
 struct QuizSessionView: View {
     let questions: [QuizQuestion]
     let onAnswer: (Int, Bool) -> Void
@@ -389,8 +391,12 @@ struct QuizSessionView: View {
                             .accessibilityIdentifier("quiz.prompt")
 
                         VStack(spacing: Theme.Spacing.s) {
-                            ForEach(Array(question.options.enumerated()), id: \.offset) { offset, option in
-                                optionButton(question: question, offset: offset, option: option)
+                            ForEach(Array(question.options.indices), id: \.self) { offset in
+                                optionButton(
+                                    question: question,
+                                    offset: offset,
+                                    option: question.options[offset]
+                                )
                             }
                         }
                     }
@@ -504,6 +510,7 @@ struct QuizSessionView: View {
 
 // MARK: - Summary
 
+/// End of a round: the score, and a calm, factual line about it.
 struct SessionSummaryView: View {
     let result: StudyResult
     let onRepeat: () -> Void

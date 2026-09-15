@@ -28,14 +28,20 @@ struct OnboardingView: View {
             id: 1,
             symbolName: "hand.tap.fill",
             title: "Tap to learn",
-            message: "Any element opens into its structure, key facts, everyday uses and a hook to help you remember it.",
+            message: """
+                Any element opens into its structure, key facts, everyday uses and a hook \
+                to help you remember it.
+                """,
             tint: ElementCategory.transitionMetal.accentColor
         ),
         Page(
             id: 2,
             symbolName: "graduationcap.fill",
             title: "Practice to remember",
-            message: "Flashcards, a quick quiz and identify rounds turn what you have read into something you recall.",
+            message: """
+                Flashcards, a quick quiz and identify rounds turn what you have read into \
+                something you recall.
+                """,
             tint: ElementCategory.nobleGas.accentColor
         ),
     ]

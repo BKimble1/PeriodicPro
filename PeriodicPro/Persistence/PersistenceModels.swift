@@ -29,6 +29,7 @@ final class ElementProgressRecord {
 }
 
 /// A term the learner typed into the table search field.
+/// A term the learner typed into the table search field.
 @Model
 final class RecentSearchRecord {
     @Attribute(.unique) var text: String
@@ -40,6 +41,7 @@ final class RecentSearchRecord {
     }
 }
 
+/// One calendar day on which the learner answered at least one card.
 /// One calendar day on which the learner answered at least one card.
 @Model
 final class StudyDayRecord {

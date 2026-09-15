@@ -7,6 +7,14 @@ import SwiftUI
 struct StructureCard: View {
     let element: ChemicalElement
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// Side by side normally; stacked once the text is large enough that a
+    /// 140-point diagram would squeeze the facts into a column of fragments.
+    private var stacksVertically: Bool {
+        dynamicTypeSize >= .accessibility1
+    }
+
     var body: some View {
         CardContainer {
             VStack(alignment: .leading, spacing: Theme.Spacing.m) {
@@ -14,18 +22,23 @@ struct StructureCard: View {
                     .font(AppFont.cardTitle)
                     .foregroundStyle(AppColor.primaryText)
 
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .center, spacing: Theme.Spacing.m) {
-                        AtomicStructureView(element: element, diameter: 152)
-                        facts
-                    }
+                if stacksVertically {
                     VStack(spacing: Theme.Spacing.m) {
                         AtomicStructureView(element: element, diameter: 176)
                         facts
                     }
+                } else {
+                    HStack(alignment: .center, spacing: Theme.Spacing.m) {
+                        AtomicStructureView(element: element, diameter: 140)
+                        facts
+                    }
                 }
 
-                Text("A simplified shell model. Each ring stands for an energy level and how many electrons it holds \u{2014} electrons do not travel on fixed circular paths.")
+                Text("""
+                    A simplified shell model. Each ring stands for an energy level and how \
+                    many electrons it holds \u{2014} electrons do not travel on fixed \
+                    circular paths.
+                    """)
                     .font(AppFont.caption2)
                     .foregroundStyle(AppColor.tertiaryText)
                     .fixedSize(horizontal: false, vertical: true)
@@ -51,7 +64,6 @@ struct StructureCard: View {
                 monospacedValue: true
             )
         }
-        .frame(minWidth: 150)
     }
 
     private var elementalForm: some View {
@@ -90,6 +102,8 @@ struct PropertyRow: Identifiable, Hashable {
     var id: String { label }
 }
 
+/// The four facts people look up most, with the rest behind a disclosure so
+/// the page never opens as a wall of numbers.
 struct QuickFactsCard: View {
     let element: ChemicalElement
     @Binding var showsMoreProperties: Bool
@@ -178,6 +192,7 @@ struct QuickFactsCard: View {
 
 // MARK: - About
 
+/// One short paragraph, written for a high-school or college learner.
 struct AboutCard: View {
     let element: ChemicalElement
 
@@ -199,10 +214,19 @@ struct AboutCard: View {
 
 // MARK: - Uses
 
+/// Recognisable, real-world applications as a grid of icon cards.
 struct UsesCard: View {
     let element: ChemicalElement
 
-    private let columns = [GridItem(.adaptive(minimum: 74), spacing: Theme.Spacing.s)]
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// Four across at normal sizes, two at accessibility sizes — never an
+    /// adaptive grid, which leaves a trailing gap on wide phones and splits
+    /// four cards three-plus-one on small ones.
+    private var columns: [GridItem] {
+        let count = dynamicTypeSize >= .accessibility1 ? 2 : 4
+        return Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.s), count: count)
+    }
 
     var body: some View {
         CardContainer {
@@ -222,6 +246,8 @@ struct UsesCard: View {
 
 // MARK: - Memory hook
 
+/// The memorisation hook: real etymology or a genuine association, never an
+/// invented one.
 struct MemoryHookCard: View {
     let element: ChemicalElement
 
@@ -252,6 +278,7 @@ struct MemoryHookCard: View {
 
 // MARK: - Familiarity
 
+/// Where this element stands in the learner's own progress.
 struct FamiliarityCard: View {
     let element: ChemicalElement
     let snapshot: ElementProgressSnapshot

@@ -114,7 +114,7 @@ struct ElementDataTests {
         for element in catalog.elements {
             let total = element.shellElectrons.reduce(0, +)
             #expect(total == element.atomicNumber,
-                    "\(element.name): shells \(element.shellElectrons) sum to \(total), expected \(element.atomicNumber)")
+                    "\(element.name): shells sum to \(total), expected \(element.atomicNumber)")
             #expect(element.shellElectrons.allSatisfy { $0 > 0 },
                     "\(element.name) has an empty shell")
             if element.symbol == "Pd" {
@@ -242,7 +242,7 @@ struct ElementDataTests {
         for pair in zip(ordered, ordered.dropFirst()) {
             if allowedInversions.contains(pair.0.atomicNumber) { continue }
             #expect(pair.0.atomicMass < pair.1.atomicMass,
-                    "\(pair.0.name) (\(pair.0.atomicMass)) should be lighter than \(pair.1.name) (\(pair.1.atomicMass))")
+                    "\(pair.0.name) should be lighter than \(pair.1.name)")
         }
         // ...and the three inversions really are inversions.
         for number in allowedInversions {

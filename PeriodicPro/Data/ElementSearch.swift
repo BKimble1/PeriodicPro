@@ -57,7 +57,7 @@ enum ElementSearch {
                     : lhs.rank < rhs.rank
             }
             .prefix(limit)
-            .map(\.element)
+            .map { $0.element }
     }
 }
 

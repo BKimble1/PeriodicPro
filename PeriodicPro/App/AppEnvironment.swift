@@ -24,6 +24,7 @@ enum AppTab: String, Hashable, CaseIterable {
     }
 }
 
+/// Environment storage for the bundled dataset.
 private struct ElementCatalogKey: EnvironmentKey {
     static let defaultValue = ElementCatalog(elements: [])
 }

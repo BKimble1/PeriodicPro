@@ -2,6 +2,8 @@ import OSLog
 import SwiftData
 import SwiftUI
 
+/// Entry point. Builds the two long-lived services and hands them to the
+/// view hierarchy through the environment.
 @main
 @MainActor
 struct PeriodicProApp: App {

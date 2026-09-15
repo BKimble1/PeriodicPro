@@ -36,27 +36,38 @@ struct PeriodicTableScreen: View {
 
     private static let fittedSpacing: CGFloat = 1.5
     private static let comfortableSpacing: CGFloat = 4
-    private static let comfortableTileSize: CGFloat = 52
+    private static let comfortableTileSize: CGFloat = 64
     private static let horizontalInset = Theme.Spacing.l
 
     private var layout: LayoutMode {
         dynamicTypeSize.isAccessibilitySize ? .comfortable : preferredLayout
     }
 
+    /// Width to lay the table out in. Until the first layout pass reports the
+    /// real width, a modern iPhone's width is assumed so the table never paints
+    /// a frame of undersized tiles.
+    private var usableWidth: CGFloat {
+        let width = screenWidth > 0 ? screenWidth : 393
+        return max(width - Self.horizontalInset * 2, 260)
+    }
+
     private var tileSize: CGFloat {
         guard layout == .fitted else { return Self.comfortableTileSize }
-        let usable = max(screenWidth - Self.horizontalInset * 2, 260)
         let columns = CGFloat(PeriodicTableGrid.columns)
         let gaps = Self.fittedSpacing * (columns - 1)
-        return max(13, ((usable - gaps) / columns).rounded(.down))
+        return max(13, ((usableWidth - gaps) / columns).rounded(.down))
     }
 
     private var tileSpacing: CGFloat {
         layout == .fitted ? Self.fittedSpacing : Self.comfortableSpacing
     }
 
+    /// In landscape the fitted table gets ~44-point tiles, which is plenty of
+    /// room for the atomic number as well as the symbol. Density follows the
+    /// tile size rather than the layout mode so that space is never wasted.
     private var tileDensity: ElementTile.Density {
-        layout == .fitted ? .minimal : .detailed
+        guard layout == .fitted else { return .detailed }
+        return tileSize >= 38 ? .standard : .minimal
     }
 
     private var searchResults: [ChemicalElement] {
@@ -76,6 +87,7 @@ struct PeriodicTableScreen: View {
                     tileSize: tileSize,
                     tileSpacing: tileSpacing,
                     density: tileDensity,
+                    showsMastery: tileDensity != .minimal,
                     scrollsHorizontally: layout == .comfortable,
                     isFavorite: { progress.isFavorite($0) },
                     mastery: { progress.mastery(for: $0) },
@@ -153,6 +165,7 @@ private struct TableScreenContent: View {
     let tileSize: CGFloat
     let tileSpacing: CGFloat
     let density: ElementTile.Density
+    let showsMastery: Bool
     let scrollsHorizontally: Bool
     let isFavorite: (Int) -> Bool
     let mastery: (Int) -> MasteryLevel
@@ -207,7 +220,10 @@ private struct TableScreenContent: View {
             .padding(.horizontal, Theme.Spacing.screenMargin)
             .padding(.top, Theme.Spacing.s)
 
-            Text("Standard atomic weights follow IUPAC 2021. Elements without a stable isotope show the mass number of their most stable form.")
+            Text("""
+                Standard atomic weights follow IUPAC 2021. Elements without a stable isotope \
+                show the mass number of their most stable form.
+                """)
                 .font(AppFont.caption2)
                 .foregroundStyle(AppColor.tertiaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -226,7 +242,7 @@ private struct TableScreenContent: View {
             namespace: namespace,
             isFavorite: isFavorite,
             mastery: mastery,
-            showsMastery: scrollsHorizontally,
+            showsMastery: showsMastery,
             onSelect: onSelect
         )
         .accessibilityIdentifier("periodicTable.grid")
