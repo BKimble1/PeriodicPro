@@ -188,10 +188,11 @@ struct StudyScreen: View {
                 // Where the reference concept has a "See All" link. All four
                 // modes are already on screen, so a link would go nowhere;
                 // what belongs in that slot is how much free study is left.
-                if let allowance = DailyStudyLimiter.allowanceDescription(
-                    completedToday: progress.completedRoundsToday,
-                    isPro: store.isPro
-                ) {
+                if !store.entitlement.isResolving,
+                   let allowance = DailyStudyLimiter.allowanceDescription(
+                       completedToday: progress.completedRoundsToday,
+                       isPro: store.isPro
+                   ) {
                     Text(allowance)
                         .font(AppFont.footnote)
                         .foregroundStyle(AppColor.secondaryText)
@@ -205,7 +206,11 @@ struct StudyScreen: View {
                     PracticeModeTile(
                         mode: mode,
                         tint: Self.modeTints[mode] ?? .metalloid,
-                        showsProBadge: mode.requiresPro && !store.isPro,
+                        // Nothing is said about Pro state until it is known, so
+                        // a subscriber never sees a badge appear and vanish.
+                        showsProBadge: mode.requiresPro
+                            && !store.isPro
+                            && !store.entitlement.isResolving,
                         action: { start(mode) }
                     )
                 }
@@ -344,6 +349,21 @@ struct StudyScreen: View {
     /// enough history yet — is decided here, before anything is presented, and
     /// never once a round is running.
     private func start(_ mode: StudyMode) {
+        Task { @MainActor in await beginRound(mode) }
+    }
+
+    /// Main-actor isolated because it assigns view state. `sessionQueue` and
+    /// `activeMode` are still set in one body with no suspension between them,
+    /// which is what stops the session from ever seeing a queue that moved.
+    @MainActor
+    private func beginRound(_ mode: StudyMode) async {
+        // StoreKit may not have answered yet on a very fast first tap. Asking
+        // again costs milliseconds and is the difference between a subscriber
+        // starting their round and a subscriber being shown a paywall.
+        if store.entitlement.isResolving {
+            await store.refresh()
+        }
+
         if mode.requiresPro, !store.isPro {
             paywall = .smartReview
             return

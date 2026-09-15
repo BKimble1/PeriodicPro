@@ -7,6 +7,7 @@ import Testing
 /// Nothing here touches StoreKit. `ProAccess` and `DailyStudyLimiter` take an
 /// `isPro` flag and a count, which is exactly why they were written that way:
 /// every free / Pro / expired / revoked combination is reachable in a test.
+@MainActor
 @Suite("Pro entitlement")
 struct ProEntitlementTests {
     private let active = ProSubscriptionInfo(
@@ -74,7 +75,6 @@ struct ProEntitlementTests {
         #expect(PurchaseState.failed("nope").message == "nope")
     }
 
-    @MainActor
     @Test("A manager built for testing never reaches StoreKit and honors its state")
     func injectedManagerGatesCorrectly() {
         let free = SubscriptionManager(testingEntitlement: .free)

@@ -132,9 +132,11 @@ enum StructureEntityFactory {
         }
 
         let entity = ModelEntity(mesh: mesh, materials: [palette.strutMaterial(state: .normal)])
-        // Only the first strut of a multiple bond is selectable, so a double
-        // bond is one target rather than two overlapping ones.
-        entity.name = strutIndex == 0 ? StructureEntityName.bond(bond.id) : "strut"
+        // Every bar of a multiple bond carries the bond's name, so selecting a
+        // double bond highlights both of its bars rather than lighting one and
+        // dimming the other. Only the first gets a collider, so the bond is one
+        // tap target rather than two overlapping ones.
+        entity.name = StructureEntityName.bond(bond.id)
         entity.position = (from + to) / 2
         entity.orientation = Self.orientation(alongY: axis / length)
 
@@ -161,6 +163,16 @@ enum StructureEntityFactory {
         if dot > 0.9999 { return simd_quatf(angle: 0, axis: up) }
         if dot < -0.9999 { return simd_quatf(angle: .pi, axis: SIMD3(1, 0, 0)) }
         return simd_quatf(from: up, to: direction)
+    }
+
+    /// Rotation taking the entity's -Z axis onto `direction`, which is how a
+    /// `DirectionalLight` is aimed.
+    static func orientation(alongNegativeZ direction: SIMD3<Float>) -> simd_quatf {
+        let forward = SIMD3<Float>(0, 0, -1)
+        let dot = simd_dot(forward, direction)
+        if dot > 0.9999 { return simd_quatf(angle: 0, axis: SIMD3(0, 1, 0)) }
+        if dot < -0.9999 { return simd_quatf(angle: .pi, axis: SIMD3(0, 1, 0)) }
+        return simd_quatf(from: forward, to: direction)
     }
 
     private static func key(_ value: Float) -> Int { Int((value * 1_000).rounded()) }
@@ -233,7 +245,12 @@ enum StructureEntityFactory {
                 var material = PhysicallyBasedMaterial()
                 material.baseColor = .init(tint: Self.tint(role: role, accent: accent, state: state))
                 material.roughness = .init(floatLiteral: Self.roughness(role: role, isMetal: isMetal))
-                material.metallic = .init(floatLiteral: role == .atom && isMetal ? 1.0 : 0.0)
+                // Not fully metallic. A metallic PBR surface gets almost all of
+                // its color from reflections, and this scene has directional
+                // lights but no environment map — at 1.0 a gold lattice renders
+                // nearly black. Partly metallic keeps the sheen and keeps the
+                // element's own color.
+                material.metallic = .init(floatLiteral: role == .atom && isMetal ? 0.45 : 0.0)
                 if state == .highlighted {
                     material.emissiveColor = .init(color: UIColor(AppColor.accent))
                     material.emissiveIntensity = 0.45

@@ -14,6 +14,7 @@
 		CAFE00000000000000000009 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		CAFE0000000000000000000A /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		CAFE0000000000000000000B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CAFE0000000000000000002B /* PeriodicPro.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = PeriodicPro.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +76,7 @@
 				CAFE00000000000000000009 /* Debug.xcconfig */,
 				CAFE0000000000000000000A /* Release.xcconfig */,
 				CAFE0000000000000000000B /* Info.plist */,
+				CAFE0000000000000000002B /* PeriodicPro.storekit */,
 			);
 			path = Config;
 			sourceTree = "<group>";

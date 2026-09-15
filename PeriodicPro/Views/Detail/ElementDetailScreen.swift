@@ -64,7 +64,10 @@ struct ElementDetailScreen: View {
 
                 StructureCard(
                     element: element,
-                    isStructureUnlocked: isStructureUnlocked,
+                    // While the entitlement is still resolving the button says
+                    // nothing about Pro rather than guessing.
+                    isStructureUnlocked: isStructureUnlocked
+                        || store.entitlement.isResolving,
                     onExplore: openExplorer
                 )
                 .softRise(enabled: !reduceMotion)
@@ -109,10 +112,18 @@ struct ElementDetailScreen: View {
     /// Opens the explorer, or the paywall when this element is not one of the
     /// six that are free to explore.
     private func openExplorer() {
-        if isStructureUnlocked {
-            showsExplorer = true
-        } else {
-            paywall = .structureExplorer
+        Task { @MainActor in
+            // As on the Study tab: resolve the entitlement before deciding, so
+            // a subscriber tapping straight after launch is not shown a paywall
+            // for something they have already paid for.
+            if store.entitlement.isResolving {
+                await store.refresh()
+            }
+            if isStructureUnlocked {
+                showsExplorer = true
+            } else {
+                paywall = .structureExplorer
+            }
         }
     }
 

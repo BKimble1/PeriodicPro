@@ -2,8 +2,12 @@
 
 **Periodic Pro collects nothing.** There is no account, no sign-in, no
 analytics, no advertising, no crash-reporting SDK and no network request of any
-kind. The app works fully offline, by design: the entire periodic table is
-bundled inside it.
+kind made by this app's own code. The app works fully offline, by design: the
+entire periodic table is bundled inside it.
+
+The one exception is the optional subscription, which is handled entirely by
+Apple's StoreKit. That is Apple talking to the App Store, not this app talking
+to a server of ours — see **Subscriptions** below.
 
 ## What is stored, and where
 
@@ -17,16 +21,37 @@ shared with third parties, and not readable by other apps.
 | Familiarity score per element (0–3), correct/incorrect counts, last-reviewed date | SwiftData store | Powers the Progress screen and orders your study queue |
 | Days on which you answered at least one card | SwiftData store | Powers the streak counter |
 | Recent search terms (most recent 8) | SwiftData store | So the search field can offer what you looked up last |
+| Rounds you have finished today | SwiftData store | Powers the free daily study allowance |
 | Whether you have seen the three onboarding pages | `UserDefaults` | So onboarding only appears once |
 
 Nothing else is recorded. In particular the app does not store your name, email
 address, contacts, location, photos, identifiers for advertising, or any device
 identifier.
 
+## Subscriptions
+
+Periodic Pro is optional. If you subscribe, the purchase is made through Apple
+using StoreKit, exactly as any App Store purchase is.
+
+- **The app never sees your payment details, your Apple Account, your name or
+  your email.** It asks StoreKit one question — is there an active subscription
+  on this device? — and gets back yes or no.
+- **There is no subscription SDK.** No RevenueCat, no analytics on conversion,
+  no third-party receipt service. There is no server of ours involved at any
+  point, so there is nothing for us to store even if we wanted to.
+- **Nothing about what you study, search for or look at is sent anywhere**,
+  whether you subscribe or not.
+- Managing or canceling a subscription happens in Apple's own Settings, which
+  the app links to.
+
+Apple's own handling of the transaction is covered by Apple's privacy policy,
+not this one.
+
 ## Third parties
 
 There are none. The app has zero third-party dependencies and makes no outbound
-connections. No data is sold or shared, because no data leaves the device.
+connections of its own. No data is sold or shared, because no data leaves the
+device.
 
 ## Your control over the data
 

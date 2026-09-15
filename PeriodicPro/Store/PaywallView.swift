@@ -22,6 +22,11 @@ struct PaywallView: View {
     @State private var selectedProductID: String?
     @State private var showsManageSubscriptions = false
     @State private var showsPrivacy = false
+    /// False until `loadProducts` has returned once. Without it the plan
+    /// section renders its "not available" state for the frame between the view
+    /// appearing and `.task` starting, which reads as a failure that has not
+    /// happened yet.
+    @State private var hasAttemptedLoad = false
 
     /// Apple's standard license for apps that do not supply their own. Linking
     /// it is the documented option and avoids inventing a terms page.
@@ -70,7 +75,15 @@ struct PaywallView: View {
         }
         .tint(AppColor.accent)
         .task {
+            // An entitlement that arrived between the tap and this sheet
+            // appearing would not fire onChange, because it never changes while
+            // the paywall is on screen.
+            if store.isPro {
+                dismiss()
+                return
+            }
             await store.loadProducts()
+            hasAttemptedLoad = true
             if selectedProductID == nil {
                 selectedProductID = store.products.first {
                     SubscriptionProduct(productID: $0.id)?.isPreferred == true
@@ -269,7 +282,7 @@ struct PaywallView: View {
 
     @ViewBuilder
     private var unavailablePlans: some View {
-        if store.purchaseState.isBusy {
+        if !hasAttemptedLoad || store.purchaseState.isBusy {
             HStack(spacing: Theme.Spacing.m) {
                 ProgressView()
                 Text("Loading subscription options…")
@@ -291,7 +304,11 @@ struct PaywallView: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 Button("Try again") {
-                    Task { await store.loadProducts() }
+                    Task {
+                        hasAttemptedLoad = false
+                        await store.loadProducts()
+                        hasAttemptedLoad = true
+                    }
                 }
                 .font(.system(.subheadline, weight: .semibold))
                 .frame(minHeight: Theme.minimumTouchTarget)

@@ -187,10 +187,28 @@ question: no violence, no profanity, no horror, no mature or suggestive themes,
 no alcohol/tobacco/drug references, no simulated gambling, no contests, no
 medical or treatment information (the app describes elements, it never gives
 health advice), no unrestricted web access, and no user-generated content.
-There is no in-app purchasing and no advertising.
+There is no advertising.
+
+The app **does** offer in-app purchases (the Periodic Pro subscription), so tick
+that box on the App Store listing. It does not affect the 4+ rating.
 
 **App Privacy** — *Do you or your third-party partners collect data from this
 app?* → **No**. That single answer completes the section; see `PRIVACY.md`.
+Subscriptions do not change this: Apple handles the transaction, and the app is
+only ever told whether an entitlement is active. It never sees a payment
+detail, an Apple Account or a name, and it has no server to send one to.
+
+**Subscriptions** — two products in one group must exist and be at least *Ready
+to Submit* before a TestFlight sandbox purchase will work. See
+**MONETIZATION.md** for the identifiers, the prices, and the exact steps. The
+app reads every price from StoreKit, so nothing needs changing in code when you
+set them.
+
+**Privacy Policy URL and Terms of Use (EULA)** — both are required in App
+Information because the app sells a subscription. Host the text of
+`PRIVACY.md` and use its URL for the policy. For terms, Apple's standard EULA
+is sufficient and is what the paywall links to; leave the custom EULA field
+empty to use it.
 
 **Export compliance** — handled automatically. `Config/Info.plist` sets
 `ITSAppUsesNonExemptEncryption` to `false`, so TestFlight never stops to ask.
