@@ -58,9 +58,12 @@ struct PeriodicTableGrid: View {
 
             ForEach(elements) { element in
                 tile(element)
+                    // The hit area is a full grid cell, half a gap wider than
+                    // the tile on every side, so the offset backs off by the
+                    // same amount and the tiles still land exactly on the grid.
                     .offset(
-                        x: CGFloat(element.gridX - 1) * step,
-                        y: CGFloat(element.gridY - baseRow) * step
+                        x: CGFloat(element.gridX - 1) * step - spacing / 2,
+                        y: CGFloat(element.gridY - baseRow) * step - spacing / 2
                     )
             }
         }
@@ -82,6 +85,11 @@ struct PeriodicTableGrid: View {
                 mastery: mastery(element.atomicNumber),
                 showsMastery: showsMastery
             )
+            // Tiles are small in the fitted layout, so every point between them
+            // belongs to one of them: the hit areas tile the grid with no dead
+            // space, and a slightly-off tap still lands on what it looks like.
+            .frame(width: tileSize + spacing, height: tileSize + spacing)
+            .contentShape(Rectangle())
         }
         .buttonStyle(ElementTileButtonStyle())
         .disabled(dimmed)

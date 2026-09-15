@@ -313,8 +313,10 @@ card, and the outcome of an answer. Nothing fires on scroll or navigation.
   electrons, and disables every scroll transition
 - Accessibility text sizes switch the table to the comfortable layout
   automatically, so tiles never become unreadably small
-- Controls outside the fitted table meet the 44-point target; the fitted table
-  is an explicit, reversible trade the learner can opt out of
+- Controls outside the fitted table meet the 44-point target. Inside it, hit
+  areas tile the grid with no dead space between them, so a slightly-off tap
+  still lands on the element it looks like — and the comfortable layout is one
+  tap away, or automatic at accessibility text sizes
 - Shell diagrams describe themselves ("5 electron shells, shell 1: 2, …")
 - Accessibility identifiers on every interactive element, which is what the UI
   tests query
