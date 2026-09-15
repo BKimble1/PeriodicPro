@@ -50,13 +50,13 @@ struct StudyStatusCard<Leading: View>: View {
                     .strokeBorder(AppColor.hairline, lineWidth: 0.7)
             }
             .contentShape(Rectangle())
-            // Combined on the label, not on the Button. Applying
-            // `children: .ignore` to a Button replaces its accessibility
-            // element with a plain one that no longer carries the activation,
-            // so VoiceOver can read it but not press it.
-            .accessibilityElement(children: .ignore)
         }
         .buttonStyle(.plain)
+        // A label on the Button, not `accessibilityElement(children: .ignore)`
+        // applied on top of it. That replaces the Button's own accessibility
+        // element with a plain one that no longer carries the activation, so
+        // VoiceOver can read the card but not press it. Overriding the label
+        // leaves it a button.
         .accessibilityLabel("\(title) \(caption)")
         .accessibilityHint("Opens Progress")
     }
@@ -150,7 +150,6 @@ struct StudyHeroCard: View {
             }
             .themeShadow(Theme.Shadow.card)
             .contentShape(Rectangle())
-            .accessibilityElement(children: .ignore)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(title). \(message)")
@@ -197,7 +196,6 @@ struct PracticeModeTile: View {
                     .minimumScaleFactor(0.75)
             }
             .contentShape(Rectangle())
-            .accessibilityElement(children: .ignore)
         }
         .buttonStyle(ElementTileButtonStyle())
         .accessibilityLabel(showsProBadge
