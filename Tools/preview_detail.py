@@ -120,7 +120,7 @@ def draw_artwork(image, element, center, hero, tint):
         side = base * (0.14 + rand() * 0.12)
         fan = (index // 2 / max(1, count // 2) - 0.4) * 1.5
         angle = (0 if index % 2 == 0 else math.pi) + fan + (rand() - 0.5) * 0.36
-        reach = 0.55 + rand() * 0.35
+        reach = 0.52 + rand() * 0.26
         cx = width / 2 + math.cos(angle) * reach * width / 2
         cy = height / 2 + math.sin(angle) * reach * height / 2
         art.rounded_rectangle(
