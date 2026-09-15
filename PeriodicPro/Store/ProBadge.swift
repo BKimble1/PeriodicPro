@@ -13,7 +13,11 @@ struct ProBadge: View {
         Text("PRO")
             .font(.system(size: isCompact ? 8 : 9, weight: .bold))
             .kerning(0.5)
-            .foregroundStyle(AppColor.accent)
+            // Ink rather than accent. Accent text on a faint accent capsule
+            // measures between 3.5 and 4.6 to 1 depending on the surface and
+            // the appearance, and nine points bold is small text, which needs
+            // 4.5. The capsule keeps the Pro tint; the word stays readable.
+            .foregroundStyle(AppColor.primaryText)
             .padding(.horizontal, isCompact ? 5 : 6)
             .padding(.vertical, isCompact ? 2 : 3)
             .background {

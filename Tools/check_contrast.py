@@ -144,6 +144,16 @@ def main() -> int:
                 check(f"{name} on {surface}", appearance,
                       app[name][index], app[surface][index], minimum)
 
+    # The PRO badge: ink on a 12%-accent capsule over whatever surface it sits
+    # on. Nine points bold is small text, so it needs the full ratio. Drawing
+    # the word in the accent itself measured between 3.5 and 4.6 depending on
+    # the surface and the appearance, which is why it is not.
+    for index, appearance in enumerate(("light", "dark")):
+        for surface in ("canvas", "surface", "surfaceMuted"):
+            badge = composite(app["accent"][index], 0.12, app[surface][index])
+            check(f"PRO badge on {surface}", appearance,
+                  app["primaryText"][index], badge, NORMAL_TEXT)
+
     # White button labels sit on the accent; 17pt semibold counts as large text.
     for index, appearance in enumerate(("light", "dark")):
         check("white label on accent", appearance, (1, 1, 1), app["accent"][index], LARGE_TEXT)
