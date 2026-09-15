@@ -6,6 +6,7 @@ struct OnboardingView: View {
     let onFinish: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var page = 0
 
     private struct Page: Identifiable {
@@ -50,38 +51,63 @@ struct OnboardingView: View {
         VStack(spacing: 0) {
             HStack {
                 Spacer()
-                Button("Skip") {
+                // The padding has to live inside the label: a Button's hit
+                // region is its label's content shape, so padding applied to
+                // the Button itself only reserved space that taps fell through.
+                // "Skip" alone is ~31x18pt, in the corner, on the first control
+                // a new user ever sees.
+                Button {
                     Haptics.tap()
                     onFinish()
+                } label: {
+                    Text("Skip")
+                        .font(AppFont.subheadline)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .padding(.horizontal, Theme.Spacing.l)
+                        .frame(minHeight: Theme.minimumTouchTarget)
+                        .contentShape(Rectangle())
                 }
-                .font(AppFont.subheadline)
-                .foregroundStyle(AppColor.secondaryText)
-                .padding(Theme.Spacing.l)
+                .buttonStyle(.plain)
+                .padding(.trailing, Theme.Spacing.xs)
                 .accessibilityIdentifier("onboarding.skip")
             }
 
+            // A .page TabView clips whatever does not fit and offers no way to
+            // scroll, and the copy uses fixedSize so it overflows rather than
+            // truncating. In landscape, and in portrait from .accessibility3
+            // up, the last lines of page two were simply unreadable.
             TabView(selection: $page) {
                 ForEach(pages) { item in
-                    VStack(spacing: Theme.Spacing.xl) {
-                        Image(systemName: item.symbolName)
-                            .font(.system(size: 46, weight: .light))
-                            .foregroundStyle(item.tint)
-                            .frame(width: 112, height: 112)
-                            .background { Circle().fill(item.tint.opacity(0.10)) }
+                    ScrollView {
+                        VStack(spacing: Theme.Spacing.xl) {
+                            // The decorative circle is the first thing to give
+                            // up room when type or the screen gets tight.
+                            if !dynamicTypeSize.isAccessibilitySize {
+                                Image(systemName: item.symbolName)
+                                    .font(.system(size: 46, weight: .light))
+                                    .foregroundStyle(item.tint)
+                                    .frame(width: 112, height: 112)
+                                    .background { Circle().fill(item.tint.opacity(0.10)) }
+                                    .accessibilityHidden(true)
+                            }
 
-                        VStack(spacing: Theme.Spacing.m) {
-                            Text(item.title)
-                                .font(.system(.title, weight: .bold))
-                                .foregroundStyle(AppColor.primaryText)
-                                .multilineTextAlignment(.center)
-                            Text(item.message)
-                                .font(AppFont.callout)
-                                .foregroundStyle(AppColor.secondaryText)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.horizontal, Theme.Spacing.xxl)
+                            VStack(spacing: Theme.Spacing.m) {
+                                Text(item.title)
+                                    .font(.system(.title, weight: .bold))
+                                    .foregroundStyle(AppColor.primaryText)
+                                    .multilineTextAlignment(.center)
+                                Text(item.message)
+                                    .font(AppFont.callout)
+                                    .foregroundStyle(AppColor.secondaryText)
+                                    .multilineTextAlignment(.center)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .padding(.horizontal, Theme.Spacing.xxl)
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, Theme.Spacing.l)
                     }
+                    .scrollBounceBehavior(.basedOnSize)
                     .tag(item.id)
                 }
             }

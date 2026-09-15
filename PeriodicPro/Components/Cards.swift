@@ -169,6 +169,9 @@ struct StatTile: View {
                 Text(value)
                     .font(.system(.title3, weight: .semibold).monospacedDigit())
                     .foregroundStyle(AppColor.primaryText)
+                    // A statistic that wraps mid-number reads as two numbers.
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                 Text(caption)
                     .font(AppFont.caption)
                     .foregroundStyle(AppColor.secondaryText)

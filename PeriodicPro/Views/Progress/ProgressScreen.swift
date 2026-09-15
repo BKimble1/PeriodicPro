@@ -6,6 +6,8 @@ struct ProgressScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(ProgressStore.self) private var progress: ProgressStore
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     @State private var showsResetConfirmation = false
     @State private var showsAbout = false
 
@@ -42,7 +44,11 @@ struct ProgressScreen: View {
                         } label: {
                             Label("Reset progress", systemImage: "arrow.counterclockwise")
                         }
-                        .disabled(progress.totalAnswered == 0 && progress.favoriteAtomicNumbers.isEmpty)
+                        // resetAllProgress() deliberately keeps favorites, so
+                        // having favorites is never a reason for this command to
+                        // have work to do — it would only ever raise a
+                        // destructive confirmation that then changed nothing.
+                        .disabled(progress.totalAnswered == 0)
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
@@ -111,10 +117,20 @@ struct ProgressScreen: View {
         }
     }
 
+    /// Two across normally, one across once the caption no longer fits a
+    /// ~160pt column. Hard-coded rows of two truncated "cards answered" to
+    /// "cards / answe…" at accessibility sizes and wrapped the number itself.
+    private var statColumns: [GridItem] {
+        [GridItem(
+            .adaptive(minimum: dynamicTypeSize.isAccessibilitySize ? 300 : 150),
+            spacing: Theme.Spacing.m
+        )]
+    }
+
     private var statsRow: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
             SectionHeader(title: "Activity")
-            HStack(spacing: Theme.Spacing.m) {
+            LazyVGrid(columns: statColumns, spacing: Theme.Spacing.m) {
                 StatTile(
                     value: "\(progress.currentStreak)",
                     caption: "day streak",
@@ -129,8 +145,6 @@ struct ProgressScreen: View {
                     tint: AppColor.accent
                 )
                 .accessibilityIdentifier("progress.answered")
-            }
-            HStack(spacing: Theme.Spacing.m) {
                 StatTile(
                     value: "\(progress.startedCount)",
                     caption: "elements started",

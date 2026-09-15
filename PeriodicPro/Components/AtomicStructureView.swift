@@ -11,10 +11,22 @@ struct AtomicStructureView: View {
     /// Identify mode turns this off: there the diagram *is* the question, and a
     /// symbol in the nucleus would print the answer in the middle of it.
     var showsSymbol: Bool = true
+    /// Overrides the family accent. Identify mode passes a neutral color for
+    /// the same reason it hides the symbol: the palette is a legend the app
+    /// teaches on page one, so a lavender nucleus narrows 118 candidates to
+    /// seven before the learner has counted a single shell.
+    var tint: Color?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var shells: [Int] { element.shellElectrons.filter { $0 > 0 } }
+
+    private var drawingTint: Color { tint ?? element.category.accentColor }
+    /// `AppColor.surface` is white on light and near-black on dark, so it reads
+    /// against the neutral nucleus as well as the family's own ink does.
+    private var symbolTint: Color {
+        tint == nil ? element.category.onAccentColor : AppColor.surface
+    }
 
     private var nucleusDiameter: CGFloat { diameter * 0.235 }
     private var innerRadius: CGFloat { diameter * 0.185 }
@@ -32,7 +44,7 @@ struct AtomicStructureView: View {
                 ShellRing(
                     electronCount: shells[index],
                     radius: radius(for: index),
-                    tint: element.category.accentColor,
+                    tint: drawingTint,
                     period: 26 + Double(index) * 9,
                     clockwise: index.isMultiple(of: 2),
                     animates: !reduceMotion
@@ -43,8 +55,8 @@ struct AtomicStructureView: View {
                 .fill(
                     RadialGradient(
                         colors: [
-                            element.category.accentColor.opacity(0.95),
-                            element.category.accentColor.opacity(0.62),
+                            drawingTint.opacity(0.95),
+                            drawingTint.opacity(0.62),
                         ],
                         center: UnitPoint(x: 0.35, y: 0.3),
                         startRadius: 1,
@@ -56,7 +68,7 @@ struct AtomicStructureView: View {
                     if showsSymbol {
                         Text(element.symbol)
                             .font(.system(size: nucleusDiameter * 0.44, weight: .semibold))
-                            .foregroundStyle(element.category.onAccentColor)
+                            .foregroundStyle(symbolTint)
                             .minimumScaleFactor(0.5)
                             .lineLimit(1)
                             .padding(2)

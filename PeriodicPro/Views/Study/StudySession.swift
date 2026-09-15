@@ -106,6 +106,8 @@ struct SessionProgressHeader: View {
     let current: Int
     let total: Int
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     private var fraction: Double {
         total == 0 ? 0 : Double(current) / Double(total)
     }
@@ -130,7 +132,7 @@ struct SessionProgressHeader: View {
                 }
             }
             .frame(height: 6)
-            .animation(Theme.Motion.reveal, value: fraction)
+            .animation(reduceMotion ? nil : Theme.Motion.reveal, value: fraction)
         }
         .padding(.horizontal, Theme.Spacing.screenMargin)
         .padding(.top, Theme.Spacing.s)
@@ -212,7 +214,10 @@ struct CardSessionView: View {
                 .frame(minHeight: 176)
                 .background {
                     RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                        .fill(card.element.category.tileFill.opacity(isRevealed ? 0.9 : 0.55))
+                        .fill(concealsFamily(card)
+                              ? AnyShapeStyle(AppColor.surfaceMuted)
+                              : AnyShapeStyle(card.element.category.tileFill
+                                              .opacity(isRevealed ? 0.9 : 0.55)))
                 }
 
             if isRevealed {
@@ -244,6 +249,15 @@ struct CardSessionView: View {
         .themeShadow(Theme.Shadow.card)
     }
 
+    /// A shell diagram in Identify is the whole question, so it may not be drawn
+    /// in the answer's family color: the app teaches that palette on onboarding
+    /// page one, and lavender alone narrows 118 candidates to seven. Text and
+    /// description clues are unaffected — the former *is* the question, and the
+    /// latter already names the family in words.
+    private func concealsFamily(_ card: StudyCard) -> Bool {
+        mode == .identify && !isRevealed && card.clue == .structure
+    }
+
     @ViewBuilder
     private func clueView(_ card: StudyCard) -> some View {
         switch card.clue {
@@ -256,10 +270,16 @@ struct CardSessionView: View {
                 .multilineTextAlignment(.center)
                 .padding(Theme.Spacing.l)
         case .structure:
-            // The symbol appears only once the learner has committed to an
-            // answer; before that the diagram has to carry the question alone.
-            AtomicStructureView(element: card.element, diameter: 150, showsSymbol: isRevealed)
-                .padding(Theme.Spacing.m)
+            // The symbol — and the family color — appear only once the learner
+            // has committed to an answer; before that the diagram has to carry
+            // the question alone.
+            AtomicStructureView(
+                element: card.element,
+                diameter: 150,
+                showsSymbol: isRevealed,
+                tint: concealsFamily(card) ? AppColor.secondaryText : nil
+            )
+            .padding(Theme.Spacing.m)
         case .description(let text):
             Text(text)
                 .font(.system(.title3, weight: .medium))
@@ -524,32 +544,41 @@ struct SessionSummaryView: View {
     let onDone: () -> Void
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.xl) {
-            Spacer(minLength: Theme.Spacing.xl)
+        // Same shape as CardSessionView and QuizSessionView: the content
+        // scrolls, the controls stay put. The ring has a hard frame that
+        // Dynamic Type multiplies by up to 1.55, and a landscape phone leaves
+        // barely 340pt of height — as one unscrollable stack the "Done" button
+        // was pushed off the bottom edge with no way to reach it.
+        VStack(spacing: Theme.Spacing.l) {
+            ScrollView {
+                VStack(spacing: Theme.Spacing.xl) {
+                    ProgressRing(
+                        progress: result.accuracy,
+                        lineWidth: 12,
+                        diameter: 156,
+                        tint: result.accuracy >= 0.8 ? AppColor.positive : AppColor.accent,
+                        centerTitle: "\(result.correct) / \(result.total)",
+                        centerCaption: "correct"
+                    )
+                    .accessibilityIdentifier("summary.ring")
 
-            ProgressRing(
-                progress: result.accuracy,
-                lineWidth: 12,
-                diameter: 156,
-                tint: result.accuracy >= 0.8 ? AppColor.positive : AppColor.accent,
-                centerTitle: "\(result.correct) / \(result.total)",
-                centerCaption: "correct"
-            )
-            .accessibilityIdentifier("summary.ring")
-
-            VStack(spacing: Theme.Spacing.s) {
-                Text(result.headline)
-                    .font(.system(.title2, weight: .semibold))
-                    .foregroundStyle(AppColor.primaryText)
-                Text(result.message)
-                    .font(AppFont.callout)
-                    .foregroundStyle(AppColor.secondaryText)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
+                    VStack(spacing: Theme.Spacing.s) {
+                        Text(result.headline)
+                            .font(.system(.title2, weight: .semibold))
+                            .foregroundStyle(AppColor.primaryText)
+                            .multilineTextAlignment(.center)
+                        Text(result.message)
+                            .font(AppFont.callout)
+                            .foregroundStyle(AppColor.secondaryText)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.horizontal, Theme.Spacing.xl)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Theme.Spacing.xxl)
             }
-            .padding(.horizontal, Theme.Spacing.xl)
-
-            Spacer(minLength: 0)
+            .scrollBounceBehavior(.basedOnSize)
 
             VStack(spacing: Theme.Spacing.s) {
                 Button {
@@ -578,6 +607,7 @@ struct SessionSummaryView: View {
                         .foregroundStyle(AppColor.accent)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("summary.done")

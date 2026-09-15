@@ -14,8 +14,15 @@ struct StudyScreen: View {
         progress.favoriteAtomicNumbers.compactMap { catalog.element(atomicNumber: $0) }
     }
 
+    /// Favorites are excluded on purpose. Both carousels register a
+    /// `matchedTransitionSource` under the same id in `studyNamespace`, and a
+    /// duplicated (id, namespace) pair makes the zoom resolve ambiguously — the
+    /// detail page can grow out of whichever tile happens to be scrolled
+    /// off-screen. Showing the same tile twice was a wart in its own right.
     private var recentlyStudied: [ChemicalElement] {
-        progress.recentlyStudied().compactMap { catalog.element(atomicNumber: $0) }
+        progress.recentlyStudied()
+            .filter { !progress.isFavorite($0) }
+            .compactMap { catalog.element(atomicNumber: $0) }
     }
 
     /// The elements the learner knows least well come first.
@@ -227,12 +234,17 @@ struct StudyScreen: View {
                                 mastery: progress.mastery(for: element.atomicNumber),
                                 showsMastery: true
                             )
+                            // Two lines: every element name fits on one at
+                            // default sizes, but at accessibility type a single
+                            // capped line renders "Magne…" for a reader who is
+                            // running large type precisely because they need it.
                             Text(element.name)
                                 .font(AppFont.caption)
                                 .foregroundStyle(AppColor.secondaryText)
-                                .lineLimit(1)
-                                .frame(maxWidth: 74)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
                                 .minimumScaleFactor(0.7)
+                                .frame(maxWidth: 74)
                         }
                     }
                     .buttonStyle(ElementTileButtonStyle())
