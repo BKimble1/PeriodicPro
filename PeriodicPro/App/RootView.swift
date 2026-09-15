@@ -53,21 +53,27 @@ struct DataUnavailableView: View {
     var detail: String?
 
     var body: some View {
-        VStack(spacing: Theme.Spacing.m) {
-            EmptyStateView(
-                symbolName: "exclamationmark.triangle",
-                title: "Element data unavailable",
-                message: "The bundled periodic table could not be read. Reinstalling the app will restore it."
-            )
-            if let detail {
-                Text(detail)
-                    .font(AppFont.caption2)
-                    .foregroundStyle(AppColor.tertiaryText)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, Theme.Spacing.xl)
-                    .textSelection(.enabled)
+        // The detail line is an unbounded error description, so this is the one
+        // screen whose height the app cannot predict. It scrolls.
+        ScrollView {
+            VStack(spacing: Theme.Spacing.m) {
+                EmptyStateView(
+                    symbolName: "exclamationmark.triangle",
+                    title: "Element data unavailable",
+                    message: "The bundled periodic table could not be read. Reinstalling the app will restore it."
+                )
+                if let detail {
+                    Text(detail)
+                        .font(AppFont.caption2)
+                        .foregroundStyle(AppColor.tertiaryText)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, Theme.Spacing.xl)
+                        .textSelection(.enabled)
+                }
             }
+            .frame(maxWidth: .infinity)
         }
+        .scrollBounceBehavior(.basedOnSize)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(AppColor.canvas)
         .accessibilityIdentifier("root.dataUnavailable")

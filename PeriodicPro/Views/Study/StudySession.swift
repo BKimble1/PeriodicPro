@@ -36,13 +36,16 @@ struct StudySessionContainer: View {
                         onDone: { dismiss() }
                     )
                 } else if pool.isEmpty {
-                    EmptyStateView(
-                        symbolName: "tray",
-                        title: "Nothing to study yet",
-                        message: "Element data could not be loaded, so there is nothing to practice right now.",
-                        actionTitle: "Close",
-                        action: { dismiss() }
-                    )
+                    ScrollView {
+                        EmptyStateView(
+                            symbolName: "tray",
+                            title: "Nothing to study yet",
+                            message: "Element data could not be loaded, so there is nothing to practice right now.",
+                            actionTitle: "Close",
+                            action: { dismiss() }
+                        )
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
                 } else {
                     session
                 }
@@ -451,11 +454,14 @@ struct QuizSessionView: View {
                 .padding(.bottom, Theme.Spacing.l)
                 .accessibilityIdentifier("quiz.next")
             } else {
-                EmptyStateView(
-                    symbolName: "questionmark.circle",
-                    title: "No questions available",
-                    message: "There are not enough elements loaded to build a quiz."
-                )
+                ScrollView {
+                    EmptyStateView(
+                        symbolName: "questionmark.circle",
+                        title: "No questions available",
+                        message: "There are not enough elements loaded to build a quiz."
+                    )
+                }
+                .scrollBounceBehavior(.basedOnSize)
             }
         }
         .animation(reduceMotion ? nil : Theme.Motion.soft, value: selection)
