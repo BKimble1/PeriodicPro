@@ -22,7 +22,7 @@ struct ElementDetailScreen: View {
     /// to the navigation bar.
     ///
     /// Stored in 5% steps rather than continuously: the scroll callback fires on
-    /// every frame, and quantising means the view body is only re-evaluated
+    /// every frame, and quantizing means the view body is only re-evaluated
     /// about twenty times across the whole handoff instead of sixty times a
     /// second. The short easing below hides the steps.
     @State private var handoff: CGFloat = 0

@@ -104,7 +104,7 @@ By default the workflow uses **Xcode cloud signing**: it passes the API key to
 `xcodebuild -allowProvisioningUpdates`, and Xcode creates and fetches the
 distribution certificate and provisioning profile itself. Nothing else is needed.
 
-Supply these four **only** if your organisation forbids cloud signing, or you
+Supply these four **only** if your organization forbids cloud signing, or you
 have hit the Apple limit of three distribution certificates and cannot revoke
 one. Setting `BUILD_CERTIFICATE_BASE64` is what switches the workflow to manual
 signing; it detects the mode automatically.
@@ -171,7 +171,7 @@ succeeds.
      a quick quiz, then check the Progress tab."
    - **Feedback Email:** yours.
    - **Beta App Description:** "A clean, offline reference and study app for the
-     periodic table. Explore all 118 elements, then practise with flashcards,
+     periodic table. Explore all 118 elements, then practice with flashcards,
      quizzes and identify rounds."
    - **Sign-in required:** No.
 

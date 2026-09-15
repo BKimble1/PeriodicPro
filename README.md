@@ -38,8 +38,8 @@ no third-party dependencies. The whole thing works on a plane.
 
 The primary screen. The full 18-column table, correctly positioned, with the
 lanthanide and actinide rows detached beneath it as they should be. Families are
-colour-coded with restrained washes, and each family also carries a distinct
-glyph so the table is readable without relying on colour.
+color-coded with restrained washes, and each family also carries a distinct
+glyph so the table is readable without relying on color.
 
 Search sits in the navigation bar and matches names, symbols and atomic numbers
 instantly — `oxygen`, `O` and `8` all land on the same element. Filter chips cut
@@ -81,7 +81,7 @@ Three modes, ten cards each:
 - **Quick Quiz** — four multiple-choice question types
 - **Identify** — a shell diagram, an atomic number or a written clue
 
-Rounds start with the elements you know least well. Favourites and recently
+Rounds start with the elements you know least well. Favorites and recently
 studied elements sit on the same screen.
 
 ### Progress
@@ -189,7 +189,7 @@ PeriodicPro/
 ├── Models/                 ChemicalElement, ElementCategory, MasteryLevel
 ├── Data/                   elements.json, the catalog, search and filtering
 ├── Persistence/            SwiftData models, container recovery, ProgressStore
-├── DesignSystem/           Spacing, radii, colours, type ramp, family palette
+├── DesignSystem/           Spacing, radii, colors, type ramp, family palette
 ├── Components/             ElementTile, cards, diagrams, progress ring
 ├── StudyEngine/            Quiz and deck generation, mastery, streaks, RNG
 ├── Services/               Haptics
@@ -200,7 +200,7 @@ PeriodicPro/
 │   ├── Study/              Study hub and the three session modes
 │   ├── Progress/           Mastery ring, activity, family breakdown
 │   └── Onboarding/         Three skippable pages, shown once
-├── Assets.xcassets/        App icon (light/dark/tinted) and accent colour
+├── Assets.xcassets/        App icon (light/dark/tinted) and accent color
 └── PrivacyInfo.xcprivacy   Privacy manifest
 
 PeriodicProTests/           Swift Testing unit tests
@@ -271,7 +271,7 @@ Everything is stored locally in SwiftData:
 
 | Model | Holds |
 | --- | --- |
-| `ElementProgressRecord` | favourite flag, mastery level, correct/incorrect counts, last reviewed |
+| `ElementProgressRecord` | favorite flag, mastery level, correct/incorrect counts, last reviewed |
 | `RecentSearchRecord` | the last eight search terms |
 | `StudyDayRecord` | one row per day you answered a card, which drives the streak |
 
@@ -288,14 +288,14 @@ Everything visual comes from tokens in `DesignSystem/`:
 - **Spacing** — an 8-point rhythm with a named screen margin and section gap
 - **Radii** — 5 for a table tile, 14 for a control, 20 for a card, 28 for a hero
 - **Shadows** — three levels, all soft enough that stacked cards stay light
-- **Colours** — semantic surfaces (canvas, surface, hairline, three text levels)
+- **Colors** — semantic surfaces (canvas, surface, hairline, three text levels)
   plus a ten-family palette. Each family exposes three roles: a saturated accent
-  for glyphs and strokes, a pale fill for tiles, and a readable on-fill colour
+  for glyphs and strokes, a pale fill for tiles, and a readable on-fill color
 - **Type** — system fonts throughout, so Dynamic Type, tracking and optical
   sizing behave the way iOS expects
 
 Dark mode is hand-tuned, not inverted. Surfaces keep separation from the
-background instead of collapsing into flat grey, and family fills become
+background instead of collapsing into flat gray, and family fills become
 low-luminance versions of the same hue so an element still reads as belonging to
 its family.
 
@@ -308,7 +308,7 @@ card, and the outcome of an answer. Nothing fires on scroll or navigation.
 
 - Every element tile carries a spoken label — name, symbol spelled out letter by
   letter, atomic number, family — so VoiceOver does not try to pronounce "Na"
-- Family is never communicated by colour alone: each carries a distinct glyph
+- Family is never communicated by color alone: each carries a distinct glyph
 - Reduce Motion replaces the zoom transition with a standard push, stops the
   electrons, and disables every scroll transition
 - Accessibility text sizes switch the table to the comfortable layout
@@ -397,7 +397,7 @@ key, so only four secrets are required:
 
 Plus a repository **variable** `BUNDLE_IDENTIFIER` set to an identifier you own.
 
-A manual-signing path exists for organisations that forbid cloud signing; it
+A manual-signing path exists for organizations that forbid cloud signing; it
 activates automatically when `BUILD_CERTIFICATE_BASE64` is present.
 
 Full walkthrough, including the App Store Connect setup and a troubleshooting

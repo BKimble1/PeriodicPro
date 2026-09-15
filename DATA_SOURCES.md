@@ -39,9 +39,11 @@ lanthanides (57–71) and actinides (89–103) carry **no** group number, and th
 detail screen says so explicitly. All other elements have a group number equal
 to their column, 1 through 18.
 
-**Spelling.** US English throughout: Aluminum, Cesium, Sulfur. IUPAC's preferred
-spellings are aluminium and caesium. `Tools/normalize_spelling.py` keeps the
-prose consistent with the element names.
+**Spelling.** US English throughout: Aluminum, Cesium, Sulfur. IUPAC's own
+preferred names for the first two use the international `-ium` and `-ae-` forms
+instead; the app follows US convention because that is what its readers will
+have been taught. `Tools/normalize_spelling.py` keeps the surrounding prose
+consistent with the element names, and CI fails if it ever drifts.
 
 **Atomic mass.** Where IUPAC publishes a standard atomic weight, that value is
 used and `atomicMassIsMassNumber` is `false`. Where an element has no stable
@@ -83,7 +85,7 @@ diagram on the detail screen:
 | `atom` | Bulk form not established | Og |
 
 The shell diagram on the detail screen is an **educational simplification**, and
-is labelled as such in the app: rings stand for energy levels and how many
+is labeled as such in the app: rings stand for energy levels and how many
 electrons occupy them. Electrons do not follow fixed circular paths. An atom is
 never described as a molecule, and the elemental form is always shown separately
 from the shell diagram.

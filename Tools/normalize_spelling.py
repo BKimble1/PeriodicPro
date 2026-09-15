@@ -116,6 +116,28 @@ REPLACEMENTS = {
     "cheque": "check", "gaol": "jail", "speciality": "specialty",
     "specialities": "specialties", "aluminised": "aluminized",
     "moustache": "mustache", "pyjamas": "pajamas",
+    # Found by auditing the shipped copy rather than guessed at up front.
+    "civilisation": "civilization", "civilisations": "civilizations",
+    "civilised": "civilized",
+    "memorisation": "memorization", "memorise": "memorize", "memorised": "memorized",
+    "memorising": "memorizing",
+    "demagnetise": "demagnetize", "demagnetised": "demagnetized",
+    "demagnetising": "demagnetizing",
+    "energise": "energize", "energised": "energized", "energising": "energizing",
+    "oxidises": "oxidizes", "stabilises": "stabilizes", "recognises": "recognizes",
+    "organises": "organizes", "realises": "realizes", "utilises": "utilizes",
+    "sanitise": "sanitize", "sanitised": "sanitized", "sanitising": "sanitizing",
+    "pluralise": "pluralize", "pluralised": "pluralized",
+    "quantise": "quantize", "quantised": "quantized", "quantising": "quantizing",
+    "mislabelled": "mislabeled", "mislabelling": "mislabeling",
+    "honour": "honor", "honours": "honors", "honoured": "honored",
+    "honouring": "honoring", "honourable": "honorable",
+    "neighbours": "neighbors", "neighboured": "neighbored",
+    "decolour": "decolor", "decoloured": "decolored", "decolouring": "decoloring",
+    "nitre": "niter", "saltpetre": "saltpeter", "sabres": "sabers",
+    "colouring": "coloring", "colouration": "coloration",
+    "flavouring": "flavoring", "vapourise": "vaporize", "vapourised": "vaporized",
+    "metres": "meters", "litres": "liters", "fibrous": "fibrous",
 }
 
 PATTERN = re.compile(

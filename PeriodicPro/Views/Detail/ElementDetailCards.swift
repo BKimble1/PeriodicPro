@@ -246,7 +246,7 @@ struct UsesCard: View {
 
 // MARK: - Memory hook
 
-/// The memorisation hook: real etymology or a genuine association, never an
+/// The memorization hook: real etymology or a genuine association, never an
 /// invented one.
 struct MemoryHookCard: View {
     let element: ChemicalElement

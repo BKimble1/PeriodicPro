@@ -35,7 +35,7 @@ enum StudyDeckBuilder {
     }
 
     /// Identify cycles through a structure diagram, an atomic number and a
-    /// written clue, so the learner recognises elements more than one way.
+    /// written clue, so the learner recognizes elements more than one way.
     static func identifyCards(
         pool: [ChemicalElement],
         count: Int = defaultCardCount,

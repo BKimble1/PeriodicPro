@@ -3,7 +3,7 @@
 ## The mark
 
 A single periodic-table tile, with one electron orbit sweeping behind it and a
-nucleus at its centre. Two electrons sit on the orbit where it passes outside
+nucleus at its center. Two electrons sit on the orbit where it passes outside
 the tile.
 
 It is deliberately reductive: at 60 points on a Home Screen the shapes still
@@ -43,7 +43,7 @@ python3 Tools/make_app_icon.py
 
 `Tools/make_app_icon.py` is the source of truth. It renders at 4× and
 downsamples with Lanczos, so the curves stay clean without any hand-retouching.
-Every colour, radius and stroke width is a named constant near the bottom of the
+Every color, radius and stroke width is a named constant near the bottom of the
 file in the `VARIANTS` table.
 
 ## The three appearances
@@ -57,7 +57,7 @@ icon inverted; the tile and field swap roles so contrast is preserved.
 
 **Tinted** — grayscale only. iOS maps luminance onto the tint the user picked,
 so the tile is light (it takes the tint) and the nucleus is punched out dark.
-The field is near-black so the mark reads as a silhouette. Do not add colour to
+The field is near-black so the mark reads as a silhouette. Do not add color to
 this variant; it will be discarded.
 
 ## If you want to redraw it
@@ -78,6 +78,6 @@ The constraints worth keeping:
 
 - [ ] All three PNGs are exactly 1024×1024
 - [ ] No alpha channel (`sips -g hasAlpha AppIcon-1024.png` reports `no`)
-- [ ] sRGB colour profile
+- [ ] sRGB color profile
 - [ ] No transparency, no rounded corners baked in, no drop shadow outside the square
 - [ ] `ASSETCATALOG_COMPILER_APPICON_NAME` is `AppIcon` (set in the target build settings)

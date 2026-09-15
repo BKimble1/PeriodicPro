@@ -36,7 +36,7 @@ enum ElementCategory: String, Codable, CaseIterable, Identifiable, Hashable, Sen
         }
     }
 
-    /// Pluralised name used in the legend and the progress breakdown.
+    /// Pluralized name used in the legend and the progress breakdown.
     var pluralName: String {
         switch self {
         case .alkaliMetal: return "Alkali Metals"
@@ -147,7 +147,7 @@ enum MatterPhase: String, Codable, CaseIterable, Hashable, Sendable {
 }
 
 /// How the element exists as a pure substance. Drives the secondary diagram
-/// on the detail screen so an atom is never mislabelled as a molecule.
+/// on the detail screen so an atom is never mislabeled as a molecule.
 enum ElementStructure: String, Codable, CaseIterable, Hashable, Sendable {
     case atom
     case diatomic

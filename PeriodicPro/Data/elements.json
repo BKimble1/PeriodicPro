@@ -335,7 +335,7 @@
     "discoveredBy": "Daniel Rutherford",
     "tagline": "Four-fifths of the air, and famously unreactive",
     "about": "Nitrogen makes up about 78 percent of the atmosphere as N₂, held together by a triple bond that is very hard to break. That inertness is why it is used to blanket reactive materials, and why converting it into fertiliser takes so much energy. Nitrogen atoms appear in every amino acid and in DNA.",
-    "memoryHook": "Nitrogen means nitre-forming, after saltpetre (potassium nitrate), the mineral it was first linked to.",
+    "memoryHook": "Nitrogen means niter-forming, after saltpeter (potassium nitrate), the mineral it was first linked to.",
     "structure": "diatomic",
     "elementalForm": "N₂ — diatomic gas",
     "uses": [
@@ -1345,7 +1345,7 @@
     "electronegativity": 1.83,
     "discoveryYear": null,
     "discoveredBy": "Known since antiquity",
-    "tagline": "The metal that built civilisations",
+    "tagline": "The metal that built civilizations",
     "about": "Iron is the most widely used metal on Earth and the backbone of steel. It also marks the point where fusion inside stars stops releasing energy, so iron builds up in stellar cores. In living things it sits at the center of hemoglobin, the protein that carries oxygen through the blood.",
     "memoryHook": "Fe comes from the Latin ferrum — the same root behind ferrous, ferrite and farrier.",
     "structure": "metallicLattice",
@@ -1790,7 +1790,7 @@
       },
       {
         "title": "Glassmaking",
-        "detail": "decolouring and red tints",
+        "detail": "decoloring and red tints",
         "symbolName": "cup.and.saucer.fill"
       },
       {
@@ -1849,7 +1849,7 @@
       },
       {
         "title": "Water Treatment",
-        "detail": "pool and spa sanitising",
+        "detail": "pool and spa sanitizing",
         "symbolName": "water.waves"
       },
       {
@@ -2051,7 +2051,7 @@
     "discoveryYear": 1794,
     "discoveredBy": "Johan Gadolin",
     "tagline": "The quiet metal behind color screens and lasers",
-    "about": "Yttrium is a silvery transition metal that behaves much like the lanthanides and is mined alongside them. Its oxide hosts the phosphors that gave older color televisions their red, and yttrium aluminum garnet forms the crystal in YAG lasers. It also stabilises zirconia ceramics and superconducting oxides.",
+    "about": "Yttrium is a silvery transition metal that behaves much like the lanthanides and is mined alongside them. Its oxide hosts the phosphors that gave older color televisions their red, and yttrium aluminum garnet forms the crystal in YAG lasers. It also stabilizes zirconia ceramics and superconducting oxides.",
     "memoryHook": "Yttrium, ytterbium, erbium and terbium all take their names from Ytterby, one small quarry in Sweden.",
     "structure": "metallicLattice",
     "elementalForm": "Y — metallic lattice",
@@ -3211,7 +3211,7 @@
     "discoveryYear": 1885,
     "discoveredBy": "Carl Auer von Welsbach",
     "tagline": "Small magnets, outsized pull",
-    "about": "Neodymium is a silvery lanthanide that oxidises quickly in air. Alloyed with iron and boron, it forms the strongest permanent magnets in commercial use, which is why it turns up in headphone drivers, hard drives and wind turbine generators. Its glass looks lavender by day and shifts blue under fluorescent light.",
+    "about": "Neodymium is a silvery lanthanide that oxidizes quickly in air. Alloyed with iron and boron, it forms the strongest permanent magnets in commercial use, which is why it turns up in headphone drivers, hard drives and wind turbine generators. Its glass looks lavender by day and shifts blue under fluorescent light.",
     "memoryHook": "From the Greek neos didymos, new twin: Welsbach pulled it out of didymium alongside praseodymium in the same work.",
     "structure": "metallicLattice",
     "elementalForm": "Nd — silvery metallic lattice",
@@ -3547,7 +3547,7 @@
     "discoveryYear": 1886,
     "discoveredBy": "Paul-Émile Lecoq de Boisbaudran",
     "tagline": "Keeps powerful magnets working under heat",
-    "about": "Dysprosium is added in small amounts to neodymium-iron-boron magnets so they resist demagnetising when hot, which matters in electric-vehicle motors and wind turbines. It has one of the largest magnetic moments of any element and also appears in magnetostrictive alloys and neutron-absorbing control rods.",
+    "about": "Dysprosium is added in small amounts to neodymium-iron-boron magnets so they resist demagnetizing when hot, which matters in electric-vehicle motors and wind turbines. It has one of the largest magnetic moments of any element and also appears in magnetostrictive alloys and neutron-absorbing control rods.",
     "memoryHook": "From the Greek dysprositos, hard to get at - it resisted separation through dozens of attempts before it was isolated.",
     "structure": "metallicLattice",
     "elementalForm": "Dy — metallic lattice",
@@ -3771,7 +3771,7 @@
     "discoveryYear": 1878,
     "discoveredBy": "Jean Charles Galissard de Marignac",
     "tagline": "At the heart of optical lattice clocks",
-    "about": "Ytterbium is a soft silvery metal with a filled 4f shell, so its chemistry resembles calcium more than that of its lanthanide neighbours. Trapped ytterbium atoms and ions underpin optical lattice clocks, among the most precise timekeepers ever built, and ytterbium-doped fibers make powerful industrial lasers.",
+    "about": "Ytterbium is a soft silvery metal with a filled 4f shell, so its chemistry resembles calcium more than that of its lanthanide neighbors. Trapped ytterbium atoms and ions underpin optical lattice clocks, among the most precise timekeepers ever built, and ytterbium-doped fibers make powerful industrial lasers.",
     "memoryHook": "Ytterby in Sweden lent its name to four elements; ytterbium keeps most of the village name and sits at number 70.",
     "structure": "metallicLattice",
     "elementalForm": "Yb — metallic lattice",
@@ -4331,7 +4331,7 @@
     "discoveryYear": null,
     "discoveredBy": "Known since antiquity",
     "tagline": "The only metal that pours at room temperature",
-    "about": "Mercury is the one metal that is liquid at room temperature, because its tightly held outer electrons bond only weakly between atoms. It once filled thermometers and barometers, but its toxicity and environmental persistence have driven those uses out under the Minamata Convention. Its vapor glows when energised, which still lights fluorescent tubes.",
+    "about": "Mercury is the one metal that is liquid at room temperature, because its tightly held outer electrons bond only weakly between atoms. It once filled thermometers and barometers, but its toxicity and environmental persistence have driven those uses out under the Minamata Convention. Its vapor glows when energized, which still lights fluorescent tubes.",
     "memoryHook": "Hg is short for hydrargyrum, Greek for water-silver; the English name comes from Mercury, the swift Roman messenger god.",
     "structure": "metallicLattice",
     "elementalForm": "Hg — liquid metal",
@@ -5237,8 +5237,8 @@
     "discoveryYear": 1944,
     "discoveredBy": "Glenn T. Seaborg, Ralph James and Albert Ghiorso",
     "tagline": "Named for the Curies, warmed by its own decay",
-    "about": "Curium honours Marie and Pierre Curie and is made by bombarding plutonium with alpha particles. Its isotopes are radioactive enough that samples warm themselves and glow faintly purple. Curium has powered the alpha-particle X-ray spectrometers on Mars rovers, instruments that read the composition of rocks.",
-    "memoryHook": "Curium sits under gadolinium, which honours the chemist Johan Gadolin; Cm honours Marie and Pierre Curie in the same way.",
+    "about": "Curium honors Marie and Pierre Curie and is made by bombarding plutonium with alpha particles. Its isotopes are radioactive enough that samples warm themselves and glow faintly purple. Curium has powered the alpha-particle X-ray spectrometers on Mars rovers, instruments that read the composition of rocks.",
+    "memoryHook": "Curium sits under gadolinium, which honors the chemist Johan Gadolin; Cm honors Marie and Pierre Curie in the same way.",
     "structure": "metallicLattice",
     "elementalForm": "Cm — metallic lattice",
     "uses": [
@@ -5466,7 +5466,7 @@
     "discoveredBy": "Albert Ghiorso and co-workers at Berkeley",
     "tagline": "Where neutron capture runs out of road",
     "about": "Fermium is the heaviest element that can be built up by neutron capture; past it the nuclei split before they can absorb more. It was found in 1952 in debris from a thermonuclear test and named for Enrico Fermi. Only trace, invisible quantities have ever been produced, so its bulk properties are predicted rather than measured.",
-    "memoryHook": "Fermium, element 100, honours Enrico Fermi, who led the first controlled chain reaction: a round number for a nuclear pioneer.",
+    "memoryHook": "Fermium, element 100, honors Enrico Fermi, who led the first controlled chain reaction: a round number for a nuclear pioneer.",
     "structure": "metallicLattice",
     "elementalForm": "Fm — metal, never isolated in bulk",
     "uses": [
@@ -5523,7 +5523,7 @@
     "discoveredBy": "Albert Ghiorso, Glenn T. Seaborg, Bernard Harvey, Gregory Choppin and Stanley Thompson",
     "tagline": "Made one atom at a time, named for the table itself",
     "about": "Mendelevium is a synthetic actinide first made by bombarding einsteinium with helium ions, yielding just seventeen atoms. Only trace quantities have ever been produced, so its chemistry is followed by tracer methods and most listed properties are predicted rather than measured. Its longest-lived isotope has a half-life near 51 days.",
-    "memoryHook": "Md honours Dmitri Mendeleev, who built the periodic table that predicted missing elements before anyone found them.",
+    "memoryHook": "Md honors Dmitri Mendeleev, who built the periodic table that predicted missing elements before anyone found them.",
     "structure": "metallicLattice",
     "elementalForm": "Md — metallic lattice (predicted)",
     "uses": [
@@ -5637,7 +5637,7 @@
     "discoveredBy": "Albert Ghiorso, Torbjorn Sikkeland, Almon Larsh and Robert Latimer",
     "tagline": "Last actinide, with an unexpected outer electron",
     "about": "Lawrencium closes the actinide series and breaks its pattern: its outermost electron sits in a 7p orbital rather than the expected 6d, an effect traced to relativistic behavior in very heavy atoms. It has only ever been produced atom by atom, so nearly every listed property is predicted rather than measured.",
-    "memoryHook": "Lr honours Ernest Lawrence, inventor of the cyclotron, the accelerator type behind the creation of heavy elements like this one.",
+    "memoryHook": "Lr honors Ernest Lawrence, inventor of the cyclotron, the accelerator type behind the creation of heavy elements like this one.",
     "structure": "metallicLattice",
     "elementalForm": "Lr — metallic lattice (predicted)",
     "uses": [
@@ -5694,7 +5694,7 @@
     "discoveredBy": "Albert Ghiorso and colleagues at Berkeley, with a competing Dubna claim",
     "tagline": "The first element past the actinides",
     "about": "Rutherfordium is the first transactinide, sitting below hafnium in group 4. Only a few hundred atoms have ever been made and they decay within seconds, so nearly every listed property is predicted rather than measured. Gas-phase experiments suggest it behaves broadly like hafnium, with some relativistic deviations.",
-    "memoryHook": "Rf honours Ernest Rutherford, who discovered the atomic nucleus that all superheavy element research now depends on.",
+    "memoryHook": "Rf honors Ernest Rutherford, who discovered the atomic nucleus that all superheavy element research now depends on.",
     "structure": "metallicLattice",
     "elementalForm": "Rf — metallic lattice (predicted)",
     "uses": [
@@ -5808,7 +5808,7 @@
     "discoveredBy": "Albert Ghiorso, Kenneth Hulet and colleagues at Berkeley",
     "tagline": "A group 6 metal made a few atoms at a time",
     "about": "Seaborgium lies below tungsten in group 6 and has only ever existed as single atoms with half-lives measured in seconds. Experiments forming volatile oxide compounds showed chemistry resembling molybdenum and tungsten, supporting its place in the table. Its physical properties remain predictions rather than measurements.",
-    "memoryHook": "Sg honours Glenn Seaborg, who was still alive when the name was approved, the first living person to be so honoured.",
+    "memoryHook": "Sg honors Glenn Seaborg, who was still alive when the name was approved, the first living person to be so honored.",
     "structure": "metallicLattice",
     "elementalForm": "Sg — metallic lattice (predicted)",
     "uses": [
@@ -5865,7 +5865,7 @@
     "discoveredBy": "Peter Armbruster, Gottfried Munzenberg and colleagues at GSI Darmstadt",
     "tagline": "A heavier cousin of rhenium, briefly glimpsed",
     "about": "Bohrium was created at GSI in Darmstadt by fusing bismuth with chromium nuclei. Only a small number of atoms have been observed, each lasting seconds at most, so its physical properties are predicted rather than measured. Chemical studies of its volatile oxychloride placed it convincingly in group 7 with rhenium.",
-    "memoryHook": "Bh honours Niels Bohr, whose model of quantised electron energy levels underpins how we describe atomic structure.",
+    "memoryHook": "Bh honors Niels Bohr, whose model of quantized electron energy levels underpins how we describe atomic structure.",
     "structure": "metallicLattice",
     "elementalForm": "Bh — metallic lattice (predicted)",
     "uses": [
@@ -5979,7 +5979,7 @@
     "discoveredBy": "Peter Armbruster, Gottfried Munzenberg and colleagues at GSI Darmstadt",
     "tagline": "Identified in 1982 from a single atom",
     "about": "Meitnerium was identified in 1982 from just one atom detected at GSI Darmstadt, and only a few more have been made since. No chemical experiment has yet been performed on it, so its placement below iridium in group 9 rests on theory. Every listed property is predicted rather than measured.",
-    "memoryHook": "Mt honours Lise Meitner, who explained nuclear fission and was passed over by the Nobel committee that credited her colleague.",
+    "memoryHook": "Mt honors Lise Meitner, who explained nuclear fission and was passed over by the Nobel committee that credited her colleague.",
     "structure": "metallicLattice",
     "elementalForm": "Mt — metallic lattice (predicted)",
     "uses": [
@@ -6093,7 +6093,7 @@
     "discoveredBy": "Sigurd Hofmann and colleagues at GSI Darmstadt",
     "tagline": "Named for the physicist behind the first X-ray image",
     "about": "Roentgenium is a synthetic element first made at Darmstadt in 1994 by fusing nickel and bismuth nuclei. Only a few dozen atoms have ever existed, and the longest-lived isotopes survive for seconds at most. Everything known about it, including its predicted metallic character, comes from theory rather than measurement.",
-    "memoryHook": "Rg honours Wilhelm Roentgen, discoverer of X-rays; the element was made in 1994, almost a century after that discovery.",
+    "memoryHook": "Rg honors Wilhelm Roentgen, discoverer of X-rays; the element was made in 1994, almost a century after that discovery.",
     "structure": "metallicLattice",
     "elementalForm": "Rg — predicted metal, never bulk-observed",
     "uses": [
@@ -6263,8 +6263,8 @@
     "discoveryYear": 1998,
     "discoveredBy": "Yuri Oganessian's team at JINR Dubna with Lawrence Livermore",
     "tagline": "A doorway to the predicted island of stability",
-    "about": "Flerovium was first detected at Dubna in 1998 and sits near the predicted island of stability, a region where superheavy nuclei should last longer than their neighbours. Only a few dozen atoms have been made, each decaying within seconds. Its chemistry is predicted, though single-atom work hints at real volatility.",
-    "memoryHook": "Fl honours Georgy Flerov, founder of the Dubna laboratory. Think Flerov, not fluorine, which uses the single letter F.",
+    "about": "Flerovium was first detected at Dubna in 1998 and sits near the predicted island of stability, a region where superheavy nuclei should last longer than their neighbors. Only a few dozen atoms have been made, each decaying within seconds. Its chemistry is predicted, though single-atom work hints at real volatility.",
+    "memoryHook": "Fl honors Georgy Flerov, founder of the Dubna laboratory. Think Flerov, not fluorine, which uses the single letter F.",
     "structure": "metallicLattice",
     "elementalForm": "Fl — predicted volatile metal, unobserved",
     "uses": [
