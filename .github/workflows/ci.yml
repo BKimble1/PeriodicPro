@@ -42,6 +42,9 @@ jobs:
       - name: Check initializer call sites
         run: python3 Tools/check_initializers.py
 
+      - name: Check color contrast
+        run: python3 Tools/check_contrast.py
+
       - name: Check spelling is normalized
         run: |
           set -euo pipefail

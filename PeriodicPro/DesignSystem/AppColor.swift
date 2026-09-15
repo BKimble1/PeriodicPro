@@ -40,7 +40,7 @@ enum AppColor {
     )
 
     static let tertiaryText = Color(
-        light: Color(red: 0.549, green: 0.584, blue: 0.647),
+        light: Color(red: 0.525, green: 0.561, blue: 0.624),
         dark: Color(red: 0.478, green: 0.510, blue: 0.573)
     )
 
@@ -49,8 +49,8 @@ enum AppColor {
     /// close to the system blue Apple uses on dark backgrounds: light enough to
     /// read as a link on the canvas, dark enough to carry white button labels.
     static let accent = Color(
-        light: Color(red: 0.161, green: 0.451, blue: 0.937),
-        dark: Color(red: 0.161, green: 0.541, blue: 1.0)
+        light: Color(red: 0.125, green: 0.400, blue: 0.898),
+        dark: Color(red: 0.118, green: 0.510, blue: 1.0)
     )
 
     static let positive = Color(
@@ -59,7 +59,7 @@ enum AppColor {
     )
 
     static let warning = Color(
-        light: Color(red: 0.898, green: 0.451, blue: 0.239),
+        light: Color(red: 0.847, green: 0.400, blue: 0.196),
         dark: Color(red: 0.969, green: 0.573, blue: 0.361)
     )
 }

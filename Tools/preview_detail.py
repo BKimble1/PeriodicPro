@@ -27,10 +27,10 @@ MARGIN = 20
 
 PALETTE = {
     "alkaliMetal":         ((254, 234, 234), (148, 41, 48), (230, 83, 90)),
-    "alkalineEarthMetal":  ((254, 236, 217), (144, 69, 19), (230, 114, 46)),
-    "transitionMetal":     ((251, 249, 211), (113, 101, 11), (202, 175, 33)),
-    "postTransitionMetal": ((229, 247, 236), (30, 102, 61), (71, 169, 108)),
-    "metalloid":           ((224, 246, 244), (14, 101, 96), (46, 171, 163)),
+    "alkalineEarthMetal":  ((254, 236, 217), (144, 69, 19), (223, 106, 37)),
+    "transitionMetal":     ((251, 249, 211), (113, 101, 11), (163, 138, 20)),
+    "postTransitionMetal": ((229, 247, 236), (30, 102, 61), (50, 142, 86)),
+    "metalloid":           ((224, 246, 244), (14, 101, 96), (33, 144, 138)),
     "reactiveNonmetal":    ((225, 242, 254), (19, 86, 126), (51, 152, 211)),
     "halogen":             ((229, 236, 254), (38, 69, 150), (75, 122, 233)),
     "nobleGas":            ((237, 234, 254), (75, 61, 150), (126, 111, 229)),
@@ -38,7 +38,7 @@ PALETTE = {
     "actinide":            ((252, 229, 246), (133, 47, 108), (212, 96, 179)),
 }
 CANVAS, SURFACE, MUTED = (249, 250, 252), (255, 255, 255), (245, 247, 250)
-HAIRLINE, PRIMARY, SECONDARY, TERTIARY = (229, 233, 239), (17, 22, 33), (99, 109, 126), (140, 149, 165)
+HAIRLINE, PRIMARY, SECONDARY, TERTIARY = (229, 233, 239), (17, 22, 33), (99, 109, 126), (134, 143, 159)
 POSITIVE = (22, 163, 104)
 
 SUPERSCRIPT = {"0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
@@ -229,7 +229,7 @@ def render(element):
         draw.rounded_rectangle([px(gx), px(gy), px(gx + cell_w), px(gy + 48)], radius=px(14), fill=MUTED)
         draw.text((px(gx + 12), px(gy + 8)), label_text, font=font(REGULAR, 12), fill=SECONDARY)
         draw.text((px(gx + 12), px(gy + 24)), value, font=font(BOLD, 15), fill=PRIMARY)
-    centered(draw, "More properties  ⌄", font(REGULAR, 15), (41, 115, 239), WIDTH / 2, y + 150)
+    centered(draw, "More properties  ⌄", font(REGULAR, 15), (32, 102, 229), WIDTH / 2, y + 150)
     y += qf_height + 16
 
     # --- about --------------------------------------------------------------

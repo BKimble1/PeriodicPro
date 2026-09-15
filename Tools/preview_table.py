@@ -58,13 +58,13 @@ DARK_PALETTE = {
 
 LIGHT = dict(
     palette=LIGHT_PALETTE, canvas=(249, 250, 252), primary=(17, 22, 33),
-    secondary=(99, 109, 126), tertiary=(140, 149, 165), accent=(41, 115, 239),
+    secondary=(99, 109, 126), tertiary=(134, 143, 159), accent=(32, 102, 229),
     surface=(255, 255, 255), hairline=(229, 233, 239), field=(238, 240, 245),
     sheet=(226, 230, 238),
 )
 DARK = dict(
     palette=DARK_PALETTE, canvas=(14, 15, 19), primary=(242, 244, 249),
-    secondary=(156, 164, 179), tertiary=(122, 130, 146), accent=(90, 150, 255),
+    secondary=(156, 164, 179), tertiary=(122, 130, 146), accent=(30, 130, 255),
     surface=(27, 29, 35), hairline=(58, 61, 71), field=(37, 39, 46),
     sheet=(8, 9, 12),
 )

@@ -323,6 +323,12 @@ card, and the outcome of an answer. Nothing fires on scroll or navigation.
 - Shell diagrams describe themselves ("5 electron shells, shell 1: 2, …")
 - Accessibility identifiers on every interactive element, which is what the UI
   tests query
+- Contrast is measured, not assumed: `Tools/check_contrast.py` reads the real
+  values out of the design system and checks all 88 colour pairings the UI draws
+  — semantic text on both surfaces, white labels on the accent, each family's
+  symbol on its tile, each family accent on the canvas, and each nucleus symbol
+  on its accent — against WCAG AA in both appearances. It runs in CI, and it is
+  what caught ten light-mode failures in the first palette
 
 ---
 

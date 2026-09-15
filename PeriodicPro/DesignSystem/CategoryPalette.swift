@@ -67,7 +67,9 @@ extension ElementCategory {
         fillLight: (Double, Double, Double),
         fillDark: (Double, Double, Double),
         inkLight: (Double, Double, Double),
-        lightAccentNeedsDarkText: Bool = false
+        /// Gold and orange keep dark ink even after being darkened: it is the
+        /// higher-contrast pairing, and `Tools/check_contrast.py` proves it.
+        darkTextOnAccent: Bool = false
     ) -> FamilyPalette {
         FamilyPalette(
             accent: Color(light: Color(red: accentLight.0, green: accentLight.1, blue: accentLight.2),
@@ -76,7 +78,7 @@ extension ElementCategory {
                         dark: Color(red: fillDark.0, green: fillDark.1, blue: fillDark.2)),
             onFill: Color(light: Color(red: inkLight.0, green: inkLight.1, blue: inkLight.2),
                           dark: .white.opacity(0.94)),
-            onAccent: lightAccentNeedsDarkText
+            onAccent: darkTextOnAccent
                 ? accentInk
                 : Color(light: .white, dark: accentInk)
         )
@@ -89,24 +91,24 @@ extension ElementCategory {
             inkLight: (0.580, 0.161, 0.188)
         ),
         .alkalineEarthMetal: make(
-            accentLight: (0.902, 0.447, 0.180), accentDark: (1.000, 0.596, 0.318),
+            accentLight: (0.875, 0.416, 0.145), accentDark: (1.000, 0.596, 0.318),
             fillLight: (0.996, 0.925, 0.851), fillDark: (0.302, 0.192, 0.118),
             inkLight: (0.565, 0.271, 0.075),
-            lightAccentNeedsDarkText: true
+            darkTextOnAccent: true
         ),
         .transitionMetal: make(
-            accentLight: (0.792, 0.686, 0.129), accentDark: (0.937, 0.851, 0.318),
+            accentLight: (0.639, 0.541, 0.078), accentDark: (0.937, 0.851, 0.318),
             fillLight: (0.984, 0.976, 0.827), fillDark: (0.263, 0.251, 0.098),
             inkLight: (0.443, 0.396, 0.043),
-            lightAccentNeedsDarkText: true
+            darkTextOnAccent: true
         ),
         .postTransitionMetal: make(
-            accentLight: (0.278, 0.663, 0.424), accentDark: (0.412, 0.816, 0.561),
+            accentLight: (0.196, 0.557, 0.337), accentDark: (0.412, 0.816, 0.561),
             fillLight: (0.898, 0.969, 0.925), fillDark: (0.110, 0.239, 0.169),
             inkLight: (0.118, 0.400, 0.239)
         ),
         .metalloid: make(
-            accentLight: (0.180, 0.671, 0.639), accentDark: (0.325, 0.827, 0.784),
+            accentLight: (0.129, 0.565, 0.541), accentDark: (0.325, 0.827, 0.784),
             fillLight: (0.878, 0.965, 0.957), fillDark: (0.078, 0.239, 0.231),
             inkLight: (0.055, 0.396, 0.376)
         ),
