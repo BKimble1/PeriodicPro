@@ -126,12 +126,21 @@ def main() -> int:
         if ratio < minimum:
             failures.append(f"{label} ({appearance}): {ratio:.2f}:1, needs {minimum}:1")
 
-    # --- semantic text on the two surfaces ----------------------------------
-    for name, minimum in (("primaryText", NORMAL_TEXT), ("secondaryText", NORMAL_TEXT),
-                          ("tertiaryText", LARGE_TEXT), ("accent", NORMAL_TEXT),
-                          ("positive", LARGE_TEXT), ("warning", LARGE_TEXT)):
+    # --- semantic text on the surfaces it is actually drawn on ---------------
+    # Only real pairings: surfaceMuted carries FactRow's label, value and
+    # footnote and the session badge, but never the accent, so asserting that
+    # combination would be inventing a requirement.
+    text_on_surfaces = [
+        ("primaryText", NORMAL_TEXT, ("canvas", "surface", "surfaceMuted")),
+        ("secondaryText", NORMAL_TEXT, ("canvas", "surface", "surfaceMuted")),
+        ("tertiaryText", LARGE_TEXT, ("canvas", "surface", "surfaceMuted")),
+        ("accent", NORMAL_TEXT, ("canvas", "surface")),
+        ("positive", LARGE_TEXT, ("canvas", "surface")),
+        ("warning", LARGE_TEXT, ("canvas", "surface")),
+    ]
+    for name, minimum, surfaces in text_on_surfaces:
         for index, appearance in enumerate(("light", "dark")):
-            for surface in ("canvas", "surface"):
+            for surface in surfaces:
                 check(f"{name} on {surface}", appearance,
                       app[name][index], app[surface][index], minimum)
 

@@ -324,7 +324,7 @@ card, and the outcome of an answer. Nothing fires on scroll or navigation.
 - Accessibility identifiers on every interactive element, which is what the UI
   tests query
 - Contrast is measured, not assumed: `Tools/check_contrast.py` reads the real
-  values out of the design system and checks all 88 colour pairings the UI draws
+  values out of the design system and checks all 94 colour pairings the UI draws
   — semantic text on both surfaces, white labels on the accent, each family's
   symbol on its tile, each family accent on the canvas, and each nucleus symbol
   on its accent — against WCAG AA in both appearances. It runs in CI, and it is
