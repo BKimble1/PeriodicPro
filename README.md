@@ -324,6 +324,11 @@ card, and the outcome of an answer. Nothing fires on scroll or navigation.
 ## Testing
 
 ```bash
+# Everything that runs without a Mac: dataset validation, Swift hygiene and
+# SF Symbol coverage, Xcode project structure, table layout at three device
+# widths, and the US English spelling gate.
+./Tools/verify.sh
+
 # Everything
 xcodebuild test \
   -project PeriodicPro.xcodeproj \
@@ -344,6 +349,12 @@ python3 Tools/validate_elements.py
 filtering, quiz and deck generation determinism, mastery transitions, streak
 arithmetic, the progress store against an in-memory SwiftData container, and
 presentation formatting.
+
+**Local checks** (`Tools/verify.sh`) run on any machine in a couple of seconds
+and are the same checks CI's `validate-data` job runs. They catch the class of
+mistake that is otherwise invisible until a build: a dataset regression, an SF
+Symbol name that does not exist, a dangling reference in the Xcode project, a
+table that would overflow the screen.
 
 **UI tests** (XCUITest) cover launch, tapping an element into its detail page,
 favouriting and seeing it appear in Study, searching by name, symbol and atomic
