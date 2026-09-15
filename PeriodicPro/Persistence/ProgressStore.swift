@@ -23,6 +23,14 @@ final class ProgressStore {
     @ObservationIgnored private var records: [Int: ElementProgressRecord] = [:]
     @ObservationIgnored private var dayRecords: [String: StudyDayRecord] = [:]
     @ObservationIgnored private var searchRecords: [String: RecentSearchRecord] = [:]
+    /// Completed rounds per day key, held in memory as well as in the store.
+    ///
+    /// The store's contract is that every method works when `container` is nil,
+    /// with the results simply not surviving a relaunch. Reading this count
+    /// straight off the managed objects broke that: with no context there are
+    /// no records, so the count stayed at zero and the free daily allowance
+    /// became unlimited for anyone whose on-disk store failed to open.
+    @ObservationIgnored private var roundsByDay: [String: Int] = [:]
 
     private(set) var snapshots: [Int: ElementProgressSnapshot] = [:]
     private(set) var recentSearches: [String] = []
@@ -104,6 +112,7 @@ final class ProgressStore {
             // Resetting progress zeroes those counts but keeps today's row, so
             // the row alone must not resurrect the streak.
             studyDayKeys = Set(dayRecords.filter { $0.value.answeredCount > 0 }.keys)
+            roundsByDay = dayRecords.mapValues(\.completedRounds)
         } catch {
             failures.append("study history")
             PersistenceController.logger.error(
@@ -200,6 +209,10 @@ final class ProgressStore {
         // were answered, and `registerStudyDay` already recorded the day.
         let key = StreakCalculator.dayKey(for: date, calendar: calendar)
 
+        // In memory first, so the count is right whether or not there is a
+        // context to persist it to.
+        roundsByDay[key, default: 0] += 1
+
         if let existing = dayRecords[key] {
             existing.completedRounds += 1
         } else if let context {
@@ -211,11 +224,14 @@ final class ProgressStore {
         save()
     }
 
-    /// Recomputed rather than incremented so it is correct after a reload, and
-    /// after midnight passes while the app is open.
+    /// Recomputed rather than incremented so it is correct after a reload, and —
+    /// the case that matters — after midnight passes while the app is merely
+    /// backgrounded. The app calls this whenever it becomes active; without
+    /// that, a learner who spent their three rounds last night would find the
+    /// app still locked this morning.
     func refreshCompletedRoundsToday(on date: Date = Date()) {
         let key = StreakCalculator.dayKey(for: date, calendar: calendar)
-        completedRoundsToday = dayRecords[key]?.completedRounds ?? 0
+        completedRoundsToday = roundsByDay[key] ?? 0
     }
 
     func recordSearch(_ rawTerm: String) {
@@ -285,6 +301,7 @@ final class ProgressStore {
             dayRecords.removeValue(forKey: key)
         }
         dayRecords[todayKey]?.answeredCount = 0
+        roundsByDay = roundsByDay.filter { $0.key == todayKey }
         studyDayKeys = []
         refreshCompletedRoundsToday()
         save()

@@ -29,9 +29,13 @@ struct OnboardingView: View {
             id: 1,
             symbolName: "hand.tap.fill",
             title: "Tap to learn",
+            // Accurate for everybody: every element's detail page shows its
+            // structure as a turning 3D model. What Pro adds is taking that
+            // model apart, which is not something onboarding mentions — there
+            // is no purchase screen anywhere in this flow.
             message: """
-                Any element opens into its structure, key facts, everyday uses and a hook \
-                to help you remember it.
+                Any element opens into its structure in 3D, plus key facts, everyday uses \
+                and a hook to help you remember it.
                 """,
             tint: ElementCategory.transitionMetal.accentColor
         ),

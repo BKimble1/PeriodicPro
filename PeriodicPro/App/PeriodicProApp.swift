@@ -9,6 +9,7 @@ import SwiftUI
 @MainActor
 struct PeriodicProApp: App {
     @State private var services = AppServices()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -25,6 +26,14 @@ struct PeriodicProApp: App {
                 // means a transaction that completed while the app was closed
                 // is picked up as soon as there is a scene to show it in.
                 .task { services.store.start() }
+                // The free daily allowance is measured against the current
+                // calendar day. Backgrounding the app overnight is the normal
+                // case, so without this a learner who used their rounds last
+                // night would still be locked out this morning.
+                .onChange(of: scenePhase) { _, phase in
+                    guard phase == .active else { return }
+                    services.progress.refreshCompletedRoundsToday()
+                }
         }
     }
 }

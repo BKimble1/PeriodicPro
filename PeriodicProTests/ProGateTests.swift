@@ -255,9 +255,25 @@ struct CompletedRoundTests {
 
     @Test("Round counting survives with no persistence at all")
     func worksWithoutAContainer() {
+        // The store's contract is that every method works when there is no
+        // container, the results simply do not outlive the app. Reading the
+        // count off the managed objects broke that and quietly granted
+        // unlimited free rounds to anyone whose on-disk store failed to open.
         let store = makeContainerlessStore()
         store.recordCompletedRound()
-        #expect(store.completedRoundsToday == 1)
+        store.recordCompletedRound()
+        #expect(store.completedRoundsToday == 2)
+        #expect(!DailyStudyLimiter.canStartRound(completedToday: 3, isPro: false))
+    }
+
+    @Test("Completed rounds survive a reload")
+    func roundsSurviveAReload() {
+        let store = makeTestStore()
+        store.recordCompletedRound()
+        store.recordCompletedRound()
+        store.reload()
+        #expect(store.completedRoundsToday == 2,
+                "the count must come back from the store, not start again at zero")
     }
 }
 

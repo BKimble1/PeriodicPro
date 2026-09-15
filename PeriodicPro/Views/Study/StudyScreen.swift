@@ -38,9 +38,15 @@ struct StudyScreen: View {
     /// detail page can grow out of whichever tile happens to be scrolled
     /// off-screen. Showing the same tile twice was a wart in its own right.
     private var recentlyStudied: [ChemicalElement] {
-        progress.recentlyStudied()
-            .filter { !progress.isFavorite($0) }
-            .compactMap { catalog.element(atomicNumber: $0) }
+        // Ask for a wider window and filter before truncating. Filtering an
+        // already-capped eight meant that favoriting the eight most recent
+        // elements emptied the shelf, even with others studied today.
+        Array(
+            progress.recentlyStudied(limit: 32)
+                .filter { !progress.isFavorite($0) }
+                .prefix(8)
+        )
+        .compactMap { catalog.element(atomicNumber: $0) }
     }
 
     /// The elements the learner knows least well come first.
@@ -74,7 +80,16 @@ struct StudyScreen: View {
                 ElementDetailScreen(element: element)
                     .zoomTransition(id: element.atomicNumber, namespace: studyNamespace)
             }
-            .fullScreenCover(item: $activeMode) { mode in
+            .fullScreenCover(item: $activeMode) {
+                // onDismiss runs after the cover has finished dismissing.
+                // Reacting to the binding going nil instead would fire at the
+                // *start* of the transition, and asking to present a sheet from
+                // a host that is still presenting is how "Get Periodic Pro"
+                // ends up doing nothing at all.
+                guard let pending = paywallAfterSession else { return }
+                paywallAfterSession = nil
+                paywall = pending
+            } content: { mode in
                 StudySessionContainer(
                     mode: mode,
                     queue: sessionQueue,
@@ -95,14 +110,6 @@ struct StudyScreen: View {
                 Button("OK", role: .cancel) { smartReviewNotice = nil }
             } message: {
                 Text(smartReviewNotice ?? "")
-            }
-            // Presenting the paywall only after the cover has gone avoids the
-            // two presentations racing, and means the paywall never appears
-            // over a round in progress.
-            .onChange(of: activeMode) { _, newValue in
-                guard newValue == nil, let pending = paywallAfterSession else { return }
-                paywallAfterSession = nil
-                paywall = pending
             }
         }
         .tint(AppColor.accent)
@@ -364,12 +371,21 @@ struct StudyScreen: View {
     /// which is what stops the session from ever seeing a queue that moved.
     @MainActor
     private func beginRound(_ mode: StudyMode) async {
+        // Nothing may start, and no paywall may appear, while a round is on
+        // screen. Two taps during the suspension below would otherwise resume
+        // in arbitrary order and put a paywall over a running session.
+        guard activeMode == nil, paywall == nil else { return }
+
         // StoreKit may not have answered yet on a very fast first tap. Asking
         // again costs milliseconds and is the difference between a subscriber
         // starting their round and a subscriber being shown a paywall.
         if store.entitlement.isResolving {
             await store.refresh()
         }
+
+        // Re-checked after the suspension: the state may have moved while this
+        // task was waiting.
+        guard activeMode == nil, paywall == nil else { return }
 
         if mode.requiresPro, !store.isPro {
             paywall = .smartReview
