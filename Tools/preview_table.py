@@ -187,13 +187,13 @@ def render(name, width, height, elements):
     for index, label in enumerate(["All", "Metals", "Nonmetals", "Metalloids"]):
         w = draw.textlength(label, font=chip_font) / SCALE + 32
         selected = index == 0
-        rounded(draw, [px(chip_x), px(y), px(chip_x + w), px(y + 34)], radius=px(17),
+        rounded(draw, [px(chip_x), px(y), px(chip_x + w), px(y + 44)], radius=px(22),
                 fill=ACCENT if selected else SURFACE,
                 outline=None if selected else HAIRLINE, width=px(0.8))
-        draw.text((px(chip_x + 16), px(y + 8)), label, font=chip_font,
+        draw.text((px(chip_x + 16), px(y + 13)), label, font=chip_font,
                   fill=(255, 255, 255) if selected else TEXT_PRIMARY)
         chip_x += w + 8
-    y += 48
+    y += 58
 
     tile = tile_size(width)
     table_width = COLUMNS * tile + (COLUMNS - 1) * FITTED_SPACING
@@ -202,7 +202,7 @@ def render(name, width, height, elements):
 
     # Legend card
     y += 14
-    legend_height = 132
+    legend_height = 150
     rounded(draw, [px(SCREEN_MARGIN), px(y), px(width - SCREEN_MARGIN), px(y + legend_height)],
             radius=px(20), fill=SURFACE, outline=HAIRLINE, width=px(0.8))
     draw.text((px(SCREEN_MARGIN + 16), px(y + 14)), "FAMILIES",
@@ -218,10 +218,10 @@ def render(name, width, height, elements):
     for index, (key, label) in enumerate(names):
         col, row = index % 2, index // 2
         lx = SCREEN_MARGIN + 16 + col * column_width
-        ly = y + 36 + row * 19
+        ly = y + 38 + row * 22
         fill, ink = PALETTE[key]
-        rounded(draw, [px(lx), px(ly), px(lx + 16), px(ly + 16)], radius=px(4), fill=fill)
-        draw.text((px(lx + 22), px(ly + 2)), label,
+        rounded(draw, [px(lx), px(ly), px(lx + 18), px(ly + 18)], radius=px(5), fill=fill)
+        draw.text((px(lx + 26), px(ly + 3)), label,
                   font=font(FONT_REGULAR, 12), fill=TEXT_SECONDARY)
     y += legend_height
 

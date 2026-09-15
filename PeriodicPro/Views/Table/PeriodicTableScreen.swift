@@ -225,7 +225,7 @@ private struct TableScreenContent: View {
                 .padding(.top, Theme.Spacing.xs)
 
             CardContainer {
-                TableLegend(filter: $filter, catalog: catalog)
+                TableLegend(catalog: catalog)
             }
             .padding(.horizontal, Theme.Spacing.screenMargin)
             .padding(.top, Theme.Spacing.s)

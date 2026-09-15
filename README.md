@@ -44,7 +44,7 @@ glyph so the table is readable without relying on color.
 Search sits in the navigation bar and matches names, symbols and atomic numbers
 instantly — `oxygen`, `O` and `8` all land on the same element. Filter chips cut
 the table to metals, nonmetals or metalloids; a compact filter sheet exposes all
-ten families. The legend under the table is tappable and filters too.
+ten families. A compact key beneath the table names every family and its glyph.
 
 Two layouts: **fitted**, where every tile is on screen at once, and
 **comfortable**, which scrolls horizontally with full-size tiles showing atomic

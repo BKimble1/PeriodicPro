@@ -1,9 +1,12 @@
 import SwiftUI
 
-/// Compact color key. Each row is tappable and filters the table, so the
-/// legend does real work instead of just taking up space.
+/// Compact color key for the ten element families.
+///
+/// Deliberately not interactive. Filtering already has two routes — the chip
+/// row above the table and the family sheet behind it — and making the key a
+/// third would either duplicate them or force every row to a 44-point target,
+/// turning a 140-point key into a 220-point one that dominates the screen.
 struct TableLegend: View {
-    @Binding var filter: ElementFilter
     let catalog: ElementCatalog
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -22,54 +25,38 @@ struct TableLegend: View {
                 .foregroundStyle(AppColor.secondaryText)
                 .textCase(.uppercase)
                 .kerning(0.5)
+                .accessibilityAddTraits(.isHeader)
 
             LazyVGrid(columns: columns, alignment: .leading, spacing: Theme.Spacing.s) {
                 ForEach(ElementCategory.displayOrder) { category in
-                    legendRow(category)
+                    key(category)
                 }
             }
         }
     }
 
-    private func legendRow(_ category: ElementCategory) -> some View {
-        let isSelected = filter.categories == [category]
-        return Button {
-            Haptics.tap()
-            withAnimation(Theme.Motion.soft) {
-                filter = isSelected ? .all : ElementFilter(family: nil, categories: [category])
+    private func key(_ category: ElementCategory) -> some View {
+        HStack(spacing: Theme.Spacing.s) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(category.tileFill)
+                    .frame(width: 18, height: 18)
+                // Large enough that the shape, not just the color, is the
+                // thing the learner reads.
+                Image(systemName: category.glyph)
+                    .font(.system(size: 9))
+                    .foregroundStyle(category.accentColor)
             }
-        } label: {
-            HStack(spacing: Theme.Spacing.s) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(category.tileFill)
-                        .frame(width: 18, height: 18)
-                    // Large enough that the shape, not just the color, is the
-                    // thing the learner reads.
-                    Image(systemName: category.glyph)
-                        .font(.system(size: 9))
-                        .foregroundStyle(category.accentColor)
-                }
-                Text(category.shortName)
-                    .font(AppFont.caption)
-                    .foregroundStyle(isSelected ? AppColor.primaryText : AppColor.secondaryText)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.85)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, 6)
-            // Each row sets the table's filter, so it is a control and gets the
-            // standard target — the swatch alone left it at 28 points.
-            .frame(minHeight: Theme.minimumTouchTarget)
-            .background {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(isSelected ? AppColor.surfaceMuted : Color.clear)
-            }
-            .contentShape(Rectangle())
+            Text(category.shortName)
+                .font(AppFont.caption)
+                .foregroundStyle(AppColor.secondaryText)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
         }
-        .buttonStyle(.plain)
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(category.pluralName), \(catalog.count(of: category)) elements")
-        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 }
