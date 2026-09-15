@@ -28,6 +28,15 @@ final class PeriodicProUITests: XCTestCase {
         app.descendants(matching: .any).matching(identifier: identifier).firstMatch
     }
 
+    /// Matches by label fragment. Several views combine their children into a
+    /// single accessibility element, so an exact-string lookup for the visible
+    /// text would never match.
+    private func labelContaining(_ fragment: String) -> XCUIElement {
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS[c] %@", fragment))
+            .firstMatch
+    }
+
     private func waitFor(_ element: XCUIElement,
                          _ timeout: TimeInterval = 10,
                          file: StaticString = #filePath,
@@ -79,7 +88,9 @@ final class PeriodicProUITests: XCTestCase {
 
     func testTappingAnElementOpensItsDetailPage() {
         openElement("Na")
-        XCTAssertTrue(app.staticTexts["Sodium"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(labelContaining("Sodium").waitForExistence(timeout: 6),
+                      "The detail page should identify itself as Sodium")
+        XCTAssertTrue(labelContaining("Alkali Metal").exists, "The family badge should be present")
         XCTAssertTrue(app.buttons["detail.favoriteButton"].exists)
         goBack()
         waitFor(app.navigationBars["Periodic Table"])
@@ -90,8 +101,9 @@ final class PeriodicProUITests: XCTestCase {
         let disclosure = app.buttons["detail.moreProperties"]
         waitFor(disclosure)
         disclosure.tap()
-        XCTAssertTrue(app.staticTexts["Melting point"].waitForExistence(timeout: 5),
+        XCTAssertTrue(labelContaining("Melting point").waitForExistence(timeout: 6),
                       "Expanded properties should include the melting point")
+        XCTAssertTrue(labelContaining("Electronegativity").exists)
     }
 
     func testFavoritingAnElementPersistsIntoStudy() {
@@ -127,7 +139,7 @@ final class PeriodicProUITests: XCTestCase {
         waitFor(result)
         result.tap()
         waitFor(app.buttons["detail.favoriteButton"])
-        XCTAssertTrue(app.staticTexts["Oxygen"].firstMatch.exists)
+        XCTAssertTrue(labelContaining("Oxygen").exists)
     }
 
     func testSearchingBySymbolAndAtomicNumber() {
@@ -266,7 +278,9 @@ final class PeriodicProUITests: XCTestCase {
         waitFor(app.navigationBars["Progress"])
         XCTAssertTrue(el("progress.ring").waitForExistence(timeout: 6))
         XCTAssertTrue(el("progress.streak").exists)
-        XCTAssertTrue(el("progress.byFamily").exists)
+        XCTAssertTrue(el("progress.answered").exists)
+        XCTAssertTrue(labelContaining("Alkali Metals").exists,
+                      "The per-family breakdown should be on screen")
     }
 
     func testProgressMenuOffersAboutAndReset() {
