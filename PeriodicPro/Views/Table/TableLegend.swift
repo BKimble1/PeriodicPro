@@ -37,11 +37,13 @@ struct TableLegend: View {
         } label: {
             HStack(spacing: Theme.Spacing.s) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
                         .fill(category.tileFill)
-                        .frame(width: 16, height: 16)
+                        .frame(width: 18, height: 18)
+                    // Large enough that the shape, not just the color, is the
+                    // thing the learner reads.
                     Image(systemName: category.glyph)
-                        .font(.system(size: 6))
+                        .font(.system(size: 9))
                         .foregroundStyle(category.accentColor)
                 }
                 Text(category.shortName)

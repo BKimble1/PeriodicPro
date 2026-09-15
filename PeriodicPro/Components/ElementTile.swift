@@ -21,9 +21,7 @@ struct ElementTile: View {
     var mastery: MasteryLevel = .notStarted
     var showsMastery: Bool = false
 
-    private var cornerRadius: CGFloat {
-        max(Theme.Radius.tile, size * 0.22)
-    }
+    private var cornerRadius: CGFloat { ElementTileShape.cornerRadius(for: size) }
 
     private var symbolSize: CGFloat {
         switch density {
@@ -66,7 +64,7 @@ struct ElementTile: View {
             VStack(spacing: size * 0.02) {
                 Text("\(element.atomicNumber)")
                     .font(AppFont.tileNumber(size * 0.22))
-                    .foregroundStyle(element.category.onTileColor.opacity(0.7))
+                    .foregroundStyle(element.category.onTileColor)
                 Text(element.symbol)
                     .font(AppFont.tileSymbol(symbolSize))
                     .foregroundStyle(element.category.onTileColor)
@@ -77,7 +75,7 @@ struct ElementTile: View {
             VStack(spacing: size * 0.02) {
                 Text("\(element.atomicNumber)")
                     .font(AppFont.tileNumber(size * 0.17))
-                    .foregroundStyle(element.category.onTileColor.opacity(0.7))
+                    .foregroundStyle(element.category.onTileColor)
                 Text(element.symbol)
                     .font(AppFont.tileSymbol(symbolSize))
                     .foregroundStyle(element.category.onTileColor)
@@ -85,32 +83,32 @@ struct ElementTile: View {
                     .lineLimit(1)
                 Text(element.name)
                     .font(AppFont.tileNumber(size * 0.15))
-                    .foregroundStyle(element.category.onTileColor.opacity(0.75))
+                    .foregroundStyle(element.category.onTileColor.opacity(0.88))
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
             }
         }
     }
 
+    /// At most one badge. Two side by side are wide enough to reach back into
+    /// the atomic number's box on a 68-point tile, and a favorite the learner
+    /// chose matters more than a mastery state they can see on Progress.
     @ViewBuilder
     private var badges: some View {
-        if isFavorite || (showsMastery && mastery == .mastered) {
-            HStack(spacing: 1) {
-                if showsMastery, mastery == .mastered {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: max(6, size * 0.16), weight: .bold))
-                        .foregroundStyle(AppColor.positive)
-                }
-                if isFavorite {
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: max(6, size * 0.16)))
-                        .foregroundStyle(element.category.accentColor)
-                }
-            }
+        if isFavorite {
+            badge("heart.fill", tint: element.category.accentColor, bold: false)
+        } else if showsMastery, mastery == .mastered {
+            badge("checkmark", tint: AppColor.positive, bold: true)
+        }
+    }
+
+    private func badge(_ symbolName: String, tint: Color, bold: Bool) -> some View {
+        Image(systemName: symbolName)
+            .font(.system(size: max(6, size * 0.16), weight: bold ? .bold : .regular))
+            .foregroundStyle(tint)
             .padding(max(1.5, size * 0.055))
             .opacity(isDimmed ? 0 : 1)
             .allowsHitTesting(false)
-        }
     }
 
     private var accessibilityLabel: String {
@@ -118,6 +116,16 @@ struct ElementTile: View {
         if isFavorite { label += ", favorite" }
         if showsMastery, mastery != .notStarted { label += ", \(mastery.displayName)" }
         return label
+    }
+}
+
+/// The one place the element-tile silhouette is defined.
+///
+/// `ElementHero` uses the same ratio, so the native zoom transition grows one
+/// continuous shape instead of morphing between two different roundings.
+enum ElementTileShape {
+    static func cornerRadius(for size: CGFloat) -> CGFloat {
+        max(Theme.Radius.tile, size * 0.22)
     }
 }
 

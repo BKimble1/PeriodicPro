@@ -24,12 +24,14 @@ struct ElementHero: View {
         .accessibilityElement(children: .contain)
     }
 
+    private var cornerRadius: CGFloat { ElementTileShape.cornerRadius(for: size) }
+
     private var card: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: Theme.Radius.hero, style: .continuous)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .fill(element.category.heroGradient)
 
-            RoundedRectangle(cornerRadius: Theme.Radius.hero, style: .continuous)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .strokeBorder(element.category.accentColor.opacity(0.16), lineWidth: 1)
 
             VStack(spacing: 0) {

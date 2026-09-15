@@ -115,8 +115,10 @@ def render(element):
     # --- hero ---------------------------------------------------------------
     hero = 196
     hx = (WIDTH - hero) / 2
+    # Mirrors ElementTileShape.cornerRadius(for:) so the preview shows the same
+    # silhouette the zoom transition grows.
     draw.rounded_rectangle([px(hx), px(y), px(hx + hero), px(y + hero)],
-                           radius=px(28), fill=fill, outline=accent, width=px(1))
+                           radius=px(max(5, hero * 0.22)), fill=fill, outline=accent, width=px(1))
     pad = hero * 0.11
     draw.text((px(hx + pad), px(y + pad)), str(element["atomicNumber"]),
               font=font(REGULAR, hero * 0.115), fill=ink)

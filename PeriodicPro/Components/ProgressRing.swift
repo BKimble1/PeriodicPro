@@ -10,17 +10,27 @@ struct ProgressRing: View {
     var centerCaption: String
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ScaledMetric(relativeTo: .title) private var typeScale: CGFloat = 1
     @State private var animatedProgress: Double = 0
 
     private var clamped: Double { min(max(progress, 0), 1) }
 
+    /// The ring grows with Dynamic Type so the number inside keeps its
+    /// proportion of the circle, capped so it never swallows the screen.
+    private var scale: CGFloat { min(max(typeScale, 1), 1.55) }
+    private var scaledDiameter: CGFloat { diameter * scale }
+    private var scaledLineWidth: CGFloat { lineWidth * scale }
+
     var body: some View {
         ZStack {
             Circle()
-                .stroke(AppColor.hairline, lineWidth: lineWidth)
+                .stroke(AppColor.hairline, lineWidth: scaledLineWidth)
 
+            // No floor on the trim: a round line cap on a zero-length subpath
+            // renders as a filled dot, so a brand-new learner would see a solid
+            // spot at twelve o'clock instead of an empty track.
             Circle()
-                .trim(from: 0, to: max(animatedProgress, 0.0001))
+                .trim(from: 0, to: animatedProgress)
                 .stroke(
                     AngularGradient(
                         colors: [tint.opacity(0.75), tint],
@@ -28,25 +38,25 @@ struct ProgressRing: View {
                         startAngle: .degrees(0),
                         endAngle: .degrees(360)
                     ),
-                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                    style: StrokeStyle(lineWidth: scaledLineWidth, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
 
             VStack(spacing: 1) {
                 Text(centerTitle)
-                    .font(.system(size: diameter * 0.20, weight: .semibold).monospacedDigit())
+                    .font(.system(size: scaledDiameter * 0.20, weight: .semibold).monospacedDigit())
                     .foregroundStyle(AppColor.primaryText)
                     .minimumScaleFactor(0.6)
                     .lineLimit(1)
                 Text(centerCaption)
-                    .font(.system(size: max(9, diameter * 0.085)))
+                    .font(.system(size: max(9, scaledDiameter * 0.085)))
                     .foregroundStyle(AppColor.secondaryText)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
-            .padding(lineWidth * 1.6)
+            .padding(scaledLineWidth * 1.6)
         }
-        .frame(width: diameter, height: diameter)
+        .frame(width: scaledDiameter, height: scaledDiameter)
         .onAppear {
             if reduceMotion {
                 animatedProgress = clamped
@@ -77,8 +87,9 @@ struct CategoryProgressBar: View {
         VStack(spacing: 6) {
             HStack(spacing: Theme.Spacing.s) {
                 Image(systemName: category.glyph)
-                    .font(.system(size: 8))
+                    .font(.system(.caption, weight: .semibold))
                     .foregroundStyle(category.accentColor)
+                    .frame(width: 14)
                 Text(category.pluralName)
                     .font(AppFont.subheadline)
                     .foregroundStyle(AppColor.primaryText)

@@ -82,7 +82,9 @@ struct FactRow: View {
                 .fill(AppColor.surfaceMuted)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(label): \(value)")
+        // The footnote is the qualifier that makes the value correct ("mass
+        // number of the most stable isotope"), so it has to reach VoiceOver.
+        .accessibilityLabel(footnote.map { "\(label): \(value). \($0)" } ?? "\(label): \(value)")
     }
 }
 
@@ -129,7 +131,7 @@ struct CategoryBadge: View {
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: category.glyph)
-                .font(.system(size: compact ? 7 : 8))
+                .font(.system(compact ? .caption2 : .caption, weight: .semibold))
             Text(compact ? category.shortName : category.displayName)
                 .font(.system(compact ? .caption2 : .caption, weight: .semibold))
         }
@@ -199,19 +201,26 @@ struct EmptyStateView: View {
 
     var body: some View {
         VStack(spacing: Theme.Spacing.m) {
-            Image(systemName: symbolName)
-                .font(.system(size: 30, weight: .light))
-                .foregroundStyle(AppColor.tertiaryText)
-                .padding(.bottom, 2)
-            Text(title)
-                .font(AppFont.cardTitle)
-                .foregroundStyle(AppColor.primaryText)
-                .multilineTextAlignment(.center)
-            Text(message)
-                .font(AppFont.subheadline)
-                .foregroundStyle(AppColor.secondaryText)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+            // Only the static part is combined. Folding the button in as well
+            // would strip its button trait and leave it reachable only as a
+            // rotor action.
+            VStack(spacing: Theme.Spacing.m) {
+                Image(systemName: symbolName)
+                    .font(.system(size: 30, weight: .light))
+                    .foregroundStyle(AppColor.tertiaryText)
+                    .padding(.bottom, 2)
+                Text(title)
+                    .font(AppFont.cardTitle)
+                    .foregroundStyle(AppColor.primaryText)
+                    .multilineTextAlignment(.center)
+                Text(message)
+                    .font(AppFont.subheadline)
+                    .foregroundStyle(AppColor.secondaryText)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .accessibilityElement(children: .combine)
+
             if let actionTitle, let action {
                 Button(actionTitle, action: action)
                     .buttonStyle(.borderedProminent)
@@ -222,6 +231,5 @@ struct EmptyStateView: View {
         .padding(.vertical, Theme.Spacing.xxl)
         .padding(.horizontal, Theme.Spacing.xl)
         .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
     }
 }

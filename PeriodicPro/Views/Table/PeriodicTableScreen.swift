@@ -34,9 +34,12 @@ struct PeriodicTableScreen: View {
 
     @Namespace private var tableNamespace
 
+    /// The comfortable layout exists to be read, so its tiles grow with the
+    /// learner's text size rather than staying a fixed 64 points.
+    @ScaledMetric(relativeTo: .body) private var comfortableTileSize: CGFloat = 64
+
     private static let fittedSpacing: CGFloat = 1.5
     private static let comfortableSpacing: CGFloat = 4
-    private static let comfortableTileSize: CGFloat = 64
     private static let horizontalInset = Theme.Spacing.l
 
     private var layout: LayoutMode {
@@ -52,7 +55,7 @@ struct PeriodicTableScreen: View {
     }
 
     private var tileSize: CGFloat {
-        guard layout == .fitted else { return Self.comfortableTileSize }
+        guard layout == .fitted else { return comfortableTileSize }
         let columns = CGFloat(PeriodicTableGrid.columns)
         let gaps = Self.fittedSpacing * (columns - 1)
         return max(13, ((usableWidth - gaps) / columns).rounded(.down))

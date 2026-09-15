@@ -34,8 +34,3 @@ enum AppFont {
         .system(size: size, weight: .medium, design: .default).monospacedDigit()
     }
 }
-
-extension Text {
-    func primaryStyle() -> Text { foregroundColor(AppColor.primaryText) }
-    func secondaryStyle() -> Text { foregroundColor(AppColor.secondaryText) }
-}
