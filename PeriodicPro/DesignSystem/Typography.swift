@@ -3,8 +3,6 @@ import SwiftUI
 /// Type ramp. Everything is a system font so Dynamic Type, tracking and
 /// optical sizing behave exactly the way iOS expects.
 enum AppFont {
-    /// Large screen title, e.g. "Periodic Table".
-    static let screenTitle = Font.system(.largeTitle, design: .default, weight: .bold)
     /// Section heading inside a card stack.
     static let sectionTitle = Font.system(.title3, design: .default, weight: .semibold)
     /// Card heading.
@@ -15,9 +13,6 @@ enum AppFont {
     static let footnote = Font.system(.footnote)
     static let caption = Font.system(.caption)
     static let caption2 = Font.system(.caption2)
-
-    /// Monospaced digits for statistics that must not jitter as they animate.
-    static let statNumber = Font.system(.title, design: .rounded, weight: .semibold).monospacedDigit()
 
     /// The element symbol on the hero. Fixed size, deliberately not Dynamic
     /// Type scaled, so the hero geometry stays stable during the zoom

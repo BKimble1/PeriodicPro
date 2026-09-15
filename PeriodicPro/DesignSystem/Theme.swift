@@ -3,6 +3,9 @@ import SwiftUI
 /// Design tokens. Every spacing value, corner radius and shadow in the app is
 /// drawn from here so the product stays visually consistent.
 enum Theme {
+    /// An 8-point rhythm. The ramp is kept complete even where a step is not
+    /// currently used, so reaching for the next size up never means inventing
+    /// a number.
     enum Spacing {
         static let xxs: CGFloat = 2
         static let xs: CGFloat = 4
@@ -21,7 +24,6 @@ enum Theme {
 
     enum Radius {
         static let tile: CGFloat = 5
-        static let chip: CGFloat = 16
         static let card: CGFloat = 20
         static let hero: CGFloat = 28
         static let control: CGFloat = 14
