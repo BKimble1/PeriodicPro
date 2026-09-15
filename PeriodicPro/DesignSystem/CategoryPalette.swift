@@ -14,11 +14,11 @@ extension ElementCategory {
             return Color(light: Color(red: 0.902, green: 0.325, blue: 0.353),
                          dark: Color(red: 1.000, green: 0.478, blue: 0.494))
         case .alkalineEarthMetal:
-            return Color(light: Color(red: 0.914, green: 0.510, blue: 0.220),
-                         dark: Color(red: 1.000, green: 0.639, blue: 0.353))
+            return Color(light: Color(red: 0.902, green: 0.447, blue: 0.180),
+                         dark: Color(red: 1.000, green: 0.596, blue: 0.318))
         case .transitionMetal:
-            return Color(light: Color(red: 0.831, green: 0.639, blue: 0.161),
-                         dark: Color(red: 0.961, green: 0.792, blue: 0.341))
+            return Color(light: Color(red: 0.792, green: 0.686, blue: 0.129),
+                         dark: Color(red: 0.937, green: 0.851, blue: 0.318))
         case .postTransitionMetal:
             return Color(light: Color(red: 0.278, green: 0.663, blue: 0.424),
                          dark: Color(red: 0.412, green: 0.816, blue: 0.561))
@@ -51,11 +51,11 @@ extension ElementCategory {
             return Color(light: Color(red: 0.996, green: 0.918, blue: 0.918),
                          dark: Color(red: 0.278, green: 0.149, blue: 0.161))
         case .alkalineEarthMetal:
-            return Color(light: Color(red: 0.996, green: 0.937, blue: 0.878),
-                         dark: Color(red: 0.278, green: 0.188, blue: 0.118))
+            return Color(light: Color(red: 0.996, green: 0.925, blue: 0.851),
+                         dark: Color(red: 0.302, green: 0.192, blue: 0.118))
         case .transitionMetal:
-            return Color(light: Color(red: 0.996, green: 0.969, blue: 0.867),
-                         dark: Color(red: 0.263, green: 0.224, blue: 0.106))
+            return Color(light: Color(red: 0.984, green: 0.976, blue: 0.827),
+                         dark: Color(red: 0.263, green: 0.251, blue: 0.098))
         case .postTransitionMetal:
             return Color(light: Color(red: 0.898, green: 0.969, blue: 0.925),
                          dark: Color(red: 0.110, green: 0.239, blue: 0.169))
@@ -88,8 +88,8 @@ extension ElementCategory {
     private var accentColorDarkened: Color {
         switch self {
         case .alkaliMetal: return Color(red: 0.580, green: 0.161, blue: 0.188)
-        case .alkalineEarthMetal: return Color(red: 0.573, green: 0.302, blue: 0.098)
-        case .transitionMetal: return Color(red: 0.502, green: 0.376, blue: 0.055)
+        case .alkalineEarthMetal: return Color(red: 0.565, green: 0.271, blue: 0.075)
+        case .transitionMetal: return Color(red: 0.443, green: 0.396, blue: 0.043)
         case .postTransitionMetal: return Color(red: 0.118, green: 0.400, blue: 0.239)
         case .metalloid: return Color(red: 0.055, green: 0.396, blue: 0.376)
         case .reactiveNonmetal: return Color(red: 0.075, green: 0.337, blue: 0.494)

@@ -27,11 +27,11 @@ FITTED_SPACING = 1.5
 HORIZONTAL_INSET = 16           # Theme.Spacing.l
 SCREEN_MARGIN = 20              # Theme.Spacing.screenMargin
 
-# Mirrors ElementCategory.tileFill / .onTileColor (light mode).
-PALETTE = {
+# Mirrors ElementCategory.tileFill / .onTileColor in both appearances.
+LIGHT_PALETTE = {
     "alkaliMetal":         ((254, 234, 234), (148, 41, 48)),
-    "alkalineEarthMetal":  ((254, 239, 224), (146, 77, 25)),
-    "transitionMetal":     ((254, 247, 221), (128, 96, 14)),
+    "alkalineEarthMetal":  ((254, 236, 217), (144, 69, 19)),
+    "transitionMetal":     ((251, 249, 211), (113, 101, 11)),
     "postTransitionMetal": ((229, 247, 236), (30, 102, 61)),
     "metalloid":           ((224, 246, 244), (14, 101, 96)),
     "reactiveNonmetal":    ((225, 242, 254), (19, 86, 126)),
@@ -41,13 +41,58 @@ PALETTE = {
     "actinide":            ((252, 229, 246), (133, 47, 108)),
 }
 
-CANVAS = (249, 250, 252)
-TEXT_PRIMARY = (17, 22, 33)
-TEXT_SECONDARY = (99, 109, 126)
-TEXT_TERTIARY = (140, 149, 165)
-ACCENT = (41, 115, 239)
-SURFACE = (255, 255, 255)
-HAIRLINE = (229, 233, 239)
+# Dark tileFill, with onTileColor = white at 94%.
+DARK_INK = (240, 240, 240)
+DARK_PALETTE = {
+    "alkaliMetal":         ((71, 38, 41), DARK_INK),
+    "alkalineEarthMetal":  ((77, 49, 30), DARK_INK),
+    "transitionMetal":     ((67, 64, 25), DARK_INK),
+    "postTransitionMetal": ((28, 61, 43), DARK_INK),
+    "metalloid":           ((20, 61, 59), DARK_INK),
+    "reactiveNonmetal":    ((22, 53, 75), DARK_INK),
+    "halogen":             ((30, 43, 81), DARK_INK),
+    "nobleGas":            ((46, 40, 81), DARK_INK),
+    "lanthanide":          ((55, 37, 76), DARK_INK),
+    "actinide":            ((67, 35, 59), DARK_INK),
+}
+
+LIGHT = dict(
+    palette=LIGHT_PALETTE, canvas=(249, 250, 252), primary=(17, 22, 33),
+    secondary=(99, 109, 126), tertiary=(140, 149, 165), accent=(41, 115, 239),
+    surface=(255, 255, 255), hairline=(229, 233, 239), field=(238, 240, 245),
+    sheet=(226, 230, 238),
+)
+DARK = dict(
+    palette=DARK_PALETTE, canvas=(14, 15, 19), primary=(242, 244, 249),
+    secondary=(156, 164, 179), tertiary=(122, 130, 146), accent=(90, 150, 255),
+    surface=(27, 29, 35), hairline=(58, 61, 71), field=(37, 39, 46),
+    sheet=(8, 9, 12),
+)
+
+THEME = LIGHT
+PALETTE = LIGHT_PALETTE
+CANVAS = LIGHT["canvas"]
+TEXT_PRIMARY = LIGHT["primary"]
+TEXT_SECONDARY = LIGHT["secondary"]
+TEXT_TERTIARY = LIGHT["tertiary"]
+ACCENT = LIGHT["accent"]
+SURFACE = LIGHT["surface"]
+HAIRLINE = LIGHT["hairline"]
+
+
+def use_theme(theme):
+    """Rebinds the module-level colour names; the drawing code stays readable."""
+    global THEME, PALETTE, CANVAS, TEXT_PRIMARY, TEXT_SECONDARY, TEXT_TERTIARY
+    global ACCENT, SURFACE, HAIRLINE
+    THEME = theme
+    PALETTE = theme["palette"]
+    CANVAS = theme["canvas"]
+    TEXT_PRIMARY = theme["primary"]
+    TEXT_SECONDARY = theme["secondary"]
+    TEXT_TERTIARY = theme["tertiary"]
+    ACCENT = theme["accent"]
+    SURFACE = theme["surface"]
+    HAIRLINE = theme["hairline"]
 
 DEVICES = [
     ("iPhone SE (3rd gen)", 375, 667),
@@ -124,7 +169,7 @@ def render(name, width, height, elements):
 
     # Search field
     rounded(draw, [px(SCREEN_MARGIN), px(y), px(width - SCREEN_MARGIN), px(y + 36)],
-            radius=px(10), fill=(238, 240, 245))
+            radius=px(10), fill=THEME["field"])
     draw.text((px(SCREEN_MARGIN + 12), px(y + 10)), "Element, symbol, or number",
               font=font(FONT_REGULAR, 15), fill=TEXT_TERTIARY)
     y += 50
@@ -182,7 +227,7 @@ def render(name, width, height, elements):
 
     # Tab bar
     bar_top = height - 83
-    draw.rectangle([0, px(bar_top), px(width), px(height)], fill=(252, 252, 253))
+    draw.rectangle([0, px(bar_top), px(width), px(height)], fill=SURFACE)
     draw.line([0, px(bar_top), px(width), px(bar_top)], fill=HAIRLINE, width=px(0.5))
     for index, label in enumerate(["Table", "Study", "Progress"]):
         cx = width * (index + 0.5) / 3
@@ -199,11 +244,9 @@ def render(name, width, height, elements):
     return image, fits, tile, table_width
 
 
-def main() -> int:
-    with open(ELEMENTS, encoding="utf-8") as handle:
-        elements = json.load(handle)
-
-    images, report = [], []
+def render_sheet(theme, out_path, elements, report):
+    use_theme(theme)
+    images = []
     for name, width, height in DEVICES:
         image, fits, tile, table_width = render(name, width, height, elements)
         images.append(image)
@@ -212,22 +255,35 @@ def main() -> int:
     gap = px(24)
     total_width = sum(i.width for i in images) + gap * (len(images) + 1)
     total_height = max(i.height for i in images) + gap * 2
-    sheet = Image.new("RGB", (total_width, total_height), (226, 230, 238))
+    sheet = Image.new("RGB", (total_width, total_height), theme["sheet"])
     x = gap
     for image in images:
         sheet.paste(image, (x, gap))
         x += image.width + gap
 
-    out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "Design", "table-preview.png")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    sheet.save(out, "PNG")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    sheet.save(out_path, "PNG")
+    return sheet
+
+
+def main() -> int:
+    with open(ELEMENTS, encoding="utf-8") as handle:
+        elements = json.load(handle)
+
+    report: list[tuple] = []
+    light_path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "Design", "table-preview.png")
+    dark_path = os.path.join(os.path.dirname(light_path), "table-preview-dark.png")
+
+    render_sheet(LIGHT, light_path, elements, report)
+    render_sheet(DARK, dark_path, elements, [])
 
     print(f"{'device':24} {'width':>6} {'tile':>6} {'table':>8}  fits")
     ok = True
     for name, width, tile, table_width, fits in report:
         print(f"{name:24} {width:6} {tile:6} {table_width:8.1f}  {'yes' if fits else 'NO'}")
         ok = ok and fits
-    print(f"\nwrote {os.path.relpath(out, ROOT)}")
+    print(f"\nwrote {os.path.relpath(light_path, ROOT)} and "
+          f"{os.path.relpath(dark_path, ROOT)}")
     return 0 if ok else 1
 
 
