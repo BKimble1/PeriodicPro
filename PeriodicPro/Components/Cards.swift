@@ -147,6 +147,12 @@ struct CategoryBadge: View {
             Capsule(style: .continuous)
                 .strokeBorder(category.accentColor.opacity(0.22), lineWidth: 0.6)
         }
+        // One element, not two. Labeling the HStack without collapsing it
+        // pushes the same label onto both children, so VoiceOver reads the
+        // family name once for the glyph and again for the text. `.ignore` is
+        // safe here in a way it would not be on a Button: there is no action to
+        // discard, only a decorative symbol beside its own caption.
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(category.displayName)
     }
 }

@@ -27,7 +27,7 @@ struct StructureCanvasView: View {
     var body: some View {
         Canvas(opaque: false, rendersAsynchronously: false) { context, size in
             let projection = StructureProjection(yaw: yaw, pitch: pitch, zoom: zoom, size: size)
-            for item in Self.drawList(scene: scene, projection: projection) {
+            for item in StructureDrawList.items(scene: scene, projection: projection) {
                 switch item.kind {
                 case .bond(let bond):
                     draw(bond: bond, item: item, projection: projection, in: &context)
@@ -41,60 +41,11 @@ struct StructureCanvasView: View {
         .accessibilityHidden(true)
     }
 
-    // MARK: - Draw list
-
-    /// One thing to draw, already projected, with the depth it sorts on.
-    struct Drawable {
-        enum Kind {
-            case node(StructureNode)
-            case bond(StructureBond)
-        }
-        let kind: Kind
-        let depth: Double
-        let from: StructureProjection.Projected
-        let to: StructureProjection.Projected
-    }
-
-    /// Everything in the scene, projected and sorted back to front.
-    ///
-    /// Static and pure so a test can assert that every node lands inside the
-    /// canvas and that ordering is genuinely back-to-front.
-    static func drawList(
-        scene: StructureScene,
-        projection: StructureProjection
-    ) -> [Drawable] {
-        var items: [Drawable] = []
-        items.reserveCapacity(scene.nodes.count + scene.bonds.count)
-
-        var projectedNodes: [Int: StructureProjection.Projected] = [:]
-        for node in scene.nodes {
-            let projected = projection.project(node.position)
-            projectedNodes[node.id] = projected
-            items.append(Drawable(kind: .node(node), depth: projected.depth,
-                                  from: projected, to: projected))
-        }
-
-        for bond in scene.bonds {
-            guard let a = projectedNodes[bond.from], let b = projectedNodes[bond.to] else { continue }
-            items.append(Drawable(
-                kind: .bond(bond),
-                // A strut sorts on its midpoint, which is what puts it behind
-                // the nearer of the two atoms it joins and in front of the
-                // further one.
-                depth: (a.depth + b.depth) / 2,
-                from: a,
-                to: b
-            ))
-        }
-
-        return items.sorted { $0.depth < $1.depth }
-    }
-
     // MARK: - Drawing
 
     private func draw(
         node: StructureNode,
-        item: Drawable,
+        item: StructureDrawList.Drawable,
         projection: StructureProjection,
         in context: inout GraphicsContext
     ) {
@@ -163,7 +114,7 @@ struct StructureCanvasView: View {
 
     private func draw(
         bond: StructureBond,
-        item: Drawable,
+        item: StructureDrawList.Drawable,
         projection: StructureProjection,
         in context: inout GraphicsContext
     ) {

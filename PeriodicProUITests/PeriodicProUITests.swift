@@ -133,9 +133,7 @@ final class PeriodicProUITests: XCTestCase {
 
     func testDetailShowsMorePropertiesOnDemand() {
         openElement("Fe")
-        let disclosure = app.buttons["detail.moreProperties"]
-        waitFor(disclosure)
-        disclosure.tap()
+        tap(app.buttons["detail.moreProperties"])
         XCTAssertTrue(labelContaining("Melting point").waitForExistence(timeout: 6),
                       "Expanded properties should include the melting point")
         XCTAssertTrue(labelContaining("Electronegativity").exists)
@@ -153,7 +151,7 @@ final class PeriodicProUITests: XCTestCase {
                       "Gold should appear in the Favorites carousel")
 
         // Unfavoriting removes it again.
-        app.buttons["study.favorite.Au"].tap()
+        tap(app.buttons["study.favorite.Au"])
         let favoriteAgain = app.buttons["detail.favoriteButton"]
         waitFor(favoriteAgain)
         favoriteAgain.tap()
@@ -504,7 +502,7 @@ final class PeriodicProUITests: XCTestCase {
                       "A search should be recorded on the Study tab")
 
         tap(app.buttons["study.clearSearches"])
-        XCTAssertFalse(app.staticTexts["sodium"].waitForExistence(timeout: 3),
+        XCTAssertFalse(labelContaining("Searched for sodium").waitForExistence(timeout: 3),
                        "Clear should empty the recent searches list")
     }
 

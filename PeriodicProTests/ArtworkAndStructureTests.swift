@@ -124,8 +124,7 @@ struct StructureSceneTests {
             // Every scene is scaled to a bounding radius of 1 so one camera
             // distance frames all of them.
             #expect(abs(scene.boundingRadius - 1) < 0.01,
-                    "\(element.symbol) \(scene.kind.rawValue) is not normalized "
-                        + "(radius \(scene.boundingRadius))")
+                    "\(element.symbol) \(scene.kind.rawValue) is not normalized (radius \(scene.boundingRadius))")
         }
     }
 
@@ -140,7 +139,7 @@ struct StructureSceneTests {
 
     @Test("Every structure kind the dataset contains is actually produced")
     func everyKindIsReachable() {
-        let kinds = Set(allScenes().map(\.1.kind))
+        let kinds = Set(allScenes().map { $0.1.kind })
         #expect(kinds.contains(.diatomicMolecule))
         #expect(kinds.contains(.polyatomicMolecule))
         #expect(kinds.contains(.metallicLattice))
@@ -380,7 +379,7 @@ struct StructureSceneTests {
         )
         let projection = StructureProjection(yaw: 0.6, pitch: 0.3, zoom: 1,
                                              size: CGSize(width: 200, height: 200))
-        let items = StructureCanvasView.drawList(scene: scene, projection: projection)
+        let items = StructureDrawList.items(scene: scene, projection: projection)
         #expect(items.count == scene.nodes.count + scene.bonds.count)
         for (earlier, later) in zip(items, items.dropFirst()) {
             #expect(earlier.depth <= later.depth)

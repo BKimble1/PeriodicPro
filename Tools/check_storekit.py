@@ -29,11 +29,9 @@ def swift_product_ids() -> list[str]:
     return re.findall(r'case\s+\w+\s*=\s*"([^"]+)"', source)
 
 
-def swift_group_id() -> str | None:
+def swift_group_field(name: str) -> str | None:
     source = open(SWIFT, encoding="utf-8").read()
-    match = re.search(
-        r'subscriptionGroupIdentifier\s*=\s*"([^"]+)"', source
-    )
+    match = re.search(rf'{name}\s*=\s*"([^"]+)"', source)
     return match.group(1) if match else None
 
 
@@ -82,11 +80,30 @@ def main() -> int:
                     f"{subscription.get('productID')} is not a RecurringSubscription"
                 )
 
-    # The group identifier the app reports must match the one in the file, so
-    # that what is created in App Store Connect matches both.
-    group_id = swift_group_id()
+    # The group the app reports must match the one in the file, so that what is
+    # created in App Store Connect matches both. Checking only that the Swift
+    # constants exist would let the two drift apart silently: renaming the group
+    # in the configuration file while the app still reports the old name is not
+    # something the build would ever notice on its own.
+    group_id = swift_group_field("subscriptionGroupIdentifier")
+    group_name = swift_group_field("subscriptionGroupDisplayName")
+
     if group_id is None:
         errors.append("SubscriptionProduct.subscriptionGroupIdentifier is missing")
+    if group_name is None:
+        errors.append("SubscriptionProduct.subscriptionGroupDisplayName is missing")
+
+    # The identifier is what the app asks StoreKit about; the display name is
+    # what has to be typed into App Store Connect. Only the name appears in the
+    # configuration file, so that is the half that can be cross-checked here.
+    if group_name is not None and len(groups) == 1:
+        config_name = groups[0].get("name")
+        if config_name != group_name:
+            errors.append(
+                "subscription group names disagree.\n"
+                f"    SubscriptionProduct.swift: {group_name!r}\n"
+                f"    PeriodicPro.storekit:      {config_name!r}"
+            )
 
     # No credential may ever be committed in the configuration file.
     settings = config.get("settings", {})

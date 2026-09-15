@@ -95,3 +95,60 @@ struct StructureProjection {
         min(max(value, zoomRange.lowerBound), zoomRange.upperBound)
     }
 }
+
+/// The projected, depth-sorted contents of a scene.
+///
+/// Deliberately a plain enum in the pure geometry file rather than a static
+/// member of `StructureCanvasView`: `View` is `@MainActor`, so a type that
+/// declares that conformance infers main-actor isolation for everything it
+/// contains — including a static function that touches nothing but maths. That
+/// would make this uncallable from a synchronous, nonisolated test, which is
+/// exactly where it needs to be called from.
+enum StructureDrawList {
+    /// One thing to draw, already projected, with the depth it sorts on.
+    struct Drawable {
+        enum Kind {
+            case node(StructureNode)
+            case bond(StructureBond)
+        }
+        let kind: Kind
+        let depth: Double
+        let from: StructureProjection.Projected
+        let to: StructureProjection.Projected
+    }
+
+    /// Everything in the scene, projected and sorted back to front.
+    ///
+    /// Pure, so a test can assert that every node lands inside the canvas and
+    /// that the ordering is genuinely back-to-front.
+    static func items(
+        scene: StructureScene,
+        projection: StructureProjection
+    ) -> [Drawable] {
+        var items: [Drawable] = []
+        items.reserveCapacity(scene.nodes.count + scene.bonds.count)
+
+        var projectedNodes: [Int: StructureProjection.Projected] = [:]
+        for node in scene.nodes {
+            let projected = projection.project(node.position)
+            projectedNodes[node.id] = projected
+            items.append(Drawable(kind: .node(node), depth: projected.depth,
+                                  from: projected, to: projected))
+        }
+
+        for bond in scene.bonds {
+            guard let a = projectedNodes[bond.from], let b = projectedNodes[bond.to] else { continue }
+            items.append(Drawable(
+                kind: .bond(bond),
+                // A strut sorts on its midpoint, which is what puts it behind
+                // the nearer of the two atoms it joins and in front of the
+                // further one.
+                depth: (a.depth + b.depth) / 2,
+                from: a,
+                to: b
+            ))
+        }
+
+        return items.sorted { $0.depth < $1.depth }
+    }
+}
