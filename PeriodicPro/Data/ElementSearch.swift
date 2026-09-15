@@ -24,7 +24,7 @@ enum ElementSearch {
         let familyWords: [String]
     }
 
-    /// A fixed locale: folding must not change behaviour with the device region,
+    /// A fixed locale: folding must not change behavior with the device region,
     /// and building a `Locale` per call showed up as pure overhead.
     private static let foldingLocale = Locale(identifier: "en_US_POSIX")
 
