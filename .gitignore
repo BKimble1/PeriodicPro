@@ -44,3 +44,7 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Per-element detail previews are regenerated on demand by
+# Tools/preview_detail.py; only the combined sheets are tracked.
+Design/detail-[A-Z]*.png

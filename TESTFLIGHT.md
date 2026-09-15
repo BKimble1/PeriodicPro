@@ -264,9 +264,11 @@ on it.
 ## Troubleshooting
 
 **`Xcode 26.0 is not installed on this runner`**
-GitHub has rotated its image. Check the runner's Xcode list in the failed step's
-log and update `XCODE_VERSION` in both workflow files. Do not fall back to an
-older major version — App Store Connect will reject the build.
+GitHub has rotated its image. The failed step prints the runner's Xcode list;
+update `XCODE_VERSION` in both workflow files to a version that is present, and
+if the newer toolchain has moved to a newer image, update `runs-on` as well
+(both workflows currently pin `macos-15`). Do not fall back to an older major
+version — App Store Connect will reject the build.
 
 **`No profiles for 'com.example.periodicpro' were found`**
 `BUNDLE_IDENTIFIER` is unset, so the build used the placeholder. Set the

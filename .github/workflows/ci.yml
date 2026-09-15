@@ -48,9 +48,10 @@ jobs:
           set -euo pipefail
           python3 Tools/normalize_spelling.py \
             PeriodicPro/Data/elements.json \
-            $(find PeriodicPro PeriodicProTests PeriodicProUITests -name '*.swift')
+            $(find PeriodicPro PeriodicProTests PeriodicProUITests -name '*.swift') \
+            ./*.md
           if ! git diff --quiet; then
-            echo "::error::Sources contain British spellings. Run Tools/normalize_spelling.py and commit."
+            echo "::error::Sources contain British spellings. Run Tools/verify.sh and commit."
             git --no-pager diff --stat
             exit 1
           fi
