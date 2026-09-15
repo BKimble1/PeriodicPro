@@ -28,7 +28,8 @@ printf '\n\033[1m==> US English spelling\033[0m\n'
 before=$(git status --porcelain)
 python3 Tools/normalize_spelling.py \
   PeriodicPro/Data/elements.json \
-  $(find PeriodicPro PeriodicProTests PeriodicProUITests -name '*.swift') >/dev/null
+  $(find PeriodicPro PeriodicProTests PeriodicProUITests -name '*.swift') \
+  $(find . -maxdepth 2 -name '*.md' -not -path './.git/*') >/dev/null
 after=$(git status --porcelain)
 if [ "$before" != "$after" ]; then
   echo "Sources contained British spellings and have been normalized. Review and commit."

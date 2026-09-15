@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Normalises prose to US English.
+"""Normalizes prose to US English.
 
 The app ships US element names (Aluminum, Cesium, Sulfur), so the surrounding
 copy has to match. This pass is explicit word-for-word rather than rule-based:
@@ -19,6 +19,9 @@ REPLACEMENTS = {
     "behaviour": "behavior", "behaviours": "behaviors",
     "favour": "favor", "favours": "favors", "favoured": "favored",
     "favourite": "favorite", "favourites": "favorites",
+    "favourited": "favorited", "favouriting": "favoriting",
+    "unfavourite": "unfavorite", "unfavourites": "unfavorites",
+    "unfavourited": "unfavorited", "unfavouriting": "unfavoriting",
     "flavour": "flavor", "flavours": "flavors",
     "harbour": "harbor", "honour": "honor", "humour": "humor",
     "labour": "labor", "neighbour": "neighbor", "neighbouring": "neighboring",

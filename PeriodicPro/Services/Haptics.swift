@@ -29,7 +29,7 @@ enum Haptics {
         selection.selectionChanged()
     }
 
-    /// Favouriting: a slightly weightier confirmation.
+    /// Favoriting: a slightly weightier confirmation.
     static func favorited(_ on: Bool) {
         guard isEnabled else { return }
         if on { rigid.impactOccurred(intensity: 0.7) } else { soft.impactOccurred(intensity: 0.5) }

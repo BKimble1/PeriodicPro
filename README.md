@@ -307,7 +307,7 @@ background instead of collapsing into flat gray, and family fills become
 low-luminance versions of the same hue so an element still reads as belonging to
 its family.
 
-Haptics are sparse on purpose: selecting an element, favouriting, revealing a
+Haptics are sparse on purpose: selecting an element, favoriting, revealing a
 card, and the outcome of an answer. Nothing fires on scroll or navigation.
 
 ---
@@ -329,7 +329,7 @@ card, and the outcome of an answer. Nothing fires on scroll or navigation.
 - Accessibility identifiers on every interactive element, which is what the UI
   tests query
 - Contrast is measured, not assumed: `Tools/check_contrast.py` reads the real
-  values out of the design system and checks all 94 colour pairings the UI draws
+  values out of the design system and checks all 94 color pairings the UI draws
   — semantic text on both surfaces, white labels on the accent, each family's
   symbol on its tile, each family accent on the canvas, and each nucleus symbol
   on its accent — against WCAG AA in both appearances. It runs in CI, and it is
@@ -373,7 +373,7 @@ Symbol name that does not exist, a dangling reference in the Xcode project, a
 table that would overflow the screen.
 
 **UI tests** (XCUITest) cover launch, tapping an element into its detail page,
-favouriting and seeing it appear in Study, searching by name, symbol and atomic
+favoriting and seeing it appear in Study, searching by name, symbol and atomic
 number, the empty search state, family filters, the filter sheet, a full
 flashcard round through to its summary, answering a quiz question, an identify
 round, and the Progress screen. Every query goes through an accessibility

@@ -117,7 +117,7 @@ final class PeriodicProUITests: XCTestCase {
         XCTAssertTrue(app.buttons["study.favorite.Au"].waitForExistence(timeout: 6),
                       "Gold should appear in the Favorites carousel")
 
-        // Unfavouriting removes it again.
+        // Unfavoriting removes it again.
         app.buttons["study.favorite.Au"].tap()
         let favoriteAgain = app.buttons["detail.favoriteButton"]
         waitFor(favoriteAgain)
