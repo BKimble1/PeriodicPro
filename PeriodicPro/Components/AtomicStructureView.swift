@@ -110,9 +110,15 @@ private struct ShellRing: View {
         }
         .onAppear {
             guard animates else { return }
+            // Reset first: on a second appearance `angle` is already 360, and
+            // animating to the value it already holds is a no-op that leaves
+            // the electrons frozen. 0 and 360 look identical, so there is no
+            // visible jump.
+            angle = 0
             withAnimation(.linear(duration: period).repeatForever(autoreverses: false)) {
                 angle = 360
             }
         }
+        .onDisappear { angle = 0 }
     }
 }

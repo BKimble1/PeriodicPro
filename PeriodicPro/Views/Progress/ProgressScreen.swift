@@ -20,9 +20,7 @@ struct ProgressScreen: View {
                     overviewCard
                     statsRow
                     categoryBreakdown
-                    if progress.isEphemeral {
-                        ephemeralNotice
-                    }
+                    storageNotices
                 }
                 .padding(.horizontal, Theme.Spacing.screenMargin)
                 .padding(.top, Theme.Spacing.xs)
@@ -167,25 +165,53 @@ struct ProgressScreen: View {
         }
     }
 
-    private var ephemeralNotice: some View {
+    /// The app is honest about storage problems rather than quietly losing
+    /// progress. Nothing renders when everything is working, which is the
+    /// normal case.
+    @ViewBuilder
+    private var storageNotices: some View {
+        if progress.storage.losesProgressOnQuit {
+            notice(
+                title: "Progress is not being saved",
+                message: """
+                    The on-device store could not be opened, so this session's progress \
+                    will be lost when the app closes. Restarting the app usually fixes it.
+                    """
+            )
+        }
+        if progress.storage.discardedPreviousProgress {
+            notice(
+                title: "Earlier progress could not be recovered",
+                message: """
+                    Saved progress was unreadable and had to be rebuilt, so familiarity \
+                    scores and your streak have started again. New progress is being saved \
+                    normally.
+                    """
+            )
+        }
+        if let failure = progress.writeFailureMessage {
+            notice(title: "Something could not be saved", message: failure)
+        }
+    }
+
+    private func notice(title: String, message: String) -> some View {
         CardContainer {
             HStack(alignment: .top, spacing: Theme.Spacing.m) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(AppColor.warning)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Progress is not being saved")
+                    Text(title)
                         .font(AppFont.cardTitle)
                         .foregroundStyle(AppColor.primaryText)
-                    Text("""
-                        The on-device store could not be opened, so this session's progress \
-                        will be lost when the app closes. Restarting the app usually fixes it.
-                        """)
+                    Text(message)
                         .font(AppFont.caption)
                         .foregroundStyle(AppColor.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("progress.storageNotice")
     }
 }
 

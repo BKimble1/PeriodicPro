@@ -177,6 +177,35 @@ succeeds.
 
 ---
 
+## 7b. App Store Connect answers you will be asked for
+
+These are the only questionnaire answers the app needs, and none of them
+change between releases.
+
+**Age rating** — the app qualifies for **4+**. Answer *None* to every content
+question: no violence, no profanity, no horror, no mature or suggestive themes,
+no alcohol/tobacco/drug references, no simulated gambling, no contests, no
+medical or treatment information (the app describes elements, it never gives
+health advice), no unrestricted web access, and no user-generated content.
+There is no in-app purchasing and no advertising.
+
+**App Privacy** — *Do you or your third-party partners collect data from this
+app?* → **No**. That single answer completes the section; see `PRIVACY.md`.
+
+**Export compliance** — handled automatically. `Config/Info.plist` sets
+`ITSAppUsesNonExemptEncryption` to `false`, so TestFlight never stops to ask.
+
+**Content rights** — the app contains no third-party content. Element data is
+assembled from public scientific reference values (see `DATA_SOURCES.md`) and
+all artwork is original.
+
+**Category** — Primary: *Education*. Secondary: *Reference*. The build already
+declares `LSApplicationCategoryType = public.app-category.education`.
+
+**Sign-in required for review** → **No**. There is no account.
+
+---
+
 ## 8. Releasing a new version
 
 - **New build, same version** (e.g. fixing a bug in 1.0.0): just re-run the

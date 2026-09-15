@@ -243,4 +243,87 @@ struct ProgressStoreTests {
         #expect(store.isFavorite(47))
         #expect(store.mastery(for: 47) == .learning)
     }
+
+    @Test("A healthy store reports no storage problem")
+    func healthyStoreHasNoWarnings() {
+        let store = makeTestStore()
+        #expect(store.writeFailureMessage == nil)
+        #expect(!store.storage.discardedPreviousProgress)
+        #expect(!store.storage.losesProgressOnQuit)
+    }
+}
+
+/// Everything above, again, with no SwiftData container at all — the path the
+/// app falls back to rather than crashing when persistence is unavailable.
+@MainActor
+@Suite("Progress store without persistence")
+struct ContainerlessProgressStoreTests {
+    private let catalog = TestCatalog.shared
+
+    @Test("Favorites still work in memory")
+    func favoritesWork() {
+        let store = makeContainerlessStore()
+        #expect(store.toggleFavorite(8) == true)
+        #expect(store.isFavorite(8))
+        #expect(store.favoriteAtomicNumbers == [8])
+        #expect(store.toggleFavorite(8) == false)
+        #expect(store.favoriteAtomicNumbers.isEmpty)
+    }
+
+    @Test("Answers still move mastery and drive the streak")
+    func answersWork() {
+        let store = makeContainerlessStore()
+        for _ in 0..<3 { store.recordAnswer(atomicNumber: 6, correct: true) }
+        #expect(store.mastery(for: 6) == .mastered)
+        #expect(store.masteredCount == 1)
+        #expect(store.totalAnswered == 3)
+        #expect(store.currentStreak == 1)
+        #expect(store.masteredCount(in: .reactiveNonmetal, catalog: catalog) == 1)
+    }
+
+    @Test("Recent searches still deduplicate and stay capped")
+    func searchesWork() {
+        let store = makeContainerlessStore()
+        store.recordSearch("gold")
+        store.recordSearch("GOLD")
+        #expect(store.recentSearches == ["GOLD"], "The newest spelling wins, without duplicating")
+
+        for index in 0..<12 { store.recordSearch("term\(index)") }
+        #expect(store.recentSearches.count == ProgressStore.recentSearchLimit)
+        #expect(store.recentSearches.first == "term11")
+
+        store.clearRecentSearches()
+        #expect(store.recentSearches.isEmpty)
+    }
+
+    @Test("Reset clears progress and keeps favorites")
+    func resetWorks() {
+        let store = makeContainerlessStore()
+        store.toggleFavorite(79)
+        store.recordAnswer(atomicNumber: 79, correct: true)
+        store.recordAnswer(atomicNumber: 8, correct: true)
+
+        store.resetAllProgress()
+        #expect(store.isFavorite(79))
+        #expect(store.favoriteAtomicNumbers == [79])
+        #expect(store.mastery(for: 79) == .notStarted)
+        #expect(store.totalAnswered == 0)
+        #expect(store.currentStreak == 0)
+        #expect(store.recentlyStudied().isEmpty)
+    }
+
+    @Test("It reports that progress will be lost")
+    func reportsItsLimitation() {
+        let store = makeContainerlessStore()
+        #expect(store.storage.losesProgressOnQuit)
+        #expect(!store.storage.discardedPreviousProgress)
+    }
+
+    @Test("Reloading without a container is a no-op rather than a crash")
+    func reloadIsSafe() {
+        let store = makeContainerlessStore()
+        store.toggleFavorite(3)
+        store.reload()
+        #expect(store.isFavorite(3), "In-memory state is kept when there is nothing to reload from")
+    }
 }

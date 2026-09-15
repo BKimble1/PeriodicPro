@@ -13,7 +13,7 @@ enum Haptics {
     private static let notification = UINotificationFeedbackGenerator()
 
     /// Disabled during UI tests so recorded runs stay deterministic.
-    static var isEnabled = !ProcessInfo.processInfo.arguments.contains("-uiTesting")
+    static var isEnabled = !RuntimeFlags.isUITesting
 
     /// Prepares the generators just before a burst of feedback.
     static func warmUp() {

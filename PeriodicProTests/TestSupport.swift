@@ -25,11 +25,22 @@ enum TestCatalog {
 /// A throwaway, in-memory progress store so tests never touch real user data.
 @MainActor
 func makeTestStore(calendar: Calendar = Calendar(identifier: .gregorian)) -> ProgressStore {
-    var utcCalendar = calendar
-    utcCalendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
-    return ProgressStore(
+    ProgressStore(
         container: PersistenceController.makeInMemoryContainer(),
-        isEphemeral: false,
-        calendar: utcCalendar
+        storage: .memoryOnlyForTesting,
+        calendar: utcCalendar(calendar)
     )
+}
+
+/// A store with no SwiftData container at all, exercising the path the app
+/// falls back to when persistence is unavailable.
+@MainActor
+func makeContainerlessStore(calendar: Calendar = Calendar(identifier: .gregorian)) -> ProgressStore {
+    ProgressStore(container: nil, storage: .memoryOnlyFallback, calendar: utcCalendar(calendar))
+}
+
+private func utcCalendar(_ base: Calendar) -> Calendar {
+    var calendar = base
+    calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+    return calendar
 }

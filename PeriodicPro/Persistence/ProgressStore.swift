@@ -6,29 +6,43 @@ import SwiftData
 /// The single owner of everything the learner has done: favorites, per-element
 /// familiarity, recent searches and study days.
 ///
-/// Views read from the in-memory snapshot dictionary (fast, value-typed) while
-/// writes go straight to SwiftData. That keeps the 118-tile table from
-/// re-rendering every time an unrelated row changes.
+/// In-memory value-typed state is the source of truth the UI reads, and
+/// SwiftData is written through behind it. That has two consequences worth
+/// knowing about: the 118-tile table never re-renders because an unrelated row
+/// changed, and the store keeps working — for this launch — even when SwiftData
+/// cannot give us a container at all.
 @MainActor
 @Observable
 final class ProgressStore {
-    private let context: ModelContext
+    /// `nil` when persistence is unavailable; every method still works, the
+    /// results simply do not survive the app closing.
+    private let context: ModelContext?
     private let calendar: Calendar
+
+    // Managed objects, held so writes never have to re-fetch the whole table.
+    @ObservationIgnored private var records: [Int: ElementProgressRecord] = [:]
+    @ObservationIgnored private var dayRecords: [String: StudyDayRecord] = [:]
+    @ObservationIgnored private var searchRecords: [String: RecentSearchRecord] = [:]
 
     private(set) var snapshots: [Int: ElementProgressSnapshot] = [:]
     private(set) var recentSearches: [String] = []
     private(set) var studyDayKeys: Set<String> = []
-    private(set) var lastWriteFailure: String?
 
-    /// `true` when progress is being kept only for this launch because the
-    /// on-disk store could not be opened.
-    let isEphemeral: Bool
+    /// Set when a write could not be saved, so the UI can say so instead of
+    /// quietly losing the change.
+    private(set) var writeFailureMessage: String?
+
+    let storage: PersistenceController.Storage
 
     static let recentSearchLimit = 8
 
-    init(container: ModelContainer, isEphemeral: Bool = false, calendar: Calendar = .current) {
-        self.context = ModelContext(container)
-        self.isEphemeral = isEphemeral
+    init(
+        container: ModelContainer?,
+        storage: PersistenceController.Storage,
+        calendar: Calendar = .current
+    ) {
+        self.context = container.map { ModelContext($0) }
+        self.storage = storage
         self.calendar = calendar
         reload()
     }
@@ -36,34 +50,56 @@ final class ProgressStore {
     // MARK: - Loading
 
     func reload() {
+        guard let context else { return }
+
+        var failures: [String] = []
+
         do {
-            let records = try context.fetch(FetchDescriptor<ElementProgressRecord>())
-            var built: [Int: ElementProgressSnapshot] = [:]
-            built.reserveCapacity(records.count)
-            for record in records {
-                built[record.atomicNumber] = ElementProgressSnapshot(
-                    atomicNumber: record.atomicNumber,
-                    isFavorite: record.isFavorite,
-                    mastery: MasteryLevel(rawValue: record.masteryRaw) ?? .notStarted,
-                    correctCount: record.correctCount,
-                    incorrectCount: record.incorrectCount,
-                    lastReviewed: record.lastReviewed
-                )
-            }
-            snapshots = built
-
-            var searchDescriptor = FetchDescriptor<RecentSearchRecord>(
-                sortBy: [SortDescriptor(\RecentSearchRecord.timestamp, order: .reverse)]
-            )
-            searchDescriptor.fetchLimit = Self.recentSearchLimit
-            recentSearches = try context.fetch(searchDescriptor).map(\.text)
-
-            let days = try context.fetch(FetchDescriptor<StudyDayRecord>())
-            studyDayKeys = Set(days.map(\.dayKey))
+            let fetched = try context.fetch(FetchDescriptor<ElementProgressRecord>())
+            records = Dictionary(fetched.map { ($0.atomicNumber, $0) },
+                                 uniquingKeysWith: { first, _ in first })
+            snapshots = records.mapValues(Self.snapshot(from:))
         } catch {
-            PersistenceController.logger.error("Reload failed: \(String(describing: error))")
-            lastWriteFailure = "Saved progress could not be read."
+            failures.append("progress")
+            PersistenceController.logger.error(
+                "Progress reload failed: \(String(describing: error), privacy: .public)")
         }
+
+        do {
+            let fetched = try context.fetch(FetchDescriptor<RecentSearchRecord>(
+                sortBy: [SortDescriptor(\RecentSearchRecord.timestamp, order: .reverse)]
+            ))
+            // Trim anything an older build left behind so the table cannot grow
+            // without bound.
+            let keep = Array(fetched.prefix(Self.recentSearchLimit))
+            for stale in fetched.dropFirst(Self.recentSearchLimit) {
+                context.delete(stale)
+            }
+            searchRecords = Dictionary(keep.map { ($0.text.lowercased(), $0) },
+                                       uniquingKeysWith: { first, _ in first })
+            recentSearches = keep.map(\.text)
+        } catch {
+            failures.append("recent searches")
+            PersistenceController.logger.error(
+                "Search reload failed: \(String(describing: error), privacy: .public)")
+        }
+
+        do {
+            let fetched = try context.fetch(FetchDescriptor<StudyDayRecord>())
+            dayRecords = Dictionary(fetched.map { ($0.dayKey, $0) },
+                                    uniquingKeysWith: { first, _ in first })
+            studyDayKeys = Set(dayRecords.keys)
+        } catch {
+            failures.append("study history")
+            PersistenceController.logger.error(
+                "Study day reload failed: \(String(describing: error), privacy: .public)")
+        }
+
+        writeFailureMessage = failures.isEmpty
+            ? nil
+            : "Some saved data could not be read (\(failures.joined(separator: ", ")))."
+
+        save()
     }
 
     // MARK: - Reads
@@ -98,7 +134,8 @@ final class ProgressStore {
 
     /// Most recently reviewed elements, newest first.
     func recentlyStudied(limit: Int = 8) -> [Int] {
-        snapshots.values
+        guard limit > 0 else { return [] }
+        return snapshots.values
             .compactMap { snapshot -> (atomicNumber: Int, date: Date)? in
                 guard let date = snapshot.lastReviewed else { return nil }
                 return (snapshot.atomicNumber, date)
@@ -116,21 +153,18 @@ final class ProgressStore {
 
     @discardableResult
     func toggleFavorite(_ atomicNumber: Int) -> Bool {
-        let record = fetchOrCreateRecord(atomicNumber)
-        record.isFavorite.toggle()
-        let value = record.isFavorite
-        applySnapshot(from: record)
-        save()
-        return value
+        var snapshot = self.snapshot(for: atomicNumber)
+        snapshot.isFavorite.toggle()
+        apply(snapshot)
+        return snapshot.isFavorite
     }
 
     func recordAnswer(atomicNumber: Int, correct: Bool, date: Date = Date()) {
-        let record = fetchOrCreateRecord(atomicNumber)
-        let current = MasteryLevel(rawValue: record.masteryRaw) ?? .notStarted
-        record.masteryRaw = MasteryEngine.next(from: current, correct: correct).rawValue
-        if correct { record.correctCount += 1 } else { record.incorrectCount += 1 }
-        record.lastReviewed = date
-        applySnapshot(from: record)
+        var snapshot = self.snapshot(for: atomicNumber)
+        snapshot.mastery = MasteryEngine.next(from: snapshot.mastery, correct: correct)
+        if correct { snapshot.correctCount += 1 } else { snapshot.incorrectCount += 1 }
+        snapshot.lastReviewed = date
+        apply(snapshot, save: false)
         registerStudyDay(on: date)
         save()
     }
@@ -138,100 +172,72 @@ final class ProgressStore {
     func recordSearch(_ rawTerm: String) {
         let term = rawTerm.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !term.isEmpty, term.count <= 32 else { return }
+        let key = term.lowercased()
 
-        do {
-            let existing = try context.fetch(FetchDescriptor<RecentSearchRecord>())
-            if let match = existing.first(where: { $0.text.caseInsensitiveCompare(term) == .orderedSame }) {
-                match.timestamp = Date()
-            } else {
-                context.insert(RecentSearchRecord(text: term, timestamp: Date()))
-            }
-            save()
-
-            // Trim anything beyond the visible window so the store stays tiny.
-            let all = try context.fetch(FetchDescriptor<RecentSearchRecord>(
-                sortBy: [SortDescriptor(\RecentSearchRecord.timestamp, order: .reverse)]
-            ))
-            guard all.count > Self.recentSearchLimit else {
-                recentSearches = all.map(\.text)
-                return
-            }
-            for stale in all.dropFirst(Self.recentSearchLimit) {
-                context.delete(stale)
-            }
-            recentSearches = all.prefix(Self.recentSearchLimit).map(\.text)
-            save()
-        } catch {
-            PersistenceController.logger.error("Search write failed: \(String(describing: error))")
+        if let existing = searchRecords[key] {
+            existing.timestamp = Date()
+        } else if let context {
+            let record = RecentSearchRecord(text: term, timestamp: Date())
+            context.insert(record)
+            searchRecords[key] = record
         }
+
+        // Newest first, deduplicated case-insensitively. The list shows the
+        // spelling just typed; the stored row keeps its original casing, which
+        // only surfaces after a relaunch and is not worth risking a unique-key
+        // conflict to change.
+        var ordered = recentSearches.filter { $0.lowercased() != key }
+        ordered.insert(term, at: 0)
+        for stale in ordered.dropFirst(Self.recentSearchLimit) {
+            if let record = searchRecords.removeValue(forKey: stale.lowercased()) {
+                context?.delete(record)
+            }
+        }
+        recentSearches = Array(ordered.prefix(Self.recentSearchLimit))
+        save()
     }
 
     func clearRecentSearches() {
-        do {
-            for record in try context.fetch(FetchDescriptor<RecentSearchRecord>()) {
-                context.delete(record)
-            }
-            recentSearches = []
-            save()
-        } catch {
-            PersistenceController.logger.error("Clearing searches failed: \(String(describing: error))")
+        for record in searchRecords.values {
+            context?.delete(record)
         }
+        searchRecords = [:]
+        recentSearches = []
+        save()
     }
 
     /// Clears familiarity, answer counts and the streak. Favorites are kept —
     /// they are a deliberate choice the learner made, not progress.
     func resetAllProgress() {
-        do {
-            for record in try context.fetch(FetchDescriptor<ElementProgressRecord>()) {
-                if record.isFavorite {
-                    record.masteryRaw = MasteryLevel.notStarted.rawValue
-                    record.correctCount = 0
-                    record.incorrectCount = 0
-                    record.lastReviewed = nil
-                } else {
-                    context.delete(record)
-                }
-            }
-            for record in try context.fetch(FetchDescriptor<StudyDayRecord>()) {
-                context.delete(record)
-            }
-            studyDayKeys = []
-            save()
-            reload()
-        } catch {
-            PersistenceController.logger.error("Reset failed: \(String(describing: error))")
+        for (atomicNumber, record) in records where !record.isFavorite {
+            context?.delete(record)
+            records.removeValue(forKey: atomicNumber)
         }
+        for record in records.values {
+            record.masteryRaw = MasteryLevel.notStarted.rawValue
+            record.correctCount = 0
+            record.incorrectCount = 0
+            record.lastReviewed = nil
+        }
+
+        snapshots = snapshots.compactMapValues { snapshot in
+            snapshot.isFavorite
+                ? ElementProgressSnapshot(atomicNumber: snapshot.atomicNumber, isFavorite: true)
+                : nil
+        }
+
+        for record in dayRecords.values {
+            context?.delete(record)
+        }
+        dayRecords = [:]
+        studyDayKeys = []
+        save()
     }
 
     // MARK: - Private
 
-    private func registerStudyDay(on date: Date) {
-        let key = StreakCalculator.dayKey(for: date, calendar: calendar)
-        do {
-            let days = try context.fetch(FetchDescriptor<StudyDayRecord>())
-            if let existing = days.first(where: { $0.dayKey == key }) {
-                existing.answeredCount += 1
-            } else {
-                context.insert(StudyDayRecord(dayKey: key, answeredCount: 1))
-            }
-            studyDayKeys.insert(key)
-        } catch {
-            PersistenceController.logger.error("Study day write failed: \(String(describing: error))")
-        }
-    }
-
-    private func fetchOrCreateRecord(_ atomicNumber: Int) -> ElementProgressRecord {
-        let existing = (try? context.fetch(FetchDescriptor<ElementProgressRecord>())) ?? []
-        if let match = existing.first(where: { $0.atomicNumber == atomicNumber }) {
-            return match
-        }
-        let record = ElementProgressRecord(atomicNumber: atomicNumber)
-        context.insert(record)
-        return record
-    }
-
-    private func applySnapshot(from record: ElementProgressRecord) {
-        snapshots[record.atomicNumber] = ElementProgressSnapshot(
+    private static func snapshot(from record: ElementProgressRecord) -> ElementProgressSnapshot {
+        ElementProgressSnapshot(
             atomicNumber: record.atomicNumber,
             isFavorite: record.isFavorite,
             mastery: MasteryLevel(rawValue: record.masteryRaw) ?? .notStarted,
@@ -241,13 +247,56 @@ final class ProgressStore {
         )
     }
 
+    /// Writes a snapshot through to SwiftData, creating the managed object the
+    /// first time an element is touched.
+    private func apply(_ snapshot: ElementProgressSnapshot, save shouldSave: Bool = true) {
+        snapshots[snapshot.atomicNumber] = snapshot
+
+        if let record = records[snapshot.atomicNumber] {
+            record.isFavorite = snapshot.isFavorite
+            record.masteryRaw = snapshot.mastery.rawValue
+            record.correctCount = snapshot.correctCount
+            record.incorrectCount = snapshot.incorrectCount
+            record.lastReviewed = snapshot.lastReviewed
+        } else if let context {
+            let record = ElementProgressRecord(
+                atomicNumber: snapshot.atomicNumber,
+                isFavorite: snapshot.isFavorite,
+                masteryRaw: snapshot.mastery.rawValue,
+                correctCount: snapshot.correctCount,
+                incorrectCount: snapshot.incorrectCount,
+                lastReviewed: snapshot.lastReviewed
+            )
+            context.insert(record)
+            records[snapshot.atomicNumber] = record
+        }
+
+        if shouldSave { save() }
+    }
+
+    private func registerStudyDay(on date: Date) {
+        let key = StreakCalculator.dayKey(for: date, calendar: calendar)
+        studyDayKeys.insert(key)
+
+        if let existing = dayRecords[key] {
+            existing.answeredCount += 1
+        } else if let context {
+            let record = StudyDayRecord(dayKey: key, answeredCount: 1)
+            context.insert(record)
+            dayRecords[key] = record
+        }
+    }
+
     private func save() {
+        guard let context else { return }
+        guard context.hasChanges else { return }
         do {
             try context.save()
-            lastWriteFailure = nil
+            writeFailureMessage = nil
         } catch {
-            PersistenceController.logger.error("Save failed: \(String(describing: error))")
-            lastWriteFailure = "Your latest change could not be saved."
+            PersistenceController.logger.error(
+                "Save failed: \(String(describing: error), privacy: .public)")
+            writeFailureMessage = "Your latest change could not be saved."
         }
     }
 }

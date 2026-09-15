@@ -13,23 +13,47 @@ enum PersistenceController {
         StudyDayRecord.self,
     ])
 
-    /// Result of building the container, so the UI can tell the learner when
-    /// their saved progress could not be recovered.
-    struct Outcome {
-        let container: ModelContainer
-        let recoveredFromCorruptStore: Bool
-        let isEphemeral: Bool
+    /// How the learner's progress is actually being stored this launch.
+    enum Storage: Equatable, Sendable {
+        /// The normal case: an on-disk store opened cleanly.
+        case persistent
+        /// The store could not be opened, so it was deleted and rebuilt. Past
+        /// progress is gone and the learner deserves to be told.
+        case rebuiltAfterCorruption
+        /// Even a rebuild failed. Progress works for this launch only.
+        case memoryOnlyFallback
+        /// A deliberate in-memory store, so UI tests never touch real data.
+        case memoryOnlyForTesting
+
+        /// Nothing written this session will survive the app closing.
+        var losesProgressOnQuit: Bool { self == .memoryOnlyFallback }
+
+        /// Progress that existed before this launch was discarded.
+        var discardedPreviousProgress: Bool { self == .rebuiltAfterCorruption }
     }
 
-    static func makeInMemoryContainer() -> ModelContainer {
+    struct Outcome: Sendable {
+        /// `nil` only if SwiftData refuses even an in-memory store, in which
+        /// case `ProgressStore` runs entirely from memory instead of crashing.
+        let container: ModelContainer?
+        let storage: Storage
+    }
+
+    /// Returns `nil` rather than trapping: a crash on launch is never a better
+    /// outcome than an app that simply cannot remember this session.
+    static func makeInMemoryContainer() -> ModelContainer? {
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        // An in-memory store cannot fail for a valid schema; if it somehow does
-        // there is no meaningful fallback left, so surface it loudly in debug.
         do {
             return try ModelContainer(for: schema, configurations: [configuration])
         } catch {
-            fatalError("Unable to create in-memory model container: \(error)")
+            logger.fault("In-memory container failed: \(String(describing: error), privacy: .public)")
+            return nil
         }
+    }
+
+    /// A clean, isolated store for UI tests.
+    static func makeTestingOutcome() -> Outcome {
+        Outcome(container: makeInMemoryContainer(), storage: .memoryOnlyForTesting)
     }
 
     static func makeOutcome() -> Outcome {
@@ -37,9 +61,9 @@ enum PersistenceController {
 
         do {
             let container = try ModelContainer(for: schema, configurations: [configuration])
-            return Outcome(container: container, recoveredFromCorruptStore: false, isEphemeral: false)
+            return Outcome(container: container, storage: .persistent)
         } catch {
-            logger.error("Persistent store failed to open: \(String(describing: error))")
+            logger.error("Persistent store failed to open: \(String(describing: error), privacy: .public)")
         }
 
         // Second chance: remove the on-disk store and start fresh. Everything in
@@ -49,12 +73,10 @@ enum PersistenceController {
 
         do {
             let container = try ModelContainer(for: schema, configurations: [configuration])
-            return Outcome(container: container, recoveredFromCorruptStore: true, isEphemeral: false)
+            return Outcome(container: container, storage: .rebuiltAfterCorruption)
         } catch {
-            logger.error("Store rebuild failed, continuing in memory: \(String(describing: error))")
-            return Outcome(container: makeInMemoryContainer(),
-                           recoveredFromCorruptStore: true,
-                           isEphemeral: true)
+            logger.error("Store rebuild failed, continuing in memory: \(String(describing: error), privacy: .public)")
+            return Outcome(container: makeInMemoryContainer(), storage: .memoryOnlyFallback)
         }
     }
 

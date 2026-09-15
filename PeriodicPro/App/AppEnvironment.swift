@@ -24,6 +24,14 @@ enum AppTab: String, Hashable, CaseIterable {
     }
 }
 
+/// Launch arguments, resolved once. `ProcessInfo.arguments` rebuilds an array
+/// every time it is read, which is not something a view body should do.
+enum RuntimeFlags {
+    /// Set by the UI test bundle: skips onboarding, uses an in-memory store and
+    /// silences haptics so runs are independent and deterministic.
+    static let isUITesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
+}
+
 /// Environment storage for the bundled dataset.
 private struct ElementCatalogKey: EnvironmentKey {
     static let defaultValue = ElementCatalog(elements: [])

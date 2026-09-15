@@ -11,12 +11,14 @@ struct PeriodicProApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            // `ProgressStore` owns the app's only `ModelContext`; no view uses
+            // `@Query` or `\.modelContext`, so injecting a second context here
+            // would only create two views of the same store.
+            RootView(catalogError: services.catalogError)
                 .environment(\.elementCatalog, services.catalog)
                 .environment(services.progress)
                 .tint(AppColor.accent)
         }
-        .modelContainer(services.container)
     }
 }
 
@@ -27,30 +29,16 @@ struct PeriodicProApp: App {
 final class AppServices {
     let catalog: ElementCatalog
     let progress: ProgressStore
-    let container: ModelContainer
     /// Non-nil when `elements.json` could not be read, which drives the
     /// data-unavailable screen instead of an empty, silent table.
     let catalogError: String?
 
     init() {
-        let outcome: PersistenceController.Outcome
-        let catalogResult: Result<ElementCatalog, Error>
+        let outcome = RuntimeFlags.isUITesting
+            ? PersistenceController.makeTestingOutcome()
+            : PersistenceController.makeOutcome()
 
-        if ProcessInfo.processInfo.arguments.contains("-uiTesting") {
-            // UI tests always start from a clean, in-memory store so runs are
-            // independent of whatever is left on the simulator.
-            outcome = PersistenceController.Outcome(
-                container: PersistenceController.makeInMemoryContainer(),
-                recoveredFromCorruptStore: false,
-                isEphemeral: false
-            )
-        } else {
-            outcome = PersistenceController.makeOutcome()
-        }
-
-        catalogResult = ElementCatalog.loadFromApplicationBundle()
-
-        switch catalogResult {
+        switch ElementCatalog.loadFromApplicationBundle() {
         case .success(let catalog):
             self.catalog = catalog
             self.catalogError = nil
@@ -61,7 +49,6 @@ final class AppServices {
                 .fault("Element catalog failed to load: \(String(describing: error), privacy: .public)")
         }
 
-        self.container = outcome.container
-        self.progress = ProgressStore(container: outcome.container, isEphemeral: outcome.isEphemeral)
+        self.progress = ProgressStore(container: outcome.container, storage: outcome.storage)
     }
 }
