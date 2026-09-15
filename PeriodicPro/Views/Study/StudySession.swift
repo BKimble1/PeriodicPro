@@ -164,17 +164,22 @@ struct CardSessionView: View {
             SessionProgressHeader(current: index, total: cards.count)
 
             if let card {
-                cardFace(card)
-                    .id(card.id)
-                    .transition(reduceMotion
-                                ? .opacity
-                                : .asymmetric(
-                                    insertion: .opacity.combined(with: .offset(x: 40)),
-                                    removal: .opacity.combined(with: .offset(x: -40))
-                                  ))
-                    .padding(.horizontal, Theme.Spacing.screenMargin)
-
-                Spacer(minLength: 0)
+                // Scrollable rather than a fixed VStack: a long element name at
+                // an accessibility text size makes the card taller than a small
+                // phone, and clipped copy is never acceptable.
+                ScrollView {
+                    cardFace(card)
+                        .id(card.id)
+                        .transition(reduceMotion
+                                    ? .opacity
+                                    : .asymmetric(
+                                        insertion: .opacity.combined(with: .offset(x: 40)),
+                                        removal: .opacity.combined(with: .offset(x: -40))
+                                      ))
+                        .padding(.horizontal, Theme.Spacing.screenMargin)
+                        .padding(.vertical, 2)
+                }
+                .scrollBounceBehavior(.basedOnSize)
 
                 controls(for: card)
                     .padding(.horizontal, Theme.Spacing.screenMargin)

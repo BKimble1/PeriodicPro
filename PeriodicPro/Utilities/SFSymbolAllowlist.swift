@@ -29,6 +29,35 @@ enum SFSymbolAllowlist {
         "circle.grid.cross.fill", "wrench.adjustable.fill",
     ]
 
+    /// Every SF Symbol the app's own interface draws, as opposed to the ones
+    /// the dataset asks for. Kept here so a single test can prove that nothing
+    /// anywhere in the app renders a blank icon, and so
+    /// `Tools/lint_sources.py` can fail the build if a view introduces a symbol
+    /// that was never checked.
+    static let uiNames: Set<String> = [
+        // Navigation and controls
+        "chevron.right", "chevron.down", "arrow.right", "arrow.up.left", "checkmark",
+        "checkmark.circle.fill", "xmark.circle.fill", "ellipsis.circle", "info.circle",
+        "arrow.counterclockwise", "line.3.horizontal.decrease.circle",
+        "line.3.horizontal.decrease.circle.fill", "magnifyingglass", "clock",
+        "arrow.up.left.and.arrow.down.right", "arrow.down.right.and.arrow.up.left",
+        // States and empty states
+        "heart", "heart.fill", "exclamationmark.triangle", "exclamationmark.triangle.fill",
+        "tray", "questionmark.circle", "lightbulb.fill",
+        // Onboarding
+        "square.grid.3x3.fill", "hand.tap.fill", "graduationcap.fill",
+        // Family glyphs, phase glyphs, mastery glyphs, study-mode glyphs, tabs
+        "circle.fill", "square.fill", "diamond.fill", "triangle.fill", "hexagon.fill",
+        "circle", "square", "diamond", "triangle", "hexagon",
+        "cube.fill", "drop.fill", "wind",
+        "circle.dotted", "circle.lefthalf.filled", "circle.righthalf.filled",
+        "rectangle.on.rectangle.angled", "questionmark.circle.fill", "eye.fill",
+        "chart.bar.fill", "flame.fill", "book.fill",
+    ]
+
+    /// Everything the app can ask UIKit to draw.
+    static var allNames: Set<String> { names.union(uiNames) }
+
     /// Guaranteed to exist on every supported OS version.
     static let fallback = "atom"
 

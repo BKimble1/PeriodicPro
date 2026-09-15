@@ -8,12 +8,20 @@ import UIKit
 struct SFSymbolTests {
     private let catalog = TestCatalog.shared
 
-    @Test("Every allowlisted symbol exists in this OS release")
+    @Test("Every symbol the app can draw exists in this OS release")
     func allowlistResolves() {
-        for name in SFSymbolAllowlist.names.sorted() {
+        for name in SFSymbolAllowlist.allNames.sorted() {
             #expect(UIImage(systemName: name) != nil,
                     "\(name) is not an SF Symbol on this OS; it would render blank")
         }
+    }
+
+    @Test("The dataset and interface symbol lists are both non-empty and disjoint enough to be useful")
+    func allowlistsAreSane() {
+        #expect(SFSymbolAllowlist.names.count > 50)
+        #expect(SFSymbolAllowlist.uiNames.count > 20)
+        #expect(SFSymbolAllowlist.allNames.count
+                >= max(SFSymbolAllowlist.names.count, SFSymbolAllowlist.uiNames.count))
     }
 
     @Test("The fallback symbol always exists")

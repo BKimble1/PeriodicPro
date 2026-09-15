@@ -148,11 +148,77 @@ def check(path: str, errors: list[str]) -> None:
                 )
 
 
+SYMBOL_LITERAL = re.compile(r'"([a-z0-9][a-z0-9.]*)"')
+SYMBOL_PROPERTY = re.compile(r"var (symbolName|glyph): String \{")
+
+
+def swift_symbol_allowlist() -> set[str]:
+    """Reads both allowlists straight out of SFSymbolAllowlist.swift."""
+    source = open(
+        os.path.join(ROOT, "PeriodicPro", "Utilities", "SFSymbolAllowlist.swift"),
+        encoding="utf-8",
+    ).read()
+    found: set[str] = set()
+    for marker in ("static let names: Set<String> = [", "static let uiNames: Set<String> = ["):
+        start = source.index(marker)
+        end = source.index("]", start)
+        found.update(re.findall(r'"([^"]+)"', source[start:end]))
+    fallback = re.search(r'static let fallback = "([^"]+)"', source)
+    if fallback:
+        found.add(fallback.group(1))
+    return found
+
+
+def used_symbol_names() -> dict[str, list[str]]:
+    """Every SF Symbol literal the app's own views can draw, with its location.
+
+    Covers `Image(systemName:)` calls (including ternaries and calls wrapped
+    onto a second line) and the bodies of `symbolName` / `glyph` properties.
+    """
+    used: dict[str, list[str]] = {}
+    for path in swift_files():
+        if not path.startswith("PeriodicPro/"):
+            continue
+        lines = open(os.path.join(ROOT, path), encoding="utf-8").read().split("\n")
+        in_property = 0
+        for number, line in enumerate(lines, start=1):
+            harvest = False
+            if "systemName" in line:
+                harvest = True
+            elif number >= 2 and "systemName" in lines[number - 2]:
+                harvest = True
+            if SYMBOL_PROPERTY.search(line):
+                in_property = line.count("{") - line.count("}")
+                continue
+            if in_property > 0:
+                in_property += line.count("{") - line.count("}")
+                harvest = True
+            if not harvest:
+                continue
+            for match in SYMBOL_LITERAL.finditer(line):
+                name = match.group(1)
+                if len(name) < 3 or name.endswith("."):
+                    continue
+                used.setdefault(name, []).append(f"{path}:{number}")
+    return used
+
+
+def check_symbols(errors: list[str]) -> None:
+    allowlisted = swift_symbol_allowlist()
+    for name, locations in sorted(used_symbol_names().items()):
+        if name not in allowlisted:
+            errors.append(
+                f"{locations[0]}: SF Symbol '{name}' is not in SFSymbolAllowlist, "
+                "so nothing proves it renders"
+            )
+
+
 def main() -> int:
     errors: list[str] = []
     files = swift_files()
     for path in files:
         check(path, errors)
+    check_symbols(errors)
 
     for error in errors:
         print(f"error: {error}")
