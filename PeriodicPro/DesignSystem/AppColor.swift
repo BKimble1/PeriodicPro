@@ -45,9 +45,12 @@ enum AppColor {
     )
 
     /// The single accent used for interactive emphasis.
+    /// The single accent used for interactive emphasis. The dark variant sits
+    /// close to the system blue Apple uses on dark backgrounds: light enough to
+    /// read as a link on the canvas, dark enough to carry white button labels.
     static let accent = Color(
         light: Color(red: 0.161, green: 0.451, blue: 0.937),
-        dark: Color(red: 0.353, green: 0.588, blue: 1.0)
+        dark: Color(red: 0.161, green: 0.541, blue: 1.0)
     )
 
     static let positive = Color(

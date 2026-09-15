@@ -80,6 +80,22 @@ extension ElementCategory {
         }
     }
 
+    /// Text and glyphs drawn directly on `accentColor`.
+    ///
+    /// Gold and orange are far too light to carry white in either appearance,
+    /// and every accent is brightened for dark mode, so dark ink is the right
+    /// answer there across the board.
+    var onAccentColor: Color {
+        switch self {
+        case .transitionMetal, .alkalineEarthMetal:
+            return Self.accentInk
+        default:
+            return Color(light: .white, dark: Self.accentInk)
+        }
+    }
+
+    fileprivate static let accentInk = Color(red: 0.075, green: 0.086, blue: 0.110)
+
     /// Symbol / number color drawn on top of `tileFill`.
     var onTileColor: Color {
         Color(light: accentColorDarkened, dark: .white.opacity(0.94))

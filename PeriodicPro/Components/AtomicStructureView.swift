@@ -56,7 +56,7 @@ struct AtomicStructureView: View {
                     if showsSymbol {
                         Text(element.symbol)
                             .font(.system(size: nucleusDiameter * 0.44, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(element.category.onAccentColor)
                             .minimumScaleFactor(0.5)
                             .lineLimit(1)
                             .padding(2)
@@ -114,17 +114,28 @@ private struct ShellRing: View {
             }
             .rotationEffect(.degrees(clockwise ? angle : -angle))
         }
-        .onAppear {
-            guard animates else { return }
-            // Reset first: on a second appearance `angle` is already 360, and
-            // animating to the value it already holds is a no-op that leaves
-            // the electrons frozen. 0 and 360 look identical, so there is no
-            // visible jump.
-            angle = 0
-            withAnimation(.linear(duration: period).repeatForever(autoreverses: false)) {
-                angle = 360
-            }
+        .onAppear { updateSpin() }
+        // Reduce Motion can be turned on while a diagram is on screen. The ring
+        // keeps its identity, so onAppear never fires again and the in-flight
+        // repeatForever animation would otherwise run on regardless.
+        .onChange(of: animates) { _, _ in updateSpin() }
+        .onDisappear { withAnimation(nil) { angle = 0 } }
+    }
+
+    private func updateSpin() {
+        guard animates else {
+            // Re-assigning without an animation is what actually cancels a
+            // repeatForever; simply not starting a new one does nothing.
+            withAnimation(nil) { angle = 0 }
+            return
         }
-        .onDisappear { angle = 0 }
+        // Reset first: on a second appearance `angle` is already 360, and
+        // animating to the value it already holds is a no-op that leaves the
+        // electrons frozen. 0 and 360 look identical, so there is no visible
+        // jump.
+        withAnimation(nil) { angle = 0 }
+        withAnimation(.linear(duration: period).repeatForever(autoreverses: false)) {
+            angle = 360
+        }
     }
 }

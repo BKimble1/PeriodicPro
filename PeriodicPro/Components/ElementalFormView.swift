@@ -10,8 +10,10 @@ struct ElementalFormView: View {
     private var tint: Color { element.category.accentColor }
 
     /// Reads the atom count out of the elemental-form label ("S₈" → 8) so the
-    /// drawing always matches the text beside it.
-    private var atomCount: Int {
+    /// drawing always matches the text beside it. `nil` when the label carries
+    /// no subscript at all, which means the form is not a fixed-size molecule
+    /// (selenium's "helical chains", for instance).
+    private var atomCount: Int? {
         let subscripts: [Character: Int] = [
             "\u{2080}": 0, "\u{2081}": 1, "\u{2082}": 2, "\u{2083}": 3, "\u{2084}": 4,
             "\u{2085}": 5, "\u{2086}": 6, "\u{2087}": 7, "\u{2088}": 8, "\u{2089}": 9,
@@ -24,7 +26,7 @@ struct ElementalFormView: View {
                 break
             }
         }
-        guard !digits.isEmpty else { return element.structure == .diatomic ? 2 : 4 }
+        guard !digits.isEmpty else { return element.structure == .diatomic ? 2 : nil }
         return digits.reduce(0) { $0 * 10 + $1 }
     }
 
@@ -33,10 +35,16 @@ struct ElementalFormView: View {
             let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
             switch element.structure {
             case .diatomic:
-                drawChain(context: context, center: center, canvas: canvasSize, count: 2)
+                drawChain(context: context, center: center, canvas: canvasSize,
+                          count: atomCount ?? 2)
             case .polyatomicMolecule:
-                drawRing(context: context, center: center, canvas: canvasSize,
-                         count: max(3, min(atomCount, 8)))
+                if let atomCount {
+                    drawRing(context: context, center: center, canvas: canvasSize,
+                             count: max(3, min(atomCount, 8)))
+                } else {
+                    // No subscript means an open chain rather than a closed ring.
+                    drawChain(context: context, center: center, canvas: canvasSize, count: 5)
+                }
             case .metallicLattice:
                 drawLattice(context: context, canvas: canvasSize)
             case .covalentNetwork:
