@@ -31,6 +31,16 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .identify: return "eye.fill"
         }
     }
+
+    /// Mixed into the session seed so the three modes do not draw the same ten
+    /// elements, in the same order, on the same day.
+    var seedSalt: UInt64 {
+        switch self {
+        case .flashcards: return 0x9E37_79B9_7F4A_7C15
+        case .quiz: return 0x85EB_CA6B_C2B2_AE35
+        case .identify: return 0x27D4_EB2F_1656_67C5
+        }
+    }
 }
 
 /// What the learner is shown before the answer is revealed.

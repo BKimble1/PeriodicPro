@@ -14,7 +14,7 @@ struct StudySessionContainer: View {
     @State private var round = 0
 
     private var seed: UInt64 {
-        SeededGenerator.dailySeed() &+ UInt64(round) &* 7_919
+        SeededGenerator.dailySeed() &+ UInt64(round) &* 7_919 &+ mode.seedSalt
     }
 
     /// Practice draws from the least-familiar elements first, but keeps a wide
@@ -256,7 +256,9 @@ struct CardSessionView: View {
                 .multilineTextAlignment(.center)
                 .padding(Theme.Spacing.l)
         case .structure:
-            AtomicStructureView(element: card.element, diameter: 150)
+            // The symbol appears only once the learner has committed to an
+            // answer; before that the diagram has to carry the question alone.
+            AtomicStructureView(element: card.element, diameter: 150, showsSymbol: isRevealed)
                 .padding(Theme.Spacing.m)
         case .description(let text):
             Text(text)

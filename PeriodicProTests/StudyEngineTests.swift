@@ -213,3 +213,46 @@ struct SeededGeneratorTests {
                 != SeededGenerator.dailySeed(for: tomorrow, calendar: calendar))
     }
 }
+
+@Suite("Study modes draw different material")
+struct StudyModeSeedTests {
+    private let catalog = TestCatalog.shared
+
+    private var pool: [ChemicalElement] { Array(catalog.elements.prefix(40)) }
+
+    @Test("Each mode has its own salt, so no two modes share a session seed")
+    func saltsAreDistinct() {
+        let salts = StudyMode.allCases.map(\.seedSalt)
+        #expect(Set(salts).count == StudyMode.allCases.count)
+    }
+
+    @Test("The same round gives the three modes different elements")
+    func modesDivergeWithinARound() {
+        let base: UInt64 = 20_260_115
+        let flashcards = StudyDeckBuilder.flashcards(
+            pool: pool, seed: base &+ StudyMode.flashcards.seedSalt
+        ).map(\.element.atomicNumber)
+        let identify = StudyDeckBuilder.identifyCards(
+            pool: pool, seed: base &+ StudyMode.identify.seedSalt
+        ).map(\.element.atomicNumber)
+        let quiz = QuizGenerator.makeQuiz(
+            pool: pool, distractors: catalog.elements, seed: base &+ StudyMode.quiz.seedSalt
+        ).map(\.element.atomicNumber)
+
+        #expect(flashcards != identify, "Flashcards and Identify should not be the same ten")
+        #expect(flashcards != quiz, "Flashcards and the quiz should not be the same ten")
+        #expect(identify != quiz, "Identify and the quiz should not be the same ten")
+    }
+
+    @Test("A structure clue never names its own element")
+    func structureCluesDoNotLeakTheAnswer() {
+        let deck = StudyDeckBuilder.identifyCards(pool: catalog.elements, count: 9, seed: 5)
+        for card in deck where card.clue == .structure {
+            #expect(!card.question.contains(card.element.name))
+            #expect(!card.question.contains(card.element.symbol))
+            #expect(card.answerTitle == card.element.name,
+                    "The answer is only revealed after the learner commits")
+        }
+        #expect(deck.contains { $0.clue == .structure }, "The deck should include structure clues")
+    }
+}

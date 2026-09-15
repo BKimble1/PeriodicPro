@@ -32,8 +32,8 @@ enum MasteryEngine {
 
 /// Counts consecutive days of study activity.
 enum StreakCalculator {
-    static let dayKeyFormat = "yyyy-MM-dd"
-
+    /// `yyyy-MM-dd` in the learner's own calendar, built by hand rather than
+    /// with a `DateFormatter` so the key never shifts with locale or region.
     static func dayKey(for date: Date, calendar: Calendar = .current) -> String {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
         let year = components.year ?? 0

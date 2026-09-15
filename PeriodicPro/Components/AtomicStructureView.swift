@@ -8,6 +8,9 @@ import SwiftUI
 struct AtomicStructureView: View {
     let element: ChemicalElement
     var diameter: CGFloat = 188
+    /// Identify mode turns this off: there the diagram *is* the question, and a
+    /// symbol in the nucleus would print the answer in the middle of it.
+    var showsSymbol: Bool = true
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -50,12 +53,14 @@ struct AtomicStructureView: View {
                 )
                 .frame(width: nucleusDiameter, height: nucleusDiameter)
                 .overlay {
-                    Text(element.symbol)
-                        .font(.system(size: nucleusDiameter * 0.44, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
-                        .padding(2)
+                    if showsSymbol {
+                        Text(element.symbol)
+                            .font(.system(size: nucleusDiameter * 0.44, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
+                            .padding(2)
+                    }
                 }
                 .themeShadow(Theme.Shadow.subtle)
         }
@@ -68,7 +73,8 @@ struct AtomicStructureView: View {
         let breakdown = shells.enumerated()
             .map { "shell \($0.offset + 1): \($0.element)" }
             .joined(separator: ", ")
-        return "Simplified shell diagram for \(element.name). "
+        let subject = showsSymbol ? element.name : "an unnamed element"
+        return "Simplified shell diagram for \(subject). "
             + "\(shells.count) electron shells. \(breakdown)."
     }
 }

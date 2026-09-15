@@ -47,6 +47,12 @@ extension EnvironmentValues {
 
 /// Applies the native zoom navigation transition, falling back to the standard
 /// push when the learner has Reduce Motion enabled.
+///
+/// The `if` makes the two cases structurally different views, so toggling
+/// Reduce Motion while a detail page is open resets that page's local state
+/// (which is only the "More properties" disclosure). `NavigationTransition` has
+/// no single concrete type that can express both cases, so the alternative
+/// would be to drop Reduce Motion support entirely — a far worse trade.
 struct ZoomTransitionModifier: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

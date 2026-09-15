@@ -77,6 +77,10 @@ enum QuizGenerator {
             if unique.count == optionCount - 1 { break }
         }
 
+        // Four options whenever the pool allows it. A pool too small to supply
+        // three distinct distractors yields a shorter question rather than a
+        // repeated one; with the full catalog as the distractor pool this never
+        // happens outside tests.
         guard !unique.isEmpty else { return nil }
 
         var options = unique + [correct]

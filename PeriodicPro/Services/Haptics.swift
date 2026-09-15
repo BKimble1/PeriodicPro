@@ -1,4 +1,3 @@
-import SwiftUI
 import UIKit
 
 /// Thin wrapper over UIKit feedback generators.
@@ -20,6 +19,8 @@ enum Haptics {
         guard isEnabled else { return }
         selection.prepare()
         soft.prepare()
+        rigid.prepare()
+        notification.prepare()
     }
 
     /// Tapping an element tile, a chip, or a card.
