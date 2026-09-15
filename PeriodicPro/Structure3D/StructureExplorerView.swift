@@ -66,10 +66,6 @@ struct StructureExplorerView: View {
                         .accessibilityIdentifier("explorer.done")
                 }
             }
-            // The 3D view cannot describe itself, so the whole scene is
-            // summarized as one element for VoiceOver and the parts row below
-            // provides the selectable hierarchy.
-            .accessibilityAction(named: "Reset view") { selection = .none }
         }
         .tint(AppColor.accent)
         .onChange(of: representation) { _, _ in selection = .none }
@@ -83,7 +79,10 @@ struct StructureExplorerView: View {
             accent: element.category.accentColor,
             selection: $selection
         )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // A floor as well as a ceiling: at an accessibility text size the
+        // caption and inspector below could otherwise squeeze the model, which
+        // is the whole point of the screen, down to nothing.
+        .frame(maxWidth: .infinity, minHeight: 200, maxHeight: .infinity)
         .overlay(alignment: .topTrailing) { hintChip }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(StructureFactsBuilder.summary(of: scene, element: element))
@@ -189,6 +188,7 @@ struct StructureExplorerView: View {
                 .font(AppFont.footnote)
                 .foregroundStyle(AppColor.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(5)
             if let note = scene.nucleonSampleNote {
                 Text(note)
                     .font(AppFont.caption)

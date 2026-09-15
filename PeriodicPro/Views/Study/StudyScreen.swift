@@ -9,6 +9,7 @@ import SwiftUI
 struct StudyScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(\.selectTab) private var selectTab
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(ProgressStore.self) private var progress: ProgressStore
     @Environment(SubscriptionManager.self) private var store: SubscriptionManager
 
@@ -136,7 +137,13 @@ struct StudyScreen: View {
     // MARK: - Status
 
     private var statusCards: some View {
-        HStack(alignment: .top, spacing: Theme.Spacing.m) {
+        // Side by side normally; stacked once each card would be a 160-point
+        // column trying to hold "Elements mastered" at forty points.
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: Theme.Spacing.m))
+            : AnyLayout(HStackLayout(alignment: .top, spacing: Theme.Spacing.m))
+
+        return layout {
             StudyStatusCard(
                 title: "\(progress.currentStreak)",
                 caption: "Day streak",

@@ -330,7 +330,10 @@ struct PaywallView: View {
                                      ? AppColor.secondaryText
                                      : AppColor.warning)
                     .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
+                    // Capped: this bar is a safe-area inset, so an uncapped
+                    // message at an accessibility text size would squeeze the
+                    // plans it is describing off the screen.
+                    .lineLimit(4)
                     .accessibilityIdentifier("paywall.message")
             }
 
