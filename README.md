@@ -276,8 +276,11 @@ Everything is stored locally in SwiftData:
 | `StudyDayRecord` | one row per day you answered a card, which drives the streak |
 
 If the store cannot be opened, `PersistenceController` deletes it and retries
-once, then falls back to an in-memory container and the Progress screen says so
-plainly — the app never launches into a crash or a silent lie about saved data.
+once; if that fails too it falls back to an in-memory container, and if
+SwiftData cannot even provide one, `ProgressStore` runs entirely from memory.
+No failure path ends in a crash, and the Progress screen says plainly when
+progress was rebuilt, is not being saved, or when a write failed — the app
+never tells a silent lie about saved data.
 
 ---
 
