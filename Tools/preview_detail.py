@@ -242,24 +242,25 @@ def render(element):
     y += about_height + 16
 
     # --- uses ---------------------------------------------------------------
-    uses_height = 164
+    # Two columns, mirroring UsesCard: four across leaves too little width for
+    # titles like "Superconductors".
+    rows = (len(element["uses"]) + 1) // 2
+    uses_height = 48 + rows * 92 + (rows - 1) * 8 + 16
     card(draw, MARGIN, y, inner, uses_height)
     draw.text((px(MARGIN + 16), px(y + 16)), "Common Uses", font=font(BOLD, 17), fill=PRIMARY)
-    count = len(element["uses"])
-    use_w = (body - 8 * (count - 1)) / count
+    use_w = (body - 8) / 2
     for index, use in enumerate(element["uses"]):
-        ux = MARGIN + 16 + index * (use_w + 8)
-        uy = y + 48
-        draw.rounded_rectangle([px(ux), px(uy), px(ux + use_w), px(uy + 108)], radius=px(14),
+        ux = MARGIN + 16 + (index % 2) * (use_w + 8)
+        uy = y + 48 + (index // 2) * 100
+        draw.rounded_rectangle([px(ux), px(uy), px(ux + use_w), px(uy + 92)], radius=px(14),
                                fill=tuple(round(accent[i] * 0.08 + SURFACE[i] * 0.92) for i in range(3)))
-        draw.ellipse([px(ux + use_w / 2 - 10), px(uy + 16), px(ux + use_w / 2 + 10), px(uy + 36)],
+        draw.ellipse([px(ux + use_w / 2 - 11), px(uy + 14), px(ux + use_w / 2 + 11), px(uy + 36)],
                      outline=accent, width=px(1.5))
-        title_lines = wrap(draw, use["title"], font(BOLD, 13), use_w - 8)
-        ty = uy + 48
-        for line in title_lines:
+        ty = uy + 44
+        for line in wrap(draw, use["title"], font(BOLD, 13), use_w - 16):
             centered(draw, line, font(BOLD, 13), PRIMARY, ux + use_w / 2, ty)
-            ty += 16
-        for line in wrap(draw, use["detail"], font(REGULAR, 11), use_w - 8)[:3]:
+            ty += 17
+        for line in wrap(draw, use["detail"], font(REGULAR, 11), use_w - 16)[:3]:
             centered(draw, line, font(REGULAR, 11), SECONDARY, ux + use_w / 2, ty)
             ty += 13
     y += uses_height + 16

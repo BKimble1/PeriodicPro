@@ -108,6 +108,8 @@ struct QuickFactsCard: View {
     let element: ChemicalElement
     @Binding var showsMoreProperties: Bool
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     private let columns = [
         GridItem(.flexible(), spacing: Theme.Spacing.s),
         GridItem(.flexible(), spacing: Theme.Spacing.s),
@@ -156,7 +158,9 @@ struct QuickFactsCard: View {
                 if !extendedProperties.isEmpty {
                     Button {
                         Haptics.tap()
-                        withAnimation(Theme.Motion.reveal) { showsMoreProperties.toggle() }
+                        withAnimation(reduceMotion ? nil : Theme.Motion.reveal) {
+                            showsMoreProperties.toggle()
+                        }
                     } label: {
                         HStack(spacing: 6) {
                             Text(showsMoreProperties ? "Fewer properties" : "More properties")
@@ -166,7 +170,7 @@ struct QuickFactsCard: View {
                                 .rotationEffect(.degrees(showsMoreProperties ? 180 : 0))
                         }
                         .foregroundStyle(AppColor.accent)
-                        .frame(maxWidth: .infinity, minHeight: Theme.minimumTouchTarget - 8)
+                        .frame(maxWidth: .infinity, minHeight: Theme.minimumTouchTarget)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
@@ -182,7 +186,9 @@ struct QuickFactsCard: View {
                                 .foregroundStyle(AppColor.tertiaryText)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        .transition(reduceMotion
+                                    ? .opacity
+                                    : .opacity.combined(with: .move(edge: .top)))
                     }
                 }
             }
@@ -220,11 +226,14 @@ struct UsesCard: View {
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    /// Four across at normal sizes, two at accessibility sizes — never an
-    /// adaptive grid, which leaves a trailing gap on wide phones and splits
-    /// four cards three-plus-one on small ones.
+    /// Two across, one at accessibility sizes. Four columns leave about 54
+    /// points of text width on a 375-point phone, which is not enough for the
+    /// real copy — "Superconductors" and "Thermoelectrics" break mid-word even
+    /// at the default text size. Never an adaptive grid, which leaves a
+    /// trailing gap on wide phones and splits four cards three-plus-one on
+    /// small ones.
     private var columns: [GridItem] {
-        let count = dynamicTypeSize >= .accessibility1 ? 2 : 4
+        let count = dynamicTypeSize >= .accessibility1 ? 1 : 2
         return Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.s), count: count)
     }
 
@@ -256,7 +265,7 @@ struct MemoryHookCard: View {
             HStack(alignment: .top, spacing: Theme.Spacing.m) {
                 Image(systemName: "lightbulb.fill")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(element.category.accentColor)
+                    .foregroundStyle(element.category.onTileColor)
                     .frame(width: 34, height: 34)
                     .background { Circle().fill(element.category.tileFill) }
 
@@ -280,7 +289,7 @@ struct MemoryHookCard: View {
 
 /// Where this element stands in the learner's own progress.
 struct FamiliarityCard: View {
-    let element: ChemicalElement
+    let elementName: String
     let snapshot: ElementProgressSnapshot
 
     var body: some View {
@@ -311,14 +320,22 @@ struct FamiliarityCard: View {
                 }
                 .frame(height: 6)
 
-                Text(snapshot.attempts == 0
-                     ? "Practice this element in Study to build familiarity."
-                     : "\(snapshot.correctCount) correct \u{00B7} \(snapshot.incorrectCount) to review")
+                Text(detailLine)
                     .font(AppFont.caption)
                     .foregroundStyle(AppColor.secondaryText)
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Your familiarity: \(snapshot.mastery.displayName)")
+        // An explicit label replaces the merged one, so it has to carry
+        // everything the card shows — including which element it is about.
+        .accessibilityLabel(
+            "Your familiarity with \(elementName): \(snapshot.mastery.displayName). \(detailLine)"
+        )
+    }
+
+    private var detailLine: String {
+        snapshot.attempts == 0
+            ? "Practice this element in Study to build familiarity."
+            : "\(snapshot.correctCount) correct \u{00B7} \(snapshot.incorrectCount) to review"
     }
 }

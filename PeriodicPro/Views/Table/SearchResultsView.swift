@@ -115,11 +115,18 @@ struct RecentSearchesView: View {
                         .textCase(.uppercase)
                         .kerning(0.5)
                     Spacer()
-                    Button("Clear") {
+                    Button {
                         Haptics.tap()
                         onClear()
+                    } label: {
+                        // The frame has to be inside the label: applied to the
+                        // Button it would not extend the hit region.
+                        Text("Clear")
+                            .font(AppFont.footnote)
+                            .padding(.horizontal, Theme.Spacing.s)
+                            .frame(minHeight: Theme.minimumTouchTarget)
+                            .contentShape(Rectangle())
                     }
-                    .font(AppFont.footnote)
                     .accessibilityIdentifier("search.clearRecents")
                 }
                 .padding(.horizontal, Theme.Spacing.xs)

@@ -6,10 +6,14 @@ struct TableLegend: View {
     @Binding var filter: ElementFilter
     let catalog: ElementCatalog
 
-    private let columns = [
-        GridItem(.flexible(), spacing: Theme.Spacing.m, alignment: .leading),
-        GridItem(.flexible(), spacing: Theme.Spacing.m, alignment: .leading),
-    ]
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// Two columns normally; one once "Alkaline Earth" can no longer share
+    /// ~130 points with a swatch without being scaled down and truncated.
+    private var columns: [GridItem] {
+        let item = GridItem(.flexible(), spacing: Theme.Spacing.m, alignment: .leading)
+        return dynamicTypeSize >= .xxLarge ? [item] : [item, item]
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
@@ -49,14 +53,17 @@ struct TableLegend: View {
                 Text(category.shortName)
                     .font(AppFont.caption)
                     .foregroundStyle(isSelected ? AppColor.primaryText : AppColor.secondaryText)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
             }
-            .padding(.vertical, 5)
             .padding(.horizontal, 6)
+            // Each row sets the table's filter, so it is a control and gets the
+            // standard target — the swatch alone left it at 28 points.
+            .frame(minHeight: Theme.minimumTouchTarget)
             .background {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(isSelected ? AppColor.surfaceMuted : Color.clear)
             }
             .contentShape(Rectangle())

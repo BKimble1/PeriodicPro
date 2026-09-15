@@ -111,9 +111,11 @@ struct UseCard: View {
             }
         }
         .padding(.vertical, Theme.Spacing.m)
-        .padding(.horizontal, Theme.Spacing.s)
+        .padding(.horizontal, Theme.Spacing.m)
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 108)
+        // Two per row means the copy rarely wraps, so the card no longer needs
+        // to reserve height for three lines of title.
+        .frame(minHeight: 92)
         .background {
             RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                 .fill(tint.opacity(0.08))

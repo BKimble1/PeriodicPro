@@ -35,8 +35,12 @@ struct PeriodicTableScreen: View {
     @Namespace private var tableNamespace
 
     /// The comfortable layout exists to be read, so its tiles grow with the
-    /// learner's text size rather than staying a fixed 64 points.
-    @ScaledMetric(relativeTo: .body) private var comfortableTileSize: CGFloat = 64
+    /// learner's text size rather than staying a fixed 64 points — capped,
+    /// because past ~112pt a tile stops being a tile and the table becomes a
+    /// 3,000-point scroll in both directions.
+    @ScaledMetric(relativeTo: .body) private var scaledComfortableTile: CGFloat = 64
+
+    private var comfortableTileSize: CGFloat { min(scaledComfortableTile, 112) }
 
     private static let fittedSpacing: CGFloat = 1.5
     private static let comfortableSpacing: CGFloat = 4
@@ -120,8 +124,11 @@ struct PeriodicTableScreen: View {
             .sheet(isPresented: $showsFilterSheet) {
                 CategoryFilterSheet(filter: $filter, catalog: catalog)
             }
+            // The safe width, not the raw frame width: in landscape the sensor
+            // housing eats 60-odd points on one side, and a vertical ScrollView
+            // lays its content out inside those insets.
             .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.size.width
+                proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing
             } action: { width in
                 screenWidth = width
             }

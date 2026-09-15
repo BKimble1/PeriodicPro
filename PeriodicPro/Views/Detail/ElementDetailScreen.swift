@@ -62,7 +62,7 @@ struct ElementDetailScreen: View {
                 UsesCard(element: element).softRise(enabled: !reduceMotion)
                 MemoryHookCard(element: element).softRise(enabled: !reduceMotion)
                 FamiliarityCard(
-                    element: element,
+                    elementName: element.name,
                     snapshot: progress.snapshot(for: element.atomicNumber)
                 )
                 .softRise(enabled: !reduceMotion)

@@ -40,11 +40,22 @@ struct PeriodicTableGrid: View {
         .frame(width: totalWidth, alignment: .leading)
     }
 
+    /// Once the tiles are big enough to sit beside real text, the caption uses
+    /// a text style so it scales; below that it stays hand-sized, because the
+    /// fitted table has no room to grow.
+    @ViewBuilder
     private func caption(_ text: String) -> some View {
-        Text(text)
-            .font(.system(size: max(9, min(11, tileSize * 0.5)), weight: .medium))
-            .foregroundStyle(AppColor.tertiaryText)
-            .accessibilityAddTraits(.isHeader)
+        if tileSize >= 38 {
+            Text(text)
+                .font(.system(.caption, weight: .medium))
+                .foregroundStyle(AppColor.tertiaryText)
+                .accessibilityAddTraits(.isHeader)
+        } else {
+            Text(text)
+                .font(.system(size: max(9, min(11, tileSize * 0.6)), weight: .medium))
+                .foregroundStyle(AppColor.tertiaryText)
+                .accessibilityAddTraits(.isHeader)
+        }
     }
 
     private func block(elements: [ChemicalElement], rows: Int, baseRow: Int) -> some View {

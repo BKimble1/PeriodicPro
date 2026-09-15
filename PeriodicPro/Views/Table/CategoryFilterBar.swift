@@ -5,6 +5,8 @@ struct CategoryFilterBar: View {
     @Binding var filter: ElementFilter
     var onOpenDetailedFilters: () -> Void
 
+    private var summaryChipIsShown: Bool { !filter.categories.isEmpty }
+
     var body: some View {
         HStack(spacing: Theme.Spacing.s) {
             ScrollView(.horizontal) {
@@ -12,20 +14,25 @@ struct CategoryFilterBar: View {
                     chip(title: "All", isSelected: !filter.isActive) {
                         filter = .all
                     }
+                    // A single selected family can produce a summary identical
+                    // to one of these ("Metalloids"), so that chip steps aside
+                    // rather than appearing twice.
                     ForEach(ElementFamily.allCases) { family in
-                        chip(
-                            title: family.displayName,
-                            isSelected: filter.family == family && filter.categories.isEmpty
-                        ) {
-                            if filter.family == family && filter.categories.isEmpty {
-                                filter = .all
-                            } else {
-                                filter = ElementFilter(family: family, categories: [])
+                        if !(summaryChipIsShown && family.displayName == filter.summary) {
+                            chip(
+                                title: family.displayName,
+                                isSelected: filter.family == family && filter.categories.isEmpty
+                            ) {
+                                if filter.family == family && filter.categories.isEmpty {
+                                    filter = .all
+                                } else {
+                                    filter = ElementFilter(family: family, categories: [])
+                                }
                             }
                         }
                     }
-                    if !filter.categories.isEmpty {
-                        chip(title: filter.summary, isSelected: true) {
+                    if summaryChipIsShown {
+                        chip(title: filter.summary, isSelected: true, identifier: "filter.selection") {
                             filter = .all
                         }
                     }
@@ -50,7 +57,12 @@ struct CategoryFilterBar: View {
         }
     }
 
-    private func chip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    private func chip(
+        title: String,
+        isSelected: Bool,
+        identifier: String? = nil,
+        action: @escaping () -> Void
+    ) -> some View {
         Button {
             Haptics.tap()
             withAnimation(Theme.Motion.soft) { action() }
@@ -59,8 +71,7 @@ struct CategoryFilterBar: View {
                 .font(.system(.subheadline, weight: .medium))
                 .foregroundStyle(isSelected ? Color.white : AppColor.primaryText)
                 .padding(.horizontal, Theme.Spacing.l)
-                .padding(.vertical, Theme.Spacing.s)
-                .frame(minHeight: 34)
+                .frame(minHeight: Theme.minimumTouchTarget)
                 .background {
                     Capsule(style: .continuous)
                         .fill(isSelected ? AppColor.accent : AppColor.surface)
@@ -69,10 +80,13 @@ struct CategoryFilterBar: View {
                     Capsule(style: .continuous)
                         .strokeBorder(isSelected ? .clear : AppColor.hairline, lineWidth: 0.8)
                 }
+                .contentShape(Capsule(style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-        .accessibilityIdentifier("filter.\(title.replacingOccurrences(of: " ", with: ""))")
+        .accessibilityIdentifier(
+            identifier ?? "filter.\(title.replacingOccurrences(of: " ", with: ""))"
+        )
     }
 }
 
