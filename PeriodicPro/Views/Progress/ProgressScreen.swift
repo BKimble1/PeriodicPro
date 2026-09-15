@@ -158,7 +158,7 @@ struct ProgressScreen: View {
                         CategoryProgressBar(
                             category: category,
                             mastered: progress.masteredCount(in: category, catalog: catalog),
-                            total: catalog.elements(in: category).count
+                            total: catalog.count(of: category)
                         )
                     }
                 }

@@ -71,7 +71,7 @@ struct PeriodicTableScreen: View {
     }
 
     private var searchResults: [ChemicalElement] {
-        ElementSearch.results(for: query, in: catalog.elements)
+        catalog.search(query)
     }
 
     var body: some View {

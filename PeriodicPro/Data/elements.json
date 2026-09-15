@@ -1364,7 +1364,7 @@
       {
         "title": "Magnets",
         "detail": "motors and speakers",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       },
       {
         "title": "Hemoglobin",
@@ -1423,7 +1423,7 @@
       {
         "title": "Magnets",
         "detail": "alnico and samarium types",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       }
     ]
   },
@@ -2014,7 +2014,7 @@
       {
         "title": "Magnets",
         "detail": "ferrite ceramic magnets",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       },
       {
         "title": "Glassmaking",
@@ -2169,7 +2169,7 @@
       {
         "title": "MRI Magnets",
         "detail": "superconducting coils",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       },
       {
         "title": "Jet Engines",
@@ -3163,7 +3163,7 @@
       {
         "title": "Magnets",
         "detail": "boosts NdFeB strength",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       },
       {
         "title": "Welder Goggles",
@@ -3219,7 +3219,7 @@
       {
         "title": "Strong Magnets",
         "detail": "in motors and speakers",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       },
       {
         "title": "Headphones",
@@ -3331,7 +3331,7 @@
       {
         "title": "SmCo Magnets",
         "detail": "stable at high heat",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       },
       {
         "title": "Reactor Control",
@@ -3611,7 +3611,7 @@
       {
         "title": "Magnet Cores",
         "detail": "concentrates field lines",
-        "symbolName": "magnet"
+        "symbolName": "bolt.horizontal.fill"
       },
       {
         "title": "Lab Standards",
@@ -5250,7 +5250,7 @@
       {
         "title": "Targets",
         "detail": "making heavier elements",
-        "symbolName": "target"
+        "symbolName": "scope"
       },
       {
         "title": "Heat Sources",
@@ -5307,7 +5307,7 @@
       {
         "title": "Targets",
         "detail": "used to make tennessine",
-        "symbolName": "target"
+        "symbolName": "scope"
       },
       {
         "title": "Nuclear Data",
@@ -5421,7 +5421,7 @@
       {
         "title": "Targets",
         "detail": "used to make mendelevium",
-        "symbolName": "target"
+        "symbolName": "scope"
       },
       {
         "title": "Spectroscopy",
@@ -5991,7 +5991,7 @@
       {
         "title": "Synthesis",
         "detail": "heavy-ion fusion tests",
-        "symbolName": "target"
+        "symbolName": "scope"
       },
       {
         "title": "Group Trends",
@@ -6048,7 +6048,7 @@
       {
         "title": "Synthesis",
         "detail": "lead-target fusion runs",
-        "symbolName": "target"
+        "symbolName": "scope"
       },
       {
         "title": "Group Trends",
@@ -6276,7 +6276,7 @@
       {
         "title": "Stability Hunt",
         "detail": "island-of-stability work",
-        "symbolName": "target"
+        "symbolName": "scope"
       },
       {
         "title": "Gas Chemistry",
@@ -6452,7 +6452,7 @@
       {
         "title": "Target Making",
         "detail": "berkelium from reactors",
-        "symbolName": "target"
+        "symbolName": "scope"
       },
       {
         "title": "Accelerators",

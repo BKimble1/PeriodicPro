@@ -60,7 +60,7 @@ struct TableLegend: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(category.pluralName), \(catalog.elements(in: category).count) elements")
+        .accessibilityLabel("\(category.pluralName), \(catalog.count(of: category)) elements")
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 }

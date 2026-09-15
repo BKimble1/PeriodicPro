@@ -99,7 +99,7 @@ struct CategoryFilterSheet: View {
                                 Text(category.pluralName)
                                     .foregroundStyle(AppColor.primaryText)
                                 Spacer()
-                                Text("\(catalog.elements(in: category).count)")
+                                Text("\(catalog.count(of: category))")
                                     .font(AppFont.footnote.monospacedDigit())
                                     .foregroundStyle(AppColor.tertiaryText)
                                 if filter.categories.contains(category) {

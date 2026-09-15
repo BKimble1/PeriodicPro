@@ -23,35 +23,29 @@ struct CardContainer<Content: View>: View {
     }
 }
 
-/// Heading above a card or a horizontal carousel, with an optional trailing
-/// action. The action is only rendered when a handler is supplied, so there is
-/// never a button that does nothing.
-struct SectionHeader<Trailing: View>: View {
+/// Heading above a card or a horizontal carousel.
+///
+/// There is deliberately no trailing "See All" slot: every list in this app is
+/// already complete on screen, and a control that does nothing is worse than no
+/// control at all.
+struct SectionHeader: View {
     let title: String
     var subtitle: String?
-    @ViewBuilder var trailing: Trailing
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(AppFont.sectionTitle)
-                    .foregroundStyle(AppColor.primaryText)
-                if let subtitle {
-                    Text(subtitle)
-                        .font(AppFont.footnote)
-                        .foregroundStyle(AppColor.secondaryText)
-                }
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(AppFont.sectionTitle)
+                .foregroundStyle(AppColor.primaryText)
+            if let subtitle {
+                Text(subtitle)
+                    .font(AppFont.footnote)
+                    .foregroundStyle(AppColor.secondaryText)
             }
-            Spacer(minLength: Theme.Spacing.s)
-            trailing
         }
-    }
-}
-
-extension SectionHeader where Trailing == EmptyView {
-    init(title: String, subtitle: String? = nil) {
-        self.init(title: title, subtitle: subtitle, trailing: { EmptyView() })
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
     }
 }
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Every SF Symbol name the bundled dataset is allowed to reference.
 ///
@@ -17,23 +18,30 @@ enum SFSymbolAllowlist {
         "hammer.fill", "building.2.fill", "house.fill", "shippingbox.fill", "cube.fill",
         "cylinder.fill", "testtube.2", "thermometer", "camera.fill", "photo.fill",
         "paintpalette.fill", "paintbrush.fill", "scissors", "fork.knife", "cup.and.saucer.fill",
-        "carrot.fill", "clock.fill", "magnet", "speaker.wave.3.fill", "radio.fill",
+        "carrot.fill", "clock.fill", "speaker.wave.3.fill", "radio.fill",
         "shield.fill", "lock.fill", "key.fill", "scalemass.fill", "chart.bar.fill", "globe",
         "moon.stars.fill", "wind", "snowflake", "cloud.fill", "water.waves", "tree.fill",
         "mountain.2.fill", "pawprint.fill", "book.fill", "gift.fill", "arrow.3.trianglepath",
         "circle.hexagongrid.fill", "hexagon.fill", "diamond.fill", "crown.fill",
         "bed.double.fill", "facemask.fill", "trash.fill", "rays", "waveform.path",
         "microphone.fill", "headphones", "gamecontroller.fill", "bicycle",
-        "flashlight.on.fill", "ruler.fill", "binoculars.fill", "scope", "target",
+        "flashlight.on.fill", "ruler.fill", "binoculars.fill", "scope",
         "circle.grid.cross.fill", "wrench.adjustable.fill",
     ]
 
+    /// Guaranteed to exist on every supported OS version.
     static let fallback = "atom"
 
     static func contains(_ name: String) -> Bool { names.contains(name) }
 
     /// Never returns a name that would render as a blank space.
+    ///
+    /// The allowlist is the first gate and `PeriodicProTests` proves every entry
+    /// in it resolves; this second check means even a symbol withdrawn by a
+    /// future OS release degrades to the fallback rather than to nothing.
+    @MainActor
     static func resolved(_ name: String) -> String {
-        names.contains(name) ? name : fallback
+        guard names.contains(name), UIImage(systemName: name) != nil else { return fallback }
+        return name
     }
 }

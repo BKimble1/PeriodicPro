@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import OSLog
 import SwiftData
 
 /// The single owner of everything the learner has done: favorites, per-element

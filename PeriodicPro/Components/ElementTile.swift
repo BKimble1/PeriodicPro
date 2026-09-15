@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// The single most reused view in the app: one element rendered as a rounded
-/// tile. It scales from a 19-point cell in the fitted periodic table up to a
-/// 92-point card in the favorites carousel.
+/// tile. It scales from a 17-point cell in the fitted periodic table up to a
+/// 68-point card in the favorites carousel.
 struct ElementTile: View {
     enum Density {
         /// Symbol only. Used when the whole table has to fit the screen width.
@@ -51,7 +51,6 @@ struct ElementTile: View {
         .overlay(alignment: .topTrailing) { badges }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
-        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder

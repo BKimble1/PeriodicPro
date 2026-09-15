@@ -8,45 +8,72 @@ import Foundation
 /// 3. name prefix ("oxy" → Oxygen)
 /// 4. symbol prefix ("mg" → Magnesium)
 /// 5. name contains ("gen" → Hydrogen, Nitrogen, Oxygen)
+/// 6. family word prefix ("noble" → the noble gases)
 /// Ties break by atomic number so results are stable and testable.
 enum ElementSearch {
     static let resultLimit = 40
 
+    /// Case- and diacritic-folded strings for one element.
+    ///
+    /// Folding is the expensive part of searching, so it happens once when the
+    /// catalog is built rather than 236 times per keystroke.
+    struct Entry: Sendable {
+        let element: ChemicalElement
+        let name: String
+        let symbol: String
+        let familyWords: [String]
+    }
+
+    /// A fixed locale: folding must not change behaviour with the device region,
+    /// and building a `Locale` per call showed up as pure overhead.
+    private static let foldingLocale = Locale(identifier: "en_US_POSIX")
+
     static func normalize(_ text: String) -> String {
-        text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US"))
+        text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: foldingLocale)
             .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    static func makeEntries(_ elements: [ChemicalElement]) -> [Entry] {
+        elements.map { element in
+            Entry(
+                element: element,
+                name: normalize(element.name),
+                symbol: normalize(element.symbol),
+                familyWords: normalize(element.category.displayName)
+                    .split(whereSeparator: { $0 == " " || $0 == "-" })
+                    .map(String.init)
+            )
+        }
     }
 
     static func results(
         for rawQuery: String,
-        in elements: [ChemicalElement],
+        in entries: [Entry],
         limit: Int = resultLimit
     ) -> [ChemicalElement] {
         let query = normalize(rawQuery)
-        guard !query.isEmpty else { return [] }
+        guard !query.isEmpty, limit > 0 else { return [] }
 
         let queryNumber = Int(query)
         var scored: [(rank: Int, element: ChemicalElement)] = []
-        scored.reserveCapacity(min(elements.count, limit * 2))
+        scored.reserveCapacity(min(entries.count, limit * 2))
 
-        for element in elements {
-            let symbol = normalize(element.symbol)
-            let name = normalize(element.name)
-
-            if symbol == query {
-                scored.append((0, element))
-            } else if let queryNumber, element.atomicNumber == queryNumber {
-                scored.append((1, element))
-            } else if name.hasPrefix(query) {
-                scored.append((2, element))
-            } else if symbol.hasPrefix(query) {
-                scored.append((3, element))
-            } else if query.count >= 2, name.contains(query) {
-                scored.append((4, element))
-            } else if queryNumber == nil,
-                      query.count >= 2,
-                      normalize(element.category.displayName).contains(query) {
-                scored.append((5, element))
+        for entry in entries {
+            if entry.symbol == query {
+                scored.append((0, entry.element))
+            } else if let queryNumber, entry.element.atomicNumber == queryNumber {
+                scored.append((1, entry.element))
+            } else if entry.name.hasPrefix(query) {
+                scored.append((2, entry.element))
+            } else if entry.symbol.hasPrefix(query) {
+                scored.append((3, entry.element))
+            } else if query.count >= 2, entry.name.contains(query) {
+                scored.append((4, entry.element))
+            } else if queryNumber == nil, query.count >= 3,
+                      // Word-prefix, not substring: otherwise "metal" would
+                      // match "Reactive Nonmetal" and return the nonmetals.
+                      entry.familyWords.contains(where: { $0.hasPrefix(query) }) {
+                scored.append((5, entry.element))
             }
         }
 
@@ -58,6 +85,17 @@ enum ElementSearch {
             }
             .prefix(limit)
             .map { $0.element }
+    }
+
+    /// Convenience that folds on the spot. The app searches through
+    /// `ElementCatalog.search(_:)`, which reuses a prebuilt index; this overload
+    /// exists for tests and one-off callers.
+    static func results(
+        for rawQuery: String,
+        in elements: [ChemicalElement],
+        limit: Int = resultLimit
+    ) -> [ChemicalElement] {
+        results(for: rawQuery, in: makeEntries(elements), limit: limit)
     }
 }
 

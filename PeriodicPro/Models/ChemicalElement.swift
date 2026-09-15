@@ -161,7 +161,8 @@ extension ChemicalElement {
 }
 
 extension String {
-    /// "Na" -> "N A" so VoiceOver spells the symbol rather than attempting a word.
+    /// "Na" -> "N a", so VoiceOver spells the symbol out letter by letter
+    /// instead of trying to pronounce it as a word.
     var spelledOutForVoiceOver: String {
         map(String.init).joined(separator: " ")
     }
@@ -177,6 +178,10 @@ enum SuperscriptFormatter {
 
     /// Digits that immediately follow an orbital letter (s, p, d, f) become
     /// superscripts; principal quantum numbers preceding a letter do not.
+    ///
+    /// Expects the space-separated notation stored in `elements.json`
+    /// ("[Ne] 3s2 3p4"), which `Tools/validate_elements.py` enforces. Unspaced
+    /// notation is ambiguous and is not supported.
     static func applyingSuperscripts(to configuration: String) -> String {
         var output = ""
         output.reserveCapacity(configuration.count)
