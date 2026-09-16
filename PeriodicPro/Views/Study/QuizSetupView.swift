@@ -159,30 +159,33 @@ struct QuizSetupView: View {
         Section {
             DisclosureGroup {
                 VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-                    filterLabel("Families")
-                    ChipGrid(items: ElementCategory.displayOrder, selection: $configuration.elementFilters.categories,
-                             title: \.shortName, identifierPrefix: "quizSetup.family")
-                    filterLabel("State at room temperature")
-                    ChipGrid(items: [MatterPhase.solid, .liquid, .gas],
-                             selection: $configuration.elementFilters.phases,
-                             title: \.displayName, identifierPrefix: "quizSetup.phase")
-                    filterLabel("Periods")
-                    ChipGrid(items: Array(1...7), selection: $configuration.elementFilters.periods,
-                             title: { "\($0)" }, identifierPrefix: "quizSetup.period")
-                    filterLabel("Groups")
-                    ChipGrid(items: Array(1...18), selection: $configuration.elementFilters.groups,
-                             title: { "\($0)" }, identifierPrefix: "quizSetup.group")
-                    filterLabel("Atomic number range")
-                    HStack(spacing: Theme.Spacing.l) {
-                        Stepper(value: Binding(
-                            get: { configuration.elementFilters.minimumAtomicNumber ?? 1 },
-                            set: { configuration.elementFilters.minimumAtomicNumber = $0 == 1 ? nil : $0 }
-                        ), in: 1...118) {
-                            Text("From \(configuration.elementFilters.minimumAtomicNumber ?? 1)")
-                                .font(AppFont.footnote)
-                        }
-                        .accessibilityIdentifier("quizSetup.minimumZ")
+                    Group {
+                        filterLabel("Families")
+                        ChipGrid(items: ElementCategory.displayOrder,
+                                 selection: $configuration.elementFilters.categories,
+                                 title: \.shortName, identifierPrefix: "quizSetup.family")
+                        filterLabel("State at room temperature")
+                        ChipGrid(items: [MatterPhase.solid, .liquid, .gas],
+                                 selection: $configuration.elementFilters.phases,
+                                 title: \.displayName, identifierPrefix: "quizSetup.phase")
                     }
+                    Group {
+                        filterLabel("Periods")
+                        ChipGrid(items: Array(1...7), selection: $configuration.elementFilters.periods,
+                                 title: { "\($0)" }, identifierPrefix: "quizSetup.period")
+                        filterLabel("Groups")
+                        ChipGrid(items: Array(1...18), selection: $configuration.elementFilters.groups,
+                                 title: { "\($0)" }, identifierPrefix: "quizSetup.group")
+                    }
+                    filterLabel("Atomic number range")
+                    Stepper(value: Binding(
+                        get: { configuration.elementFilters.minimumAtomicNumber ?? 1 },
+                        set: { configuration.elementFilters.minimumAtomicNumber = $0 == 1 ? nil : $0 }
+                    ), in: 1...118) {
+                        Text("From \(configuration.elementFilters.minimumAtomicNumber ?? 1)")
+                            .font(AppFont.footnote)
+                    }
+                    .accessibilityIdentifier("quizSetup.minimumZ")
                     Stepper(value: Binding(
                         get: { configuration.elementFilters.maximumAtomicNumber ?? 118 },
                         set: { configuration.elementFilters.maximumAtomicNumber = $0 == 118 ? nil : $0 }

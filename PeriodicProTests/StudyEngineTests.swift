@@ -243,7 +243,7 @@ struct StudyModeSeedTests {
         ).map(\.element.atomicNumber)
         let quiz = QuizGenerator.makeQuiz(
             pool: pool, distractors: catalog.elements, seed: base &+ StudyMode.quiz.seedSalt
-        ).map(\.element.atomicNumber)
+        ).compactMap { $0.element?.atomicNumber }
 
         #expect(flashcards != identify, "Flashcards and Identify should not be the same ten")
         #expect(flashcards != quiz, "Flashcards and the quiz should not be the same ten")

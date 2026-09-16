@@ -44,7 +44,7 @@ final class CompoundSearchModel {
             status = .idle
             return
         }
-        localResults = store.localSearch(trimmed)
+        localResults = store.localSearch(trimmed).map(CompoundMatchCandidate.init(local:))
         guard Self.shouldQueryRemote(trimmed), store.isOnlineLookupEnabled else {
             status = .done
             return
