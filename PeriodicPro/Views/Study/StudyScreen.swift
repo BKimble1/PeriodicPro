@@ -14,12 +14,28 @@ struct StudyScreen: View {
     @Environment(SubscriptionManager.self) private var store: SubscriptionManager
 
     @State private var path: [ChemicalElement] = []
-    @State private var activeMode: StudyMode?
-    /// Captured when a round starts. `studyQueue` is ordered by mastery, which
-    /// changes on every answer, and `StudyScreen.body` observes that — so
-    /// passing it live handed the running session a freshly shuffled pool after
-    /// each card and the deck changed under the learner mid-round.
-    @State private var sessionQueue: [ChemicalElement] = []
+    /// The round on screen, mode and deck together.
+    ///
+    /// The deck travels *inside* the item rather than beside it in its own
+    /// `@State`. It used to be a separate property, written on the line above
+    /// `activeMode`, and the session came up empty every time: two state writes
+    /// drive one presentation, and `fullScreenCover(item:)` builds its content
+    /// from the item it was handed, not from whatever else the view has since
+    /// been told. Every round in every mode opened on "Nothing to study yet".
+    ///
+    /// One value, one write, no window in which they disagree. The deck is
+    /// still captured once when the round starts — `studyQueue` is ordered by
+    /// mastery, which changes on every answer, and handing the session a live
+    /// view of it reshuffled the learner's remaining cards after each one.
+    private struct ActiveRound: Identifiable {
+        let mode: StudyMode
+        let queue: [ChemicalElement]
+        // The same identity the mode had when it was the item on its own, so a
+        // second tap on the same mode still does not re-present.
+        var id: String { mode.id }
+    }
+
+    @State private var activeRound: ActiveRound?
     @State private var paywall: PaywallContext?
     /// Shown when Smart Review is unlocked but has nothing to review yet.
     @State private var smartReviewNotice: String?
@@ -80,7 +96,7 @@ struct StudyScreen: View {
                 ElementDetailScreen(element: element)
                     .zoomTransition(id: element.atomicNumber, namespace: studyNamespace)
             }
-            .fullScreenCover(item: $activeMode) {
+            .fullScreenCover(item: $activeRound) {
                 // onDismiss runs after the cover has finished dismissing.
                 // Reacting to the binding going nil instead would fire at the
                 // *start* of the transition, and asking to present a sheet from
@@ -89,10 +105,10 @@ struct StudyScreen: View {
                 guard let pending = paywallAfterSession else { return }
                 paywallAfterSession = nil
                 paywall = pending
-            } content: { mode in
+            } content: { round in
                 StudySessionContainer(
-                    mode: mode,
-                    queue: sessionQueue,
+                    mode: round.mode,
+                    queue: round.queue,
                     catalog: catalog,
                     onAllowanceSpent: { paywallAfterSession = .dailyLimit }
                 )
@@ -383,15 +399,15 @@ struct StudyScreen: View {
         Task { @MainActor in await beginRound(mode) }
     }
 
-    /// Main-actor isolated because it assigns view state. `sessionQueue` and
-    /// `activeMode` are still set in one body with no suspension between them,
-    /// which is what stops the session from ever seeing a queue that moved.
+    /// Main-actor isolated because it assigns view state. The mode and the deck
+    /// are one value, so the session cannot be presented with one of them and
+    /// not the other.
     @MainActor
     private func beginRound(_ mode: StudyMode) async {
         // Nothing may start, and no paywall may appear, while a round is on
         // screen. Two taps during the suspension below would otherwise resume
         // in arbitrary order and put a paywall over a running session.
-        guard activeMode == nil, paywall == nil else { return }
+        guard activeRound == nil, paywall == nil else { return }
 
         // StoreKit may not have answered yet on a very fast first tap. Asking
         // again costs milliseconds and is the difference between a subscriber
@@ -402,7 +418,7 @@ struct StudyScreen: View {
 
         // Re-checked after the suspension: the state may have moved while this
         // task was waiting.
-        guard activeMode == nil, paywall == nil else { return }
+        guard activeRound == nil, paywall == nil else { return }
 
         if mode.requiresPro, !store.isPro {
             paywall = .smartReview
@@ -423,9 +439,12 @@ struct StudyScreen: View {
             return
         }
 
-        sessionQueue = mode == .smartReview
-            ? SmartReviewBuilder.queue(elements: catalog.elements, snapshots: progress.snapshots)
-            : studyQueue
-        activeMode = mode
+        activeRound = ActiveRound(
+            mode: mode,
+            queue: mode == .smartReview
+                ? SmartReviewBuilder.queue(
+                    elements: catalog.elements, snapshots: progress.snapshots)
+                : studyQueue
+        )
     }
 }
