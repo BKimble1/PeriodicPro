@@ -28,9 +28,12 @@ fi
 STAGING="$(mktemp -d)"
 trap 'rm -rf "$STAGING"' EXIT
 
+# Silenced: it prints a "File: <uuid>, suggested name: <name>" line for every
+# attachment, and XCTest attaches a snapshot per query and an image per tap, so
+# this alone ran to a hundred lines a bundle.
 xcrun xcresulttool export attachments \
   --path "$RESULT_BUNDLE" \
-  --output-path "$STAGING"
+  --output-path "$STAGING" >/dev/null
 
 mkdir -p "$OUTPUT_DIR"
 
@@ -51,3 +54,15 @@ fi
 # to help diagnose.
 echo "screenshots so far: $(ls -1 "$OUTPUT_DIR" | wc -l | tr -d ' ') file(s)"
 ls -1 "$OUTPUT_DIR" | grep -E '^[0-9]{2}-' || true
+
+# When the tour fails, XCTest attaches a full description of the failure. Print
+# it. It is the one thing in the bundle worth reading from CI, and the
+# alternative is downloading a fifty-megabyte artifact to see one paragraph —
+# which is not possible at all from an environment whose egress policy blocks
+# the artifact host.
+find "$OUTPUT_DIR" -maxdepth 1 -name 'Complete Issue Description*' -print0 2>/dev/null |
+  while IFS= read -r -d '' issue; do
+    echo "--- $(basename "$issue") ---"
+    cat "$issue"
+    echo "--- end ---"
+  done
