@@ -95,7 +95,8 @@ final class ElemoraScreenshotTests: XCTestCase {
         }
 
         XCTAssertTrue(element.exists && element.isHittable,
-                      "\(element) never became tappable, scrolling both ways",
+                      "\(element) never became tappable, scrolling both ways"
+                      + onScreen(),
                       file: file, line: line)
         return element
     }
@@ -214,13 +215,47 @@ final class ElemoraScreenshotTests: XCTestCase {
 
         let yearly = el("paywall.plan.periodicpro.pro.yearly")
         let monthly = el("paywall.plan.periodicpro.pro.monthly")
-        XCTAssertTrue(yearly.waitForExistence(timeout: 30),
+        let unavailable = el("paywall.unavailable")
+
+        // Both wait and scroll, because either alone is wrong here.
+        //
+        // The plan rows come after the header and the feature list, which is
+        // more than one screenful on an iPhone SE — and SwiftUI does not vend
+        // an accessibility element for content that far outside a ScrollView's
+        // viewport, so a plain `waitForExistence` on a small phone waited out
+        // its whole timeout on a row that could not appear without scrolling.
+        // Scrolling alone is no better: the rows do not exist at all until
+        // StoreKit answers, and running to the bottom of the loading state
+        // before then finds nothing either.
+        let deadline = Date().addingTimeInterval(45)
+        while !yearly.exists, Date() < deadline {
+            // A terminal state — `hasAttemptedLoad` is set and the product
+            // list came back empty — so there is nothing to wait for, and
+            // saying so beats timing out with a message about scrolling.
+            if unavailable.exists {
+                XCTFail("The paywall rendered its \"options unavailable\" state: "
+                        + "StoreKit returned no products for the local "
+                        + "Config/PeriodicPro.storekit configuration"
+                        + onScreen())
+                return
+            }
+            app.swipeUp()
+        }
+
+        XCTAssertTrue(yearly.exists,
                       "The paywall never loaded the yearly plan from "
                       + "Config/PeriodicPro.storekit. Check that the scheme still "
-                      + "references it and that the product identifiers match.")
-        XCTAssertTrue(monthly.exists, "The paywall is missing the monthly plan")
+                      + "references it and that the product identifiers match."
+                      + onScreen())
+        XCTAssertTrue(monthly.exists,
+                      "The paywall is missing the monthly plan" + onScreen())
         settle(1.0)
         capture("08-elemora-pro-paywall")
-        app.buttons["paywall.close"].tap()
+
+        // The close button lives in the navigation bar, which the swipes above
+        // never move, but the swipes do leave the sheet scrolled — so tap it
+        // through the same helper the rest of the tour uses rather than
+        // assuming where the content ended up.
+        tap(app.buttons["paywall.close"])
     }
 }
