@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 #
-# Pulls the screenshots ElemoraScreenshotTests attached to a result bundle out
-# into plain PNGs.
+# Pulls the attachments ElemoraScreenshotTests left in a result bundle out into
+# plain files.
 #
 #   ./Tools/export_screenshots.sh build/Screenshots-light.xcresult Screenshots
 #
-# The attachments are named in the test (`01-table-light` and friends), and
+# The screenshots are named in the test (`01-table-light` and friends), and
 # xcresulttool preserves those names, so the output is a folder a person can
-# look at in order rather than a pile of UUIDs.
+# look at in order rather than a pile of UUIDs. XCTest also attaches its own
+# diagnostics when a query fails — those come out too, because when the tour
+# fails they are the most useful thing in the bundle.
 #
 # `xcresulttool export attachments` is the Xcode 16+ spelling. Older Xcodes only
 # had the deprecated `--format json --id` graph walk; this script does not try
@@ -37,30 +39,7 @@ mkdir -p "$OUTPUT_DIR"
 # shape ever changes — a screenshot with an ugly name still beats no screenshot.
 MANIFEST="$STAGING/manifest.json"
 if [ -f "$MANIFEST" ]; then
-  python3 - "$MANIFEST" "$STAGING" "$OUTPUT_DIR" <<'PY'
-import json, os, shutil, sys
-
-manifest_path, staging, output = sys.argv[1:4]
-with open(manifest_path) as handle:
-    manifest = json.load(handle)
-
-# The manifest is a list of test entries, each with an `attachments` list.
-count = 0
-for entry in manifest if isinstance(manifest, list) else [manifest]:
-    for attachment in entry.get("attachments", []):
-        exported = attachment.get("exportedFileName")
-        name = attachment.get("suggestedHumanReadableName") or exported
-        if not exported:
-            continue
-        source = os.path.join(staging, exported)
-        if not os.path.exists(source):
-            continue
-        if not name.lower().endswith(".png"):
-            name += ".png"
-        shutil.copyfile(source, os.path.join(output, name))
-        count += 1
-print(f"exported {count} screenshot(s) to {output}")
-PY
+  python3 Tools/rename_attachments.py "$MANIFEST" "$STAGING" "$OUTPUT_DIR"
 else
   echo "warning: no manifest.json in the export; copying PNGs verbatim" >&2
   find "$STAGING" -name '*.png' -exec cp {} "$OUTPUT_DIR/" \;

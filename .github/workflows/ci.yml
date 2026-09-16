@@ -297,7 +297,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: elemora-simulator-screenshots
-          path: screenshots/*.png
+          # The whole folder, not just the PNGs: when a capture fails, XCTest's
+          # own attached diagnostics are the most useful thing in the bundle,
+          # and they are text.
+          path: screenshots/
           retention-days: 30
           if-no-files-found: error
 

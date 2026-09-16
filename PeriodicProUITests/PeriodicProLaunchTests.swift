@@ -24,7 +24,18 @@ final class PeriodicProLaunchTests: XCTestCase {
         attachment.name = "Accessibility tree"
         attachment.lifetime = .keepAlways
         add(attachment)
-        return "\nWindow: \(app.windows.firstMatch.frame)\n\(app.debugDescription)"
+
+        let described = app.descendants(matching: .any)
+            .allElementsBoundByAccessibilityElement
+            .filter { !$0.identifier.isEmpty }
+            .map { "\($0.identifier)<\($0.elementType.rawValue)>" }
+        let shown = described.prefix(40).joined(separator: " ")
+        let more = described.count > 40 ? " …+\(described.count - 40)" : ""
+        // The full tree goes to the attachment; the message gets one line,
+        // because GitHub's error annotation keeps only the first line of a
+        // multi-line assertion message and the tree is what is being looked at.
+        return " | window \(app.windows.firstMatch.frame) "
+            + "| \(described.count) identified: \(shown)\(more)"
     }
 
     func testLaunchPerformanceAndFirstFrame() throws {

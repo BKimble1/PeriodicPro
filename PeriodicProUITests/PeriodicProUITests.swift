@@ -44,14 +44,19 @@ final class PeriodicProUITests: XCTestCase {
     /// those apart from a CI log was worth a whole round trip. This lists the
     /// identifiers the app is currently vending, which answers it directly.
     private func onScreen() -> String {
-        let identifiers = app.descendants(matching: .any)
+        let described = app.descendants(matching: .any)
             .allElementsBoundByAccessibilityElement
-            .map(\.identifier)
-            .filter { !$0.isEmpty }
-        let shown = identifiers.prefix(40).joined(separator: ", ")
-        let more = identifiers.count > 40 ? " … and \(identifiers.count - 40) more" : ""
-        return "\n  window: \(app.windows.firstMatch.frame)"
-            + "\n  \(identifiers.count) identified element(s): \(shown)\(more)"
+            .filter { !$0.identifier.isEmpty }
+            .map { "\($0.identifier)<\($0.elementType.rawValue)>" }
+        let shown = described.prefix(40).joined(separator: " ")
+        let more = described.count > 40 ? " …+\(described.count - 40)" : ""
+        // One line, deliberately. A multi-line assertion message is collapsed
+        // to its first line in GitHub's error annotation, which is where this
+        // is read — a tree spread over forty lines arrives as nothing at all.
+        // The type in angle brackets is XCUIElement.ElementType's raw value:
+        // 9 is a button, 48 a static text, 6 a generic "other".
+        return " | window \(app.windows.firstMatch.frame) "
+            + "| \(described.count) identified: \(shown)\(more)"
     }
 
     private func waitFor(_ element: XCUIElement,
