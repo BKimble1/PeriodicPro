@@ -166,11 +166,13 @@ struct EntitlementResolutionTests {
 
         #expect(ContinuousClock.now - started < .seconds(25),
                 "an answered request should not sit out the deadline")
-        // An empty catalogue is still an answer, and it is the unavailable
+        // An empty catalog is still an answer, and it is the unavailable
         // state rather than the timeout message.
         if case .productsUnavailable = store.purchaseState {} else {
-            Issue.record("expected unavailable for an empty catalogue, "
-                         + "got \(store.purchaseState)")
+            // One literal, not two joined with `+`: `Issue.record` takes a
+            // `Comment`, which is expressible by a string literal but is not a
+            // String, so concatenating two of them does not typecheck.
+            Issue.record("expected unavailable for an empty catalog, got \(store.purchaseState)")
         }
     }
 

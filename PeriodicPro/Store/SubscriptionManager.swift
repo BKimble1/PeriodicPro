@@ -43,7 +43,11 @@ final class SubscriptionManager {
     @ObservationIgnored
     private let productRequest: @Sendable () async throws -> [Product]
 
-    private static func liveProductRequest() async throws -> [Product] {
+    /// `nonisolated` on purpose: a static member of a `@MainActor` type is
+    /// itself main-actor isolated, and handing that to a `@Sendable` property
+    /// warns about introducing data races. Nothing here needs the main actor —
+    /// `Product.products(for:)` is not isolated either.
+    private nonisolated static func liveProductRequest() async throws -> [Product] {
         try await Product.products(for: SubscriptionProduct.allProductIDs)
     }
 
