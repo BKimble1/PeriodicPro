@@ -53,7 +53,16 @@ struct ElementDetailScreen: View {
                 ElementHero(element: element)
                     .padding(.top, Theme.Spacing.s)
                     .padding(.bottom, Theme.Spacing.xs)
-                    .scrollTransition(.interactive, axis: .vertical) { content, phase in
+                    // `reduceMotion` is captured rather than read inside the
+                    // closure. `scrollTransition` does not run its body on the
+                    // main actor, so reading an `@Environment` value there is
+                    // three warnings on every Release build today — "main
+                    // actor-isolated property 'reduceMotion' can not be
+                    // referenced from a Sendable closure" — and an error the
+                    // day this target moves to the Swift 6 language mode. The
+                    // captured value is the one in effect when the transition
+                    // is built, which is what the old code read anyway.
+                    .scrollTransition(.interactive, axis: .vertical) { [reduceMotion] content, phase in
                         content
                             .opacity(reduceMotion ? 1 : 1 - abs(phase.value) * 0.9)
                             .scaleEffect(reduceMotion ? 1 : 1 + phase.value * 0.07, anchor: .top)
