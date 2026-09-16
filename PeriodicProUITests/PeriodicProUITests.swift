@@ -37,12 +37,30 @@ final class PeriodicProUITests: XCTestCase {
             .firstMatch
     }
 
+    /// What is actually on screen, in one line.
+    ///
+    /// "Timed out waiting for X" is not a diagnosis — it cannot distinguish a
+    /// control that is missing from one that is merely off screen, and telling
+    /// those apart from a CI log was worth a whole round trip. This lists the
+    /// identifiers the app is currently vending, which answers it directly.
+    private func onScreen() -> String {
+        let identifiers = app.descendants(matching: .any)
+            .allElementsBoundByAccessibilityElement
+            .map(\.identifier)
+            .filter { !$0.isEmpty }
+        let shown = identifiers.prefix(40).joined(separator: ", ")
+        let more = identifiers.count > 40 ? " … and \(identifiers.count - 40) more" : ""
+        return "\n  window: \(app.windows.firstMatch.frame)"
+            + "\n  \(identifiers.count) identified element(s): \(shown)\(more)"
+    }
+
     private func waitFor(_ element: XCUIElement,
                          _ timeout: TimeInterval = 10,
                          file: StaticString = #filePath,
                          line: UInt = #line) {
         XCTAssertTrue(element.waitForExistence(timeout: timeout),
-                      "Timed out waiting for \(element)", file: file, line: line)
+                      "Timed out waiting for \(element)\(onScreen())",
+                      file: file, line: line)
     }
 
     private func openTab(_ name: String) {
@@ -53,21 +71,40 @@ final class PeriodicProUITests: XCTestCase {
 
     /// Scrolls until the element can actually be tapped.
     ///
-    /// The Study tab is taller than a 4.7-inch screen, so a control that exists
-    /// is not necessarily on screen. Tapping a non-hittable element fails in a
-    /// way that looks like a missing feature rather than a scroll position.
+    /// Scroll *while* looking, rather than waiting for the element to exist and
+    /// only then scrolling. SwiftUI does not vend an accessibility element for
+    /// content far outside a ScrollView's viewport, so waiting for something
+    /// below the fold to exist times out before anything has scrolled — which
+    /// is exactly how a reachable control reads as a missing feature.
+    ///
+    /// The short wait first matters too: most targets are already on screen,
+    /// and swiping past one that simply had not rendered yet is how a test
+    /// starts scrolling away from what it was looking for.
     @discardableResult
     private func scrollTo(_ element: XCUIElement,
                           file: StaticString = #filePath,
                           line: UInt = #line) -> XCUIElement {
-        waitFor(element, 10, file: file, line: line)
+        if element.waitForExistence(timeout: 3), element.isHittable { return element }
+
         var attempts = 0
-        while !element.isHittable && attempts < 6 {
+        while attempts < 8 {
             app.swipeUp()
             attempts += 1
+            if element.exists, element.isHittable { return element }
         }
+
+        // It may have been above the starting position rather than below it.
+        for _ in 0..<attempts {
+            app.swipeDown()
+            if element.exists, element.isHittable { return element }
+        }
+
+        XCTAssertTrue(element.exists,
+                      "\(element) never appeared, scrolling in both directions\(onScreen())",
+                      file: file, line: line)
         XCTAssertTrue(element.isHittable,
-                      "\(element) never became tappable", file: file, line: line)
+                      "\(element) exists but never became tappable\(onScreen())",
+                      file: file, line: line)
         return element
     }
 
@@ -75,6 +112,22 @@ final class PeriodicProUITests: XCTestCase {
                      file: StaticString = #filePath,
                      line: UInt = #line) {
         scrollTo(element, file: file, line: line).tap()
+    }
+
+    /// Asserts the control is reachable — present, and scrollable into view.
+    ///
+    /// The distinction from `exists` is deliberate. A screen taller than the
+    /// display is not a defect, so "reachable" is the claim these tests are
+    /// actually making; only the launch test asserts the stronger "on the first
+    /// screenful", and only for the table, which is the one screen that
+    /// promises it.
+    private func assertReachable(_ element: XCUIElement,
+                                 _ what: String,
+                                 file: StaticString = #filePath,
+                                 line: UInt = #line) {
+        _ = scrollTo(element, file: file, line: line)
+        XCTAssertTrue(element.exists, "\(what) is missing\(onScreen())",
+                      file: file, line: line)
     }
 
     /// Relaunches with Pro entitled. StoreKit is never contacted in a UI test —
@@ -87,9 +140,7 @@ final class PeriodicProUITests: XCTestCase {
     }
 
     private func openElement(_ symbol: String) {
-        let tile = app.buttons["element.\(symbol)"]
-        waitFor(tile)
-        tile.tap()
+        tap(app.buttons["element.\(symbol)"])
         waitFor(app.buttons["detail.favoriteButton"])
     }
 
@@ -103,19 +154,26 @@ final class PeriodicProUITests: XCTestCase {
 
     func testLaunchesIntoThePeriodicTable() {
         waitFor(app.navigationBars["Periodic Table"])
-        XCTAssertTrue(app.buttons["element.H"].exists, "Hydrogen tile should be on screen")
-        XCTAssertTrue(app.buttons["element.Og"].exists, "Oganesson tile should be on screen")
+        // The one place the stronger claim is made on purpose: the table is the
+        // app's first screen and the fitted layout exists so that all of it is
+        // there without scrolling. If this fails, the table has been pushed
+        // below the fold and that is the bug, not the assertion.
+        XCTAssertTrue(app.buttons["element.H"].waitForExistence(timeout: 10),
+                      "Hydrogen tile should be on screen at launch\(onScreen())")
+        XCTAssertTrue(app.buttons["element.Og"].exists,
+                      "Oganesson tile should be on screen at launch\(onScreen())")
         XCTAssertTrue(app.tabBars.buttons["Table"].exists)
         XCTAssertTrue(app.tabBars.buttons["Study"].exists)
         XCTAssertTrue(app.tabBars.buttons["Progress"].exists)
     }
 
     func testAllOneHundredAndEighteenTilesAreReachable() {
-        waitFor(app.buttons["element.H"])
         // Spot-check one element from every row of the table, including both
-        // detached f-block rows.
+        // detached f-block rows. Reachable, which is what the name says: the
+        // lanthanide and actinide rows sit below the main block and a small
+        // phone does not hold all of it at once.
         for symbol in ["H", "He", "Li", "Na", "K", "Rb", "Cs", "Fr", "La", "Lu", "Ac", "Lr", "Og"] {
-            XCTAssertTrue(app.buttons["element.\(symbol)"].exists, "\(symbol) tile is missing")
+            assertReachable(app.buttons["element.\(symbol)"], "the \(symbol) tile")
         }
     }
 
@@ -322,10 +380,11 @@ final class PeriodicProUITests: XCTestCase {
         XCTAssertTrue(el("study.masteryCard").exists)
         XCTAssertTrue(el("study.heroCard").exists, "Flashcards should be the hero card")
 
-        // Four practice tiles, Smart Review included.
+        // Four practice tiles, Smart Review included. Scrolled to rather than
+        // asserted on the first screenful: the Study tab is taller than the
+        // display by design, which is why `scrollTo` exists at all.
         for mode in ["flashcards", "quiz", "identify", "smartReview"] {
-            XCTAssertTrue(app.buttons["study.mode.\(mode)"].exists,
-                          "\(mode) tile is missing")
+            assertReachable(app.buttons["study.mode.\(mode)"], "the \(mode) tile")
         }
     }
 
