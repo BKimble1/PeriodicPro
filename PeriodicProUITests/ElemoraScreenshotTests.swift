@@ -107,10 +107,29 @@ final class ElemoraScreenshotTests: XCTestCase {
         scrollTo(element, file: file, line: line).tap()
     }
 
+    /// Finds a tab without assuming the shape of the tab bar.
+    ///
+    /// Scoping to `app.tabBars` is an iPhone assumption. On iPad the tour
+    /// timed out waiting for "Study" on a screen that plainly had it: iPadOS
+    /// 18 draws the floating tab bar, XCUITest does not vend that as a
+    /// `tabBar` element, and the accessibility dump showed the three tab
+    /// buttons outside any tab bar — listed twice each, since the bar and its
+    /// sidebar representation are both in the tree.
+    ///
+    /// So: the tab bar first, because that is the cheapest and most specific
+    /// query where it exists, then anywhere, taking the first of the
+    /// duplicates. The claim being tested is unchanged — the tab is reachable
+    /// and opens its screen — it is simply no longer a claim about which
+    /// container iOS happened to put it in.
     private func openTab(_ name: String) {
-        let tab = app.tabBars.buttons[name]
-        waitFor(tab)
-        tab.tap()
+        let inTabBar = app.tabBars.buttons[name]
+        if inTabBar.waitForExistence(timeout: 5) {
+            inTabBar.tap()
+            return
+        }
+        let anywhere = app.buttons[name].firstMatch
+        waitFor(anywhere)
+        anywhere.tap()
     }
 
     private func openElement(_ symbol: String) {

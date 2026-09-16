@@ -76,10 +76,27 @@ final class PeriodicProUITests: XCTestCase {
                       file: file, line: line)
     }
 
+    /// Finds a tab without assuming the shape of the tab bar.
+    ///
+    /// Scoping to `app.tabBars` is an iPhone assumption: iPadOS 18 draws the
+    /// floating tab bar, XCUITest does not vend that as a `tabBar` element,
+    /// and the tab buttons appear twice in the tree — once for the bar and
+    /// once for its sidebar representation. Tab bar first where it exists,
+    /// then anywhere, taking the first of the duplicates.
     private func openTab(_ name: String) {
-        let tab = app.tabBars.buttons[name]
-        waitFor(tab)
-        tab.tap()
+        let inTabBar = app.tabBars.buttons[name]
+        if inTabBar.waitForExistence(timeout: 5) {
+            inTabBar.tap()
+            return
+        }
+        let anywhere = app.buttons[name].firstMatch
+        waitFor(anywhere)
+        anywhere.tap()
+    }
+
+    /// Whether a tab is reachable at all, wherever iOS filed it.
+    private func tabExists(_ name: String) -> Bool {
+        app.tabBars.buttons[name].exists || app.buttons[name].firstMatch.exists
     }
 
     /// Scrolls until the element can actually be tapped.
@@ -175,9 +192,9 @@ final class PeriodicProUITests: XCTestCase {
                       "Hydrogen tile should be on screen at launch\(onScreen())")
         XCTAssertTrue(app.buttons["element.Og"].exists,
                       "Oganesson tile should be on screen at launch\(onScreen())")
-        XCTAssertTrue(app.tabBars.buttons["Table"].exists)
-        XCTAssertTrue(app.tabBars.buttons["Study"].exists)
-        XCTAssertTrue(app.tabBars.buttons["Progress"].exists)
+        XCTAssertTrue(tabExists("Table"), "Table tab missing\(onScreen())")
+        XCTAssertTrue(tabExists("Study"), "Study tab missing\(onScreen())")
+        XCTAssertTrue(tabExists("Progress"), "Progress tab missing\(onScreen())")
     }
 
     /// Every tile addressable on its own.
