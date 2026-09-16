@@ -832,9 +832,9 @@ final class PeriodicProUITests: XCTestCase {
         tap(app.buttons["study.mode.quiz"])
         waitFor(el("quizSetup.sheet"))
         XCTAssertTrue(el("quizSetup.content").exists)
-        XCTAssertTrue(el("quizSetup.difficulty").exists)
-        XCTAssertTrue(el("quizSetup.length").exists)
-        XCTAssertTrue(el("quizSetup.poolCount").exists, "The footer says how big the selection is")
+        assertReachable(el("quizSetup.difficulty"), "the difficulty picker")
+        assertReachable(el("quizSetup.length"), "the length picker")
+        assertReachable(el("quizSetup.poolCount"), "the footer that says how big the selection is")
         app.buttons["quizSetup.cancel"].tap()
         XCTAssertTrue(app.navigationBars["Study"].waitForExistence(timeout: 5))
     }
