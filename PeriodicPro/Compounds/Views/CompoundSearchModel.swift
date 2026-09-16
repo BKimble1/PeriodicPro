@@ -97,8 +97,8 @@ final class CompoundSearchModel {
 
     /// PubChem is only asked for something that could be a compound name:
     /// never for a number, which is an atomic number, and never for one or two
-    /// letters, which is a symbol.
-    static func shouldQueryRemote(_ query: String) -> Bool {
+    /// letters, which is a symbol. Pure, so it is callable from anywhere.
+    nonisolated static func shouldQueryRemote(_ query: String) -> Bool {
         guard query.count >= minimumRemoteLength, Int(query) == nil else { return false }
         return PubChemClient.isPlausibleName(query)
     }
