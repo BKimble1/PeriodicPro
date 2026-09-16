@@ -88,6 +88,46 @@ struct ProEntitlementTests {
     }
 }
 
+/// The entitlement wait has to be bounded, whatever StoreKit does.
+@MainActor
+@Suite("Waiting for StoreKit")
+struct EntitlementResolutionTests {
+    /// The defect this pins: `beginRound` awaited `refresh()` unbounded. On a
+    /// CI simulator where StoreKit never answered, the entitlement stayed
+    /// unresolved and tapping Smart Review did nothing — no round, no paywall,
+    /// no error. A control that can hang forever on a network call is worse
+    /// than one that guesses, and guessing "not Pro" is safe: the learner gets
+    /// the paywall, which dismisses itself if a real entitlement turns up.
+    @Test("Returns on the deadline when the answer never comes")
+    func boundedWhenStoreKitIsSilent() async {
+        // StoreKit is off in this initializer, so `refresh()` returns without
+        // ever changing the entitlement — a stand-in for "never answers".
+        let store = SubscriptionManager(testingEntitlement: .unknown)
+        let started = ContinuousClock.now
+
+        await store.resolveEntitlement(within: .milliseconds(300))
+
+        let elapsed = ContinuousClock.now - started
+        #expect(store.entitlement.isResolving, "the stand-in never answers, by design")
+        #expect(elapsed >= .milliseconds(250), "it should actually wait for the answer")
+        #expect(elapsed < .seconds(3), "but it must not wait forever: \(elapsed)")
+    }
+
+    @Test("Returns immediately once the entitlement is known")
+    func returnsAtOnceWhenAlreadyResolved() async {
+        for entitlement in [ProEntitlement.free,
+                            .pro(ProSubscriptionInfo(
+                                productID: SubscriptionProduct.monthly.rawValue,
+                                expirationDate: nil))] {
+            let store = SubscriptionManager(testingEntitlement: entitlement)
+            let started = ContinuousClock.now
+            await store.resolveEntitlement(within: .seconds(5))
+            #expect(ContinuousClock.now - started < .milliseconds(200),
+                    "a resolved entitlement should not wait at all")
+        }
+    }
+}
+
 @Suite("Feature gates")
 struct ProAccessTests {
     /// The six elements the brief names as free to explore.

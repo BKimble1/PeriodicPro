@@ -115,10 +115,9 @@ struct ElementDetailScreen: View {
         Task { @MainActor in
             // As on the Study tab: resolve the entitlement before deciding, so
             // a subscriber tapping straight after launch is not shown a paywall
-            // for something they have already paid for.
-            if store.entitlement.isResolving {
-                await store.refresh()
-            }
+            // for something they have already paid for. Bounded for the same
+            // reason — Explore in 3D must never be a button that does nothing.
+            await store.resolveEntitlement()
             if isStructureUnlocked {
                 showsExplorer = true
             } else {

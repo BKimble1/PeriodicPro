@@ -410,11 +410,11 @@ struct StudyScreen: View {
         guard activeRound == nil, paywall == nil else { return }
 
         // StoreKit may not have answered yet on a very fast first tap. Asking
-        // again costs milliseconds and is the difference between a subscriber
-        // starting their round and a subscriber being shown a paywall.
-        if store.entitlement.isResolving {
-            await store.refresh()
-        }
+        // again is the difference between a subscriber starting their round and
+        // a subscriber being shown a paywall — but it is bounded, because
+        // StoreKit does not promise to answer and an unbounded await here means
+        // the tile does nothing at all.
+        await store.resolveEntitlement()
 
         // Re-checked after the suspension: the state may have moved while this
         // task was waiting.

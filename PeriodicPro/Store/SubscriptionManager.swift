@@ -122,6 +122,29 @@ final class SubscriptionManager {
         entitlement = best.map(ProEntitlement.pro) ?? .free
     }
 
+    /// Waits for a pending entitlement answer, but not forever.
+    ///
+    /// `refresh()` reaches StoreKit, and StoreKit does not promise to answer
+    /// promptly. On one CI simulator it never answered at all, and because the
+    /// caller awaited it unbounded, tapping a Pro-gated control did nothing:
+    /// no round, no paywall, not even an error. A control that can hang
+    /// forever on a network call is worse than one that guesses.
+    ///
+    /// Past the deadline the caller proceeds with what is known. That is safe
+    /// in the direction it fails: an unresolved entitlement reads as not-Pro,
+    /// so the learner sees the paywall — and the paywall dismisses itself the
+    /// moment a real entitlement arrives, which is exactly what a subscriber
+    /// whose answer was merely slow will get. The refresh is left running
+    /// rather than canceled, so that answer still lands when it comes.
+    func resolveEntitlement(within duration: Duration = .seconds(3)) async {
+        guard entitlement.isResolving else { return }
+        Task { await self.refresh() }
+        let deadline = ContinuousClock.now.advanced(by: duration)
+        while entitlement.isResolving, ContinuousClock.now < deadline {
+            try? await Task.sleep(for: .milliseconds(50))
+        }
+    }
+
     /// If the learner somehow holds both plans — an upgrade mid-term, say —
     /// the one that runs longest is the one that matters.
     static func longerLasting(
