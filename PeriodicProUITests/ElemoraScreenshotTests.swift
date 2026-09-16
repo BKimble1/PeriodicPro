@@ -51,12 +51,26 @@ final class ElemoraScreenshotTests: XCTestCase {
         app.descendants(matching: .any).matching(identifier: identifier).firstMatch
     }
 
+    /// What is on screen, in one line — GitHub's error annotation keeps only
+    /// the first line of a multi-line assertion message.
+    private func onScreen() -> String {
+        let described = app.descendants(matching: .any)
+            .allElementsBoundByAccessibilityElement
+            .filter { !$0.identifier.isEmpty }
+            .map { "\($0.identifier)<\($0.elementType.rawValue)>" }
+        let shown = described.prefix(40).joined(separator: " ")
+        let more = described.count > 40 ? " …+\(described.count - 40)" : ""
+        return " | window \(app.windows.firstMatch.frame) "
+            + "| \(described.count) identified: \(shown)\(more)"
+    }
+
     private func waitFor(_ element: XCUIElement,
                          _ timeout: TimeInterval = 15,
                          file: StaticString = #filePath,
                          line: UInt = #line) {
         XCTAssertTrue(element.waitForExistence(timeout: timeout),
-                      "Timed out waiting for \(element)", file: file, line: line)
+                      "Timed out waiting for \(element)\(onScreen())",
+                      file: file, line: line)
     }
 
     /// Scrolls while looking, rather than waiting for the element to exist and

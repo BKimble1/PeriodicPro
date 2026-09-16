@@ -223,6 +223,12 @@ jobs:
       # appearance changed underneath it, rather than an in-app override — so
       # what is captured is what iOS actually composites, navigation bars,
       # status bar and all.
+      #
+      # The suffix goes in as TEST_RUNNER_SCREENSHOT_SUFFIX. xcodebuild does not
+      # hand its own environment to the test runner process inside the
+      # simulator, so setting SCREENSHOT_SUFFIX directly reached nothing: all
+      # three runs fell back to "light" and produced three sets of identically
+      # named files, with no way to tell the dark ones apart.
       - name: Capture — light
         run: |
           set -euo pipefail
@@ -230,7 +236,7 @@ jobs:
           xcrun simctl boot "${SIM_DEFAULT}" || true
           xcrun simctl bootstatus "${SIM_DEFAULT}" -b
           xcrun simctl ui "${SIM_DEFAULT}" appearance light
-          SCREENSHOT_SUFFIX=light xcodebuild test-without-building \
+          TEST_RUNNER_SCREENSHOT_SUFFIX=light xcodebuild test-without-building \
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
@@ -250,7 +256,7 @@ jobs:
           xcrun simctl boot "${SIM_DEFAULT}" || true
           xcrun simctl bootstatus "${SIM_DEFAULT}" -b
           xcrun simctl ui "${SIM_DEFAULT}" appearance dark
-          SCREENSHOT_SUFFIX=dark xcodebuild test-without-building \
+          TEST_RUNNER_SCREENSHOT_SUFFIX=dark xcodebuild test-without-building \
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
@@ -271,7 +277,8 @@ jobs:
           xcrun simctl boot "${SIM_SMALL}" || true
           xcrun simctl bootstatus "${SIM_SMALL}" -b
           xcrun simctl ui "${SIM_SMALL}" appearance light
-          SCREENSHOT_SUFFIX="light-${SIM_SMALL_NAME// /-}" xcodebuild test-without-building \
+          TEST_RUNNER_SCREENSHOT_SUFFIX="light-${SIM_SMALL_NAME// /-}" \
+            xcodebuild test-without-building \
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \

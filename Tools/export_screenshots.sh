@@ -45,4 +45,9 @@ else
   find "$STAGING" -name '*.png' -exec cp {} "$OUTPUT_DIR/" \;
 fi
 
-ls -la "$OUTPUT_DIR"
+# A count and the tour's own frames, not the whole folder. XCTest adds its own
+# snapshots, synthesized-event images and a screen recording on failure, and
+# listing all of them three times over buried the failure this script was run
+# to help diagnose.
+echo "screenshots so far: $(ls -1 "$OUTPUT_DIR" | wc -l | tr -d ' ') file(s)"
+ls -1 "$OUTPUT_DIR" | grep -E '^[0-9]{2}-' || true
