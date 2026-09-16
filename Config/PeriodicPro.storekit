@@ -67,7 +67,7 @@
       "localizations" : [
 
       ],
-      "name" : "Periodic Pro",
+      "name" : "Elemora Pro",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -83,14 +83,14 @@
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Interactive 3D structures, unlimited study and Smart Review.",
-              "displayName" : "Periodic Pro Monthly",
+              "description" : "3D structures, unlimited study, and Smart Review.",
+              "displayName" : "Elemora Pro Monthly",
               "locale" : "en_US"
             }
           ],
           "productID" : "periodicpro.pro.monthly",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Periodic Pro Monthly",
+          "referenceName" : "Elemora Pro Monthly",
           "subscriptionGroupID" : "20250915",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
@@ -111,14 +111,14 @@
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Interactive 3D structures, unlimited study and Smart Review.",
-              "displayName" : "Periodic Pro Yearly",
+              "description" : "3D structures, unlimited study, and Smart Review.",
+              "displayName" : "Elemora Pro Yearly",
               "locale" : "en_US"
             }
           ],
           "productID" : "periodicpro.pro.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "Periodic Pro Yearly",
+          "referenceName" : "Elemora Pro Yearly",
           "subscriptionGroupID" : "20250915",
           "type" : "RecurringSubscription",
           "winbackOffers" : [

@@ -1,7 +1,14 @@
-# Periodic Pro — subscriptions
+# Elemora Pro — subscriptions
 
-Everything the app needs to sell Periodic Pro, and everything that still has to
+Everything the app needs to sell Elemora Pro, and everything that still has to
 be created in App Store Connect before a build can take a real payment.
+
+> **Names and identifiers are not the same thing.** Everything a customer reads
+> says **Elemora Pro**. Everything Apple matches on keeps its original
+> `periodicpro` spelling — the product identifiers, the group identifier and the
+> bundle identifier — because those are permanent once a build has been
+> uploaded. Do not "tidy" them to match the brand; it would orphan every
+> existing subscriber and require a second App Store Connect app.
 
 No third-party subscription SDK is used. There is no RevenueCat, no analytics,
 no account and no server. Entitlement comes from StoreKit 2 and nothing else.
@@ -10,7 +17,7 @@ no account and no server. Entitlement comes from StoreKit 2 and nothing else.
 
 ## What Pro unlocks
 
-| | Free | Periodic Pro |
+| | Free | Elemora Pro |
 |---|---|---|
 | All 118 elements, the full table, search, filters | ✅ | ✅ |
 | Favorites, core facts, About, Common Uses, Memory Hooks | ✅ | ✅ |
@@ -41,13 +48,13 @@ Create **one subscription group** containing **two subscriptions**.
 
 | Field | Value |
 |---|---|
-| Subscription group reference name | `Periodic Pro` |
-| Group identifier used in the app | `periodicpro.pro` |
+| Subscription group reference name | `Elemora Pro` |
+| Group identifier used in the app | `periodicpro.pro` (**unchanged — technical**) |
 
-| Product | Identifier | Duration | Target price (US) |
-|---|---|---|---|
-| Monthly | `periodicpro.pro.monthly` | 1 month | $2.99 |
-| Yearly | `periodicpro.pro.yearly` | 1 year | $19.99 |
+| Product | Customer-facing name | Identifier (**unchanged — technical**) | Duration | Target price (US) |
+|---|---|---|---|---|
+| Monthly | Elemora Pro Monthly | `periodicpro.pro.monthly` | 1 month | $2.99 |
+| Yearly | Elemora Pro Yearly | `periodicpro.pro.yearly` | 1 year | $19.99 |
 
 The target prices are what to enter when creating the products. **The app never
 displays them from source.** Every price on the paywall comes from
@@ -60,13 +67,17 @@ change. `Tools/check_storekit.py` fails the build if the identifiers in
 ### Steps in App Store Connect
 
 1. **App Store Connect → your app → Subscriptions → Create a subscription group.**
-   Reference name `Periodic Pro`.
-2. Add subscription `periodicpro.pro.monthly`, duration 1 month, price $2.99.
-3. Add subscription `periodicpro.pro.yearly`, duration 1 year, price $19.99.
+   Reference name `Elemora Pro`.
+2. Add subscription `periodicpro.pro.monthly` — the identifier keeps the
+   `periodicpro` spelling — with display name **Elemora Pro Monthly**,
+   duration 1 month, price $2.99.
+3. Add subscription `periodicpro.pro.yearly` — identifier likewise unchanged —
+   with display name **Elemora Pro Yearly**, duration 1 year, price $19.99.
 4. Give each a display name and description for every locale you ship.
-   English is enough to start.
+   English is enough to start. The description the app ships with locally is
+   "3D structures, unlimited study, and Smart Review."
 5. Add the **subscription group localization** (the group needs its own display
-   name — `Periodic Pro`), or the products stay in "Missing Metadata".
+   name — `Elemora Pro`), or the products stay in "Missing Metadata".
 6. Upload a **review screenshot** of the paywall for each product.
 7. Fill in the **App Store Server Notifications** URL only if you want one — this
    app does not need it, because it has no server and reads entitlement directly
@@ -195,7 +206,7 @@ Only when the learner asks for something behind it:
 * tapping **Smart Review** without a subscription
 * tapping **Explore in 3D** on an element outside the free six
 * starting a **fourth round** in a day, or tapping the summary's primary button
-  once the allowance is spent — the button says "Get Periodic Pro" at that
+  once the allowance is spent — the button says "Get Elemora Pro" at that
   point, so nobody is refused after tapping "Study again"
 
 It never appears at launch, never during onboarding, and never over a round in

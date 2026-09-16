@@ -1,7 +1,7 @@
 import StoreKit
 import SwiftUI
 
-/// Periodic Pro.
+/// Elemora Pro.
 ///
 /// Every price on this screen comes from `Product.displayPrice`, which is what
 /// the App Store will actually charge in the learner's own currency. Nothing
@@ -123,7 +123,7 @@ struct PaywallView: View {
             .accessibilityHidden(true)
 
             VStack(spacing: 6) {
-                Text("Periodic Pro")
+                Text("Elemora Pro")
                     .font(.system(.largeTitle, weight: .bold))
                     .foregroundStyle(AppColor.primaryText)
                     .multilineTextAlignment(.center)
@@ -444,7 +444,7 @@ struct PrivacySummarySheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.l) {
-                    Text("Periodic Pro collects nothing.")
+                    Text("Elemora collects nothing.")
                         .font(.system(.title3, weight: .semibold))
                         .foregroundStyle(AppColor.primaryText)
 

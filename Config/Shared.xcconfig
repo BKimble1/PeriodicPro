@@ -1,17 +1,21 @@
 // ---------------------------------------------------------------------------
-// Periodic Pro — central project configuration
+// Elemora — central project configuration
 //
 // Everything a person renaming or re-signing this product needs to change is
 // in this file. Nothing here is a secret; signing identities are supplied by
 // CI or by Local.xcconfig, which is git-ignored.
 // ---------------------------------------------------------------------------
 
-// The name shown under the icon on the Home Screen.
-APP_DISPLAY_NAME = Periodic Pro
+// The name shown under the icon on the Home Screen. The App Store listing is
+// "Elemora: Periodic Table"; only the short form fits under the icon.
+APP_DISPLAY_NAME = Elemora
 
-// PLACEHOLDER — replace with a bundle identifier you own in App Store Connect
-// before the first TestFlight upload. The two test bundles derive from it.
-PRODUCT_BUNDLE_IDENTIFIER_BASE = com.example.periodicpro
+// The identifier registered in App Store Connect. It intentionally keeps the
+// original `periodicpro` spelling: the App Store record, the provisioning
+// profiles and the GitHub `BUNDLE_IDENTIFIER` variable are all bound to it,
+// and a bundle identifier cannot be changed once a build has been uploaded.
+// The two test bundles derive from it.
+PRODUCT_BUNDLE_IDENTIFIER_BASE = com.idlery.periodicpro
 
 // Semantic marketing version. Bump for every release you show to testers.
 MARKETING_VERSION = 1.0.0

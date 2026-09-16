@@ -209,7 +209,7 @@ final class SubscriptionManager {
             await refresh()
             purchaseState = entitlement.isPro
                 ? .succeeded
-                : .failed("No active Periodic Pro subscription was found for this Apple Account.")
+                : .failed("No active Elemora Pro subscription was found for this Apple Account.")
         } catch {
             Self.logger.error("Restore failed: \(String(describing: error), privacy: .public)")
             purchaseState = .failed("Purchases could not be restored. Please try again.")

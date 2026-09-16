@@ -1,6 +1,15 @@
-# Periodic Pro
+# Elemora
 
 A native iPhone app for exploring and memorizing the periodic table.
+
+Listed on the App Store as **Elemora: Periodic Table**; **Elemora** under the
+Home Screen icon; the optional paid tier is **Elemora Pro**.
+
+The repository, the Xcode project, the scheme, the target and the bundle and
+product identifiers are all still called `PeriodicPro` / `periodicpro`. That is
+deliberate — Apple binds the App Store record and every subscriber receipt to
+those strings, and they cannot be changed after an upload. See
+[Names versus identifiers](#names-versus-identifiers).
 
 All 118 elements, laid out correctly, in a table that fits the screen. Tap any
 element and its tile expands into a full detail page. When you are ready to
@@ -143,7 +152,7 @@ Scientific honesty is enforced in code and asserted by tests:
 The detail page shows a lightweight `Canvas` preview of the same scene rather
 than standing up a 3D view inside a scrolling card.
 
-### Periodic Pro
+### Elemora Pro
 
 An optional subscription. The table, all 118 elements, search, filters,
 favorites, every fact and all three original practice modes stay free.
@@ -500,15 +509,38 @@ Everything you might want to change is in `Config/Shared.xcconfig`:
 
 | Setting | Default | What it is |
 | --- | --- | --- |
-| `APP_DISPLAY_NAME` | `Periodic Pro` | Name under the icon |
-| `PRODUCT_BUNDLE_IDENTIFIER_BASE` | `com.example.periodicpro` | **Placeholder.** Replace with one you own |
+| `APP_DISPLAY_NAME` | `Elemora` | Name under the icon |
+| `PRODUCT_BUNDLE_IDENTIFIER_BASE` | `com.idlery.periodicpro` | Registered at Apple. **Do not change** — see below |
 | `MARKETING_VERSION` | `1.0.0` | Semantic version |
 | `CURRENT_PROJECT_VERSION` | `1` | Build number; CI overrides it |
 | `APP_DEVELOPMENT_TEAM` | *(empty)* | Your Team ID, via `Config/Local.xcconfig` or CI |
 | `IPHONEOS_DEPLOYMENT_TARGET` | `18.0` | Minimum iOS version |
 
-The bundle identifier and team are left deliberately blank or obviously fake so
-a build can never quietly sign with the wrong identity.
+The team is left deliberately blank so a build can never quietly sign with the
+wrong identity; CI supplies it from the `APPLE_TEAM_ID` secret.
+
+### Names versus identifiers
+
+Everything a customer reads says Elemora. Everything Apple matches on keeps its
+original spelling, because none of it can be changed after the first upload.
+
+| | Value | Kind |
+| --- | --- | --- |
+| App Store name | Elemora: Periodic Table | brand |
+| Home Screen name | Elemora | brand |
+| Paid tier | Elemora Pro | brand |
+| Subscription group display name | Elemora Pro | brand |
+| Product display names | Elemora Pro Monthly / Yearly | brand |
+| Bundle identifier | `com.idlery.periodicpro` | **permanent identifier** |
+| Monthly product identifier | `periodicpro.pro.monthly` | **permanent identifier** |
+| Yearly product identifier | `periodicpro.pro.yearly` | **permanent identifier** |
+| Subscription group identifier | `periodicpro.pro` | **permanent identifier** |
+| Repository, `.xcodeproj`, scheme, target, test bundles | `PeriodicPro` | internal, wired into CI |
+| GitHub repository variable | `BUNDLE_IDENTIFIER` = `com.idlery.periodicpro` | CI configuration |
+
+`Tools/check_storekit.py` enforces both halves of this table: it fails if a
+product identifier drifts, and it fails if a customer-facing name in
+`Config/PeriodicPro.storekit` stops saying Elemora Pro.
 
 ---
 
@@ -552,7 +584,7 @@ features, an AI tutor, ads, analytics, achievements, chemistry calculators, AR,
 and a settings screen. The goal is one thing done properly — explore,
 understand, memorize.
 
-There is an optional subscription, Periodic Pro, and there is a 3D structure
+There is an optional subscription, Elemora Pro, and there is a 3D structure
 explorer. Neither changes the rule above: no account is required for either,
 nothing is measured about how you use them, and the periodic table itself is
 free in full.

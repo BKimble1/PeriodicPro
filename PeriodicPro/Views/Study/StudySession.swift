@@ -664,7 +664,7 @@ struct SessionSummaryView: View {
                     Haptics.tap()
                     if canStudyAgain { onRepeat() } else { onUnlock() }
                 } label: {
-                    Text(canStudyAgain ? "Study again" : "Get Periodic Pro")
+                    Text(canStudyAgain ? "Study again" : "Get Elemora Pro")
                         .font(.system(.body, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)

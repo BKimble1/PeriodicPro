@@ -7,7 +7,7 @@ import SwiftUI
 struct StructureCard: View {
     let element: ChemicalElement
     /// Whether the full interactive explorer is available for this element.
-    /// Six elements are free; the rest are part of Periodic Pro.
+    /// Six elements are free; the rest are part of Elemora Pro.
     var isStructureUnlocked: Bool = true
     var onExplore: () -> Void = {}
 
@@ -151,7 +151,7 @@ struct StructureCard: View {
         .buttonStyle(.plain)
         .accessibilityLabel(isStructureUnlocked
                             ? "Explore \(element.name) in 3D"
-                            : "Explore \(element.name) in 3D, Periodic Pro feature")
+                            : "Explore \(element.name) in 3D, Elemora Pro feature")
         .accessibilityIdentifier("detail.explore3D")
     }
 }

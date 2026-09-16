@@ -1,6 +1,6 @@
 # Privacy
 
-**Periodic Pro collects nothing.** There is no account, no sign-in, no
+**Elemora collects nothing.** There is no account, no sign-in, no
 analytics, no advertising, no crash-reporting SDK and no network request of any
 kind made by this app's own code. The app works fully offline, by design: the
 entire periodic table is bundled inside it.
@@ -30,7 +30,7 @@ identifier.
 
 ## Subscriptions
 
-Periodic Pro is optional. If you subscribe, the purchase is made through Apple
+Elemora Pro is optional. If you subscribe, the purchase is made through Apple
 using StoreKit, exactly as any App Store purchase is.
 
 - **The app never sees your payment details, your Apple Account, your name or

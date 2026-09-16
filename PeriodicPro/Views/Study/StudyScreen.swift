@@ -84,7 +84,7 @@ struct StudyScreen: View {
                 // onDismiss runs after the cover has finished dismissing.
                 // Reacting to the binding going nil instead would fire at the
                 // *start* of the transition, and asking to present a sheet from
-                // a host that is still presenting is how "Get Periodic Pro"
+                // a host that is still presenting is how "Get Elemora Pro"
                 // ends up doing nothing at all.
                 guard let pending = paywallAfterSession else { return }
                 paywallAfterSession = nil

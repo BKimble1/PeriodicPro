@@ -1,6 +1,6 @@
 import Foundation
 
-/// The three things Periodic Pro unlocks.
+/// The three things Elemora Pro unlocks.
 ///
 /// Everything else in the app — all 118 elements, the whole table, search,
 /// filters, favorites, the facts, About, Common Uses, Memory Hooks, Progress,

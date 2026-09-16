@@ -77,7 +77,7 @@ enum PurchaseState: Hashable, Sendable {
         case .productsUnavailable(let reason):
             return reason
         case .pending:
-            return "Your purchase is waiting for approval. Periodic Pro will unlock as soon as it "
+            return "Your purchase is waiting for approval. Elemora Pro will unlock as soon as it "
                 + "goes through — there is nothing else you need to do."
         case .canceled:
             return nil

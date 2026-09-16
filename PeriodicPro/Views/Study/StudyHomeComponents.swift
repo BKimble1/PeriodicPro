@@ -199,7 +199,7 @@ struct PracticeModeTile: View {
         }
         .buttonStyle(ElementTileButtonStyle())
         .accessibilityLabel(showsProBadge
-                            ? "\(mode.title), Periodic Pro feature. \(mode.subtitle)"
+                            ? "\(mode.title), Elemora Pro feature. \(mode.subtitle)"
                             : "\(mode.title). \(mode.subtitle)")
         .accessibilityIdentifier("study.mode.\(mode.rawValue)")
     }

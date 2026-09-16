@@ -392,7 +392,7 @@ final class PeriodicProUITests: XCTestCase {
         openTab("Study")
         let smartReview = app.buttons["study.mode.smartReview"]
         scrollTo(smartReview)
-        XCTAssertTrue(smartReview.label.contains("Periodic Pro"),
+        XCTAssertTrue(smartReview.label.contains("Elemora Pro"),
                       "Smart Review should be marked as a Pro feature for a free learner")
 
         smartReview.tap()
@@ -421,7 +421,7 @@ final class PeriodicProUITests: XCTestCase {
         openTab("Study")
         let smartReview = app.buttons["study.mode.smartReview"]
         scrollTo(smartReview)
-        XCTAssertFalse(smartReview.label.contains("Periodic Pro"),
+        XCTAssertFalse(smartReview.label.contains("Elemora Pro"),
                        "A subscriber should not see a Pro badge")
         XCTAssertFalse(el("study.allowance").exists,
                        "A subscriber should not see a free-round counter")
@@ -434,7 +434,7 @@ final class PeriodicProUITests: XCTestCase {
         openElement("Au")
         let explore = app.buttons["detail.explore3D"]
         scrollTo(explore)
-        XCTAssertFalse(explore.label.contains("Periodic Pro"),
+        XCTAssertFalse(explore.label.contains("Elemora Pro"),
                        "Gold is a free demo element and must not be marked Pro")
         explore.tap()
 
@@ -449,7 +449,7 @@ final class PeriodicProUITests: XCTestCase {
         openElement("Ne")
         let explore = app.buttons["detail.explore3D"]
         scrollTo(explore)
-        XCTAssertTrue(explore.label.contains("Periodic Pro"),
+        XCTAssertTrue(explore.label.contains("Elemora Pro"),
                       "Neon is not a demo element, so its explorer should be marked Pro")
         explore.tap()
 

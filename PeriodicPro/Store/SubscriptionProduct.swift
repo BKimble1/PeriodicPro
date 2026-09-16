@@ -15,8 +15,12 @@ enum SubscriptionProduct: String, CaseIterable, Identifiable, Hashable, Sendable
     /// The App Store Connect subscription group both products belong to. One
     /// group means the learner can move between monthly and yearly and the
     /// App Store handles the proration.
+    ///
+    /// The identifier keeps the product's original spelling on purpose: it is
+    /// what App Store Connect and every existing receipt are bound to. Only the
+    /// display name is the brand, and the brand is Elemora.
     static let subscriptionGroupIdentifier = "periodicpro.pro"
-    static let subscriptionGroupDisplayName = "Periodic Pro"
+    static let subscriptionGroupDisplayName = "Elemora Pro"
 
     static var allProductIDs: [String] { allCases.map(\.rawValue) }
 

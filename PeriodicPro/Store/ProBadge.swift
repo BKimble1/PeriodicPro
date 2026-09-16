@@ -23,7 +23,7 @@ struct ProBadge: View {
             .background {
                 Capsule().fill(AppColor.accent.opacity(0.12))
             }
-            .accessibilityLabel("Periodic Pro feature")
+            .accessibilityLabel("Elemora Pro feature")
     }
 }
 
@@ -49,14 +49,14 @@ enum PaywallContext: String, Identifiable, Hashable, Sendable {
     var subheadline: String {
         switch self {
         case .dailyLimit:
-            return "Free study is three rounds a day. Periodic Pro removes the limit."
+            return "Free study is three rounds a day. Elemora Pro removes the limit."
         case .structureExplorer:
             return "Hydrogen, carbon, oxygen, sodium, iron and gold are free to explore. "
                 + "Pro opens the other 112."
         case .smartReview:
             return "Smart Review builds rounds from the elements you get wrong most."
         case .general:
-            return "Everything in Periodic Pro, for one subscription."
+            return "Everything in Elemora Pro, for one subscription."
         }
     }
 }

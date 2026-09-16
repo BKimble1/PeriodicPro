@@ -1,8 +1,26 @@
-# Shipping Periodic Pro to TestFlight
+# Shipping Elemora to TestFlight
 
 This repository is wired so that a TestFlight build needs **no code changes** —
 only credentials and two identifiers you own. Everything below is a one-time
 setup; after that, pushing a `v*` tag ships a build.
+
+> ## Names versus identifiers
+>
+> | | Value | May it change? |
+> | --- | --- | --- |
+> | App Store name | **Elemora: Periodic Table** | brand |
+> | Home Screen name (`APP_DISPLAY_NAME`) | **Elemora** | brand |
+> | Paid tier, everywhere a customer reads it | **Elemora Pro** | brand |
+> | Bundle identifier | `com.idlery.periodicpro` | **no — permanent** |
+> | Monthly product identifier | `periodicpro.pro.monthly` | **no — permanent** |
+> | Yearly product identifier | `periodicpro.pro.yearly` | **no — permanent** |
+> | Subscription group identifier | `periodicpro.pro` | **no — permanent** |
+> | Xcode project, scheme, target, test bundles | `PeriodicPro` | no — wired into CI |
+>
+> The `periodicpro` identifiers are deliberate. Apple binds the App Store
+> record, the provisioning profiles and every subscriber's receipt to them, and
+> none of them can be changed after the first upload. Renaming one would need a
+> second App Store Connect app and would strand existing subscribers.
 
 ---
 
@@ -10,7 +28,7 @@ setup; after that, pushing a `v*` tag ships a build.
 
 - An **Apple Developer Program** membership (paid). Individual or Organization.
 - Admin or Account Holder access to **App Store Connect** (to create an API key).
-- A bundle identifier you own, e.g. `com.yourcompany.periodicpro`.
+- The bundle identifier `com.idlery.periodicpro`, already registered.
 
 Everything else — the archive, the signing, the upload — is automated.
 
@@ -18,34 +36,35 @@ Everything else — the archive, the signing, the upload — is automated.
 
 ## 1. Claim a bundle identifier
 
-The repository ships with the deliberate placeholder
-`com.example.periodicpro`, which you do not own and cannot upload.
+**Already done.** The identifier is `com.idlery.periodicpro`, it is registered
+at Apple, and it is committed as `PRODUCT_BUNDLE_IDENTIFIER_BASE` in
+`Config/Shared.xcconfig`. It keeps the `periodicpro` spelling on purpose; see
+*Names versus identifiers* at the top of this file.
+
+CI also reads it from the repository variable `BUNDLE_IDENTIFIER`
+(Settings → Secrets and variables → Actions → **Variables**), which must hold
+the same value, `com.idlery.periodicpro`. The variable wins when both are set,
+so the two must not drift apart.
+
+For a local build with a different team, copy
+`Config/Local.xcconfig.sample` to `Config/Local.xcconfig` and override it
+there. That file is git-ignored.
+
+If you ever need to register it again:
 
 1. Go to <https://developer.apple.com/account/resources/identifiers/list>.
 2. **Identifiers → + → App IDs → App**.
-3. Description: `Periodic Pro`. Bundle ID: **Explicit**,
-   `com.yourcompany.periodicpro`.
+3. Description: `Elemora`. Bundle ID: **Explicit**, `com.idlery.periodicpro`.
 4. Capabilities: leave everything off. The app needs none.
 5. Register.
-
-Then set it in **one** of two places:
-
-- **For CI (recommended):** repository → Settings → Secrets and variables →
-  Actions → **Variables** → New repository variable
-  `BUNDLE_IDENTIFIER` = `com.yourcompany.periodicpro`.
-- **For local builds:** `cp Config/Local.xcconfig.sample Config/Local.xcconfig`
-  and edit it. That file is git-ignored.
-
-You may instead edit `PRODUCT_BUNDLE_IDENTIFIER_BASE` in `Config/Shared.xcconfig`
-and commit it — fine for a private fork, but then the identifier lives in git.
 
 ---
 
 ## 2. Create the app record in App Store Connect
 
 1. <https://appstoreconnect.apple.com> → **Apps → + → New App**.
-2. Platform **iOS**, Name `Periodic Pro` (or your own name — see *Renaming*
-   below), Primary Language, your bundle ID, SKU `periodicpro-1`.
+2. Platform **iOS**, Name `Elemora: Periodic Table`, Primary Language,
+   bundle ID `com.idlery.periodicpro`, SKU `periodicpro-1`.
 3. User Access: Full Access.
 4. Create.
 
@@ -189,7 +208,7 @@ medical or treatment information (the app describes elements, it never gives
 health advice), no unrestricted web access, and no user-generated content.
 There is no advertising.
 
-The app **does** offer in-app purchases (the Periodic Pro subscription), so tick
+The app **does** offer in-app purchases (the Elemora Pro subscription), so tick
 that box on the App Store listing. It does not affect the 4+ rating.
 
 **App Privacy** — *Do you or your third-party partners collect data from this
@@ -264,18 +283,20 @@ Then **Xcode → Window → Organizer → Distribute App → TestFlight & App St
 
 ## Renaming the product
 
-Everything is in `Config/Shared.xcconfig`:
+The user-visible name lives in `Config/Shared.xcconfig`:
 
-| Setting | Effect |
-| --- | --- |
-| `APP_DISPLAY_NAME` | The name under the icon |
-| `PRODUCT_BUNDLE_IDENTIFIER_BASE` | The app's bundle ID; the test bundles derive `.tests` and `.uitests` from it |
-| `MARKETING_VERSION` | The version testers see |
-| `CURRENT_PROJECT_VERSION` | Build number (CI overrides this) |
-| `APP_DEVELOPMENT_TEAM` | Signing team |
+| Setting | Effect | Current value |
+| --- | --- | --- |
+| `APP_DISPLAY_NAME` | The name under the icon | `Elemora` |
+| `MARKETING_VERSION` | The version testers see | `1.0.0` |
+| `CURRENT_PROJECT_VERSION` | Build number (CI overrides this) | `1` |
+| `APP_DEVELOPMENT_TEAM` | Signing team | supplied by CI |
 
-Only the Xcode *target* name stays `PeriodicPro`; nothing user-visible depends
-on it.
+`PRODUCT_BUNDLE_IDENTIFIER_BASE` is in the same file but is **not** a rename
+knob any more: it is `com.idlery.periodicpro`, Apple owns that binding, and
+changing it after an upload means a new app record. The Xcode project, scheme,
+target and test bundles are likewise still called `PeriodicPro`, and nothing
+user-visible depends on any of them.
 
 ---
 
@@ -288,9 +309,11 @@ if the newer toolchain has moved to a newer image, update `runs-on` as well
 (both workflows currently pin `macos-15`). Do not fall back to an older major
 version — App Store Connect will reject the build.
 
-**`No profiles for 'com.example.periodicpro' were found`**
-`BUNDLE_IDENTIFIER` is unset, so the build used the placeholder. Set the
-repository variable from step 1.
+**`No profiles for '<some identifier>' were found`**
+The identifier the archive used is not one this Apple account owns. Check that
+the repository variable `BUNDLE_IDENTIFIER` is exactly
+`com.idlery.periodicpro` — it overrides `Config/Shared.xcconfig`, so a typo
+there beats the committed value.
 
 **`Your account does not have sufficient permissions`**
 The API key was created with Developer access. Delete it and create a new one

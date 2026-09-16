@@ -3,7 +3,10 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    # `main` plus the working branches. A push event runs the workflow file as
+    # it exists at the pushed commit, which is the only way to get a real Xcode
+    # compile on a branch while the default branch has no workflows on it.
+    branches: [main, "claude/**"]
   workflow_dispatch:
 
 concurrency:
@@ -47,6 +50,9 @@ jobs:
 
       - name: Check StoreKit configuration
         run: python3 Tools/check_storekit.py
+
+      - name: Check branding
+        run: python3 Tools/check_branding.py
 
       - name: Check artwork and structure routing
         run: python3 Tools/check_visual_routing.py
