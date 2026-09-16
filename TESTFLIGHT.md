@@ -2,7 +2,8 @@
 
 This repository is wired so that a TestFlight build needs **no code changes** —
 only credentials and two identifiers you own. Everything below is a one-time
-setup; after that, pushing a `v*` tag ships a build.
+setup; after that, pushing a `v*` tag ships a build — or, while the workflows are
+still on the feature branch, a commit marked `[testflight]` (see §6).
 
 > ## Names versus identifiers
 >
@@ -153,6 +154,27 @@ git push origin v1.0.0
 
 GitHub → **Actions → TestFlight → Run workflow**.
 
+### Before the workflows reach `main`
+
+Both routes above need something this repository does not have yet. GitHub
+registers **Run workflow** from the default branch only, and `.github/workflows`
+currently lives on the feature branch, so the button is not offered. A tag is no
+better when the credentials pushing it are scoped to `refs/heads/claude/*`.
+
+Until the workflows are merged, a push to a `claude/**` branch ships a build if,
+and only if, its commit message contains `[testflight]`:
+
+```bash
+git commit -m "Whatever the change was [testflight]"
+git push -u origin claude/my-branch
+```
+
+An ordinary push to those branches still ships nothing — the job is gated on that
+marker, because a build number is spent and a build that reaches App Store Connect
+cannot be unsent. Once the workflows are on `main`, delete the `branches:` line
+and the `contains(...)` clause from `.github/workflows/testflight.yml` and use
+tags.
+
 Either way the workflow will:
 
 1. check out the repository
@@ -163,10 +185,13 @@ Either way the workflow will:
 5. run the unit tests on an iPhone simulator
 6. compute the build number as `run number + BUILD_NUMBER_OFFSET`
 7. archive Release for a generic iOS device
-8. export a signed `.ipa` using `app-store-connect` export options
-9. **validate** the `.ipa` against App Store Connect
-10. **upload** it
-11. publish a job summary with the version, build number and signing mode, and
+8. read the archive back — device families, Home Screen name, version, build
+   number and the export-compliance flag — and stop before the upload if any of
+   them is not what was asked for
+9. export a signed `.ipa` using `app-store-connect` export options
+10. **validate** the `.ipa` against App Store Connect
+11. **upload** it
+12. publish a job summary with the version, build number and signing mode, and
     attach the `.ipa` and dSYMs as build artifacts for 14 days
 
 Processing in App Store Connect usually takes 5–15 minutes after the upload

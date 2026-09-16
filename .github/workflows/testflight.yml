@@ -3,6 +3,14 @@ name: TestFlight
 on:
   push:
     tags: ["v*"]
+    # A tag is the normal way in, and the only one worth using once these
+    # workflows reach the default branch. Until they do, GitHub offers no
+    # other route: workflow_dispatch is registered from the default branch
+    # only, and this account's push credentials are scoped to
+    # refs/heads/claude/*, so a v-tag cannot be pushed either. The job below
+    # is gated on the commit message, so an ordinary push to the branch
+    # builds nothing and uploads nothing.
+    branches: ["claude/**"]
   workflow_dispatch:
     inputs:
       notes:
@@ -27,6 +35,14 @@ jobs:
     name: Archive and upload to TestFlight
     runs-on: macos-15
     timeout-minutes: 90
+    # Uploading a build is not something to do by accident: it consumes a
+    # build number, and a build that reaches App Store Connect cannot be
+    # unsent. A tag or a manual run says so by itself; a branch push has to
+    # say so in the commit message.
+    if: >-
+      startsWith(github.ref, 'refs/tags/v')
+      || github.event_name == 'workflow_dispatch'
+      || contains(github.event.head_commit.message, '[testflight]')
     steps:
       # ---------------------------------------------------------------- setup
       - name: Checkout
@@ -231,6 +247,52 @@ jobs:
           fi
 
           xcodebuild archive "${ARGS[@]}" | xcbeautify --renderer github-actions
+
+      # What Apple will actually receive, read back out of the archive rather
+      # than assumed from the build settings that were meant to produce it.
+      # Each of these has its own way of going wrong quietly: a device family
+      # that never picked up the iPad, a display name still reading the target
+      # name, and an export-compliance key written as the string "NO" rather
+      # than a boolean — which App Store Connect ignores, leaving the build
+      # sitting in Missing Compliance until somebody answers the question by
+      # hand.
+      - name: Verify what was archived
+        run: |
+          set -euo pipefail
+          APP=$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -name '*.app' | head -n 1)
+          [ -n "$APP" ] || { echo "::error::The archive contains no .app"; exit 1; }
+          PLIST="$APP/Info.plist"
+
+          BUNDLE_ID_BUILT=$(plutil -extract CFBundleIdentifier raw "$PLIST")
+          DISPLAY_NAME=$(plutil -extract CFBundleDisplayName raw "$PLIST")
+          VERSION_BUILT=$(plutil -extract CFBundleShortVersionString raw "$PLIST")
+          BUILD_BUILT=$(plutil -extract CFBundleVersion raw "$PLIST")
+          FAMILIES=$(plutil -extract UIDeviceFamily json -o - "$PLIST")
+          ENCRYPTION=$(plutil -extract ITSAppUsesNonExemptEncryption json -o - "$PLIST" 2>/dev/null || echo missing)
+
+          echo "bundle identifier: $BUNDLE_ID_BUILT"
+          echo "display name:      $DISPLAY_NAME"
+          echo "version:           $VERSION_BUILT ($BUILD_BUILT)"
+          echo "device families:   $FAMILIES"
+          echo "non-exempt crypto: $ENCRYPTION"
+          echo "app icon:          $(ls "$APP" | grep -c '^AppIcon') file(s)"
+
+          fail=0
+          case "$FAMILIES" in
+            *2*) ;;
+            *) echo "::error::The archive is iPhone-only. TARGETED_DEVICE_FAMILY \
+          should be 1,2 in Config/Shared.xcconfig."; fail=1 ;;
+          esac
+          [ "$DISPLAY_NAME" = "Elemora" ] || {
+            echo "::error::The Home Screen name is '$DISPLAY_NAME', not Elemora"; fail=1; }
+          [ "$ENCRYPTION" = "false" ] || {
+            echo "::error::ITSAppUsesNonExemptEncryption is $ENCRYPTION, and App Store \
+          Connect reads only a real boolean. The build would land in Missing Compliance."
+            fail=1; }
+          [ "$BUILD_BUILT" = "$BUILD_NUMBER" ] || {
+            echo "::error::Built build number $BUILD_BUILT does not match the resolved \
+          $BUILD_NUMBER, so the upload would collide with an earlier build."; fail=1; }
+          [ "$fail" -eq 0 ]
 
       - name: Write export options
         env:
