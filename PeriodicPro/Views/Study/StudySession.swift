@@ -23,16 +23,29 @@ struct StudySessionContainer: View {
     /// re-dealt from a new seed while the card index carried on counting.
     @State private var roundSeed: UInt64 = 0
 
+    /// The queue this round draws from, already snapshotted by the caller.
+    let queue: [ChemicalElement]
+
     /// Practice draws from the least-familiar elements first, but keeps a wide
     /// enough pool that a round is never the same ten tiles twice over.
     ///
-    /// Captured once, in `init`, and deliberately never refreshed: the incoming
-    /// queue is ordered by mastery, so re-deriving it after an answer reshuffles
-    /// every position and the learner's remaining cards change underneath them.
-    /// `State(initialValue:)` only takes effect the first time this view's
-    /// identity appears, which is exactly the guarantee wanted here. The seed
-    /// still moves with `round`, so "Study again" deals a different hand.
-    @State private var pool: [ChemicalElement]
+    /// Derived, not stored. It used to be `@State` seeded with
+    /// `State(initialValue:)` from `queue`, which takes effect only the first
+    /// time this view's identity appears — so whichever value the very first
+    /// construction happened to see was the deck for good. In a real run that
+    /// value was the empty array, and every round in every mode opened on
+    /// "Nothing to study yet". Nothing caught it, because these tests had never
+    /// been run.
+    ///
+    /// Deriving it is safe for the reason the stored version was reaching for:
+    /// `queue` is `StudyScreen.sessionQueue`, which is itself captured once
+    /// when the round starts and never written again while the round is on
+    /// screen. The deck cannot reshuffle underneath the learner because its
+    /// source does not move. The seed still advances with `round`, so "Study
+    /// again" deals a different hand.
+    private var pool: [ChemicalElement] {
+        Array(queue.prefix(StudyDeckBuilder.defaultPoolSize))
+    }
 
     init(
         mode: StudyMode,
@@ -41,9 +54,9 @@ struct StudySessionContainer: View {
         onAllowanceSpent: @escaping () -> Void = {}
     ) {
         self.mode = mode
+        self.queue = queue
         self.catalog = catalog
         self.onAllowanceSpent = onAllowanceSpent
-        _pool = State(initialValue: Array(queue.prefix(StudyDeckBuilder.defaultPoolSize)))
         _roundSeed = State(initialValue: Self.seed(round: 0, mode: mode))
     }
 

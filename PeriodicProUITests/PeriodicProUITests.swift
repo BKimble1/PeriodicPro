@@ -307,9 +307,9 @@ final class PeriodicProUITests: XCTestCase {
         waitFor(filterButton)
         filterButton.tap()
 
-        let row = app.buttons["filterSheet.nobleGas"]
-        waitFor(row)
-        row.tap()
+        // Scrolled to, not just waited for: the sheet lists every family and
+        // noble gas sits below the fold on a phone-sized sheet.
+        tap(app.buttons["filterSheet.nobleGas"])
         app.buttons["filterSheet.done"].tap()
 
         XCTAssertTrue(app.buttons["element.He"].waitForExistence(timeout: 5))
