@@ -31,9 +31,15 @@ APP_DEVELOPMENT_TEAM =
 
 // --- Platform --------------------------------------------------------------
 IPHONEOS_DEPLOYMENT_TARGET = 18.0
-TARGETED_DEVICE_FAMILY = 1
+// 1 = iPhone, 2 = iPad. The layout was already size-driven rather than
+// device-driven — the table fits itself to the width it is given and nothing
+// in the app asks what device it is on — so the iPad gets the real screen
+// rather than a scaled-up phone.
+TARGETED_DEVICE_FAMILY = 1,2
 SUPPORTED_PLATFORMS = iphoneos iphonesimulator
 SUPPORTS_MACCATALYST = NO
+// Separate decision from iPad support, and still no: running the iPad build on
+// an Apple silicon Mac is not something that has been tested here.
 SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO
 
 // --- Swift -----------------------------------------------------------------

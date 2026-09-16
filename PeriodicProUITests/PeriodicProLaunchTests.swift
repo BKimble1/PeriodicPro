@@ -87,11 +87,16 @@ final class PeriodicProLaunchTests: XCTestCase {
         // Only the fitted layout promises to hold all eighteen columns. At an
         // accessibility text size the app deliberately switches to large tiles
         // that scroll sideways, and asserting oganesson is on screen there
-        // would be asserting the opposite of the intended behavior. Fitted is
-        // the case worth pinning, and it is the one identified by tiles that
-        // are narrower than the comfortable layout's minimum of 64 points.
-        let isFittedLayout = hydrogen.frame.width < 64
-        if isFittedLayout {
+        // would be asserting the opposite of the intended behavior.
+        //
+        // Which layout is on screen is derived from the tiles themselves, not
+        // from a fixed width: the first version of this compared against the
+        // comfortable layout's 64-point minimum, which is also roughly what a
+        // *fitted* tile measures on a 13-inch iPad — so the check would have
+        // quietly skipped itself on the largest device it covers. Eighteen
+        // columns that were sized to fit must actually fit.
+        let sizedToFit = hydrogen.frame.width * CGFloat(18) <= window.width
+        if sizedToFit {
             XCTAssertLessThanOrEqual(oganesson.frame.maxX, window.maxX + 1,
                                      "The fitted table overflows the trailing edge")
         }

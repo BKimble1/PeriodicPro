@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Chooses iPhone simulators from whatever the machine actually has.
+"""Chooses iPhone and iPad simulators from whatever the machine actually has.
 
 GitHub rotates the device set in its macOS images, so a hard-coded
 `name=iPhone 17 Pro` destination fails the whole pipeline the day that device
 goes away. This reads `xcrun simctl list devices available --json` and picks a
-default, a small and a large iPhone from what is there.
+default, a small and a large iPhone, plus an iPad, from what is there.
 
     xcrun simctl list devices available --json | python3 Tools/pick_simulators.py
 
@@ -34,15 +34,18 @@ def main() -> int:
         return 2
 
     devices = []
+    ipads = []
     for runtime, entries in json.loads(raw).get("devices", {}).items():
         if "iOS" not in runtime:
             continue
         for entry in entries:
             if not entry.get("isAvailable", False):
                 continue
-            if "iPhone" not in entry.get("name", ""):
-                continue
-            devices.append(entry)
+            name = entry.get("name", "")
+            if "iPhone" in name:
+                devices.append(entry)
+            elif "iPad" in name:
+                ipads.append(entry)
 
     if not devices:
         print("error: no available iPhone simulators", file=sys.stderr)
@@ -66,6 +69,18 @@ def main() -> int:
     )
 
     chosen = {"SIM_DEFAULT": default, "SIM_SMALL": small, "SIM_LARGE": large}
+
+    # The app ships for iPhone and iPad, so CI needs one of each. A plain iPad
+    # or an Air is preferred over a Pro: the narrower screen is where a layout
+    # built for a phone is likeliest to look stretched, and it is the one more
+    # people own.
+    if ipads:
+        ipads.sort(key=lambda d: device_rank(d["name"]))
+        chosen["SIM_IPAD"] = next(
+            (d for d in ipads if "pro" not in d["name"].lower()), ipads[-1]
+        )
+    else:
+        print("warning: no available iPad simulators", file=sys.stderr)
     for key, device in chosen.items():
         print(f"{key}={device['udid']}")
         print(f"{key}_NAME={device['name']}")

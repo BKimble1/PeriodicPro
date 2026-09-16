@@ -1,6 +1,6 @@
 # Elemora
 
-A native iPhone app for exploring and memorizing the periodic table.
+A native iPhone and iPad app for exploring and memorizing the periodic table.
 
 Listed on the App Store as **Elemora: Periodic Table**; **Elemora** under the
 Home Screen icon; the optional paid tier is **Elemora Pro**.
@@ -169,7 +169,7 @@ the product identifiers, what to create in App Store Connect, and how to test it
 | --- | --- |
 | Xcode | **26.0 or newer** (App Store Connect rejects older toolchains) |
 | iOS | 18.0 or newer |
-| Devices | iPhone, portrait and landscape |
+| Devices | iPhone and iPad. iPhone in portrait and landscape; iPad in all four orientations |
 | Swift | Swift 5 language mode on the Swift 6 toolchain |
 | Dependencies | none |
 
@@ -187,7 +187,7 @@ cd PeriodicPro
 open PeriodicPro.xcodeproj
 ```
 
-Select the **PeriodicPro** scheme and any iPhone simulator, then ⌘R. It builds
+Select the **PeriodicPro** scheme and any iPhone or iPad simulator, then ⌘R. It builds
 and runs with no further setup.
 
 To run on your own device, add your Team ID:
@@ -466,7 +466,7 @@ identifier — no pixel coordinates.
 2. **build-and-test** (macOS) — build for testing, unit tests, UI tests, then an
    unsigned Release build to catch optimiser-only failures
 3. **smaller-and-larger-phones** (macOS, matrix) — launch and layout tests on a
-   small iPhone and a Pro Max, asserting the fitted table never overflows the
+   small iPhone, a Pro Max and an iPad, asserting the fitted table never overflows the
    screen width
 
 Simulator destinations are resolved at run time by `Tools/pick_simulators.py`

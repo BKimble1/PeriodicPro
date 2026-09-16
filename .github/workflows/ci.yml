@@ -316,14 +316,17 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
-  smaller-and-larger-phones:
+  device-layout:
     name: Layout check (${{ matrix.size }})
     runs-on: macos-15
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        size: [SIM_SMALL, SIM_LARGE]
+        # The iPad is here because the app ships for it, and a device family
+        # set in an xcconfig proves nothing on its own — this actually launches
+        # the build on one and measures the table.
+        size: [SIM_SMALL, SIM_LARGE, SIM_IPAD]
     steps:
       - uses: actions/checkout@v4
 
@@ -352,8 +355,12 @@ jobs:
           set -euo pipefail
           set -o pipefail
           KEY="${{ matrix.size }}"
-          UDID="${!KEY}"
+          UDID="${!KEY:-}"
           NAME_KEY="${KEY}_NAME"
+          if [ -z "$UDID" ]; then
+            echo "::error::$KEY was not resolved — this runner has no such simulator"
+            exit 1
+          fi
           echo "Running on ${!NAME_KEY} ($UDID)"
           xcodebuild test \
             -project "$PROJECT" \
