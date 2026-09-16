@@ -167,10 +167,15 @@ struct ChemicalCompound: Codable, Hashable, Identifiable, Sendable {
     /// The formula with real subscripts: C₂H₆O.
     var displayFormula: String { CompoundFormula.subscripted(formula) }
 
-    /// Atomic number → count. From the structure when there is one, so the
-    /// count can never disagree with the picture; from the formula otherwise.
+    /// Atomic number → count, per formula unit.
+    ///
+    /// From the molecular structure when there is one, so the count can never
+    /// disagree with the picture; from the formula for a lattice, whose cell
+    /// holds several formula units, and for a record with no structure.
     var composition: [Int: Int] {
-        if let structure, !structure.atoms.isEmpty { return structure.composition }
+        if let structure, !structure.atoms.isEmpty, structure.source != .curatedLattice {
+            return structure.composition
+        }
         return CompoundFormula.parse(hillFormula) ?? [:]
     }
 

@@ -520,9 +520,12 @@ enum StructureSceneBuilder {
         let c = cOverA * a
         switch stacking {
         case .abab:
-            hexagon(y: -c / 2)
-            hollows(y: 0, rotated: false)
-            hexagon(y: c / 2)
+            // The full layer in the middle, three atoms above and below: the
+            // central atom then touches six in its plane and three on each
+            // side, the twelve neighbors that define close packing.
+            hollows(y: -c / 2, rotated: false)
+            hexagon(y: 0)
+            hollows(y: c / 2, rotated: false)
         case .abac:
             hexagon(y: -c / 2)
             hollows(y: -c / 4, rotated: false)

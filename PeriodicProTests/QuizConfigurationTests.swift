@@ -143,7 +143,8 @@ struct QuizConfigurationTests {
             #expect(questions.allSatisfy { $0.kind.difficulty == difficulty }, "\(difficulty) dealt a stray kind")
             let dealt = Set(questions.map(\.kind))
             #expect(dealt.isSubset(of: Set(difficulty.elementKinds)))
-            #expect(dealt.count >= 3, "\(difficulty) should rotate through its kinds")
+            #expect(dealt.count >= min(3, difficulty.elementKinds.count),
+                    "\(difficulty) should rotate through its kinds")
         }
         var mixed = QuizConfiguration.standard
         mixed.difficulty = .mixed

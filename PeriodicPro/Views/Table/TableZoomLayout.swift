@@ -50,7 +50,14 @@ enum TableZoomLayout {
     static func fittedTileSize(viewportWidth: CGFloat) -> CGFloat {
         let usable = max(viewportWidth - Theme.Spacing.l * 2, 260)
         let gaps = fittedSpacing * CGFloat(columns - 1)
-        return max(13, ((usable - gaps) / CGFloat(columns)).rounded(.down))
+        var tile = max(13, ((usable - gaps) / CGFloat(columns)).rounded(.down))
+        // The gap between tiles grows with the tile, so on a wide screen the
+        // first estimate — made with the smallest gap — can overflow by a few
+        // points. Step down until the row really fits.
+        while tile > 13, CGFloat(columns) * tile + CGFloat(columns - 1) * spacing(forTileSize: tile) > usable {
+            tile -= 1
+        }
+        return tile
     }
 
     /// The largest zoom for a given fitted tile — `maximumZoom`, or less on a

@@ -65,7 +65,7 @@ GENERATOR_ATOM_COUNTS = {
     "bcc": 9,
     "simpleCubic": 8,
     "diamondCubic": 18,
-    "hcp": 17,
+    "hcp": 13,
     "dhcp": 27,
     "lattice": None,       # depends on the basis
     "closePackedCluster": 13,

@@ -75,24 +75,43 @@ final class ElemoraScreenshotTests: XCTestCase {
                       file: file, line: line)
     }
 
+    /// Whether the element is somewhere a finger could land, waiting up to
+    /// `timeout` for it to get there. Existence alone is not enough: a sheet
+    /// still sliding in vends its rows before they are on screen, and a tap
+    /// aimed at one of them then lands on whatever is underneath.
+    private func becomesHittable(_ element: XCUIElement, within timeout: TimeInterval) -> Bool {
+        let hittable = NSPredicate { _, _ in element.exists && element.isHittable }
+        let expectation = XCTNSPredicateExpectation(predicate: hittable, object: nil)
+        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
+    }
+
     /// Scrolls while looking, rather than waiting for the element to exist and
     /// only then scrolling. SwiftUI does not vend an accessibility element for
     /// content far outside a ScrollView's viewport, so waiting for something
     /// below the fold times out before a single swipe has happened.
+    ///
+    /// The wait before the first swipe is deliberately generous. On the iPad
+    /// runner the element picker took longer than three seconds to arrive,
+    /// the tour started swiping, and the swipes scrolled the picker's own
+    /// list — away from the row it was about to tap.
     @discardableResult
     private func scrollTo(_ element: XCUIElement,
                           file: StaticString = #filePath,
                           line: UInt = #line) -> XCUIElement {
-        if element.waitForExistence(timeout: 3), element.isHittable { return element }
+        if becomesHittable(element, within: 6) { return element }
 
         var attempts = 0
         while attempts < 8 {
             app.swipeUp()
             attempts += 1
+            // A swipe has momentum. Checking, and then tapping, before the
+            // list has stopped puts the tap where the row was a moment ago.
+            settle(0.6)
             if element.exists, element.isHittable { return element }
         }
         for _ in 0..<attempts {
             app.swipeDown()
+            settle(0.6)
             if element.exists, element.isHittable { return element }
         }
 
@@ -181,9 +200,22 @@ final class ElemoraScreenshotTests: XCTestCase {
             .firstMatch
     }
 
+    /// Adds an element through the builder's picker and confirms it landed in
+    /// the tray, rather than trusting that the tap on the row did anything.
     private func addElement(_ symbol: String) {
         tap(app.buttons["build.addElement"])
-        tap(app.buttons["build.pick.\(symbol)"])
+        // The picker slides in; its rows are tapped only once it has arrived.
+        waitFor(app.navigationBars["Add an element"])
+        settle(0.6)
+        let row = app.buttons["build.pick.\(symbol)"]
+        tap(row)
+        let counted = el("build.count.\(symbol)")
+        if !counted.waitForExistence(timeout: 4), row.exists, row.isHittable {
+            // The first tap landed while the sheet was still settling and hit
+            // nothing. One more, now that it is still.
+            row.tap()
+        }
+        waitFor(counted)
     }
 
     // MARK: - The tour

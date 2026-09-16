@@ -112,22 +112,30 @@ final class PeriodicProUITests: XCTestCase {
     /// The short wait first matters too: most targets are already on screen,
     /// and swiping past one that simply had not rendered yet is how a test
     /// starts scrolling away from what it was looking for.
+    ///
+    /// That first wait is on hittability, not existence, and it is generous:
+    /// a sheet still sliding in vends its rows before they are on screen, and
+    /// swiping at that point scrolls the sheet's own list away from the row.
     @discardableResult
     private func scrollTo(_ element: XCUIElement,
                           file: StaticString = #filePath,
                           line: UInt = #line) -> XCUIElement {
-        if element.waitForExistence(timeout: 3), element.isHittable { return element }
+        if becomesHittable(element, within: 6) { return element }
 
         var attempts = 0
         while attempts < 8 {
             app.swipeUp()
             attempts += 1
+            // A swipe has momentum; checking and tapping before the list has
+            // stopped puts the tap where the row was a moment ago.
+            settle(0.6)
             if element.exists, element.isHittable { return element }
         }
 
         // It may have been above the starting position rather than below it.
         for _ in 0..<attempts {
             app.swipeDown()
+            settle(0.6)
             if element.exists, element.isHittable { return element }
         }
 
@@ -144,6 +152,20 @@ final class PeriodicProUITests: XCTestCase {
                      file: StaticString = #filePath,
                      line: UInt = #line) {
         scrollTo(element, file: file, line: line).tap()
+    }
+
+    /// Whether the element is somewhere a finger could land, waiting up to
+    /// `timeout` for it to get there.
+    private func becomesHittable(_ element: XCUIElement, within timeout: TimeInterval) -> Bool {
+        let hittable = NSPredicate { _, _ in element.exists && element.isHittable }
+        let expectation = XCTNSPredicateExpectation(predicate: hittable, object: nil)
+        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
+    }
+
+    /// Lets a scroll's momentum run out. The app is a separate process, so
+    /// this blocks only the test runner.
+    private func settle(_ seconds: TimeInterval) {
+        Thread.sleep(forTimeInterval: seconds)
     }
 
     /// Asserts the control is reachable — present, and scrollable into view.
@@ -758,15 +780,27 @@ final class PeriodicProUITests: XCTestCase {
 
     // MARK: - Build
 
+    /// Adds an element through the picker and confirms it reached the tray.
     private func addElement(_ symbol: String, searching name: String? = nil) {
         tap(app.buttons["build.addElement"])
+        // The picker slides in; its rows are tapped only once it has arrived.
+        waitFor(app.navigationBars["Add an element"])
+        settle(0.6)
         if let name {
             let field = app.searchFields.firstMatch
             waitFor(field)
             field.tap()
             field.typeText(name)
         }
-        tap(app.buttons["build.pick.\(symbol)"])
+        let row = app.buttons["build.pick.\(symbol)"]
+        tap(row)
+        let counted = el("build.count.\(symbol)")
+        if !counted.waitForExistence(timeout: 4), row.exists, row.isHittable {
+            // The first tap landed while the sheet was still settling and hit
+            // nothing. One more, now that it is still.
+            row.tap()
+        }
+        waitFor(counted)
     }
 
     func testBuildTabShowsTheCompoundBuilderBeta() {

@@ -89,8 +89,8 @@ struct StructureProfileTests {
         #expect(entry("Mg").primary.representationKind == .hcp)
         let scene = form("Mg")
         #expect(scene.kind == .metallicLattice)
-        // Two seven-atom hexagonal layers with three atoms between them.
-        #expect(scene.atoms.count == 17)
+        // A seven-atom hexagonal layer with three atoms above and three below.
+        #expect(scene.atoms.count == 13)
         #expect(scene.coordination == 12)
         // The central atom of the prism touches twelve neighbors.
         let center = scene.atoms.min { magnitude($0.position) < magnitude($1.position) }

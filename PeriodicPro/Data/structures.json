@@ -119,7 +119,7 @@
  {
   "atomicNumber": 5,
   "primary": {
-   "representationKind": "complexCrystal",
+   "representationKind": "rhombohedral",
    "allotropeName": "β-rhombohedral boron",
    "phase": "solid",
    "crystalSystem": "trigonal",

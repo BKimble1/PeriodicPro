@@ -189,7 +189,7 @@ STRUCTURES = {
     3: (bcc(3.510, notes="Body-centered cubic at room temperature; a martensitic transformation "
                          "below about 78 K gives a close-packed form."), []),
     4: (hcp(2.286, 3.584), []),
-    5: (profile("complexCrystal", allotropeName="β-rhombohedral boron", crystalSystem="trigonal",
+    5: (profile("rhombohedral", allotropeName="β-rhombohedral boron", crystalSystem="trigonal",
                 latticeType="B₁₂ icosahedra linked into a network", spaceGroup="R-3m",
                 latticeParameters=cell(a=10.93, c=23.82), coordination=5,
                 notes="The stable form has 105 atoms per cell built from B₁₂ icosahedra. One "

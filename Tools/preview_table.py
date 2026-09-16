@@ -113,12 +113,20 @@ def rounded(draw, box, radius, fill, outline=None, width=1):
     draw.rounded_rectangle(box, radius=radius, fill=fill, outline=outline, width=width)
 
 
+def spacing_for(tile):
+    """TableZoomLayout.spacing(forTileSize:)."""
+    return min(4, max(FITTED_SPACING, tile * 0.075))
+
+
 def tile_size(width):
-    """PeriodicTableScreen.tileSize, fitted layout."""
+    """TableZoomLayout.fittedTileSize(viewportWidth:)."""
     usable = max(width - HORIZONTAL_INSET * 2, 260)
     gaps = FITTED_SPACING * (COLUMNS - 1)
     import math
-    return max(13, math.floor((usable - gaps) / COLUMNS))
+    tile = max(13, math.floor((usable - gaps) / COLUMNS))
+    while tile > 13 and COLUMNS * tile + (COLUMNS - 1) * spacing_for(tile) > usable:
+        tile -= 1
+    return tile
 
 
 def draw_table(draw, elements, origin_x, origin_y, tile, spacing):

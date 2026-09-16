@@ -58,6 +58,13 @@ struct ZoomableTableView: View {
     @State private var pinchStartOffset: CGPoint = .zero
     @State private var pinchStartContent: CGSize = .zero
     @State private var pinchFocus: CGPoint = .zero
+    /// When the last pinch let go. To a tile, a finger that lands on it and
+    /// lifts from it is a tap; to the person it was half of a pinch. A
+    /// selection that arrives while two fingers are down, or within a beat of
+    /// them lifting, belongs to the pinch, and no page opens for it.
+    @State private var pinchEndedAt: Date = .distantPast
+    /// How long after a pinch ends the tiles still treat a lift as its tail.
+    private static let pinchSettleInterval: TimeInterval = 0.4
     /// The table's height at fitted zoom, measured once the layout settles.
     @State private var fittedContentHeight: CGFloat?
 
@@ -97,7 +104,7 @@ struct ZoomableTableView: View {
                 isFavorite: isFavorite,
                 mastery: mastery,
                 showsMastery: TableZoomLayout.showsBadges(forTileSize: tileSize),
-                onSelect: onSelect,
+                onSelect: select,
                 onDoubleTap: toggleZoom
             )
             .padding(.horizontal, Theme.Spacing.l)
@@ -163,6 +170,7 @@ struct ZoomableTableView: View {
             .onEnded { _ in
                 pinchStartZoom = nil
                 isPinching = false
+                pinchEndedAt = Date()
                 // A pinch that stops a hair above fitted snaps home, so the
                 // table is never left three points too wide with slack to
                 // scroll.
@@ -170,6 +178,20 @@ struct ZoomableTableView: View {
                     fit(animated: true)
                 }
             }
+    }
+
+    /// Opens a tile's page, unless the tap was really the end of a pinch.
+    ///
+    /// The tiles are buttons and the pinch is a simultaneous gesture, so each
+    /// finger of a pinch is also a press on whatever tile it landed on. A
+    /// finger that lifts from the tile it started on completes that press.
+    /// The pinch recognizer ends when the first finger lifts, which can come
+    /// either side of the button firing, so both the live flag and the
+    /// moment it cleared are checked.
+    private func select(_ element: ChemicalElement) {
+        guard !isPinching,
+              Date().timeIntervalSince(pinchEndedAt) > Self.pinchSettleInterval else { return }
+        onSelect(element)
     }
 
     /// Applies a zoom while keeping `focus` (a viewport point) over the same
