@@ -265,6 +265,12 @@ struct CardSessionView: View {
         }
         .animation(reduceMotion ? nil : Theme.Motion.reveal, value: index)
         .animation(reduceMotion ? nil : Theme.Motion.reveal, value: isRevealed)
+        // A container, like the paywall and the summary. This view holds the
+        // card face *and* the controls under it, so naming it without
+        // `children: .contain` renamed Reveal Answer, the answer, I knew this
+        // and Review again to "session.card" — every control a round is
+        // played with.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("session.card")
     }
 
