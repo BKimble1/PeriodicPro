@@ -119,6 +119,61 @@ struct EntitlementResolutionTests {
         #expect(elapsed < .seconds(30), "but it must not wait forever: \(elapsed)")
     }
 
+    /// The sibling of the defect above, in the same file, missed the first
+    /// time. `loadProducts` awaited `Product.products(for:)` with no bound, so
+    /// when StoreKit did not answer the paywall sat on "Loading subscription
+    /// options…" with no prices, no error and no Try again button — that
+    /// button only appears once a load has been *attempted*, and this one
+    /// never finished attempting.
+    @Test("A product request that never answers still ends in a retryable state")
+    func productLoadIsBounded() async {
+        let store = SubscriptionManager(
+            testingEntitlement: .free,
+            enablesLoading: true,
+            productRequest: {
+                // Never answers, which is precisely what a real StoreKit
+                // cannot be asked to do on demand.
+                try await Task.sleep(for: .seconds(600))
+                return []
+            })
+        let started = ContinuousClock.now
+
+        await store.loadProducts(within: .milliseconds(300))
+
+        let elapsed = ContinuousClock.now - started
+        #expect(elapsed >= .milliseconds(250), "it should wait for the answer first")
+        // Generous for the same reason as the wait above: the claim is that it
+        // ends, not that it ends punctually on a contended main actor.
+        #expect(elapsed < .seconds(30), "but it must not wait forever: \(elapsed)")
+        #expect(store.products.isEmpty)
+        // The state matters as much as the timing: this is the one the paywall
+        // draws the Try again button from. Ending in `.loadingProducts` would
+        // be the same bug with a deadline attached.
+        if case .productsUnavailable = store.purchaseState {} else {
+            Issue.record("expected a retryable state, got \(store.purchaseState)")
+        }
+    }
+
+    @Test("A product request that answers is not made to wait for the deadline")
+    func productLoadReturnsEarlyOnAnswer() async {
+        let store = SubscriptionManager(
+            testingEntitlement: .free,
+            enablesLoading: true,
+            productRequest: { [] })
+        let started = ContinuousClock.now
+
+        await store.loadProducts(within: .seconds(30))
+
+        #expect(ContinuousClock.now - started < .seconds(25),
+                "an answered request should not sit out the deadline")
+        // An empty catalogue is still an answer, and it is the unavailable
+        // state rather than the timeout message.
+        if case .productsUnavailable = store.purchaseState {} else {
+            Issue.record("expected unavailable for an empty catalogue, "
+                         + "got \(store.purchaseState)")
+        }
+    }
+
     @Test("Returns immediately once the entitlement is known")
     func returnsAtOnceWhenAlreadyResolved() async {
         for entitlement in [ProEntitlement.free,

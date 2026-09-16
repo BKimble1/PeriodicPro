@@ -26,8 +26,26 @@ final class SubscriptionManager {
     /// StoreKit when it is false, so a unit test can never reach Apple's
     /// servers and a UI test is never blocked by a purchase sheet.
     @ObservationIgnored private let isStoreKitEnabled: Bool
+    /// Whether `loadProducts` may run. Separate from `isStoreKitEnabled`
+    /// because product fetching is the one path with a test seam in front of
+    /// it; everything else here talks to StoreKit directly.
+    @ObservationIgnored private let canRequestProducts: Bool
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
     @ObservationIgnored private var hasStarted = false
+    /// Whether a product request has come back, either way. Read by the
+    /// bounded wait in `loadProducts(within:)`.
+    @ObservationIgnored private var hasProductAnswer = false
+
+    /// How products are fetched. Exactly one thing ever supplies a different
+    /// value: a test that needs a request which never answers, which is the
+    /// case the bounded wait exists for and the only one that cannot be
+    /// reached through StoreKit itself. Production has no other caller.
+    @ObservationIgnored
+    private let productRequest: @Sendable () async throws -> [Product]
+
+    private static func liveProductRequest() async throws -> [Product] {
+        try await Product.products(for: SubscriptionProduct.allProductIDs)
+    }
 
     @ObservationIgnored
     private static let logger = Logger(subsystem: "com.periodicpro.app", category: "store")
@@ -38,6 +56,8 @@ final class SubscriptionManager {
         // paywall without a sandbox account.
         let stubsStoreKit = RuntimeFlags.isUITesting && !RuntimeFlags.usesLocalStoreKit
         isStoreKitEnabled = !stubsStoreKit
+        canRequestProducts = !stubsStoreKit
+        productRequest = Self.liveProductRequest
         if stubsStoreKit {
             // UI tests drive the paywall and the Pro-gated paths deterministically
             // from a launch argument rather than from a sandbox account.
@@ -46,10 +66,25 @@ final class SubscriptionManager {
     }
 
     /// Tests and previews. Never opens a connection to StoreKit.
-    init(testingEntitlement: ProEntitlement, products: [Product] = []) {
+    ///
+    /// `productRequest` is the one seam: pass a request that never returns to
+    /// exercise the bounded wait in `loadProducts(within:)`, which is the case
+    /// that cannot be produced any other way — a real StoreKit that hangs is
+    /// exactly what a test cannot arrange. `enablesLoading` opens the guard on
+    /// `loadProducts` alone, and deliberately does *not* set
+    /// `isStoreKitEnabled`: `refresh`, `purchase`, `restore` and `start` reach
+    /// StoreKit directly rather than through this seam, so that flag stays
+    /// false here and the promise above — that a test can never reach Apple's
+    /// servers — keeps holding.
+    init(testingEntitlement: ProEntitlement,
+         products: [Product] = [],
+         enablesLoading: Bool = false,
+         productRequest: @escaping @Sendable () async throws -> [Product] = { [] }) {
         isStoreKitEnabled = false
+        canRequestProducts = enablesLoading
         self.entitlement = testingEntitlement
         self.products = products
+        self.productRequest = productRequest
     }
 
     private static let uiTestingSubscription = ProSubscriptionInfo(
@@ -160,13 +195,44 @@ final class SubscriptionManager {
 
     // MARK: - Products
 
-    func loadProducts() async {
-        guard isStoreKitEnabled else { return }
+    /// Loads the subscription products, but does not wait forever for them.
+    ///
+    /// Bounded for the same reason `resolveEntitlement(within:)` is, and it is
+    /// the same mistake twice in one file: `Product.products(for:)` reaches
+    /// StoreKit, and StoreKit does not promise to answer. Awaiting it with no
+    /// bound meant that when it did not, the paywall sat on "Loading
+    /// subscription options…" forever — no prices, no error, and not even the
+    /// Try again button, because that button only appears once a load has been
+    /// *attempted* and this one never finished attempting. A spinner with no
+    /// way out is the worst of the three states this screen can be in.
+    ///
+    /// Past the deadline the learner gets the unavailable state, which already
+    /// says what happened and offers a retry. The request is left running
+    /// rather than canceled — `Product.products(for:)` is not required to be
+    /// cancellation-responsive, and a late answer is still worth having, so an
+    /// arrival after the deadline simply fills the plans in.
+    func loadProducts(within duration: Duration = .seconds(15)) async {
+        guard canRequestProducts else { return }
         guard products.isEmpty else { return }
 
         purchaseState = .loadingProducts
+        hasProductAnswer = false
+        Task { await self.requestProducts() }
+
+        let deadline = ContinuousClock.now.advanced(by: duration)
+        while !hasProductAnswer, ContinuousClock.now < deadline {
+            try? await Task.sleep(for: .milliseconds(50))
+        }
+
+        guard !hasProductAnswer else { return }
+        purchaseState = .productsUnavailable(
+            "Subscription options are taking longer than usual to load. "
+                + "Check your connection and try again.")
+    }
+
+    private func requestProducts() async {
         do {
-            let loaded = try await Product.products(for: SubscriptionProduct.allProductIDs)
+            let loaded = try await productRequest()
             products = Self.sorted(loaded)
             purchaseState = products.isEmpty
                 ? .productsUnavailable(
@@ -178,6 +244,7 @@ final class SubscriptionManager {
             purchaseState = .productsUnavailable(
                 "Subscription options could not be loaded. Check your connection and try again.")
         }
+        hasProductAnswer = true
     }
 
     /// Preferred plan first, then by identifier so the order is stable.
