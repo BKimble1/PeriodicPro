@@ -133,6 +133,7 @@ RETAINED_IDENTIFIERS = {
     "Tools/validate_project.py": "reads PeriodicPro.xcodeproj",
     "Tools/verify.sh": "runs the checkers over the PeriodicPro source tree",
     "Tools/check_branding.py": "this allowlist",
+    "Tools/check_app_icon.py": "reads PeriodicPro/Assets.xcassets and the project",
 
     # --- Documentation, which has to explain the split to a human ---
     "README.md": "documents which identifiers are retained and why",

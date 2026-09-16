@@ -54,6 +54,9 @@ jobs:
       - name: Check branding
         run: python3 Tools/check_branding.py
 
+      - name: Check the app icon
+        run: python3 Tools/check_app_icon.py
+
       - name: Check artwork and structure routing
         run: python3 Tools/check_visual_routing.py
 
@@ -242,6 +245,10 @@ jobs:
         run: |
           set -euo pipefail
           set -o pipefail
+          # Booted again first: `simctl ui` needs a running device, and
+          # xcodebuild does not promise to leave one behind after a test run.
+          xcrun simctl boot "${SIM_DEFAULT}" || true
+          xcrun simctl bootstatus "${SIM_DEFAULT}" -b
           xcrun simctl ui "${SIM_DEFAULT}" appearance dark
           SCREENSHOT_SUFFIX=dark xcodebuild test-without-building \
             -project "$PROJECT" \

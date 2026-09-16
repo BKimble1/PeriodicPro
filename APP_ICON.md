@@ -83,10 +83,22 @@ Replace `Design/AppIconSource.png` with a 1024×1024 RGB PNG, update `FIELD`,
 `TEAL` and `GOLD` in `Tools/make_app_icon.py` to whatever the new artwork is
 drawn in, and rerun the script.
 
-## Checklist before uploading
+## What is checked automatically
 
-- [ ] All three PNGs are exactly 1024×1024
-- [ ] No alpha channel (`sips -g hasAlpha AppIcon-1024.png` reports `no`)
-- [ ] sRGB color profile
-- [ ] No transparency, no rounded corners baked in, no drop shadow outside the square
-- [ ] `ASSETCATALOG_COMPILER_APPICON_NAME` is `AppIcon` (set in the target build settings)
+`Tools/check_app_icon.py` runs in `Tools/verify.sh` and in CI. It reads the PNG
+headers directly — no Pillow, so it works on a bare CI image — and fails if:
+
+- an appearance is missing from `Contents.json`, or declared with the wrong one;
+- any PNG is not exactly 1024×1024;
+- any PNG is not truecolor, or carries a `tRNS` chunk (transparency by another
+  name). App Store Connect rejects an icon with an alpha channel, and it does so
+  after the archive, sign and export have already run;
+- `ASSETCATALOG_COMPILER_APPICON_NAME` is no longer `AppIcon`, which would ship
+  a build with no icon at all.
+
+Left to a human, because neither is mechanically decidable:
+
+- [ ] sRGB (none of the three carries an ICC profile, which Apple's toolchain
+      treats as sRGB — correct here, since the artwork is drawn in sRGB)
+- [ ] No rounded corners baked in, no drop shadow outside the square
+- [ ] It still reads at 29pt
