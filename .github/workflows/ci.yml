@@ -289,6 +289,32 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer github-actions
 
+      # And the iPad. The layout job already proves the table fits an iPad
+      # window, but "fits" and "looks like an iPad app rather than a stretched
+      # phone" are different claims and only one of them can be settled by an
+      # assertion. These are also the frames App Store Connect will ask for:
+      # an app that ships with iPad in its device family cannot be submitted
+      # with iPhone screenshots alone.
+      - name: Capture — iPad
+        if: always() && env.SIM_IPAD != ''
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          xcrun simctl boot "${SIM_IPAD}" || true
+          xcrun simctl bootstatus "${SIM_IPAD}" -b
+          xcrun simctl ui "${SIM_IPAD}" appearance light
+          TEST_RUNNER_SCREENSHOT_SUFFIX="light-${SIM_IPAD_NAME// /-}" \
+            xcodebuild test-without-building \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "id=${SIM_IPAD}" \
+            -derivedDataPath build/DerivedData \
+            -only-testing:PeriodicProUITests/ElemoraScreenshotTests \
+            -resultBundlePath build/Screenshots-ipad.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
       - name: Export the screenshots
         if: always()
         run: |
