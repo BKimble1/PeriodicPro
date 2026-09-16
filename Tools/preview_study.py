@@ -34,6 +34,7 @@ LIGHT = dict(
     TILES=[
         ("Flashcards", (224, 246, 244), (14, 101, 96)),        # metalloid
         ("Quiz", (242, 231, 251), (96, 50, 138)),              # lanthanide
+        ("Match", (224, 234, 252), (28, 60, 130)),             # transitionMetal
         ("Identify", (254, 236, 217), (144, 69, 19)),          # alkalineEarth
         ("Smart Review", (254, 234, 234), (148, 41, 48)),      # alkaliMetal
     ],
@@ -48,6 +49,7 @@ DARK = dict(
     TILES=[
         ("Flashcards", (20, 48, 47), (240, 240, 240)),
         ("Quiz", (42, 31, 55), (240, 240, 240)),
+        ("Match", (24, 36, 62), (240, 240, 240)),
         ("Identify", (55, 40, 24), (240, 240, 240)),
         ("Smart Review", (56, 27, 30), (240, 240, 240)),
     ],
@@ -153,19 +155,20 @@ def render(name: str, width: int, height: int) -> tuple[Image.Image, float]:
                px(y + 5)), allowance, font=allowance_font, fill=T["SECONDARY"])
     y += 28
 
-    tile_gap = 12
-    tile = (content - tile_gap * 3) / 4
+    # Five tiles across, with the tighter 8-point gap the grid uses for them.
+    tile_gap = 8
+    tile = (content - tile_gap * 4) / 5
     for index, (label, fill, ink) in enumerate(T["TILES"]):
         x = MARGIN + index * (tile + tile_gap)
         draw.rounded_rectangle([px(x), px(y), px(x + tile), px(y + tile)],
                                radius=px(18), fill=fill)
-        draw.ellipse([px(x + tile / 2 - 11), px(y + tile / 2 - 11),
-                      px(x + tile / 2 + 11), px(y + tile / 2 + 11)], fill=ink)
+        draw.ellipse([px(x + tile / 2 - 10), px(y + tile / 2 - 10),
+                      px(x + tile / 2 + 10), px(y + tile / 2 + 10)], fill=ink)
         if label == "Smart Review":
             draw.rounded_rectangle([px(x + tile - 28), px(y + 5), px(x + tile - 5), px(y + 17)],
                                    radius=px(6), fill=T["PRO_BADGE"])
             draw.text((px(x + tile - 25), px(y + 6)), "PRO", font=font(BOLD, 7), fill=T["ACCENT"])
-        label_font = font(REGULAR, 12)
+        label_font = font(REGULAR, 11)
         for line_index, line in enumerate(label.split(" ")
                                           if len(label) > 10 else [label]):
             centered(draw, line, label_font, T["PRIMARY"],
@@ -201,10 +204,10 @@ def render(name: str, width: int, height: int) -> tuple[Image.Image, float]:
     # --- tab bar ----------------------------------------------------------
     draw.rectangle([0, px(height - TAB_BAR), px(width), px(height)], fill=T["SURFACE"])
     draw.line([0, px(height - TAB_BAR)], fill=T["HAIRLINE"], width=max(1, SCALE // 2))
-    for index, label in enumerate(["Table", "Study", "Progress"]):
+    for index, label in enumerate(["Table", "Study", "Build", "Progress"]):
         color = T["ACCENT"] if label == "Study" else T["TERTIARY"]
         centered(draw, label, font(REGULAR, 10), color,
-                 width * (index + 0.5) / 3, height - TAB_BAR + 30)
+                 width * (index + 0.5) / 4, height - TAB_BAR + 30)
 
     return image, tiles_bottom
 

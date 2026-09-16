@@ -44,3 +44,36 @@ private func utcCalendar(_ base: Calendar) -> Calendar {
     calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
     return calendar
 }
+
+/// Locates the PubChem fixture files inside the test bundle.
+///
+/// Small, real-shaped JSON captured in PubChem's PUG REST schema, so the
+/// parser tests never touch the network.
+enum Fixtures {
+    private final class Token {}
+
+    static func url(_ name: String) -> URL? {
+        let bundle = Bundle(for: Token.self)
+        return bundle.url(forResource: name, withExtension: "json", subdirectory: "Fixtures")
+            ?? bundle.url(forResource: name, withExtension: "json")
+    }
+
+    static func data(_ name: String) -> Data {
+        guard let url = url(name), let data = try? Data(contentsOf: url) else {
+            fatalError("Missing fixture \(name).json in the test bundle")
+        }
+        return data
+    }
+}
+
+/// The bundled compound catalog, loaded once for the whole test run.
+enum TestCompounds {
+    static let catalog = CompoundCatalog.loadFromApplicationBundle()
+
+    static func compound(_ name: String) -> ChemicalCompound {
+        guard let compound = catalog.compounds.first(where: { $0.preferredName == name }) else {
+            fatalError("Missing compound \(name) in the bundled catalog")
+        }
+        return compound
+    }
+}

@@ -1,0 +1,14 @@
+{
+ "PropertyTable": {
+  "Properties": [
+   {
+    "CID": 962,
+    "MolecularFormula": "H2O",
+    "MolecularWeight": "18.02",
+    "IUPACName": "oxidane",
+    "Title": "Water",
+    "Charge": 0
+   }
+  ]
+ }
+}

@@ -19,8 +19,10 @@ final class PeriodicProUITests: XCTestCase {
         // still covered, by the launch tests that deliberately ask for it.
         XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
-        // Skips onboarding, uses an in-memory store and silences haptics.
-        app.launchArguments = ["-uiTesting"]
+        // Skips onboarding, uses an in-memory store and silences haptics. The
+        // compound stub answers PubChem's endpoints from the bundled catalog,
+        // so the compound flows below are deterministic and offline.
+        app.launchArguments = ["-uiTesting", "-compoundNetworkStub"]
         app.launch()
     }
 
@@ -165,7 +167,7 @@ final class PeriodicProUITests: XCTestCase {
     /// comes from a launch argument instead.
     private func relaunchAsPro() {
         app.terminate()
-        app.launchArguments = ["-uiTesting", "-proEntitled"]
+        app.launchArguments = ["-uiTesting", "-proEntitled", "-compoundNetworkStub"]
         app.launch()
     }
 
@@ -194,6 +196,7 @@ final class PeriodicProUITests: XCTestCase {
                       "Oganesson tile should be on screen at launch\(onScreen())")
         XCTAssertTrue(tabExists("Table"), "Table tab missing\(onScreen())")
         XCTAssertTrue(tabExists("Study"), "Study tab missing\(onScreen())")
+        XCTAssertTrue(tabExists("Build"), "Build tab missing\(onScreen())")
         XCTAssertTrue(tabExists("Progress"), "Progress tab missing\(onScreen())")
     }
 
@@ -443,6 +446,8 @@ final class PeriodicProUITests: XCTestCase {
     func testQuizQuestionAcceptsAnAnswerAndAdvances() {
         openTab("Study")
         tap(app.buttons["study.mode.quiz"])
+        waitFor(el("quizSetup.sheet"))
+        tap(app.buttons["quizSetup.start"])
 
         waitFor(el("quiz.prompt"))
         let option = app.buttons["quiz.option.0"]
@@ -505,7 +510,7 @@ final class PeriodicProUITests: XCTestCase {
         // Four practice tiles, Smart Review included. Scrolled to rather than
         // asserted on the first screenful: the Study tab is taller than the
         // display by design, which is why `scrollTo` exists at all.
-        for mode in ["flashcards", "quiz", "identify", "smartReview"] {
+        for mode in ["flashcards", "quiz", "match", "identify", "smartReview"] {
             assertReachable(app.buttons["study.mode.\(mode)"], "the \(mode) tile")
         }
     }
@@ -696,5 +701,182 @@ final class PeriodicProUITests: XCTestCase {
         app.buttons["About this app"].tap()
         XCTAssertTrue(app.navigationBars["About"].waitForExistence(timeout: 5))
         app.navigationBars["About"].buttons["Done"].tap()
+    }
+
+    // MARK: - Compounds
+
+    func testCompoundSearchFindsWaterAndOpensItsPage() {
+        let field = app.searchFields.firstMatch
+        waitFor(field)
+        field.tap()
+        field.typeText("water")
+
+        let result = app.buttons["compoundResult.962"]
+        waitFor(result)
+        result.tap()
+        waitFor(el("compound.hero"))
+        XCTAssertTrue(labelContaining("Water").exists)
+        let attribution = el("compound.attribution")
+        scrollTo(attribution)
+        XCTAssertTrue(attribution.label.contains("PubChem"),
+                      "A compound page must name its data source\(onScreen())")
+        XCTAssertTrue(el("compound.structureStyle").exists, "The structure card offers Ball & Stick / Space Fill")
+
+        app.buttons["compound.favoriteButton"].tap()
+        goBack()
+        openTab("Study")
+        XCTAssertTrue(app.buttons["study.compound.962"].waitForExistence(timeout: 6),
+                      "A favorited compound should appear on the Study tab's compound shelf\(onScreen())")
+    }
+
+    func testNumericSearchNeverAsksPubChem() {
+        let field = app.searchFields.firstMatch
+        waitFor(field)
+        field.tap()
+        field.typeText("26")
+        XCTAssertTrue(app.buttons["searchResult.Fe"].waitForExistence(timeout: 5))
+        XCTAssertFalse(el("search.compounds.searching").waitForExistence(timeout: 2),
+                       "An atomic-number query must not start an online compound search")
+    }
+
+    func testCompoundExplorerOpensForEveryone() {
+        let field = app.searchFields.firstMatch
+        waitFor(field)
+        field.tap()
+        field.typeText("water")
+        tap(app.buttons["compoundResult.962"])
+        waitFor(el("compound.hero"))
+        let explore = app.buttons["compound.explore3D"]
+        scrollTo(explore)
+        XCTAssertFalse(explore.label.contains("Elemora Pro"), "Compound features are free for everyone")
+        explore.tap()
+        waitFor(el("compoundExplorer.viewer"))
+        XCTAssertTrue(el("compoundExplorer.parts").exists)
+        app.buttons["compoundExplorer.done"].tap()
+        waitFor(el("compound.hero"))
+    }
+
+    // MARK: - Build
+
+    private func addElement(_ symbol: String, searching name: String? = nil) {
+        tap(app.buttons["build.addElement"])
+        if let name {
+            let field = app.searchFields.firstMatch
+            waitFor(field)
+            field.tap()
+            field.typeText(name)
+        }
+        tap(app.buttons["build.pick.\(symbol)"])
+    }
+
+    func testBuildTabShowsTheCompoundBuilderBeta() {
+        openTab("Build")
+        waitFor(el("build.header"))
+        XCTAssertTrue(el("build.beta").exists, "The builder must be marked as a beta\(onScreen())")
+        XCTAssertTrue(app.buttons["build.addElement"].exists)
+        XCTAssertTrue(el("build.empty").exists)
+    }
+
+    func testBuildingWaterFindsTheKnownCompound() {
+        openTab("Build")
+        addElement("H")
+        tap(app.buttons["build.increment.H"])
+        addElement("O")
+        XCTAssertTrue(el("build.formula").waitForExistence(timeout: 5))
+        XCTAssertTrue(el("build.hints").exists, "Hints are shown, labeled as heuristics")
+        tap(app.buttons["build.lookUp"])
+        waitFor(el("build.result"))
+        XCTAssertTrue(labelContaining("Water").exists, "H2O should resolve to water\(onScreen())")
+        XCTAssertTrue(el("build.result.preview").exists, "A known compound shows its structure")
+        tap(app.buttons["build.result.addToStudy"])
+        tap(app.buttons["build.result.details"])
+        waitFor(el("compound.hero"))
+        goBack()
+    }
+
+    func testBuildingC2H6OOffersAChoiceRatherThanAssumingEthanol() {
+        openTab("Build")
+        addElement("C")
+        tap(app.buttons["build.increment.C"])
+        addElement("H")
+        for _ in 0..<5 { tap(app.buttons["build.increment.H"]) }
+        addElement("O")
+        tap(app.buttons["build.lookUp"])
+        waitFor(el("build.candidates"))
+        XCTAssertTrue(labelContaining("Multiple known compounds share this formula.").exists)
+        XCTAssertTrue(app.buttons["build.candidate.702"].exists, "Ethanol is offered")
+        XCTAssertTrue(app.buttons["build.candidate.8254"].exists, "Dimethyl ether is offered")
+        tap(app.buttons["build.candidate.8254"])
+        waitFor(el("build.result"))
+        XCTAssertTrue(labelContaining("Dimethyl ether").exists)
+    }
+
+    func testUnknownCompositionIsAMissNotADiscovery() {
+        openTab("Build")
+        addElement("Au", searching: "gold")
+        addElement("He")
+        tap(app.buttons["build.lookUp"])
+        waitFor(el("build.noMatch"))
+        XCTAssertTrue(labelContaining("No known PubChem match found.").exists)
+        XCTAssertTrue(labelContaining("not evidence of a new chemical discovery").exists)
+        tap(app.buttons["build.saveHypothetical"])
+        waitFor(el("build.result"))
+        XCTAssertTrue(labelContaining("Hypothetical").exists)
+        XCTAssertFalse(el("build.result.preview").exists, "Nothing is drawn for a composition nobody has seen")
+    }
+
+    // MARK: - Quiz setup, Match and My Quizzes
+
+    func testQuizSetupOffersContentScopeAndDifficulty() {
+        openTab("Study")
+        tap(app.buttons["study.mode.quiz"])
+        waitFor(el("quizSetup.sheet"))
+        XCTAssertTrue(el("quizSetup.content").exists)
+        XCTAssertTrue(el("quizSetup.difficulty").exists)
+        XCTAssertTrue(el("quizSetup.length").exists)
+        XCTAssertTrue(el("quizSetup.poolCount").exists, "The footer says how big the selection is")
+        app.buttons["quizSetup.cancel"].tap()
+        XCTAssertTrue(app.navigationBars["Study"].waitForExistence(timeout: 5))
+    }
+
+    func testMatchRoundPairsUpAndFinishes() {
+        openTab("Study")
+        tap(app.buttons["study.mode.match"])
+        waitFor(el("quizSetup.sheet"))
+        tap(app.buttons["quizSetup.start"])
+        waitFor(el("match.board"))
+        // The board is dealt with pair ids 0..<n; matching each prompt to its
+        // own answer finishes the round whatever the shuffled order is.
+        for id in 0..<8 {
+            let prompt = app.buttons["match.prompt.\(id)"]
+            guard prompt.waitForExistence(timeout: 3) else { break }
+            tap(prompt)
+            tap(app.buttons["match.answer.\(id)"])
+        }
+        XCTAssertTrue(app.buttons["summary.done"].waitForExistence(timeout: 10),
+                      "Matching every pair should end the round\(onScreen())")
+        app.buttons["summary.done"].tap()
+    }
+
+    func testSavedQuizAppearsUnderMyQuizzes() {
+        openTab("Study")
+        tap(app.buttons["study.mode.quiz"])
+        waitFor(el("quizSetup.sheet"))
+        tap(app.buttons["quizSetup.save"])
+        // The name prompt is a system alert, whose text field XCUITest vends
+        // under the alert rather than under the app's own identifiers.
+        let alert = app.alerts.firstMatch
+        waitFor(alert)
+        let nameField = alert.textFields.firstMatch
+        waitFor(nameField)
+        nameField.tap()
+        nameField.typeText("Halogens")
+        alert.buttons["Save"].tap()
+        XCTAssertTrue(labelContaining("Halogens").waitForExistence(timeout: 6),
+                      "The saved quiz should appear on the Study tab\(onScreen())")
+        tap(app.buttons["study.myQuizzes.seeAll"])
+        waitFor(app.navigationBars["My Quizzes"])
+        XCTAssertTrue(el("myQuizzes.list").exists)
+        XCTAssertTrue(labelContaining("Halogens").exists)
     }
 }

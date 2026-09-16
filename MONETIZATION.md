@@ -22,14 +22,19 @@ no account and no server. Entitlement comes from StoreKit 2 and nothing else.
 | All 118 elements, the full table, search, filters | ✅ | ✅ |
 | Favorites, core facts, About, Common Uses, Memory Hooks | ✅ | ✅ |
 | Progress, streak, per-family breakdown | ✅ | ✅ |
-| Flashcards, Quick Quiz, Identify | ✅ | ✅ |
+| Flashcards, Quiz (with setup), Match, Identify | ✅ | ✅ |
+| Compound search, compound pages, the Compound Builder (beta) | ✅ | ✅ |
+| Basic compound study: compounds in quizzes and Match | ✅ | ✅ |
+| My Quizzes: save, edit, share and import | ✅ | ✅ |
 | Study rounds per day | 3 | Unlimited |
 | Interactive 3D structure explorer | 6 elements | All 118 |
 | Smart Review | — | ✅ |
 
 **Nothing scientific is behind the paywall.** Every fact, every diagram caption,
-every element page is free. Pro buys depth: unlimited practice, the interactive
-explorer for the whole table, and rounds targeted at what you keep missing.
+every element page, every compound page and the whole Compound Builder beta are
+free. Pro buys depth: unlimited practice, the interactive explorer for the
+whole table, and rounds targeted at what you keep missing. The compound beta
+added **no new products** and changed nothing about the two subscriptions.
 
 ### The free 3D elements
 

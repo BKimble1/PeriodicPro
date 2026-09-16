@@ -464,8 +464,10 @@ struct PrivacySummarySheet: View {
                     paragraph("Subscriptions are handled entirely by Apple. The app is told "
                               + "whether a subscription is active; it never sees your payment "
                               + "details, your Apple Account or your name.")
-                    paragraph("The element data ships inside the app, so nothing you look up "
-                              + "or search for leaves your device.")
+                    paragraph("The element data and a starter set of compounds ship inside the app. "
+                              + "Online compound searches are sent to PubChem to retrieve requested "
+                              + "chemical information: only the name or formula you look up, only when "
+                              + "you search for a compound, and nothing about you.")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, Theme.Spacing.screenMargin)

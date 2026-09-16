@@ -1,0 +1,101 @@
+{
+ "PC_Compounds": [
+  {
+   "id": {
+    "id": {
+     "cid": 962
+    }
+   },
+   "atoms": {
+    "aid": [
+     1,
+     2,
+     3
+    ],
+    "element": [
+     8,
+     1,
+     1
+    ]
+   },
+   "charge": 0,
+   "props": [
+    {
+     "urn": {
+      "label": "IUPAC Name",
+      "name": "Preferred"
+     },
+     "value": {
+      "sval": "oxidane"
+     }
+    },
+    {
+     "urn": {
+      "label": "Molecular Formula"
+     },
+     "value": {
+      "sval": "H2O"
+     }
+    }
+   ],
+   "bonds": {
+    "aid1": [
+     1,
+     1
+    ],
+    "aid2": [
+     2,
+     3
+    ],
+    "order": [
+     1,
+     1
+    ]
+   },
+   "coords": [
+    {
+     "type": [
+      2,
+      5,
+      10
+     ],
+     "aid": [
+      1,
+      2,
+      3
+     ],
+     "conformers": [
+      {
+       "x": [
+        -0.0,
+        -0.763,
+        0.764
+       ],
+       "y": [
+        0.398,
+        -0.199,
+        -0.199
+       ],
+       "z": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "data": [
+        {
+         "urn": {
+          "label": "Conformer",
+          "name": "ID"
+         },
+         "value": {
+          "sval": "0000000000000001"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

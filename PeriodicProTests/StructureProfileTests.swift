@@ -107,7 +107,7 @@ struct StructureProfileTests {
             #expect(!scene.isMetallic)
             // 8 corners, 6 face centers, 4 interior atoms.
             #expect(scene.atoms.count == 18)
-            #expect(scene.bonds.allSatisfy(\.isDiscreteBond))
+            #expect(scene.bonds.allSatisfy { $0.isDiscreteBond })
             // Each interior atom is bonded to four neighbors.
             let interior = scene.atoms.filter { atom in
                 scene.bonds.filter { $0.from == atom.id || $0.to == atom.id }.count == 4
@@ -228,7 +228,7 @@ struct StructureProfileTests {
 
         let iodine = form("I")
         #expect(iodine.kind == .molecularCrystal)
-        #expect(iodine.bonds.allSatisfy(\.isDiscreteBond))
+        #expect(iodine.bonds.allSatisfy { $0.isDiscreteBond })
         for atom in iodine.atoms {
             let bonds = iodine.bonds.filter { $0.from == atom.id || $0.to == atom.id }.count
             #expect(bonds <= 1, "an iodine atom belongs to one I₂ molecule")

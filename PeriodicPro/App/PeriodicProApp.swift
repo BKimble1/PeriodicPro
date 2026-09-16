@@ -20,6 +20,8 @@ struct PeriodicProApp: App {
                 .environment(\.elementCatalog, services.catalog)
                 .environment(services.progress)
                 .environment(services.store)
+                .environment(services.compounds)
+                .environment(services.savedQuizzes)
                 .tint(AppColor.accent)
                 // Starting the StoreKit listener here rather than in
                 // `AppServices.init` keeps the initializer synchronous and
@@ -38,8 +40,9 @@ struct PeriodicProApp: App {
     }
 }
 
-/// Owns the two things the whole app depends on: the bundled element catalog
-/// and the learner's local progress. Built once, at launch.
+/// Owns the things the whole app depends on: the bundled element catalog,
+/// the learner's local progress, the compound catalog and cache, and the
+/// saved quizzes. Built once, at launch.
 @MainActor
 @Observable
 final class AppServices {
@@ -48,6 +51,10 @@ final class AppServices {
     /// The app's only StoreKit connection. Views read entitlement state from
     /// here; none of them talks to StoreKit directly.
     let store: SubscriptionManager
+    /// Bundled compounds, the on-device cache, and the PubChem client.
+    let compounds: CompoundStore
+    /// The learner's own quizzes.
+    let savedQuizzes: SavedQuizStore
     /// Non-nil when `elements.json` could not be read, which drives the
     /// data-unavailable screen instead of an empty, silent table.
     let catalogError: String?
@@ -70,5 +77,32 @@ final class AppServices {
 
         self.progress = ProgressStore(container: outcome.container, storage: outcome.storage)
         self.store = SubscriptionManager()
+        self.compounds = Self.makeCompoundStore(container: outcome.container)
+        self.savedQuizzes = SavedQuizStore(container: outcome.container)
+    }
+
+    /// The compound store, with the network wired the way this launch needs.
+    ///
+    /// A UI-test launch makes no network request at all unless it explicitly
+    /// asks for the catalog-backed stub, which answers PubChem's endpoints
+    /// from the bundled data through the real request and parsing code.
+    private static func makeCompoundStore(container: ModelContainer?) -> CompoundStore {
+        let catalog = CompoundCatalog.loadFromApplicationBundle()
+        if catalog.loadError != nil {
+            Logger(subsystem: "com.periodicpro.app", category: "compounds")
+                .error("Compound catalog unavailable: \(catalog.loadError ?? "", privacy: .public)")
+        }
+        guard RuntimeFlags.isUITesting else {
+            return CompoundStore(container: container, catalog: catalog)
+        }
+        guard RuntimeFlags.stubsCompoundNetwork else {
+            return CompoundStore(container: container, catalog: catalog, isOnlineLookupEnabled: false)
+        }
+        let client = PubChemClient(
+            transport: CatalogBackedStubTransport(catalog: catalog),
+            maximumRetries: 0,
+            minimumGap: .zero
+        )
+        return CompoundStore(container: container, catalog: catalog, client: client)
     }
 }

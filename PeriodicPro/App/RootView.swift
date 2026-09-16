@@ -1,12 +1,13 @@
 import SwiftUI
 
-/// Three tabs, no more. Search lives in Table; favorites live in Study and on
-/// each element page.
+/// Four tabs. Search lives in Table; favorites live in Study and on each
+/// detail page; Build is the Compound Builder beta.
 struct RootView: View {
     /// Diagnostic detail shown only when the bundled dataset cannot be read.
     var catalogError: String?
 
     @Environment(\.elementCatalog) private var catalog
+    @Environment(SavedQuizStore.self) private var savedQuizzes: SavedQuizStore
 
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var selection: AppTab = .table
@@ -25,6 +26,10 @@ struct RootView: View {
                         .tabItem { Label(AppTab.study.title, systemImage: AppTab.study.symbolName) }
                         .tag(AppTab.study)
 
+                    CompoundBuilderScreen()
+                        .tabItem { Label(AppTab.build.title, systemImage: AppTab.build.symbolName) }
+                        .tag(AppTab.build)
+
                     ProgressScreen()
                         .tabItem { Label(AppTab.progress.title, systemImage: AppTab.progress.symbolName) }
                         .tag(AppTab.progress)
@@ -37,6 +42,24 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: shouldShowOnboarding) {
             OnboardingView { hasCompletedOnboarding = true }
+        }
+        // A `.elemoraquiz` file opened from Files, Messages or AirDrop lands
+        // here, is validated, and becomes one of the learner's quizzes.
+        .onOpenURL { url in
+            guard url.pathExtension.lowercased() == ElemoraQuizPackage.fileExtension else { return }
+            savedQuizzes.importFile(at: url, catalog: catalog)
+            selection = .study
+        }
+        .alert(
+            "Quiz import",
+            isPresented: Binding(
+                get: { savedQuizzes.lastImportMessage != nil },
+                set: { if !$0 { savedQuizzes.lastImportMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { savedQuizzes.lastImportMessage = nil }
+        } message: {
+            Text(savedQuizzes.lastImportMessage ?? "")
         }
     }
 

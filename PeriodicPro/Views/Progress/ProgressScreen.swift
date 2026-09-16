@@ -158,6 +158,19 @@ struct ProgressScreen: View {
                     symbolName: "heart.fill",
                     tint: ElementCategory.alkaliMetal.accentColor
                 )
+                StatTile(
+                    value: "\(progress.studyCompoundIDs.count)",
+                    caption: "compounds in study",
+                    symbolName: "circle.hexagongrid.fill",
+                    tint: ElementCategory.transitionMetal.accentColor
+                )
+                .accessibilityIdentifier("progress.compounds")
+                StatTile(
+                    value: "\(progress.masteredCompoundCount)",
+                    caption: "compounds mastered",
+                    symbolName: "checkmark.circle.fill",
+                    tint: AppColor.positive
+                )
             }
         }
     }
@@ -238,6 +251,7 @@ struct ProgressScreen: View {
 struct AboutSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.elementCatalog) private var catalog
+    @Environment(CompoundStore.self) private var compounds: CompoundStore
 
     private var version: String {
         let info = Bundle.main.infoDictionary
@@ -264,10 +278,32 @@ struct AboutSheet: View {
 
                 Section("Privacy") {
                     Text("""
-                        Everything you do stays on this device. There is no account, no \
-                        analytics and no network request \u{2014} favorites, familiarity \
-                        scores and recent searches are stored locally, and are removed when \
-                        you delete the app.
+                        Everything you do stays on this device. There is no account and no \
+                        analytics \u{2014} favorites, familiarity scores, saved quizzes and \
+                        recent searches are stored locally, and are removed when you delete \
+                        the app.
+                        """)
+                        .font(AppFont.footnote)
+                        .foregroundStyle(AppColor.secondaryText)
+                    Text("""
+                        Online compound searches are sent to PubChem to retrieve requested \
+                        chemical information. Only the name or formula you look up is sent, \
+                        only when you search for a compound or look one up in the builder, \
+                        and nothing about you travels with it.
+                        """)
+                        .font(AppFont.footnote)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .accessibilityIdentifier("about.pubchem")
+                }
+
+                Section("Compounds") {
+                    LabeledContent("Bundled compounds", value: "\(compounds.catalog.count)")
+                    Text("""
+                        Bundled compound records are verified against PubChem and carry its \
+                        compound identifier. Molecular pictures are computed conformers or \
+                        representative unit cells, and every picture says which. A composition \
+                        the builder cannot match is saved only as a hypothetical composition: \
+                        a database miss is never treated as a discovery.
                         """)
                         .font(AppFont.footnote)
                         .foregroundStyle(AppColor.secondaryText)

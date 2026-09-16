@@ -3,11 +3,14 @@ import Foundation
 /// The practice modes.
 ///
 /// Three card formats — reveal, multiple choice, and name-it-from-its-structure
-/// — plus Smart Review, which is the flashcard format run over the elements the
-/// learner keeps getting wrong rather than over the whole table.
+/// — plus Match, which pairs names with symbols or formulas against the clock
+/// of your own attention, and Smart Review, which is the flashcard format run
+/// over the elements the learner keeps getting wrong rather than over the
+/// whole table.
 enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     case flashcards
     case quiz
+    case match
     case identify
     case smartReview
 
@@ -17,6 +20,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         switch self {
         case .flashcards: return "Flashcards"
         case .quiz: return "Quiz"
+        case .match: return "Match"
         case .identify: return "Identify"
         case .smartReview: return "Smart Review"
         }
@@ -25,7 +29,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     /// The longer name, used where there is room for it.
     var fullTitle: String {
         switch self {
-        case .quiz: return "Quick Quiz"
+        case .quiz: return "Custom Quiz"
         default: return title
         }
     }
@@ -33,7 +37,8 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     var subtitle: String {
         switch self {
         case .flashcards: return "Reveal and self-rate"
-        case .quiz: return "10 multiple-choice questions"
+        case .quiz: return "Multiple choice, your way"
+        case .match: return "Pair names with symbols and formulas"
         case .identify: return "Name it from its structure"
         case .smartReview: return "The elements you keep missing"
         }
@@ -43,6 +48,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         switch self {
         case .flashcards: return "rectangle.on.rectangle.angled"
         case .quiz: return "questionmark.circle.fill"
+        case .match: return "arrow.left.arrow.right"
         case .identify: return "eye.fill"
         // A crosshair: the right idea for a mode that aims at weak spots.
         // (The obvious name for that symbol does not exist in SF Symbols.)
@@ -53,12 +59,16 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     /// Smart Review is the one mode behind Pro.
     var requiresPro: Bool { self == .smartReview }
 
+    /// Quiz and Match open a setup screen before a round starts.
+    var opensSetup: Bool { self == .quiz || self == .match }
+
     /// Mixed into the session seed so the modes do not draw the same ten
     /// elements, in the same order, on the same day.
     var seedSalt: UInt64 {
         switch self {
         case .flashcards: return 0x9E37_79B9_7F4A_7C15
         case .quiz: return 0x85EB_CA6B_C2B2_AE35
+        case .match: return 0x2545_F491_4F6C_DD1D
         case .identify: return 0x27D4_EB2F_1656_67C5
         case .smartReview: return 0x1F83_D9AB_FB41_BD6B
         }
@@ -88,21 +98,91 @@ struct StudyCard: Identifiable, Equatable, Hashable, Sendable {
     let answerDetail: String
 }
 
-/// One multiple-choice question.
+/// One multiple-choice question, about an element or a compound.
 struct QuizQuestion: Identifiable, Equatable, Hashable, Sendable {
     let id: Int
     let kind: Kind
-    let element: ChemicalElement
+    let subject: QuizSubject
     let prompt: String
     let options: [String]
     let correctIndex: Int
+    /// One line shown once the question is answered: the fact behind it.
+    let detail: String?
 
-    enum Kind: String, CaseIterable, Hashable, Sendable {
+    /// Every question type the generator can deal. Which ones a round uses
+    /// is decided by `QuizDifficulty`.
+    enum Kind: String, CaseIterable, Codable, Hashable, Sendable {
+        // Elements — easy
         case symbolForName
         case nameForSymbol
+        // Elements — medium
         case numberForName
         case familyForElement
+        case phaseForElement
+        case periodForElement
+        // Elements — hard
+        case configurationForElement
+        case elementForClue
+        case groupForElement
+        case massForElement
+        // Compounds — easy
+        case formulaForCompound
+        case compoundForFormula
+        // Compounds — medium
+        case molarMassForCompound
+        case bondingForCompound
+        case elementInCompound
+        // Compounds — hard
+        case atomCountForCompound
+        case compoundForDescription
+
+        /// The four types the original Quick Quiz dealt.
+        static let classic: [Kind] = [.symbolForName, .nameForSymbol, .numberForName, .familyForElement]
+
+        var isAboutCompound: Bool {
+            switch self {
+            case .formulaForCompound, .compoundForFormula, .molarMassForCompound, .bondingForCompound,
+                 .elementInCompound, .atomCountForCompound, .compoundForDescription:
+                return true
+            default:
+                return false
+            }
+        }
+
+        var difficulty: QuizDifficulty {
+            if QuizDifficulty.easy.elementKinds.contains(self) || QuizDifficulty.easy.compoundKinds.contains(self) {
+                return .easy
+            }
+            if QuizDifficulty.medium.elementKinds.contains(self)
+                || QuizDifficulty.medium.compoundKinds.contains(self) {
+                return .medium
+            }
+            return .hard
+        }
     }
+
+    init(
+        id: Int,
+        kind: Kind,
+        subject: QuizSubject,
+        prompt: String,
+        options: [String],
+        correctIndex: Int,
+        detail: String? = nil
+    ) {
+        self.id = id
+        self.kind = kind
+        self.subject = subject
+        self.prompt = prompt
+        self.options = options
+        self.correctIndex = correctIndex
+        self.detail = detail
+    }
+
+    /// The element this question is about, when it is about one.
+    var element: ChemicalElement? { subject.element }
+    /// The compound this question is about, when it is about one.
+    var compound: ChemicalCompound? { subject.compound }
 
     var correctAnswer: String { options[correctIndex] }
 
@@ -130,7 +210,7 @@ struct StudyResult: Equatable, Hashable, Sendable {
     var message: String {
         switch accuracy {
         case 1.0:
-            return "Every answer correct. These elements are sticking."
+            return "Every answer correct. These are sticking."
         case 0.8..<1.0:
             return "Nearly all correct. A short review will close the gap."
         case 0.5..<0.8:

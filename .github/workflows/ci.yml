@@ -39,6 +39,9 @@ jobs:
       - name: Validate structures.json
         run: python3 Tools/validate_structures.py
 
+      - name: Validate compounds.json
+        run: python3 Tools/validate_compounds.py
+
       - name: Lint Swift sources
         run: python3 Tools/lint_sources.py
 

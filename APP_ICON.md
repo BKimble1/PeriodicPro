@@ -140,5 +140,5 @@ Left to a human, because it is not mechanically decidable:
 
 - [ ] It still reads at 29pt — see `Design/AppIconPreview.png`
 - [ ] The compiled app's icon on the simulator Home Screen is razor-sharp. The
-      screenshot tour captures it (`14-home-screen-icon`) so it can be
+      screenshot tour captures it (`19-home-screen-icon`) so it can be
       compared against the system icons beside it.

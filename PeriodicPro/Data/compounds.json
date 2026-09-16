@@ -1,0 +1,10324 @@
+[
+ {
+  "id": "pubchem-962",
+  "pubChemCID": 962,
+  "preferredName": "Water",
+  "formula": "H2O",
+  "hillFormula": "H2O",
+  "iupacName": "oxidane",
+  "molarMass": 18.015,
+  "canonicalSMILES": "O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Dihydrogen monoxide"
+  ],
+  "summary": "Bent molecule of two hydrogen atoms bonded to one oxygen; the solvent of life and the reference for the Celsius scale.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -0.0,
+     "y": 0.398,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.763,
+     "y": -0.199,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": 0.764,
+     "y": -0.199,
+     "z": 0.0,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-280",
+  "pubChemCID": 280,
+  "preferredName": "Carbon dioxide",
+  "formula": "CO2",
+  "hillFormula": "CO2",
+  "iupacName": "carbon dioxide",
+  "molarMass": 44.009,
+  "canonicalSMILES": "O=C=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Carbonic anhydride"
+  ],
+  "summary": "Linear molecule with two C=O double bonds; the gas plants fix and combustion releases.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -1.405,
+     "y": -0.009,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.0,
+     "y": -0.0,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": 1.405,
+     "y": 0.009,
+     "z": 0.0,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-5234",
+  "pubChemCID": 5234,
+  "preferredName": "Sodium chloride",
+  "formula": "NaCl",
+  "hillFormula": "ClNa",
+  "iupacName": "sodium chloride",
+  "molarMass": 58.44,
+  "canonicalSMILES": "[Na+].[Cl-]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Table salt",
+   "Halite"
+  ],
+  "summary": "Sodium and chloride ions in a rock-salt lattice, each ion surrounded by six of the other.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "curatedLattice",
+   "note": "A conventional unit cell of the rock-salt structure; the struts are ionic contacts. a = 5.64 Å (CRC Handbook).",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 11,
+     "x": -2.82,
+     "y": -2.82,
+     "z": -2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 11,
+     "x": -2.82,
+     "y": -2.82,
+     "z": 2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 2,
+     "atomicNumber": 11,
+     "x": -2.82,
+     "y": 2.82,
+     "z": -2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 3,
+     "atomicNumber": 11,
+     "x": -2.82,
+     "y": 2.82,
+     "z": 2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 4,
+     "atomicNumber": 11,
+     "x": 2.82,
+     "y": -2.82,
+     "z": -2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 5,
+     "atomicNumber": 11,
+     "x": 2.82,
+     "y": -2.82,
+     "z": 2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 6,
+     "atomicNumber": 11,
+     "x": 2.82,
+     "y": 2.82,
+     "z": -2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 7,
+     "atomicNumber": 11,
+     "x": 2.82,
+     "y": 2.82,
+     "z": 2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 8,
+     "atomicNumber": 11,
+     "x": 0.0,
+     "y": 0.0,
+     "z": -2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 9,
+     "atomicNumber": 11,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 2.82,
+     "formalCharge": 1
+    },
+    {
+     "id": 10,
+     "atomicNumber": 11,
+     "x": 0.0,
+     "y": -2.82,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 11,
+     "atomicNumber": 11,
+     "x": 0.0,
+     "y": 2.82,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 12,
+     "atomicNumber": 11,
+     "x": -2.82,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 13,
+     "atomicNumber": 11,
+     "x": 2.82,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 14,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": -2.82,
+     "z": -2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 15,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": -2.82,
+     "z": 2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 16,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": 2.82,
+     "z": -2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 17,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": 2.82,
+     "z": 2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 18,
+     "atomicNumber": 17,
+     "x": -2.82,
+     "y": 0.0,
+     "z": -2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 19,
+     "atomicNumber": 17,
+     "x": -2.82,
+     "y": 0.0,
+     "z": 2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 20,
+     "atomicNumber": 17,
+     "x": 2.82,
+     "y": 0.0,
+     "z": -2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 21,
+     "atomicNumber": 17,
+     "x": 2.82,
+     "y": 0.0,
+     "z": 2.82,
+     "formalCharge": -1
+    },
+    {
+     "id": 22,
+     "atomicNumber": 17,
+     "x": -2.82,
+     "y": -2.82,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 23,
+     "atomicNumber": 17,
+     "x": -2.82,
+     "y": 2.82,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 24,
+     "atomicNumber": 17,
+     "x": 2.82,
+     "y": -2.82,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 25,
+     "atomicNumber": 17,
+     "x": 2.82,
+     "y": 2.82,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 26,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": -1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 4,
+     "from": 1,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 5,
+     "from": 1,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 9,
+     "from": 3,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 10,
+     "from": 3,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 11,
+     "from": 3,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 12,
+     "from": 4,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 13,
+     "from": 4,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 14,
+     "from": 4,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 15,
+     "from": 5,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 16,
+     "from": 5,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 17,
+     "from": 5,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 18,
+     "from": 6,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 19,
+     "from": 6,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 20,
+     "from": 6,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 21,
+     "from": 7,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 22,
+     "from": 7,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 23,
+     "from": 7,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 24,
+     "from": 8,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 25,
+     "from": 8,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 26,
+     "from": 8,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 27,
+     "from": 8,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 28,
+     "from": 8,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 29,
+     "from": 9,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 30,
+     "from": 9,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 31,
+     "from": 9,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 32,
+     "from": 9,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 33,
+     "from": 9,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 34,
+     "from": 10,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 35,
+     "from": 10,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 36,
+     "from": 10,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 37,
+     "from": 10,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 38,
+     "from": 10,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 39,
+     "from": 11,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 40,
+     "from": 11,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 41,
+     "from": 11,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 42,
+     "from": 11,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 43,
+     "from": 11,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 44,
+     "from": 12,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 45,
+     "from": 12,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 46,
+     "from": 12,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 47,
+     "from": 12,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 48,
+     "from": 12,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 49,
+     "from": 13,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 50,
+     "from": 13,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 51,
+     "from": 13,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 52,
+     "from": 13,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 53,
+     "from": 13,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-222",
+  "pubChemCID": 222,
+  "preferredName": "Ammonia",
+  "formula": "NH3",
+  "hillFormula": "H3N",
+  "iupacName": "azane",
+  "molarMass": 17.031,
+  "canonicalSMILES": "N",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "base",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Azane"
+  ],
+  "summary": "Trigonal pyramidal molecule; a weak base in water and the feedstock for most nitrogen fertilizer.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 7,
+     "x": 0.001,
+     "y": -0.004,
+     "z": 0.296,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.646,
+     "y": -0.681,
+     "z": -0.108,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -0.269,
+     "y": 0.902,
+     "z": -0.085,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 0.914,
+     "y": -0.216,
+     "z": -0.103,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-297",
+  "pubChemCID": 297,
+  "preferredName": "Methane",
+  "formula": "CH4",
+  "hillFormula": "CH4",
+  "iupacName": "methane",
+  "molarMass": 16.043,
+  "canonicalSMILES": "C",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Natural gas (main component)"
+  ],
+  "summary": "Tetrahedral, the simplest hydrocarbon and the main component of natural gas.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": 0.0,
+     "y": -0.0,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.615,
+     "y": -0.783,
+     "z": -0.448,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -0.426,
+     "y": 0.977,
+     "z": -0.237,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 0.026,
+     "y": -0.132,
+     "z": 1.084,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 1.015,
+     "y": -0.062,
+     "z": -0.399,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-313",
+  "pubChemCID": 313,
+  "preferredName": "Hydrogen chloride",
+  "formula": "HCl",
+  "hillFormula": "ClH",
+  "iupacName": "chlorane",
+  "molarMass": 36.458,
+  "canonicalSMILES": "Cl",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Hydrochloric acid (in water)"
+  ],
+  "summary": "Diatomic gas; dissolved in water it is hydrochloric acid, a strong acid.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 17,
+     "x": 0.683,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.683,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-1118",
+  "pubChemCID": 1118,
+  "preferredName": "Sulfuric acid",
+  "formula": "H2SO4",
+  "hillFormula": "H2O4S",
+  "iupacName": "sulfuric acid",
+  "molarMass": 98.072,
+  "canonicalSMILES": "OS(=O)(=O)O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Oil of vitriol"
+  ],
+  "summary": "Tetrahedral sulfur bonded to four oxygens, two carrying hydrogen; a strong diprotic acid made in larger quantities than any other chemical.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -1.063,
+     "y": -0.503,
+     "z": 0.685,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 16,
+     "x": -0.001,
+     "y": 0.453,
+     "z": -0.044,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": 0.674,
+     "y": 1.233,
+     "z": 0.963,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -0.679,
+     "y": 1.023,
+     "z": -1.18,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 8,
+     "x": 1.066,
+     "y": -0.62,
+     "z": -0.577,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": -1.697,
+     "y": -0.804,
+     "z": 0.001,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": 1.701,
+     "y": -0.782,
+     "z": 0.151,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 4,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-944",
+  "pubChemCID": 944,
+  "preferredName": "Nitric acid",
+  "formula": "HNO3",
+  "hillFormula": "HNO3",
+  "iupacName": "nitric acid",
+  "molarMass": 63.012,
+  "canonicalSMILES": "O[N+](=O)[O-]",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Aqua fortis"
+  ],
+  "summary": "Planar nitrogen bonded to three oxygens; a strong acid and an oxidizer.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 0.824,
+     "y": -0.279,
+     "z": 0.556,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 7,
+     "x": -0.4,
+     "y": -0.106,
+     "z": -0.062,
+     "formalCharge": 1
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -0.395,
+     "y": 0.826,
+     "z": -0.859,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -1.269,
+     "y": -0.897,
+     "z": 0.282,
+     "formalCharge": -1
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 1.241,
+     "y": 0.458,
+     "z": 0.084,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-14798",
+  "pubChemCID": 14798,
+  "preferredName": "Sodium hydroxide",
+  "formula": "NaOH",
+  "hillFormula": "HNaO",
+  "iupacName": "sodium hydroxide",
+  "molarMass": 39.997,
+  "canonicalSMILES": "[Na+].[OH-]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "base",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Caustic soda",
+   "Lye"
+  ],
+  "summary": "Sodium and hydroxide ions; a strong base used in soap and paper making.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 0.489,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.489,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 11,
+     "x": 3.489,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-10112",
+  "pubChemCID": 10112,
+  "preferredName": "Calcium carbonate",
+  "formula": "CaCO3",
+  "hillFormula": "CCaO3",
+  "iupacName": "calcium carbonate",
+  "molarMass": 100.086,
+  "canonicalSMILES": "[Ca+2].[O-]C([O-])=O",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Limestone",
+   "Calcite",
+   "Chalk"
+  ],
+  "summary": "Calcium ions and flat carbonate ions; limestone, marble, chalk and seashells.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -0.649,
+     "y": 1.201,
+     "z": -0.003,
+     "formalCharge": -1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.028,
+     "y": -0.006,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -0.663,
+     "y": -1.194,
+     "z": 0.003,
+     "formalCharge": -1
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 1.284,
+     "y": -0.001,
+     "z": -0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 20,
+     "x": 4.284,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 2
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-516892",
+  "pubChemCID": 516892,
+  "preferredName": "Sodium bicarbonate",
+  "formula": "NaHCO3",
+  "hillFormula": "CHNaO3",
+  "iupacName": "sodium hydrogen carbonate",
+  "molarMass": 84.006,
+  "canonicalSMILES": "[Na+].OC([O-])=O",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Baking soda",
+   "Sodium hydrogen carbonate"
+  ],
+  "summary": "Sodium and hydrogen carbonate ions; releases carbon dioxide when heated or acidified, which is what makes baking soda rise.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 0.783,
+     "y": -0.644,
+     "z": 0.092,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -0.389,
+     "y": -0.032,
+     "z": -0.01,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -1.421,
+     "y": -0.739,
+     "z": 0.025,
+     "formalCharge": -1
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -0.231,
+     "y": 1.206,
+     "z": -0.129,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 1.258,
+     "y": 0.209,
+     "z": 0.023,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 11,
+     "x": 4.258,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-5793",
+  "pubChemCID": 5793,
+  "preferredName": "Glucose",
+  "formula": "C6H12O6",
+  "hillFormula": "C6H12O6",
+  "iupacName": "6-(hydroxymethyl)oxane-2,3,4,5-tetrol",
+  "molarMass": 180.156,
+  "canonicalSMILES": "OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "D-Glucose",
+   "Dextrose",
+   "Blood sugar"
+  ],
+  "summary": "A six-carbon sugar, shown in its six-membered ring form; the sugar cells burn for energy.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 3.345,
+     "y": -0.67,
+     "z": 0.913,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 2.041,
+     "y": -0.667,
+     "z": 1.479,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": 0.962,
+     "y": -0.544,
+     "z": 0.392,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -0.243,
+     "y": -1.153,
+     "z": 0.898,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": -1.277,
+     "y": -1.177,
+     "z": -0.073,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 8,
+     "x": -2.413,
+     "y": -1.81,
+     "z": 0.5,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 6,
+     "x": -1.684,
+     "y": 0.246,
+     "z": -0.476,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 8,
+     "x": -2.704,
+     "y": 0.234,
+     "z": -1.486,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 6,
+     "x": -0.463,
+     "y": 0.99,
+     "z": -1.004,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 8,
+     "x": -0.79,
+     "y": 2.367,
+     "z": -1.258,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": 0.688,
+     "y": 0.926,
+     "z": 0.007,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 8,
+     "x": 1.829,
+     "y": 1.564,
+     "z": -0.564,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 1,
+     "x": 3.976,
+     "y": -0.55,
+     "z": 1.642,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 1,
+     "x": 1.919,
+     "y": -1.605,
+     "z": 2.032,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 1,
+     "x": 1.964,
+     "y": 0.152,
+     "z": 2.203,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 1,
+     "x": 1.3,
+     "y": -1.102,
+     "z": -0.492,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 1,
+     "x": -0.976,
+     "y": -1.769,
+     "z": -0.946,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 1,
+     "x": -2.099,
+     "y": -2.696,
+     "z": 0.749,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 1,
+     "x": -2.106,
+     "y": 0.784,
+     "z": 0.383,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 1,
+     "x": -3.405,
+     "y": -0.349,
+     "z": -1.129,
+     "formalCharge": 0
+    },
+    {
+     "id": 20,
+     "atomicNumber": 1,
+     "x": -0.146,
+     "y": 0.579,
+     "z": -1.97,
+     "formalCharge": 0
+    },
+    {
+     "id": 21,
+     "atomicNumber": 1,
+     "x": -1.626,
+     "y": 2.339,
+     "z": -1.767,
+     "formalCharge": 0
+    },
+    {
+     "id": 22,
+     "atomicNumber": 1,
+     "x": 0.41,
+     "y": 1.501,
+     "z": 0.899,
+     "formalCharge": 0
+    },
+    {
+     "id": 23,
+     "atomicNumber": 1,
+     "x": 1.498,
+     "y": 2.409,
+     "z": -0.931,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 4,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 6,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 8,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 8,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 10,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 0,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 1,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 1,
+     "to": 14,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 2,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 4,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 5,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 6,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 7,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 20,
+     "from": 8,
+     "to": 20,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 21,
+     "from": 9,
+     "to": 21,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 22,
+     "from": 10,
+     "to": 22,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 23,
+     "from": 11,
+     "to": 23,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-5988",
+  "pubChemCID": 5988,
+  "preferredName": "Sucrose",
+  "formula": "C12H22O11",
+  "hillFormula": "C12H22O11",
+  "iupacName": "2-[3,4-dihydroxy-2,5-bis(hydroxymethyl)oxolan-2-yl]oxy-6-(hydroxymethyl)oxane-3,4,5-triol",
+  "molarMass": 342.297,
+  "canonicalSMILES": "OC[C@H]1O[C@@](CO)(O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@@H](O)[C@@H]1O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Table sugar",
+   "Cane sugar"
+  ],
+  "summary": "Glucose and fructose joined through an oxygen; ordinary table sugar.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -3.38,
+     "y": -1.497,
+     "z": -1.577,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -3.319,
+     "y": -0.074,
+     "z": -1.472,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": -3.246,
+     "y": 0.324,
+     "z": 0.005,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -1.985,
+     "y": -0.164,
+     "z": 0.536,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": -1.213,
+     "y": 0.967,
+     "z": 0.984,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 6,
+     "x": -1.306,
+     "y": 1.04,
+     "z": 2.531,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 8,
+     "x": -0.591,
+     "y": -0.059,
+     "z": 3.133,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 8,
+     "x": 0.182,
+     "y": 0.919,
+     "z": 0.654,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 6,
+     "x": 0.557,
+     "y": -0.079,
+     "z": -0.291,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 8,
+     "x": 1.711,
+     "y": 0.41,
+     "z": -0.992,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": 2.943,
+     "y": -0.074,
+     "z": -0.456,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 6,
+     "x": 4.117,
+     "y": 0.68,
+     "z": -1.106,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 8,
+     "x": 4.28,
+     "y": 0.38,
+     "z": -2.492,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 6,
+     "x": 3.049,
+     "y": -1.604,
+     "z": -0.647,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 8,
+     "x": 4.005,
+     "y": -2.119,
+     "z": 0.292,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 6,
+     "x": 1.69,
+     "y": -2.32,
+     "z": -0.459,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 8,
+     "x": 1.058,
+     "y": -2.6,
+     "z": -1.712,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 6,
+     "x": 0.764,
+     "y": -1.46,
+     "z": 0.396,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 8,
+     "x": 1.361,
+     "y": -1.335,
+     "z": 1.704,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 6,
+     "x": -1.83,
+     "y": 2.211,
+     "z": 0.311,
+     "formalCharge": 0
+    },
+    {
+     "id": 20,
+     "atomicNumber": 8,
+     "x": -1.325,
+     "y": 2.401,
+     "z": -1.021,
+     "formalCharge": 0
+    },
+    {
+     "id": 21,
+     "atomicNumber": 6,
+     "x": -3.296,
+     "y": 1.84,
+     "z": 0.217,
+     "formalCharge": 0
+    },
+    {
+     "id": 22,
+     "atomicNumber": 8,
+     "x": -3.943,
+     "y": 2.157,
+     "z": 1.454,
+     "formalCharge": 0
+    },
+    {
+     "id": 23,
+     "atomicNumber": 1,
+     "x": -2.598,
+     "y": -1.838,
+     "z": -1.103,
+     "formalCharge": 0
+    },
+    {
+     "id": 24,
+     "atomicNumber": 1,
+     "x": -2.442,
+     "y": 0.257,
+     "z": -2.035,
+     "formalCharge": 0
+    },
+    {
+     "id": 25,
+     "atomicNumber": 1,
+     "x": -4.218,
+     "y": 0.333,
+     "z": -1.944,
+     "formalCharge": 0
+    },
+    {
+     "id": 26,
+     "atomicNumber": 1,
+     "x": -4.037,
+     "y": -0.189,
+     "z": 0.564,
+     "formalCharge": 0
+    },
+    {
+     "id": 27,
+     "atomicNumber": 1,
+     "x": -2.337,
+     "y": 0.972,
+     "z": 2.884,
+     "formalCharge": 0
+    },
+    {
+     "id": 28,
+     "atomicNumber": 1,
+     "x": -0.843,
+     "y": 1.959,
+     "z": 2.904,
+     "formalCharge": 0
+    },
+    {
+     "id": 29,
+     "atomicNumber": 1,
+     "x": -0.775,
+     "y": -0.011,
+     "z": 4.089,
+     "formalCharge": 0
+    },
+    {
+     "id": 30,
+     "atomicNumber": 1,
+     "x": -0.203,
+     "y": -0.169,
+     "z": -1.076,
+     "formalCharge": 0
+    },
+    {
+     "id": 31,
+     "atomicNumber": 1,
+     "x": 2.984,
+     "y": 0.191,
+     "z": 0.608,
+     "formalCharge": 0
+    },
+    {
+     "id": 32,
+     "atomicNumber": 1,
+     "x": 5.058,
+     "y": 0.455,
+     "z": -0.593,
+     "formalCharge": 0
+    },
+    {
+     "id": 33,
+     "atomicNumber": 1,
+     "x": 3.942,
+     "y": 1.758,
+     "z": -1.037,
+     "formalCharge": 0
+    },
+    {
+     "id": 34,
+     "atomicNumber": 1,
+     "x": 4.839,
+     "y": -0.414,
+     "z": -2.552,
+     "formalCharge": 0
+    },
+    {
+     "id": 35,
+     "atomicNumber": 1,
+     "x": 3.427,
+     "y": -1.845,
+     "z": -1.645,
+     "formalCharge": 0
+    },
+    {
+     "id": 36,
+     "atomicNumber": 1,
+     "x": 3.589,
+     "y": -2.042,
+     "z": 1.176,
+     "formalCharge": 0
+    },
+    {
+     "id": 37,
+     "atomicNumber": 1,
+     "x": 1.851,
+     "y": -3.283,
+     "z": 0.041,
+     "formalCharge": 0
+    },
+    {
+     "id": 38,
+     "atomicNumber": 1,
+     "x": 1.665,
+     "y": -3.166,
+     "z": -2.222,
+     "formalCharge": 0
+    },
+    {
+     "id": 39,
+     "atomicNumber": 1,
+     "x": -0.203,
+     "y": -1.956,
+     "z": 0.535,
+     "formalCharge": 0
+    },
+    {
+     "id": 40,
+     "atomicNumber": 1,
+     "x": 0.723,
+     "y": -0.788,
+     "z": 2.221,
+     "formalCharge": 0
+    },
+    {
+     "id": 41,
+     "atomicNumber": 1,
+     "x": -1.637,
+     "y": 3.129,
+     "z": 0.874,
+     "formalCharge": 0
+    },
+    {
+     "id": 42,
+     "atomicNumber": 1,
+     "x": -0.349,
+     "y": 2.349,
+     "z": -0.953,
+     "formalCharge": 0
+    },
+    {
+     "id": 43,
+     "atomicNumber": 1,
+     "x": -3.827,
+     "y": 2.365,
+     "z": -0.584,
+     "formalCharge": 0
+    },
+    {
+     "id": 44,
+     "atomicNumber": 1,
+     "x": -4.896,
+     "y": 1.988,
+     "z": 1.336,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 5,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 4,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 7,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 8,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 9,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 11,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 10,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 13,
+     "to": 14,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 13,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 15,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 15,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 17,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 4,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 19,
+     "to": 20,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 20,
+     "from": 19,
+     "to": 21,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 21,
+     "from": 21,
+     "to": 22,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 22,
+     "from": 21,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 23,
+     "from": 17,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 24,
+     "from": 0,
+     "to": 23,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 25,
+     "from": 1,
+     "to": 24,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 26,
+     "from": 1,
+     "to": 25,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 27,
+     "from": 2,
+     "to": 26,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 28,
+     "from": 5,
+     "to": 27,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 29,
+     "from": 5,
+     "to": 28,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 30,
+     "from": 6,
+     "to": 29,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 31,
+     "from": 8,
+     "to": 30,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 32,
+     "from": 10,
+     "to": 31,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 33,
+     "from": 11,
+     "to": 32,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 34,
+     "from": 11,
+     "to": 33,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 35,
+     "from": 12,
+     "to": 34,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 36,
+     "from": 13,
+     "to": 35,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 37,
+     "from": 14,
+     "to": 36,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 38,
+     "from": 15,
+     "to": 37,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 39,
+     "from": 16,
+     "to": 38,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 40,
+     "from": 17,
+     "to": 39,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 41,
+     "from": 18,
+     "to": 40,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 42,
+     "from": 19,
+     "to": 41,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 43,
+     "from": 20,
+     "to": 42,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 44,
+     "from": 21,
+     "to": 43,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 45,
+     "from": 22,
+     "to": 44,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-702",
+  "pubChemCID": 702,
+  "preferredName": "Ethanol",
+  "formula": "C2H6O",
+  "hillFormula": "C2H6O",
+  "iupacName": "ethanol",
+  "molarMass": 46.069,
+  "canonicalSMILES": "CCO",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Ethyl alcohol",
+   "Grain alcohol"
+  ],
+  "summary": "Two carbons and a hydroxyl group; the alcohol in drinks and a common fuel and solvent. Shares its formula with dimethyl ether.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": 0.896,
+     "y": 0.051,
+     "z": 0.109,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -0.535,
+     "y": -0.439,
+     "z": 0.036,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -1.308,
+     "y": 0.438,
+     "z": -0.771,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 0.94,
+     "y": 1.054,
+     "z": 0.546,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 1.509,
+     "y": -0.623,
+     "z": 0.714,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": 1.331,
+     "y": 0.121,
+     "z": -0.894,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": -0.576,
+     "y": -1.437,
+     "z": -0.41,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": -0.985,
+     "y": -0.487,
+     "z": 1.032,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": -1.273,
+     "y": 1.32,
+     "z": -0.362,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 1,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 1,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-887",
+  "pubChemCID": 887,
+  "preferredName": "Methanol",
+  "formula": "CH4O",
+  "hillFormula": "CH4O",
+  "iupacName": "methanol",
+  "molarMass": 32.042,
+  "canonicalSMILES": "CO",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Methyl alcohol",
+   "Wood alcohol"
+  ],
+  "summary": "The simplest alcohol, one carbon bearing a hydroxyl group; toxic, and a widely used solvent and feedstock.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -0.371,
+     "y": -0.001,
+     "z": -0.016,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 8,
+     "x": 0.929,
+     "y": -0.538,
+     "z": -0.174,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -0.542,
+     "y": 0.239,
+     "z": 1.036,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": -1.104,
+     "y": -0.742,
+     "z": -0.342,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": -0.47,
+     "y": 0.9,
+     "z": -0.627,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": 1.558,
+     "y": 0.142,
+     "z": 0.123,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 1,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-180",
+  "pubChemCID": 180,
+  "preferredName": "Acetone",
+  "formula": "C3H6O",
+  "hillFormula": "C3H6O",
+  "iupacName": "propan-2-one",
+  "molarMass": 58.08,
+  "canonicalSMILES": "CC(C)=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Propanone",
+   "2-Propanone"
+  ],
+  "summary": "The simplest ketone, a C=O flanked by two methyl groups; the solvent in nail polish remover.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -1.257,
+     "y": 0.219,
+     "z": -0.204,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.135,
+     "y": 0.545,
+     "z": 0.266,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": 1.184,
+     "y": -0.514,
+     "z": 0.06,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 0.402,
+     "y": 1.624,
+     "z": 0.793,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": -1.245,
+     "y": 0.031,
+     "z": -1.281,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": -1.922,
+     "y": 1.063,
+     "z": -0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": -1.627,
+     "y": -0.66,
+     "z": 0.328,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": 0.901,
+     "y": -1.42,
+     "z": 0.603,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": 1.283,
+     "y": -0.729,
+     "z": -1.006,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 1,
+     "x": 2.146,
+     "y": -0.16,
+     "z": 0.441,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 0,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-176",
+  "pubChemCID": 176,
+  "preferredName": "Acetic acid",
+  "formula": "C2H4O2",
+  "hillFormula": "C2H4O2",
+  "iupacName": "acetic acid",
+  "molarMass": 60.052,
+  "canonicalSMILES": "CC(O)=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "organic"
+  ],
+  "alternateNames": [
+   "Ethanoic acid",
+   "Vinegar (in water)"
+  ],
+  "summary": "A carboxylic acid; vinegar is a few percent of it in water.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -0.956,
+     "y": -0.04,
+     "z": 0.112,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.479,
+     "y": 0.244,
+     "z": -0.187,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": 1.301,
+     "y": -0.707,
+     "z": 0.293,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 0.917,
+     "y": 1.206,
+     "z": -0.793,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": -1.577,
+     "y": 0.761,
+     "z": -0.3,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": -1.108,
+     "y": -0.078,
+     "z": 1.194,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": -1.252,
+     "y": -0.984,
+     "z": -0.351,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": 2.195,
+     "y": -0.402,
+     "z": 0.032,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 0,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-784",
+  "pubChemCID": 784,
+  "preferredName": "Hydrogen peroxide",
+  "formula": "H2O2",
+  "hillFormula": "H2O2",
+  "iupacName": "hydrogen peroxide",
+  "molarMass": 34.014,
+  "canonicalSMILES": "OO",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Dioxidane"
+  ],
+  "summary": "Two oxygens singly bonded, each carrying a hydrogen, in a twisted open-book shape; a bleach and disinfectant that decomposes to water and oxygen.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -0.584,
+     "y": 0.435,
+     "z": 0.202,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 8,
+     "x": 0.562,
+     "y": -0.459,
+     "z": 0.211,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -1.19,
+     "y": -0.159,
+     "z": -0.281,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 1.212,
+     "y": 0.183,
+     "z": -0.132,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-2519",
+  "pubChemCID": 2519,
+  "preferredName": "Caffeine",
+  "formula": "C8H10N4O2",
+  "hillFormula": "C8H10N4O2",
+  "iupacName": "1,3,7-trimethylpurine-2,6-dione",
+  "molarMass": 194.194,
+  "canonicalSMILES": "Cn1cnc2c1c(=O)n(C)c(=O)n2C",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "1,3,7-Trimethylxanthine"
+  ],
+  "summary": "A fused two-ring purine with three methyl groups; the stimulant in coffee and tea.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": 2.994,
+     "y": -1.401,
+     "z": -0.422,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 7,
+     "x": 2.136,
+     "y": -0.274,
+     "z": -0.158,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": 2.541,
+     "y": 1.014,
+     "z": 0.076,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 7,
+     "x": 1.516,
+     "y": 1.816,
+     "z": 0.284,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": 0.425,
+     "y": 1.006,
+     "z": 0.177,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 6,
+     "x": 0.773,
+     "y": -0.283,
+     "z": -0.093,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 6,
+     "x": -0.177,
+     "y": -1.328,
+     "z": -0.253,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 8,
+     "x": 0.147,
+     "y": -2.487,
+     "z": -0.497,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 7,
+     "x": -1.495,
+     "y": -0.889,
+     "z": -0.103,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 6,
+     "x": -2.56,
+     "y": -1.863,
+     "z": -0.243,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": -1.895,
+     "y": 0.435,
+     "z": 0.178,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 8,
+     "x": -3.089,
+     "y": 0.725,
+     "z": 0.293,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 7,
+     "x": -0.887,
+     "y": 1.389,
+     "z": 0.317,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 6,
+     "x": -1.213,
+     "y": 2.773,
+     "z": 0.605,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 1,
+     "x": 4.038,
+     "y": -1.076,
+     "z": -0.408,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 1,
+     "x": 2.747,
+     "y": -1.804,
+     "z": -1.407,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 1,
+     "x": 2.832,
+     "y": -2.151,
+     "z": 0.356,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 1,
+     "x": 3.582,
+     "y": 1.311,
+     "z": 0.084,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 1,
+     "x": -2.186,
+     "y": -2.867,
+     "z": -0.459,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 1,
+     "x": -3.14,
+     "y": -1.893,
+     "z": 0.686,
+     "formalCharge": 0
+    },
+    {
+     "id": 20,
+     "atomicNumber": 1,
+     "x": -3.224,
+     "y": -1.55,
+     "z": -1.055,
+     "formalCharge": 0
+    },
+    {
+     "id": 21,
+     "atomicNumber": 1,
+     "x": -0.745,
+     "y": 3.061,
+     "z": 1.552,
+     "formalCharge": 0
+    },
+    {
+     "id": 22,
+     "atomicNumber": 1,
+     "x": -2.292,
+     "y": 2.929,
+     "z": 0.689,
+     "formalCharge": 0
+    },
+    {
+     "id": 23,
+     "atomicNumber": 1,
+     "x": -0.83,
+     "y": 3.407,
+     "z": -0.201,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 5,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 7,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 6,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 8,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 8,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 11,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 10,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 12,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 5,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 12,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 0,
+     "to": 14,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 0,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 0,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 2,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 9,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 20,
+     "from": 9,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 21,
+     "from": 9,
+     "to": 20,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 22,
+     "from": 13,
+     "to": 21,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 23,
+     "from": 13,
+     "to": 22,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 24,
+     "from": 13,
+     "to": 23,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-2244",
+  "pubChemCID": 2244,
+  "preferredName": "Aspirin",
+  "formula": "C9H8O4",
+  "hillFormula": "C9H8O4",
+  "iupacName": "2-acetyloxybenzoic acid",
+  "molarMass": 180.159,
+  "canonicalSMILES": "CC(=O)Oc1ccccc1C(O)=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "organic"
+  ],
+  "alternateNames": [
+   "Acetylsalicylic acid"
+  ],
+  "summary": "A benzene ring carrying a carboxylic acid and an acetyl ester; the original synthetic painkiller.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": 3.384,
+     "y": 0.581,
+     "z": -0.325,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 2.084,
+     "y": 0.056,
+     "z": 0.206,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": 1.872,
+     "y": -0.209,
+     "z": 1.382,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 1.195,
+     "y": -0.097,
+     "z": -0.853,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": -0.077,
+     "y": -0.498,
+     "z": -0.433,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 6,
+     "x": -0.381,
+     "y": -1.858,
+     "z": -0.558,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 6,
+     "x": -1.642,
+     "y": -2.319,
+     "z": -0.184,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 6,
+     "x": -2.595,
+     "y": -1.425,
+     "z": 0.3,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 6,
+     "x": -2.294,
+     "y": -0.063,
+     "z": 0.406,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 6,
+     "x": -1.03,
+     "y": 0.419,
+     "z": 0.032,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": -0.712,
+     "y": 1.869,
+     "z": 0.114,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 8,
+     "x": -1.713,
+     "y": 2.587,
+     "z": 0.659,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 8,
+     "x": 0.31,
+     "y": 2.42,
+     "z": -0.251,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 1,
+     "x": 3.833,
+     "y": -0.154,
+     "z": -0.997,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 1,
+     "x": 4.069,
+     "y": 0.76,
+     "z": 0.509,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 1,
+     "x": 3.218,
+     "y": 1.528,
+     "z": -0.844,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 1,
+     "x": 0.362,
+     "y": -2.554,
+     "z": -0.936,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 1,
+     "x": -1.881,
+     "y": -3.377,
+     "z": -0.268,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 1,
+     "x": -3.578,
+     "y": -1.786,
+     "z": 0.595,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 1,
+     "x": -3.059,
+     "y": 0.615,
+     "z": 0.779,
+     "formalCharge": 0
+    },
+    {
+     "id": 20,
+     "atomicNumber": 1,
+     "x": -1.366,
+     "y": 3.504,
+     "z": 0.666,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 5,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 7,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 7,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 8,
+     "to": 9,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 9,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 10,
+     "to": 12,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 9,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 0,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 0,
+     "to": 14,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 0,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 5,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 6,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 7,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 8,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 20,
+     "from": 11,
+     "to": 20,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-8254",
+  "pubChemCID": 8254,
+  "preferredName": "Dimethyl ether",
+  "formula": "C2H6O",
+  "hillFormula": "C2H6O",
+  "iupacName": "methoxymethane",
+  "molarMass": 46.069,
+  "canonicalSMILES": "COC",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Methoxymethane"
+  ],
+  "summary": "Two methyl groups on one oxygen. The same atoms as ethanol, joined differently — a gas rather than a liquid.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": 1.13,
+     "y": 0.303,
+     "z": -0.232,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 8,
+     "x": 0.163,
+     "y": -0.177,
+     "z": 0.691,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": -1.114,
+     "y": -0.321,
+     "z": 0.083,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 2.087,
+     "y": 0.394,
+     "z": 0.287,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 1.248,
+     "y": -0.399,
+     "z": -1.063,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": 0.842,
+     "y": 1.289,
+     "z": -0.611,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": -1.474,
+     "y": 0.645,
+     "z": -0.285,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": -1.068,
+     "y": -1.043,
+     "z": -0.737,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": -1.815,
+     "y": -0.691,
+     "z": 0.836,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 2,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-241",
+  "pubChemCID": 241,
+  "preferredName": "Benzene",
+  "formula": "C6H6",
+  "hillFormula": "C6H6",
+  "iupacName": "benzene",
+  "molarMass": 78.114,
+  "canonicalSMILES": "c1ccccc1",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Benzol"
+  ],
+  "summary": "A flat six-carbon ring with delocalized bonding, drawn here with alternating double bonds; the parent of the aromatic compounds.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -0.373,
+     "y": -1.344,
+     "z": 0.015,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.977,
+     "y": -0.995,
+     "z": -0.007,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": 1.35,
+     "y": 0.349,
+     "z": -0.022,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 6,
+     "x": 0.373,
+     "y": 1.344,
+     "z": -0.015,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": -0.977,
+     "y": 0.995,
+     "z": 0.007,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 6,
+     "x": -1.35,
+     "y": -0.349,
+     "z": 0.022,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": -0.664,
+     "y": -2.391,
+     "z": 0.026,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": 1.739,
+     "y": -1.771,
+     "z": -0.013,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": 2.402,
+     "y": 0.62,
+     "z": -0.039,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 1,
+     "x": 0.664,
+     "y": 2.391,
+     "z": -0.026,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 1,
+     "x": -1.739,
+     "y": 1.771,
+     "z": 0.013,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 1,
+     "x": -2.402,
+     "y": -0.62,
+     "z": 0.039,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 5,
+     "to": 0,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 0,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 1,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 3,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 4,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 5,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-6325",
+  "pubChemCID": 6325,
+  "preferredName": "Ethylene",
+  "formula": "C2H4",
+  "hillFormula": "C2H4",
+  "iupacName": "ethene",
+  "molarMass": 28.054,
+  "canonicalSMILES": "C=C",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Ethene"
+  ],
+  "summary": "Two carbons joined by a double bond; a plant hormone and the feedstock for polyethylene.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -0.666,
+     "y": -0.044,
+     "z": 0.031,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.666,
+     "y": 0.044,
+     "z": -0.031,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -1.28,
+     "y": 0.84,
+     "z": 0.165,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": -1.167,
+     "y": -1.004,
+     "z": -0.05,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 1.28,
+     "y": -0.84,
+     "z": -0.165,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": 1.167,
+     "y": 1.004,
+     "z": 0.05,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 1,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-6334",
+  "pubChemCID": 6334,
+  "preferredName": "Propane",
+  "formula": "C3H8",
+  "hillFormula": "C3H8",
+  "iupacName": "propane",
+  "molarMass": 44.097,
+  "canonicalSMILES": "CCC",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [],
+  "summary": "A three-carbon alkane; bottled fuel gas.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -1.213,
+     "y": 0.296,
+     "z": 0.273,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -0.042,
+     "y": -0.616,
+     "z": -0.046,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": 1.245,
+     "y": 0.169,
+     "z": -0.239,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": -1.386,
+     "y": 1.012,
+     "z": -0.537,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": -1.033,
+     "y": 0.858,
+     "z": 1.195,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": -2.127,
+     "y": -0.292,
+     "z": 0.407,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": 0.09,
+     "y": -1.339,
+     "z": 0.767,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": -0.261,
+     "y": -1.186,
+     "z": -0.956,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": 1.15,
+     "y": 0.881,
+     "z": -1.065,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 1,
+     "x": 2.073,
+     "y": -0.509,
+     "z": -0.467,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 1,
+     "x": 1.503,
+     "y": 0.727,
+     "z": 0.667,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 1,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 1,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 2,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-24823",
+  "pubChemCID": 24823,
+  "preferredName": "Ozone",
+  "formula": "O3",
+  "hillFormula": "O3",
+  "iupacName": "trioxidane",
+  "molarMass": 47.997,
+  "canonicalSMILES": "[O-][O+]=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Trioxygen"
+  ],
+  "summary": "Three oxygen atoms in a bent molecule; an allotrope of oxygen that absorbs ultraviolet light in the stratosphere.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 1.131,
+     "y": -0.209,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 8,
+     "x": -0.049,
+     "y": 0.447,
+     "z": -0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -1.082,
+     "y": -0.239,
+     "z": -0.0,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-281",
+  "pubChemCID": 281,
+  "preferredName": "Carbon monoxide",
+  "formula": "CO",
+  "hillFormula": "CO",
+  "iupacName": "carbon monoxide",
+  "molarMass": 28.01,
+  "canonicalSMILES": "[C-]#[O+]",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [],
+  "summary": "One carbon and one oxygen joined by a triple bond; a colorless, odorless and toxic gas from incomplete combustion.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": 0.559,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 8,
+     "x": -0.559,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 3,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-1119",
+  "pubChemCID": 1119,
+  "preferredName": "Sulfur dioxide",
+  "formula": "SO2",
+  "hillFormula": "O2S",
+  "iupacName": "sulfur dioxide",
+  "molarMass": 64.058,
+  "canonicalSMILES": "O=S=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [],
+  "summary": "Bent molecule of sulfur and two oxygens; a preservative, and the source of acid rain when it forms from burning sulfur-rich fuel.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -1.342,
+     "y": 0.45,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 16,
+     "x": -0.065,
+     "y": -0.607,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": 1.407,
+     "y": 0.156,
+     "z": 0.0,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-402",
+  "pubChemCID": 402,
+  "preferredName": "Hydrogen sulfide",
+  "formula": "H2S",
+  "hillFormula": "H2S",
+  "iupacName": "sulfane",
+  "molarMass": 34.076,
+  "canonicalSMILES": "S",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Sulfane"
+  ],
+  "summary": "Bent like water, with sulfur in place of oxygen; the smell of rotten eggs.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 16,
+     "x": -0.01,
+     "y": 0.613,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.971,
+     "y": -0.322,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": 0.98,
+     "y": -0.291,
+     "z": 0.0,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-1176",
+  "pubChemCID": 1176,
+  "preferredName": "Urea",
+  "formula": "CH4N2O",
+  "hillFormula": "CH4N2O",
+  "iupacName": "urea",
+  "molarMass": 60.056,
+  "canonicalSMILES": "NC(N)=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Carbamide"
+  ],
+  "summary": "A carbonyl flanked by two amino groups; the main nitrogen waste in urine and the first organic compound made from inorganic starting materials.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 7,
+     "x": -0.975,
+     "y": -0.471,
+     "z": -0.406,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -0.12,
+     "y": 0.457,
+     "z": 0.074,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 7,
+     "x": 1.11,
+     "y": -0.04,
+     "z": 0.323,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -0.427,
+     "y": 1.621,
+     "z": 0.264,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": -1.929,
+     "y": -0.133,
+     "z": -0.463,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": -0.887,
+     "y": -1.392,
+     "z": -0.002,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": 1.785,
+     "y": 0.68,
+     "z": 0.552,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": 1.444,
+     "y": -0.723,
+     "z": -0.342,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 2,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-712",
+  "pubChemCID": 712,
+  "preferredName": "Formaldehyde",
+  "formula": "CH2O",
+  "hillFormula": "CH2O",
+  "iupacName": "formaldehyde",
+  "molarMass": 30.026,
+  "canonicalSMILES": "C=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Methanal"
+  ],
+  "summary": "The simplest aldehyde, a single carbon double-bonded to oxygen.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -0.012,
+     "y": 0.002,
+     "z": -0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 8,
+     "x": 1.188,
+     "y": -0.244,
+     "z": 0.001,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -0.775,
+     "y": -0.792,
+     "z": 0.009,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": -0.401,
+     "y": 1.033,
+     "z": -0.01,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-174",
+  "pubChemCID": 174,
+  "preferredName": "Ethylene glycol",
+  "formula": "C2H6O2",
+  "hillFormula": "C2H6O2",
+  "iupacName": "ethane-1,2-diol",
+  "molarMass": 62.068,
+  "canonicalSMILES": "OCCO",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Ethane-1,2-diol"
+  ],
+  "summary": "Two carbons each carrying a hydroxyl group; automotive antifreeze.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 1.822,
+     "y": -0.332,
+     "z": 0.367,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.669,
+     "y": 0.496,
+     "z": 0.278,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": -0.567,
+     "y": -0.331,
+     "z": -0.055,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -1.696,
+     "y": 0.515,
+     "z": -0.217,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 2.044,
+     "y": -0.615,
+     "z": -0.537,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": 0.534,
+     "y": 1.008,
+     "z": 1.236,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": 0.84,
+     "y": 1.271,
+     "z": -0.477,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": -0.768,
+     "y": -1.052,
+     "z": 0.745,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": -0.412,
+     "y": -0.898,
+     "z": -0.979,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 1,
+     "x": -2.466,
+     "y": -0.062,
+     "z": -0.36,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 1,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 1,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 3,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-753",
+  "pubChemCID": 753,
+  "preferredName": "Glycerol",
+  "formula": "C3H8O3",
+  "hillFormula": "C3H8O3",
+  "iupacName": "propane-1,2,3-triol",
+  "molarMass": 92.094,
+  "canonicalSMILES": "OCC(O)CO",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Glycerin",
+   "Glycerine"
+  ],
+  "summary": "Three carbons each with a hydroxyl group; the backbone of fats.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 2.561,
+     "y": 0.007,
+     "z": -0.212,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 1.373,
+     "y": 0.281,
+     "z": 0.529,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": 0.169,
+     "y": -0.299,
+     "z": -0.208,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 0.112,
+     "y": 0.294,
+     "z": -1.518,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": -1.141,
+     "y": -0.018,
+     "z": 0.525,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 8,
+     "x": -2.216,
+     "y": -0.545,
+     "z": -0.258,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": 2.331,
+     "y": 0.217,
+     "z": -1.14,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": 1.48,
+     "y": -0.155,
+     "z": 1.527,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": 1.292,
+     "y": 1.369,
+     "z": 0.623,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 1,
+     "x": 0.3,
+     "y": -1.375,
+     "z": -0.371,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 1,
+     "x": -0.76,
+     "y": 0.023,
+     "z": -1.87,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 1,
+     "x": -1.155,
+     "y": -0.492,
+     "z": 1.511,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 1,
+     "x": -1.309,
+     "y": 1.058,
+     "z": 0.63,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 1,
+     "x": -3.038,
+     "y": -0.365,
+     "z": 0.233,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 2,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 0,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 1,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 1,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 3,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 4,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 4,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 5,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-311",
+  "pubChemCID": 311,
+  "preferredName": "Citric acid",
+  "formula": "C6H8O7",
+  "hillFormula": "C6H8O7",
+  "iupacName": "2-hydroxypropane-1,2,3-tricarboxylic acid",
+  "molarMass": 192.123,
+  "canonicalSMILES": "OC(=O)CC(O)(CC(O)=O)C(O)=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "organic"
+  ],
+  "alternateNames": [],
+  "summary": "Three carboxylic acid groups on a small carbon skeleton; the sourness of citrus fruit.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": 2.635,
+     "y": -0.076,
+     "z": 1.904,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 1.994,
+     "y": -0.428,
+     "z": 0.775,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": 2.179,
+     "y": -1.518,
+     "z": 0.257,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 6,
+     "x": 1.12,
+     "y": 0.667,
+     "z": 0.243,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": 0.144,
+     "y": 0.165,
+     "z": -0.834,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 8,
+     "x": 0.922,
+     "y": -0.276,
+     "z": -1.967,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 6,
+     "x": -0.799,
+     "y": -0.986,
+     "z": -0.462,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 6,
+     "x": -1.506,
+     "y": -0.792,
+     "z": 0.846,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 8,
+     "x": -2.844,
+     "y": -0.75,
+     "z": 0.72,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 8,
+     "x": -0.977,
+     "y": -0.695,
+     "z": 1.94,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": -0.716,
+     "y": 1.357,
+     "z": -1.294,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 8,
+     "x": -1.424,
+     "y": 1.923,
+     "z": -0.293,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 8,
+     "x": -0.819,
+     "y": 1.812,
+     "z": -2.422,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 1,
+     "x": 3.16,
+     "y": -0.864,
+     "z": 2.156,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 1,
+     "x": 0.589,
+     "y": 1.13,
+     "z": 1.081,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 1,
+     "x": 1.788,
+     "y": 1.423,
+     "z": -0.188,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 1,
+     "x": 1.461,
+     "y": -1.041,
+     "z": -1.681,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 1,
+     "x": -1.545,
+     "y": -1.124,
+     "z": -1.257,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 1,
+     "x": -0.272,
+     "y": -1.946,
+     "z": -0.411,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 1,
+     "x": -3.174,
+     "y": -0.622,
+     "z": 1.634,
+     "formalCharge": 0
+    },
+    {
+     "id": 20,
+     "atomicNumber": 1,
+     "x": -1.914,
+     "y": 2.645,
+     "z": -0.744,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 4,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 7,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 7,
+     "to": 9,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 4,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 10,
+     "to": 12,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 0,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 3,
+     "to": 14,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 3,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 5,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 6,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 6,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 8,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 11,
+     "to": 20,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-3672",
+  "pubChemCID": 3672,
+  "preferredName": "Ibuprofen",
+  "formula": "C13H18O2",
+  "hillFormula": "C13H18O2",
+  "iupacName": "2-[4-(2-methylpropyl)phenyl]propanoic acid",
+  "molarMass": 206.285,
+  "canonicalSMILES": "CC(C)Cc1ccc(cc1)C(C)C(O)=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "organic"
+  ],
+  "alternateNames": [],
+  "summary": "A benzene ring with an isobutyl group on one side and a propanoic acid on the other; a common anti-inflammatory painkiller.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -3.525,
+     "y": 0.457,
+     "z": -1.151,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -3.452,
+     "y": -0.112,
+     "z": 0.266,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": -3.255,
+     "y": 1.012,
+     "z": 1.284,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 6,
+     "x": -2.408,
+     "y": -1.24,
+     "z": 0.408,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": -0.969,
+     "y": -0.854,
+     "z": 0.16,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 6,
+     "x": -0.159,
+     "y": -0.41,
+     "z": 1.212,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 6,
+     "x": 1.172,
+     "y": -0.052,
+     "z": 0.984,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 6,
+     "x": 1.725,
+     "y": -0.132,
+     "z": -0.302,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 6,
+     "x": 0.915,
+     "y": -0.585,
+     "z": -1.352,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 6,
+     "x": -0.417,
+     "y": -0.942,
+     "z": -1.123,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": 3.168,
+     "y": 0.253,
+     "z": -0.569,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 6,
+     "x": 3.429,
+     "y": 1.732,
+     "z": -0.274,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 6,
+     "x": 4.137,
+     "y": -0.618,
+     "z": 0.208,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 8,
+     "x": 4.463,
+     "y": -1.752,
+     "z": -0.447,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 8,
+     "x": 4.604,
+     "y": -0.395,
+     "z": 1.314,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 1,
+     "x": -4.374,
+     "y": 1.143,
+     "z": -1.245,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 1,
+     "x": -3.662,
+     "y": -0.342,
+     "z": -1.887,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 1,
+     "x": -2.62,
+     "y": 1.016,
+     "z": -1.413,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 1,
+     "x": -4.429,
+     "y": -0.567,
+     "z": 0.478,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 1,
+     "x": -2.344,
+     "y": 1.586,
+     "z": 1.087,
+     "formalCharge": 0
+    },
+    {
+     "id": 20,
+     "atomicNumber": 1,
+     "x": -3.198,
+     "y": 0.612,
+     "z": 2.302,
+     "formalCharge": 0
+    },
+    {
+     "id": 21,
+     "atomicNumber": 1,
+     "x": -4.097,
+     "y": 1.712,
+     "z": 1.249,
+     "formalCharge": 0
+    },
+    {
+     "id": 22,
+     "atomicNumber": 1,
+     "x": -2.673,
+     "y": -2.059,
+     "z": -0.274,
+     "formalCharge": 0
+    },
+    {
+     "id": 23,
+     "atomicNumber": 1,
+     "x": -2.486,
+     "y": -1.675,
+     "z": 1.413,
+     "formalCharge": 0
+    },
+    {
+     "id": 24,
+     "atomicNumber": 1,
+     "x": -0.559,
+     "y": -0.339,
+     "z": 2.221,
+     "formalCharge": 0
+    },
+    {
+     "id": 25,
+     "atomicNumber": 1,
+     "x": 1.775,
+     "y": 0.287,
+     "z": 1.825,
+     "formalCharge": 0
+    },
+    {
+     "id": 26,
+     "atomicNumber": 1,
+     "x": 1.312,
+     "y": -0.666,
+     "z": -2.362,
+     "formalCharge": 0
+    },
+    {
+     "id": 27,
+     "atomicNumber": 1,
+     "x": -1.021,
+     "y": -1.292,
+     "z": -1.957,
+     "formalCharge": 0
+    },
+    {
+     "id": 28,
+     "atomicNumber": 1,
+     "x": 3.397,
+     "y": 0.107,
+     "z": -1.634,
+     "formalCharge": 0
+    },
+    {
+     "id": 29,
+     "atomicNumber": 1,
+     "x": 4.464,
+     "y": 1.997,
+     "z": -0.517,
+     "formalCharge": 0
+    },
+    {
+     "id": 30,
+     "atomicNumber": 1,
+     "x": 2.766,
+     "y": 2.373,
+     "z": -0.866,
+     "formalCharge": 0
+    },
+    {
+     "id": 31,
+     "atomicNumber": 1,
+     "x": 3.273,
+     "y": 1.975,
+     "z": 0.783,
+     "formalCharge": 0
+    },
+    {
+     "id": 32,
+     "atomicNumber": 1,
+     "x": 5.046,
+     "y": -2.228,
+     "z": 0.18,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 5,
+     "to": 6,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 7,
+     "to": 8,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 8,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 7,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 10,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 12,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 12,
+     "to": 14,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 9,
+     "to": 4,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 0,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 0,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 0,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 1,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 2,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 20,
+     "from": 2,
+     "to": 20,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 21,
+     "from": 2,
+     "to": 21,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 22,
+     "from": 3,
+     "to": 22,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 23,
+     "from": 3,
+     "to": 23,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 24,
+     "from": 5,
+     "to": 24,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 25,
+     "from": 6,
+     "to": 25,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 26,
+     "from": 8,
+     "to": 26,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 27,
+     "from": 9,
+     "to": 27,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 28,
+     "from": 10,
+     "to": 28,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 29,
+     "from": 11,
+     "to": 29,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 30,
+     "from": 11,
+     "to": 30,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 31,
+     "from": 11,
+     "to": 31,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 32,
+     "from": 13,
+     "to": 32,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-1983",
+  "pubChemCID": 1983,
+  "preferredName": "Acetaminophen",
+  "formula": "C8H9NO2",
+  "hillFormula": "C8H9NO2",
+  "iupacName": "N-(4-hydroxyphenyl)acetamide",
+  "molarMass": 151.165,
+  "canonicalSMILES": "CC(=O)Nc1ccc(O)cc1",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Paracetamol",
+   "Tylenol (brand)"
+  ],
+  "summary": "A benzene ring carrying a hydroxyl group and an acetamide; a common painkiller and fever reducer.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -3.614,
+     "y": 0.868,
+     "z": 0.202,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -2.167,
+     "y": 1.029,
+     "z": -0.191,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -1.811,
+     "y": 1.967,
+     "z": -0.895,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 7,
+     "x": -1.365,
+     "y": 0.042,
+     "z": 0.354,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": 0.028,
+     "y": -0.115,
+     "z": 0.201,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 6,
+     "x": 0.831,
+     "y": 0.732,
+     "z": -0.565,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 6,
+     "x": 2.207,
+     "y": 0.504,
+     "z": -0.665,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 6,
+     "x": 2.782,
+     "y": -0.571,
+     "z": -0.001,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 8,
+     "x": 4.126,
+     "y": -0.754,
+     "z": -0.127,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 6,
+     "x": 2.002,
+     "y": -1.427,
+     "z": 0.767,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": 0.626,
+     "y": -1.197,
+     "z": 0.865,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 1,
+     "x": -3.899,
+     "y": -0.188,
+     "z": 0.221,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 1,
+     "x": -4.248,
+     "y": 1.376,
+     "z": -0.53,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 1,
+     "x": -3.773,
+     "y": 1.31,
+     "z": 1.189,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 1,
+     "x": -1.826,
+     "y": -0.645,
+     "z": 0.937,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 1,
+     "x": 0.42,
+     "y": 1.582,
+     "z": -1.101,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 1,
+     "x": 2.825,
+     "y": 1.168,
+     "z": -1.264,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 1,
+     "x": 4.386,
+     "y": -1.535,
+     "z": 0.388,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 1,
+     "x": 2.44,
+     "y": -2.27,
+     "z": 1.291,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 1,
+     "x": 0.03,
+     "y": -1.876,
+     "z": 1.47,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 5,
+     "to": 6,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 7,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 7,
+     "to": 9,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 9,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 4,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 0,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 0,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 0,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 3,
+     "to": 14,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 5,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 6,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 8,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 9,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 10,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-4873",
+  "pubChemCID": 4873,
+  "preferredName": "Potassium chloride",
+  "formula": "KCl",
+  "hillFormula": "ClK",
+  "iupacName": "potassium chloride",
+  "molarMass": 74.548,
+  "canonicalSMILES": "[K+].[Cl-]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Sylvite"
+  ],
+  "summary": "Potassium and chloride ions in the rock-salt lattice; a fertilizer and a salt substitute.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "curatedLattice",
+   "note": "A conventional unit cell of the rock-salt structure; the struts are ionic contacts. a = 6.293 Å (CRC Handbook).",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 19,
+     "x": -3.147,
+     "y": -3.147,
+     "z": -3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 19,
+     "x": -3.147,
+     "y": -3.147,
+     "z": 3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 2,
+     "atomicNumber": 19,
+     "x": -3.147,
+     "y": 3.147,
+     "z": -3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 3,
+     "atomicNumber": 19,
+     "x": -3.147,
+     "y": 3.147,
+     "z": 3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 4,
+     "atomicNumber": 19,
+     "x": 3.147,
+     "y": -3.147,
+     "z": -3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 5,
+     "atomicNumber": 19,
+     "x": 3.147,
+     "y": -3.147,
+     "z": 3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 6,
+     "atomicNumber": 19,
+     "x": 3.147,
+     "y": 3.147,
+     "z": -3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 7,
+     "atomicNumber": 19,
+     "x": 3.147,
+     "y": 3.147,
+     "z": 3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 8,
+     "atomicNumber": 19,
+     "x": 0.0,
+     "y": 0.0,
+     "z": -3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 9,
+     "atomicNumber": 19,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 3.147,
+     "formalCharge": 1
+    },
+    {
+     "id": 10,
+     "atomicNumber": 19,
+     "x": 0.0,
+     "y": -3.147,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 11,
+     "atomicNumber": 19,
+     "x": 0.0,
+     "y": 3.147,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 12,
+     "atomicNumber": 19,
+     "x": -3.147,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 13,
+     "atomicNumber": 19,
+     "x": 3.147,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 14,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": -3.147,
+     "z": -3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 15,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": -3.147,
+     "z": 3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 16,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": 3.147,
+     "z": -3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 17,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": 3.147,
+     "z": 3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 18,
+     "atomicNumber": 17,
+     "x": -3.147,
+     "y": 0.0,
+     "z": -3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 19,
+     "atomicNumber": 17,
+     "x": -3.147,
+     "y": 0.0,
+     "z": 3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 20,
+     "atomicNumber": 17,
+     "x": 3.147,
+     "y": 0.0,
+     "z": -3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 21,
+     "atomicNumber": 17,
+     "x": 3.147,
+     "y": 0.0,
+     "z": 3.147,
+     "formalCharge": -1
+    },
+    {
+     "id": 22,
+     "atomicNumber": 17,
+     "x": -3.147,
+     "y": -3.147,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 23,
+     "atomicNumber": 17,
+     "x": -3.147,
+     "y": 3.147,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 24,
+     "atomicNumber": 17,
+     "x": 3.147,
+     "y": -3.147,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 25,
+     "atomicNumber": 17,
+     "x": 3.147,
+     "y": 3.147,
+     "z": 0.0,
+     "formalCharge": -1
+    },
+    {
+     "id": 26,
+     "atomicNumber": 17,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": -1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 4,
+     "from": 1,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 5,
+     "from": 1,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 9,
+     "from": 3,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 10,
+     "from": 3,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 11,
+     "from": 3,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 12,
+     "from": 4,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 13,
+     "from": 4,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 14,
+     "from": 4,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 15,
+     "from": 5,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 16,
+     "from": 5,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 17,
+     "from": 5,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 18,
+     "from": 6,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 19,
+     "from": 6,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 20,
+     "from": 6,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 21,
+     "from": 7,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 22,
+     "from": 7,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 23,
+     "from": 7,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 24,
+     "from": 8,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 25,
+     "from": 8,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 26,
+     "from": 8,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 27,
+     "from": 8,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 28,
+     "from": 8,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 29,
+     "from": 9,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 30,
+     "from": 9,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 31,
+     "from": 9,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 32,
+     "from": 9,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 33,
+     "from": 9,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 34,
+     "from": 10,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 35,
+     "from": 10,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 36,
+     "from": 10,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 37,
+     "from": 10,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 38,
+     "from": 10,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 39,
+     "from": 11,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 40,
+     "from": 11,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 41,
+     "from": 11,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 42,
+     "from": 11,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 43,
+     "from": 11,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 44,
+     "from": 12,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 45,
+     "from": 12,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 46,
+     "from": 12,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 47,
+     "from": 12,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 48,
+     "from": 12,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 49,
+     "from": 13,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 50,
+     "from": 13,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 51,
+     "from": 13,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 52,
+     "from": 13,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 53,
+     "from": 13,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-14792",
+  "pubChemCID": 14792,
+  "preferredName": "Magnesium oxide",
+  "formula": "MgO",
+  "hillFormula": "MgO",
+  "iupacName": "oxomagnesium",
+  "molarMass": 40.304,
+  "canonicalSMILES": "[Mg+2].[O-2]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Magnesia",
+   "Periclase"
+  ],
+  "summary": "Magnesium and oxide ions in the rock-salt lattice; a refractory material that withstands very high temperatures.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "curatedLattice",
+   "note": "A conventional unit cell of the rock-salt structure; the struts are ionic contacts. a = 4.212 Å (CRC Handbook).",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 12,
+     "x": -2.106,
+     "y": -2.106,
+     "z": -2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 1,
+     "atomicNumber": 12,
+     "x": -2.106,
+     "y": -2.106,
+     "z": 2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 2,
+     "atomicNumber": 12,
+     "x": -2.106,
+     "y": 2.106,
+     "z": -2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 3,
+     "atomicNumber": 12,
+     "x": -2.106,
+     "y": 2.106,
+     "z": 2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 4,
+     "atomicNumber": 12,
+     "x": 2.106,
+     "y": -2.106,
+     "z": -2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 5,
+     "atomicNumber": 12,
+     "x": 2.106,
+     "y": -2.106,
+     "z": 2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 6,
+     "atomicNumber": 12,
+     "x": 2.106,
+     "y": 2.106,
+     "z": -2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 7,
+     "atomicNumber": 12,
+     "x": 2.106,
+     "y": 2.106,
+     "z": 2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 8,
+     "atomicNumber": 12,
+     "x": 0.0,
+     "y": 0.0,
+     "z": -2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 9,
+     "atomicNumber": 12,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 2.106,
+     "formalCharge": 2
+    },
+    {
+     "id": 10,
+     "atomicNumber": 12,
+     "x": 0.0,
+     "y": -2.106,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 11,
+     "atomicNumber": 12,
+     "x": 0.0,
+     "y": 2.106,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 12,
+     "atomicNumber": 12,
+     "x": -2.106,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 13,
+     "atomicNumber": 12,
+     "x": 2.106,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 14,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": -2.106,
+     "z": -2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 15,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": -2.106,
+     "z": 2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 16,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": 2.106,
+     "z": -2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 17,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": 2.106,
+     "z": 2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 18,
+     "atomicNumber": 8,
+     "x": -2.106,
+     "y": 0.0,
+     "z": -2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 19,
+     "atomicNumber": 8,
+     "x": -2.106,
+     "y": 0.0,
+     "z": 2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 20,
+     "atomicNumber": 8,
+     "x": 2.106,
+     "y": 0.0,
+     "z": -2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 21,
+     "atomicNumber": 8,
+     "x": 2.106,
+     "y": 0.0,
+     "z": 2.106,
+     "formalCharge": -2
+    },
+    {
+     "id": 22,
+     "atomicNumber": 8,
+     "x": -2.106,
+     "y": -2.106,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 23,
+     "atomicNumber": 8,
+     "x": -2.106,
+     "y": 2.106,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 24,
+     "atomicNumber": 8,
+     "x": 2.106,
+     "y": -2.106,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 25,
+     "atomicNumber": 8,
+     "x": 2.106,
+     "y": 2.106,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 26,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": -2
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 4,
+     "from": 1,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 5,
+     "from": 1,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 9,
+     "from": 3,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 10,
+     "from": 3,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 11,
+     "from": 3,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 12,
+     "from": 4,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 13,
+     "from": 4,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 14,
+     "from": 4,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 15,
+     "from": 5,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 16,
+     "from": 5,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 17,
+     "from": 5,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 18,
+     "from": 6,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 19,
+     "from": 6,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 20,
+     "from": 6,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 21,
+     "from": 7,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 22,
+     "from": 7,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 23,
+     "from": 7,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 24,
+     "from": 8,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 25,
+     "from": 8,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 26,
+     "from": 8,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 27,
+     "from": 8,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 28,
+     "from": 8,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 29,
+     "from": 9,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 30,
+     "from": 9,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 31,
+     "from": 9,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 32,
+     "from": 9,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 33,
+     "from": 9,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 34,
+     "from": 10,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 35,
+     "from": 10,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 36,
+     "from": 10,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 37,
+     "from": 10,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 38,
+     "from": 10,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 39,
+     "from": 11,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 40,
+     "from": 11,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 41,
+     "from": 11,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 42,
+     "from": 11,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 43,
+     "from": 11,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 44,
+     "from": 12,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 45,
+     "from": 12,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 46,
+     "from": 12,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 47,
+     "from": 12,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 48,
+     "from": 12,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 49,
+     "from": 13,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 50,
+     "from": 13,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 51,
+     "from": 13,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 52,
+     "from": 13,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 53,
+     "from": 13,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-14778",
+  "pubChemCID": 14778,
+  "preferredName": "Calcium oxide",
+  "formula": "CaO",
+  "hillFormula": "CaO",
+  "iupacName": "oxocalcium",
+  "molarMass": 56.077,
+  "canonicalSMILES": "[Ca+2].[O-2]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Quicklime",
+   "Lime"
+  ],
+  "summary": "Calcium and oxide ions in the rock-salt lattice; quicklime, made by heating limestone.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "curatedLattice",
+   "note": "A conventional unit cell of the rock-salt structure; the struts are ionic contacts. a = 4.811 Å (CRC Handbook).",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 20,
+     "x": -2.405,
+     "y": -2.405,
+     "z": -2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 1,
+     "atomicNumber": 20,
+     "x": -2.405,
+     "y": -2.405,
+     "z": 2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 2,
+     "atomicNumber": 20,
+     "x": -2.405,
+     "y": 2.405,
+     "z": -2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 3,
+     "atomicNumber": 20,
+     "x": -2.405,
+     "y": 2.405,
+     "z": 2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 4,
+     "atomicNumber": 20,
+     "x": 2.405,
+     "y": -2.405,
+     "z": -2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 5,
+     "atomicNumber": 20,
+     "x": 2.405,
+     "y": -2.405,
+     "z": 2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 6,
+     "atomicNumber": 20,
+     "x": 2.405,
+     "y": 2.405,
+     "z": -2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 7,
+     "atomicNumber": 20,
+     "x": 2.405,
+     "y": 2.405,
+     "z": 2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 8,
+     "atomicNumber": 20,
+     "x": 0.0,
+     "y": 0.0,
+     "z": -2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 9,
+     "atomicNumber": 20,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 2.405,
+     "formalCharge": 2
+    },
+    {
+     "id": 10,
+     "atomicNumber": 20,
+     "x": 0.0,
+     "y": -2.405,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 11,
+     "atomicNumber": 20,
+     "x": 0.0,
+     "y": 2.405,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 12,
+     "atomicNumber": 20,
+     "x": -2.405,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 13,
+     "atomicNumber": 20,
+     "x": 2.405,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 2
+    },
+    {
+     "id": 14,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": -2.405,
+     "z": -2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 15,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": -2.405,
+     "z": 2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 16,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": 2.405,
+     "z": -2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 17,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": 2.405,
+     "z": 2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 18,
+     "atomicNumber": 8,
+     "x": -2.405,
+     "y": 0.0,
+     "z": -2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 19,
+     "atomicNumber": 8,
+     "x": -2.405,
+     "y": 0.0,
+     "z": 2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 20,
+     "atomicNumber": 8,
+     "x": 2.405,
+     "y": 0.0,
+     "z": -2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 21,
+     "atomicNumber": 8,
+     "x": 2.405,
+     "y": 0.0,
+     "z": 2.405,
+     "formalCharge": -2
+    },
+    {
+     "id": 22,
+     "atomicNumber": 8,
+     "x": -2.405,
+     "y": -2.405,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 23,
+     "atomicNumber": 8,
+     "x": -2.405,
+     "y": 2.405,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 24,
+     "atomicNumber": 8,
+     "x": 2.405,
+     "y": -2.405,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 25,
+     "atomicNumber": 8,
+     "x": 2.405,
+     "y": 2.405,
+     "z": 0.0,
+     "formalCharge": -2
+    },
+    {
+     "id": 26,
+     "atomicNumber": 8,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": -2
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 4,
+     "from": 1,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 5,
+     "from": 1,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 6,
+     "from": 2,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 9,
+     "from": 3,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 10,
+     "from": 3,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 11,
+     "from": 3,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 12,
+     "from": 4,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 13,
+     "from": 4,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 14,
+     "from": 4,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 15,
+     "from": 5,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 16,
+     "from": 5,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 17,
+     "from": 5,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 18,
+     "from": 6,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 19,
+     "from": 6,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 20,
+     "from": 6,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 21,
+     "from": 7,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 22,
+     "from": 7,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 23,
+     "from": 7,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 24,
+     "from": 8,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 25,
+     "from": 8,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 26,
+     "from": 8,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 27,
+     "from": 8,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 28,
+     "from": 8,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 29,
+     "from": 9,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 30,
+     "from": 9,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 31,
+     "from": 9,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 32,
+     "from": 9,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 33,
+     "from": 9,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 34,
+     "from": 10,
+     "to": 14,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 35,
+     "from": 10,
+     "to": 15,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 36,
+     "from": 10,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 37,
+     "from": 10,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 38,
+     "from": 10,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 39,
+     "from": 11,
+     "to": 16,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 40,
+     "from": 11,
+     "to": 17,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 41,
+     "from": 11,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 42,
+     "from": 11,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 43,
+     "from": 11,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 44,
+     "from": 12,
+     "to": 18,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 45,
+     "from": 12,
+     "to": 19,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 46,
+     "from": 12,
+     "to": 22,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 47,
+     "from": 12,
+     "to": 23,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 48,
+     "from": 12,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 49,
+     "from": 13,
+     "to": 20,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 50,
+     "from": 13,
+     "to": 21,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 51,
+     "from": 13,
+     "to": 24,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 52,
+     "from": 13,
+     "to": 25,
+     "order": 1,
+     "isContact": true
+    },
+    {
+     "id": 53,
+     "from": 13,
+     "to": 26,
+     "order": 1,
+     "isContact": true
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-24261",
+  "pubChemCID": 24261,
+  "preferredName": "Silicon dioxide",
+  "formula": "SiO2",
+  "hillFormula": "O2Si",
+  "iupacName": "dioxosilane",
+  "molarMass": 60.083,
+  "canonicalSMILES": "O=[Si]=O",
+  "charge": 0,
+  "bondingClass": "networkSolid",
+  "tags": [
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Silica",
+   "Quartz",
+   "Sand"
+  ],
+  "summary": "Not a molecule: every silicon is bonded to four oxygens and every oxygen to two silicons in an endless network. Quartz, sand and glass.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": null
+ },
+ {
+  "id": "pubchem-25517",
+  "pubChemCID": 25517,
+  "preferredName": "Ammonium chloride",
+  "formula": "NH4Cl",
+  "hillFormula": "ClH4N",
+  "iupacName": "azanium chloride",
+  "molarMass": 53.489,
+  "canonicalSMILES": "[NH4+].[Cl-]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Sal ammoniac"
+  ],
+  "summary": "Ammonium and chloride ions; used in dry cells and as a flux for soldering.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 7,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.647,
+     "y": -0.743,
+     "z": -0.29,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -0.321,
+     "y": 0.9,
+     "z": -0.376,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 0.028,
+     "y": 0.048,
+     "z": 1.025,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 0.94,
+     "y": -0.206,
+     "z": -0.359,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 17,
+     "x": 3.94,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": -1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-10340",
+  "pubChemCID": 10340,
+  "preferredName": "Sodium carbonate",
+  "formula": "Na2CO3",
+  "hillFormula": "CNa2O3",
+  "iupacName": "disodium carbonate",
+  "molarMass": 105.988,
+  "canonicalSMILES": "[Na+].[Na+].[O-]C([O-])=O",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Washing soda",
+   "Soda ash"
+  ],
+  "summary": "Two sodium ions and a carbonate ion; washing soda, used in glass making.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -0.678,
+     "y": -1.181,
+     "z": 0.001,
+     "formalCharge": -1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.026,
+     "y": -0.008,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -0.626,
+     "y": 1.204,
+     "z": -0.005,
+     "formalCharge": -1
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 1.278,
+     "y": -0.015,
+     "z": 0.004,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 11,
+     "x": 4.278,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 5,
+     "atomicNumber": 11,
+     "x": -3.678,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-24434",
+  "pubChemCID": 24434,
+  "preferredName": "Potassium nitrate",
+  "formula": "KNO3",
+  "hillFormula": "KNO3",
+  "iupacName": "potassium nitrate",
+  "molarMass": 101.102,
+  "canonicalSMILES": "[K+].[O-][N+](=O)[O-]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Saltpeter",
+   "Niter"
+  ],
+  "summary": "Potassium and nitrate ions; the oxidizer in black powder and a fertilizer.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -1.045,
+     "y": -0.669,
+     "z": -0.061,
+     "formalCharge": -1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 7,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -0.056,
+     "y": 1.241,
+     "z": -0.003,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 1.101,
+     "y": -0.571,
+     "z": 0.064,
+     "formalCharge": -1
+    },
+    {
+     "id": 4,
+     "atomicNumber": 19,
+     "x": 4.101,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-8857",
+  "pubChemCID": 8857,
+  "preferredName": "Ethyl acetate",
+  "formula": "C4H8O2",
+  "hillFormula": "C4H8O2",
+  "iupacName": "ethyl acetate",
+  "molarMass": 88.106,
+  "canonicalSMILES": "CCOC(C)=O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Ethyl ethanoate"
+  ],
+  "summary": "The ester of ethanol and acetic acid; the fruity smell of nail polish and a common solvent.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -2.263,
+     "y": 0.206,
+     "z": 0.448,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -1.078,
+     "y": -0.544,
+     "z": -0.13,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": 0.102,
+     "y": 0.232,
+     "z": 0.109,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 6,
+     "x": 1.246,
+     "y": -0.334,
+     "z": -0.365,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": 2.417,
+     "y": 0.551,
+     "z": -0.066,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 8,
+     "x": 1.319,
+     "y": -1.405,
+     "z": -0.95,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": -2.128,
+     "y": 0.37,
+     "z": 1.523,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": -3.191,
+     "y": -0.35,
+     "z": 0.289,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": -2.358,
+     "y": 1.193,
+     "z": -0.015,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 1,
+     "x": -0.984,
+     "y": -1.52,
+     "z": 0.358,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 1,
+     "x": -1.218,
+     "y": -0.681,
+     "z": -1.208,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 1,
+     "x": 3.329,
+     "y": 0.086,
+     "z": -0.451,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 1,
+     "x": 2.285,
+     "y": 1.519,
+     "z": -0.556,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 1,
+     "x": 2.52,
+     "y": 0.677,
+     "z": 1.015,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 3,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 3,
+     "to": 5,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 0,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 0,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 0,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 1,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 1,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 4,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 4,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 4,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-3776",
+  "pubChemCID": 3776,
+  "preferredName": "Isopropyl alcohol",
+  "formula": "C3H8O",
+  "hillFormula": "C3H8O",
+  "iupacName": "propan-2-ol",
+  "molarMass": 60.096,
+  "canonicalSMILES": "CC(C)O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Isopropanol",
+   "2-Propanol",
+   "Rubbing alcohol"
+  ],
+  "summary": "A three-carbon alcohol with the hydroxyl on the middle carbon; rubbing alcohol.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": 1.388,
+     "y": 0.089,
+     "z": -0.001,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -0.082,
+     "y": 0.346,
+     "z": -0.294,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": -0.947,
+     "y": -0.84,
+     "z": 0.105,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -0.489,
+     "y": 1.495,
+     "z": 0.441,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 1.552,
+     "y": -0.079,
+     "z": 1.069,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 1,
+     "x": 1.99,
+     "y": 0.961,
+     "z": -0.278,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 1,
+     "x": 1.758,
+     "y": -0.78,
+     "z": -0.554,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 1,
+     "x": -0.21,
+     "y": 0.562,
+     "z": -1.36,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 1,
+     "x": -0.875,
+     "y": -1.035,
+     "z": 1.18,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 1,
+     "x": -2.002,
+     "y": -0.632,
+     "z": -0.106,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 1,
+     "x": -0.657,
+     "y": -1.745,
+     "z": -0.437,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 1,
+     "x": -1.425,
+     "y": 1.659,
+     "z": 0.235,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 0,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 0,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 1,
+     "to": 7,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 2,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 2,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 2,
+     "to": 10,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 3,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-6326",
+  "pubChemCID": 6326,
+  "preferredName": "Acetylene",
+  "formula": "C2H2",
+  "hillFormula": "C2H2",
+  "iupacName": "ethyne",
+  "molarMass": 26.038,
+  "canonicalSMILES": "C#C",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Ethyne"
+  ],
+  "summary": "Two carbons joined by a triple bond in a linear molecule; the fuel in welding torches.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 6,
+     "x": -0.593,
+     "y": 0.049,
+     "z": -0.009,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.593,
+     "y": -0.049,
+     "z": 0.152,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -1.645,
+     "y": 0.136,
+     "z": -0.151,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 1.645,
+     "y": -0.136,
+     "z": 0.295,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 3,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-22985",
+  "pubChemCID": 22985,
+  "preferredName": "Ammonium nitrate",
+  "formula": "NH4NO3",
+  "hillFormula": "H4N2O3",
+  "iupacName": "azanium nitrate",
+  "molarMass": 80.043,
+  "canonicalSMILES": "[NH4+].[O-][N+](=O)[O-]",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [],
+  "summary": "Ammonium and nitrate ions; a nitrogen fertilizer.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 7,
+     "x": 0.0,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.569,
+     "y": -0.809,
+     "z": -0.276,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 1,
+     "x": -0.451,
+     "y": 0.863,
+     "z": -0.326,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 1,
+     "x": 0.087,
+     "y": 0.025,
+     "z": 1.023,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 0.933,
+     "y": -0.079,
+     "z": -0.421,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 8,
+     "x": 5.229,
+     "y": -0.974,
+     "z": -0.013,
+     "formalCharge": -1
+    },
+    {
+     "id": 6,
+     "atomicNumber": 7,
+     "x": 6.0,
+     "y": -0.0,
+     "z": 0.0,
+     "formalCharge": 1
+    },
+    {
+     "id": 7,
+     "atomicNumber": 8,
+     "x": 5.542,
+     "y": 1.154,
+     "z": 0.013,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 8,
+     "x": 7.229,
+     "y": -0.18,
+     "z": -0.0,
+     "formalCharge": -1
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 0,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 0,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 0,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 5,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 6,
+     "to": 7,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-54670067",
+  "pubChemCID": 54670067,
+  "preferredName": "Ascorbic acid",
+  "formula": "C6H8O6",
+  "hillFormula": "C6H8O6",
+  "iupacName": "(2R)-2-[(1S)-1,2-dihydroxyethyl]-3,4-dihydroxy-2H-furan-5-one",
+  "molarMass": 176.124,
+  "canonicalSMILES": "OC[C@H](O)[C@H]1OC(=O)C(O)=C1O",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "organic"
+  ],
+  "alternateNames": [
+   "Vitamin C",
+   "L-Ascorbic acid"
+  ],
+  "summary": "A five-membered ring lactone with an enediol; vitamin C, which humans cannot make.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -3.004,
+     "y": -1.132,
+     "z": -0.384,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": -1.654,
+     "y": -0.9,
+     "z": 0.022,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 6,
+     "x": -1.384,
+     "y": 0.61,
+     "z": 0.059,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": -1.672,
+     "y": 1.148,
+     "z": -1.246,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 6,
+     "x": 0.034,
+     "y": 0.993,
+     "z": 0.521,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 8,
+     "x": 0.261,
+     "y": 0.576,
+     "z": 1.874,
+     "formalCharge": 0
+    },
+    {
+     "id": 6,
+     "atomicNumber": 6,
+     "x": 1.404,
+     "y": -0.17,
+     "z": 1.946,
+     "formalCharge": 0
+    },
+    {
+     "id": 7,
+     "atomicNumber": 8,
+     "x": 1.867,
+     "y": -0.642,
+     "z": 2.966,
+     "formalCharge": 0
+    },
+    {
+     "id": 8,
+     "atomicNumber": 6,
+     "x": 1.967,
+     "y": -0.306,
+     "z": 0.585,
+     "formalCharge": 0
+    },
+    {
+     "id": 9,
+     "atomicNumber": 8,
+     "x": 3.101,
+     "y": -0.998,
+     "z": 0.281,
+     "formalCharge": 0
+    },
+    {
+     "id": 10,
+     "atomicNumber": 6,
+     "x": 1.144,
+     "y": 0.349,
+     "z": -0.232,
+     "formalCharge": 0
+    },
+    {
+     "id": 11,
+     "atomicNumber": 8,
+     "x": 1.198,
+     "y": 0.438,
+     "z": -1.597,
+     "formalCharge": 0
+    },
+    {
+     "id": 12,
+     "atomicNumber": 1,
+     "x": -3.202,
+     "y": -0.454,
+     "z": -1.06,
+     "formalCharge": 0
+    },
+    {
+     "id": 13,
+     "atomicNumber": 1,
+     "x": -1.506,
+     "y": -1.364,
+     "z": 1.001,
+     "formalCharge": 0
+    },
+    {
+     "id": 14,
+     "atomicNumber": 1,
+     "x": -1.016,
+     "y": -1.402,
+     "z": -0.712,
+     "formalCharge": 0
+    },
+    {
+     "id": 15,
+     "atomicNumber": 1,
+     "x": -2.114,
+     "y": 1.063,
+     "z": 0.741,
+     "formalCharge": 0
+    },
+    {
+     "id": 16,
+     "atomicNumber": 1,
+     "x": -0.898,
+     "y": 0.962,
+     "z": -1.814,
+     "formalCharge": 0
+    },
+    {
+     "id": 17,
+     "atomicNumber": 1,
+     "x": 0.149,
+     "y": 2.083,
+     "z": 0.472,
+     "formalCharge": 0
+    },
+    {
+     "id": 18,
+     "atomicNumber": 1,
+     "x": 3.467,
+     "y": -0.665,
+     "z": -0.552,
+     "formalCharge": 0
+    },
+    {
+     "id": 19,
+     "atomicNumber": 1,
+     "x": 1.859,
+     "y": -0.191,
+     "z": -1.938,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 2,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 2,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 4,
+     "from": 4,
+     "to": 5,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 5,
+     "from": 5,
+     "to": 6,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 6,
+     "from": 6,
+     "to": 7,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 7,
+     "from": 6,
+     "to": 8,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 8,
+     "from": 8,
+     "to": 9,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 9,
+     "from": 8,
+     "to": 10,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 10,
+     "from": 10,
+     "to": 11,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 11,
+     "from": 10,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 12,
+     "from": 0,
+     "to": 12,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 13,
+     "from": 1,
+     "to": 13,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 14,
+     "from": 1,
+     "to": 14,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 15,
+     "from": 2,
+     "to": 15,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 16,
+     "from": 3,
+     "to": 16,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 17,
+     "from": 4,
+     "to": 17,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 18,
+     "from": 9,
+     "to": 18,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 19,
+     "from": 11,
+     "to": 19,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-24462",
+  "pubChemCID": 24462,
+  "preferredName": "Copper(II) sulfate",
+  "formula": "CuSO4",
+  "hillFormula": "CuO4S",
+  "iupacName": "copper;sulfate",
+  "molarMass": 159.602,
+  "canonicalSMILES": "[Cu+2].[O-]S([O-])(=O)=O",
+  "charge": 0,
+  "bondingClass": "ionic",
+  "tags": [
+   "salt",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Cupric sulfate",
+   "Blue vitriol (hydrate)"
+  ],
+  "summary": "Copper(II) and sulfate ions; the anhydrous salt is white, and the familiar blue is the pentahydrate.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "The ions of one formula unit. In the solid these ions pack into a lattice of many such units; no bond is drawn between the ions.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 8,
+     "x": -0.84,
+     "y": -1.194,
+     "z": -0.209,
+     "formalCharge": -1
+    },
+    {
+     "id": 1,
+     "atomicNumber": 16,
+     "x": 0.0,
+     "y": -0.0,
+     "z": -0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 8,
+     "x": -0.832,
+     "y": 1.212,
+     "z": -0.111,
+     "formalCharge": -1
+    },
+    {
+     "id": 3,
+     "atomicNumber": 8,
+     "x": 1.062,
+     "y": 0.038,
+     "z": -1.022,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 8,
+     "x": 0.61,
+     "y": -0.057,
+     "z": 1.341,
+     "formalCharge": 0
+    },
+    {
+     "id": 5,
+     "atomicNumber": 29,
+     "x": 4.062,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 2
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 2,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 4,
+     "order": 2,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-6212",
+  "pubChemCID": 6212,
+  "preferredName": "Chloroform",
+  "formula": "CHCl3",
+  "hillFormula": "CHCl3",
+  "iupacName": "chloroform",
+  "molarMass": 119.369,
+  "canonicalSMILES": "ClC(Cl)Cl",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "organic"
+  ],
+  "alternateNames": [
+   "Trichloromethane"
+  ],
+  "summary": "Methane with three hydrogens replaced by chlorine; once an anesthetic, now a solvent.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 17,
+     "x": -0.736,
+     "y": 1.529,
+     "z": -0.378,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 6,
+     "x": 0.004,
+     "y": -0.003,
+     "z": 0.116,
+     "formalCharge": 0
+    },
+    {
+     "id": 2,
+     "atomicNumber": 17,
+     "x": -0.971,
+     "y": -1.374,
+     "z": -0.439,
+     "formalCharge": 0
+    },
+    {
+     "id": 3,
+     "atomicNumber": 17,
+     "x": 1.659,
+     "y": -0.123,
+     "z": -0.506,
+     "formalCharge": 0
+    },
+    {
+     "id": 4,
+     "atomicNumber": 1,
+     "x": 0.044,
+     "y": -0.029,
+     "z": 1.208,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 1,
+     "from": 1,
+     "to": 2,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 2,
+     "from": 1,
+     "to": 3,
+     "order": 1,
+     "isContact": false
+    },
+    {
+     "id": 3,
+     "from": 1,
+     "to": 4,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ },
+ {
+  "id": "pubchem-14917",
+  "pubChemCID": 14917,
+  "preferredName": "Hydrogen fluoride",
+  "formula": "HF",
+  "hillFormula": "FH",
+  "iupacName": "fluorane",
+  "molarMass": 20.006,
+  "canonicalSMILES": "F",
+  "charge": 0,
+  "bondingClass": "molecular",
+  "tags": [
+   "acid",
+   "inorganic"
+  ],
+  "alternateNames": [
+   "Hydrofluoric acid (in water)"
+  ],
+  "summary": "Diatomic, strongly hydrogen-bonded; its solution etches glass.",
+  "classificationSource": "Curated: ionic versus molecular from the constituents (metal + nonmetal or polyatomic ion versus nonmetals only); acid and base in the Brønsted sense in water, for compounds textbooks list as such; organic for carbon compounds with C–H bonds, plus urea.",
+  "dataSource": "curated",
+  "isLocalCurated": true,
+  "lastUpdated": "2026-09-16",
+  "structure": {
+   "is3D": true,
+   "source": "computedConformer",
+   "note": "Computed conformer (RDKit ETKDGv3, MMFF94-optimized). Real connectivity and bond orders; the geometry is calculated, not measured.",
+   "atoms": [
+    {
+     "id": 0,
+     "atomicNumber": 9,
+     "x": 0.488,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 0
+    },
+    {
+     "id": 1,
+     "atomicNumber": 1,
+     "x": -0.488,
+     "y": 0.0,
+     "z": 0.0,
+     "formalCharge": 0
+    }
+   ],
+   "bonds": [
+    {
+     "id": 0,
+     "from": 0,
+     "to": 1,
+     "order": 1,
+     "isContact": false
+    }
+   ]
+  }
+ }
+]

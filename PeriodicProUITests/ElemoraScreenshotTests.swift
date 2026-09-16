@@ -37,7 +37,9 @@ final class ElemoraScreenshotTests: XCTestCase {
         // orientation the previous class happened to leave behind.
         XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
-        app.launchArguments = ["-uiTesting"]
+        // The compound stub answers PubChem from the bundled catalog, so the
+        // compound frames are deterministic and the tour never needs a network.
+        app.launchArguments = ["-uiTesting", "-compoundNetworkStub"]
         app.launch()
     }
 
@@ -157,10 +159,31 @@ final class ElemoraScreenshotTests: XCTestCase {
 
     /// Names, attaches and keeps one screenshot.
     private func capture(_ name: String) {
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        keep(app.screenshot(), as: name)
+    }
+
+    /// The whole screen rather than the app's window: the Home Screen is not
+    /// the app.
+    private func captureScreen(_ name: String) {
+        keep(XCUIScreen.main.screenshot(), as: name)
+    }
+
+    private func keep(_ screenshot: XCUIScreenshot, as name: String) {
+        let attachment = XCTAttachment(screenshot: screenshot)
         attachment.name = "\(name)-\(suffix)"
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    private func labelContaining(_ fragment: String) -> XCUIElement {
+        app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS[c] %@", fragment))
+            .firstMatch
+    }
+
+    private func addElement(_ symbol: String) {
+        tap(app.buttons["build.addElement"])
+        tap(app.buttons["build.pick.\(symbol)"])
     }
 
     // MARK: - The tour
@@ -216,6 +239,105 @@ final class ElemoraScreenshotTests: XCTestCase {
         waitFor(app.navigationBars["Progress"])
         settle()
         capture("07-progress")
+
+        // 9. The table, pinched to about 2.5×
+        openTab("Table")
+        waitFor(app.buttons["element.H"])
+        let table = el("table.zoomView")
+        waitFor(table)
+        table.pinch(withScale: 2.5, velocity: 1.0)
+        waitFor(el("table.fit"))
+        settle(0.8)
+        capture("09-table-zoomed")
+        el("table.fit").tap()
+        settle(0.6)
+
+        // 10. Compound search: the bundled catalog answers at once
+        let field = app.searchFields.firstMatch
+        waitFor(field)
+        field.tap()
+        field.typeText("water")
+        waitFor(app.buttons["compoundResult.962"])
+        settle(0.8)
+        capture("10-compound-search")
+
+        // 11. A compound page, and 12. its 3D explorer
+        app.buttons["compoundResult.962"].tap()
+        waitFor(el("compound.hero"))
+        settle()
+        capture("11-compound-detail")
+        scrollTo(app.buttons["compound.explore3D"]).tap()
+        waitFor(el("compoundExplorer.viewer"))
+        settle(3.0)
+        capture("12-compound-3d-explorer")
+        app.buttons["compoundExplorer.done"].tap()
+        waitFor(el("compound.hero"))
+        goBack()
+        // Leaves the search, so the table is back for the next visit.
+        let cancel = app.buttons["Cancel"].firstMatch
+        if cancel.waitForExistence(timeout: 3) { cancel.tap() }
+
+        // 13. Quiz setup
+        openTab("Study")
+        waitFor(app.navigationBars["Study"])
+        tap(app.buttons["study.mode.quiz"])
+        waitFor(el("quizSetup.sheet"))
+        settle(0.8)
+        capture("13-quiz-setup")
+        app.buttons["quizSetup.cancel"].tap()
+        waitFor(app.navigationBars["Study"])
+
+        // 14. A Match round
+        tap(app.buttons["study.mode.match"])
+        waitFor(el("quizSetup.sheet"))
+        tap(app.buttons["quizSetup.start"])
+        waitFor(el("match.board"))
+        settle(0.8)
+        capture("14-match-round")
+        app.buttons["session.exit"].tap()
+        waitFor(app.navigationBars["Study"])
+
+        // 15. My Quizzes, with one saved quiz
+        tap(app.buttons["study.mode.quiz"])
+        waitFor(el("quizSetup.sheet"))
+        tap(app.buttons["quizSetup.save"])
+        let alert = app.alerts.firstMatch
+        waitFor(alert)
+        let nameField = alert.textFields.firstMatch
+        waitFor(nameField)
+        nameField.tap()
+        nameField.typeText("Halogens and noble gases")
+        alert.buttons["Save"].tap()
+        tap(app.buttons["study.myQuizzes.seeAll"])
+        waitFor(app.navigationBars["My Quizzes"])
+        settle(0.8)
+        capture("15-my-quizzes")
+        goBack()
+
+        // 16. The Build tab, empty; 17. water found; 18. C₂H₆O offering a choice
+        openTab("Build")
+        waitFor(el("build.header"))
+        settle(0.8)
+        capture("16-build-empty")
+        addElement("H")
+        tap(app.buttons["build.increment.H"])
+        addElement("O")
+        tap(app.buttons["build.lookUp"])
+        waitFor(el("build.result"))
+        settle()
+        capture("17-build-water")
+        tap(app.buttons["build.clear"])
+        addElement("C")
+        tap(app.buttons["build.increment.C"])
+        addElement("H")
+        for _ in 0..<5 { tap(app.buttons["build.increment.H"]) }
+        addElement("O")
+        tap(app.buttons["build.lookUp"])
+        waitFor(el("build.candidates"))
+        XCTAssertTrue(labelContaining("Multiple known compounds share this formula.").exists,
+                      "C₂H₆O must be offered as a choice, never assumed to be ethanol" + onScreen())
+        settle(0.8)
+        capture("18-build-ambiguous")
 
         // 8. The Elemora Pro paywall, with real prices.
         //
@@ -276,5 +398,23 @@ final class ElemoraScreenshotTests: XCTestCase {
         // through the same helper the rest of the tour uses rather than
         // assuming where the content ended up.
         tap(app.buttons["paywall.close"])
+
+        // 19. The Home Screen icon, as iOS really draws it.
+        //
+        // The icon has been blurry before, and every check of the artwork
+        // proved the file rather than the pixels a person sees. This is the
+        // simulator's own Home Screen with the installed app on it, captured
+        // through the full pipeline: asset catalog, build, install, SpringBoard.
+        XCUIDevice.shared.press(.home)
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let icon = springboard.icons["Elemora"].firstMatch
+        var pages = 0
+        while !icon.waitForExistence(timeout: 4), pages < 3 {
+            springboard.swipeLeft()
+            pages += 1
+        }
+        XCTAssertTrue(icon.exists, "The Elemora icon should be on the Home Screen after install")
+        settle(1.5)
+        captureScreen("19-home-screen-icon")
     }
 }

@@ -6,11 +6,59 @@
 	     settings (see the project's build configurations). This file holds only
 	     keys Xcode does not generate.
 
-	     The app performs no network requests and uses no encryption beyond what
-	     the operating system provides, so it qualifies for the standard export
+	     The app's only network requests are plain HTTPS lookups to PubChem for
+	     compound information, and it uses no encryption beyond what the
+	     operating system provides, so it qualifies for the standard export
 	     compliance exemption. Declaring it here means TestFlight never stops to
 	     ask before distributing a build. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
+	<!-- The `.elemoraquiz` document: a saved quiz's name and configuration as
+	     JSON, so a quiz can be shared through Files, Messages or AirDrop and
+	     opened by Elemora on another device. Nothing else is in the file. -->
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.idlery.elemora.quiz</string>
+			<key>UTTypeDescription</key>
+			<string>Elemora Quiz</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>elemoraquiz</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/json</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Elemora Quiz</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.idlery.elemora.quiz</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Opened files are copied into the app's Inbox by iOS; the app reads
+	     one and imports it, and never needs the file in place. -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<false/>
 </dict>
 </plist>

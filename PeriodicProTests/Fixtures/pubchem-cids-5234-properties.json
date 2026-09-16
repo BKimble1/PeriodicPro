@@ -1,0 +1,14 @@
+{
+ "PropertyTable": {
+  "Properties": [
+   {
+    "CID": 5234,
+    "MolecularFormula": "ClNa",
+    "MolecularWeight": "58.44",
+    "IUPACName": "sodium chloride",
+    "Title": "Sodium chloride",
+    "Charge": 0
+   }
+  ]
+ }
+}

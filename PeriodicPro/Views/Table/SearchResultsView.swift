@@ -5,16 +5,22 @@ struct SearchResultsView: View {
     let results: [ChemicalElement]
     let query: String
     let namespace: Namespace.ID
+    /// When compounds matched, an element miss is not a miss at all, so the
+    /// empty state stays quiet.
+    var hasCompoundResults = false
     let isFavorite: (Int) -> Bool
     let mastery: (Int) -> MasteryLevel
     let onSelect: (ChemicalElement) -> Void
 
     var body: some View {
-        if results.isEmpty {
+        if results.isEmpty, hasCompoundResults {
+            EmptyView()
+        } else if results.isEmpty {
             EmptyStateView(
                 symbolName: "magnifyingglass",
                 title: "No matches for \u{201C}\(query)\u{201D}",
-                message: "Try an element name, a chemical symbol such as Fe, or an atomic number from 1 to 118."
+                message: "Try an element name, a chemical symbol such as Fe, an atomic number from 1 to 118, "
+                    + "or a compound such as water or NaCl."
             )
             .accessibilityIdentifier("search.emptyState")
         } else {

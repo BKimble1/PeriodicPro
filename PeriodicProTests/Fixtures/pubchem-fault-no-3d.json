@@ -1,0 +1,9 @@
+{
+ "Fault": {
+  "Code": "PUGREST.NotFound",
+  "Message": "Record not found",
+  "Details": [
+   "No 3D conformer information available for the requested record"
+  ]
+ }
+}

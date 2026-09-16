@@ -1,0 +1,9 @@
+{
+ "Fault": {
+  "Code": "PUGREST.Timeout",
+  "Message": "Request timed out",
+  "Details": [
+   "Try a more specific query"
+  ]
+ }
+}

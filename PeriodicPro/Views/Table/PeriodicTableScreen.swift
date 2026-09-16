@@ -11,9 +11,12 @@ import SwiftUI
 struct PeriodicTableScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(ProgressStore.self) private var progress: ProgressStore
+    @Environment(CompoundStore.self) private var compounds: CompoundStore
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var query = ""
+    /// The compound half of the search: local at once, PubChem after a pause.
+    @State private var compoundSearch = CompoundSearchModel()
     @State private var filter: ElementFilter = .all
     @State private var path = NavigationPath()
     @State private var showsFilterSheet = false
@@ -67,6 +70,7 @@ struct PeriodicTableScreen: View {
                     filter: $filter,
                     query: query,
                     results: searchResults,
+                    compoundSearch: compoundSearch,
                     recentSearches: progress.recentSearches,
                     namespace: tableNamespace,
                     viewportWidth: usableWidth,
@@ -78,7 +82,11 @@ struct PeriodicTableScreen: View {
                     zoomCommand: $zoomCommand,
                     isFavorite: { progress.isFavorite($0) },
                     mastery: { progress.mastery(for: $0) },
+                    isCompoundFavorite: { progress.isCompoundFavorite($0) },
+                    compoundMastery: { progress.compoundMastery(for: $0) },
                     onSelect: open,
+                    onSelectCompound: openCompound,
+                    onRetryCompounds: { compoundSearch.retry(store: compounds) },
                     onSelectRecent: { query = $0 },
                     onClearRecents: { progress.clearRecentSearches() },
                     onOpenFilters: { showsFilterSheet = true }
@@ -99,10 +107,16 @@ struct PeriodicTableScreen: View {
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
             .onSubmit(of: .search) { progress.recordSearch(query) }
+            .onChange(of: query) { _, newValue in
+                compoundSearch.update(query: newValue, store: compounds)
+            }
             .toolbar { toolbarContent }
             .navigationDestination(for: ChemicalElement.self) { element in
                 ElementDetailScreen(element: element)
                     .zoomTransition(id: element.atomicNumber, namespace: tableNamespace)
+            }
+            .navigationDestination(for: CompoundMatchCandidate.self) { candidate in
+                CompoundDetailScreen(candidate: candidate)
             }
             .sheet(isPresented: $showsFilterSheet) {
                 CategoryFilterSheet(filter: $filter, catalog: catalog)
@@ -170,6 +184,11 @@ struct PeriodicTableScreen: View {
         if !query.isEmpty { progress.recordSearch(query) }
         path.append(element)
     }
+
+    private func openCompound(_ candidate: CompoundMatchCandidate) {
+        if !query.isEmpty { progress.recordSearch(query) }
+        path.append(candidate)
+    }
 }
 
 // MARK: - Scroll content
@@ -183,6 +202,7 @@ private struct TableScreenContent: View {
     @Binding var filter: ElementFilter
     let query: String
     let results: [ChemicalElement]
+    let compoundSearch: CompoundSearchModel
     let recentSearches: [String]
     let namespace: Namespace.ID
     let viewportWidth: CGFloat
@@ -194,7 +214,11 @@ private struct TableScreenContent: View {
     @Binding var zoomCommand: ZoomCommand?
     let isFavorite: (Int) -> Bool
     let mastery: (Int) -> MasteryLevel
+    let isCompoundFavorite: (String) -> Bool
+    let compoundMastery: (String) -> MasteryLevel
     let onSelect: (ChemicalElement) -> Void
+    let onSelectCompound: (CompoundMatchCandidate) -> Void
+    let onRetryCompounds: () -> Void
     let onSelectRecent: (String) -> Void
     let onClearRecents: () -> Void
     let onOpenFilters: () -> Void
@@ -206,11 +230,24 @@ private struct TableScreenContent: View {
                     results: results,
                     query: query,
                     namespace: namespace,
+                    hasCompoundResults: !compoundSearch.isEmpty,
                     isFavorite: isFavorite,
                     mastery: mastery,
                     onSelect: onSelect
                 )
                 .padding(.top, Theme.Spacing.s)
+                // Compounds sit under the elements. A bare number is an atomic
+                // number and never reaches PubChem; the section still shows
+                // the bundled catalog's own matches.
+                if !compoundSearch.isEmpty || compoundSearch.askedRemote {
+                    CompoundSearchSection(
+                        model: compoundSearch,
+                        isFavorite: isCompoundFavorite,
+                        mastery: compoundMastery,
+                        onSelect: onSelectCompound,
+                        onRetry: onRetryCompounds
+                    )
+                }
             } else if isSearching {
                 RecentSearchesView(
                     terms: recentSearches,

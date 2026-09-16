@@ -31,8 +31,11 @@ final class ProgressStore {
     /// no records, so the count stayed at zero and the free daily allowance
     /// became unlimited for anyone whose on-disk store failed to open.
     @ObservationIgnored private var roundsByDay: [String: Int] = [:]
+    @ObservationIgnored private var compoundRecords: [String: CompoundProgressRecord] = [:]
 
     private(set) var snapshots: [Int: ElementProgressSnapshot] = [:]
+    /// Compound progress, keyed by the compound's stable identifier.
+    private(set) var compoundSnapshots: [String: CompoundProgressSnapshot] = [:]
     private(set) var recentSearches: [String] = []
     private(set) var studyDayKeys: Set<String> = []
 
@@ -119,6 +122,17 @@ final class ProgressStore {
                 "Study day reload failed: \(String(describing: error), privacy: .public)")
         }
 
+        do {
+            let fetched = try context.fetch(FetchDescriptor<CompoundProgressRecord>())
+            compoundRecords = Dictionary(fetched.map { ($0.compoundID, $0) },
+                                         uniquingKeysWith: { first, _ in first })
+            compoundSnapshots = compoundRecords.mapValues(Self.snapshot(from:))
+        } catch {
+            failures.append("compound progress")
+            PersistenceController.logger.error(
+                "Compound progress reload failed: \(String(describing: error), privacy: .public)")
+        }
+
         readFailureMessage = failures.isEmpty
             ? nil
             : "Some saved data could not be read (\(failures.joined(separator: ", ")))."
@@ -178,6 +192,99 @@ final class ProgressStore {
     /// from this; the regular modes use `MasteryEngine.studyPriority`.
     func weakestSnapshots() -> [ElementProgressSnapshot] {
         SmartReviewBuilder.ranked(Array(snapshots.values))
+    }
+
+    // MARK: - Compounds
+
+    func compoundSnapshot(for id: String) -> CompoundProgressSnapshot {
+        compoundSnapshots[id] ?? CompoundProgressSnapshot(compoundID: id)
+    }
+
+    func isCompoundFavorite(_ id: String) -> Bool { compoundSnapshot(for: id).isFavorite }
+    func isCompoundSaved(_ id: String) -> Bool { compoundSnapshot(for: id).isSaved }
+    func compoundMastery(for id: String) -> MasteryLevel { compoundSnapshot(for: id).mastery }
+
+    var favoriteCompoundIDs: [String] {
+        compoundSnapshots.values.filter(\.isFavorite).map(\.compoundID).sorted()
+    }
+
+    var savedCompoundIDs: [String] {
+        compoundSnapshots.values.filter(\.isSaved).map(\.compoundID).sorted()
+    }
+
+    /// Everything the learner has chosen or practiced: the study pool.
+    var studyCompoundIDs: [String] {
+        compoundSnapshots.values.filter(\.isInStudy).map(\.compoundID).sorted()
+    }
+
+    var masteredCompoundCount: Int {
+        compoundSnapshots.values.filter { $0.mastery == .mastered }.count
+    }
+
+    var totalCompoundAnswered: Int {
+        compoundSnapshots.values.reduce(0) { $0 + $1.attempts }
+    }
+
+    @discardableResult
+    func toggleCompoundFavorite(_ id: String) -> Bool {
+        var snapshot = compoundSnapshot(for: id)
+        snapshot.isFavorite.toggle()
+        applyCompound(snapshot)
+        return snapshot.isFavorite
+    }
+
+    func setCompoundSaved(_ id: String, _ isSaved: Bool) {
+        var snapshot = compoundSnapshot(for: id)
+        guard snapshot.isSaved != isSaved else { return }
+        snapshot.isSaved = isSaved
+        applyCompound(snapshot)
+    }
+
+    func recordCompoundAnswer(id: String, correct: Bool, date: Date = Date()) {
+        var snapshot = compoundSnapshot(for: id)
+        snapshot.mastery = MasteryEngine.next(from: snapshot.mastery, correct: correct)
+        if correct { snapshot.correctCount += 1 } else { snapshot.incorrectCount += 1 }
+        snapshot.lastReviewed = date
+        applyCompound(snapshot, save: false)
+        registerStudyDay(on: date)
+        save()
+    }
+
+    private static func snapshot(from record: CompoundProgressRecord) -> CompoundProgressSnapshot {
+        CompoundProgressSnapshot(
+            compoundID: record.compoundID,
+            isFavorite: record.isFavorite,
+            isSaved: record.isSaved,
+            mastery: MasteryLevel(rawValue: record.masteryRaw) ?? .notStarted,
+            correctCount: record.correctCount,
+            incorrectCount: record.incorrectCount,
+            lastReviewed: record.lastReviewed
+        )
+    }
+
+    private func applyCompound(_ snapshot: CompoundProgressSnapshot, save shouldSave: Bool = true) {
+        compoundSnapshots[snapshot.compoundID] = snapshot
+        if let record = compoundRecords[snapshot.compoundID] {
+            record.isFavorite = snapshot.isFavorite
+            record.isSaved = snapshot.isSaved
+            record.masteryRaw = snapshot.mastery.rawValue
+            record.correctCount = snapshot.correctCount
+            record.incorrectCount = snapshot.incorrectCount
+            record.lastReviewed = snapshot.lastReviewed
+        } else if let context {
+            let record = CompoundProgressRecord(
+                compoundID: snapshot.compoundID,
+                isFavorite: snapshot.isFavorite,
+                isSaved: snapshot.isSaved,
+                masteryRaw: snapshot.mastery.rawValue,
+                correctCount: snapshot.correctCount,
+                incorrectCount: snapshot.incorrectCount,
+                lastReviewed: snapshot.lastReviewed
+            )
+            context.insert(record)
+            compoundRecords[snapshot.compoundID] = record
+        }
+        if shouldSave { save() }
     }
 
     // MARK: - Writes
@@ -288,6 +395,25 @@ final class ProgressStore {
         snapshots = snapshots.compactMapValues { snapshot in
             snapshot.isFavorite
                 ? ElementProgressSnapshot(atomicNumber: snapshot.atomicNumber, isFavorite: true)
+                : nil
+        }
+
+        // Compounds follow the same rule: favorites and saved choices stay,
+        // familiarity goes.
+        for (id, record) in compoundRecords where !record.isFavorite && !record.isSaved {
+            context?.delete(record)
+            compoundRecords.removeValue(forKey: id)
+        }
+        for record in compoundRecords.values {
+            record.masteryRaw = MasteryLevel.notStarted.rawValue
+            record.correctCount = 0
+            record.incorrectCount = 0
+            record.lastReviewed = nil
+        }
+        compoundSnapshots = compoundSnapshots.compactMapValues { snapshot in
+            snapshot.isFavorite || snapshot.isSaved
+                ? CompoundProgressSnapshot(
+                    compoundID: snapshot.compoundID, isFavorite: snapshot.isFavorite, isSaved: snapshot.isSaved)
                 : nil
         }
 

@@ -1,0 +1,22 @@
+{
+ "PropertyTable": {
+  "Properties": [
+   {
+    "CID": 702,
+    "MolecularFormula": "C2H6O",
+    "MolecularWeight": "46.07",
+    "IUPACName": "ethanol",
+    "Title": "Ethanol",
+    "Charge": 0
+   },
+   {
+    "CID": 8254,
+    "MolecularFormula": "C2H6O",
+    "MolecularWeight": "46.07",
+    "IUPACName": "methoxymethane",
+    "Title": "Dimethyl ether",
+    "Charge": 0
+   }
+  ]
+ }
+}

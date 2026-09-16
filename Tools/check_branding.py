@@ -104,6 +104,10 @@ RETAINED_IDENTIFIERS = {
     "PeriodicProTests/TableZoomTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/StructureProfileTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/TestSupport.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/CompoundTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/PubChemClientTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/QuizConfigurationTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/SavedQuizTests.swift": "@testable import PeriodicPro",
 
     # --- Source naming the log subsystem or the test target ---
     "PeriodicPro/Store/SubscriptionManager.swift":
@@ -111,6 +115,14 @@ RETAINED_IDENTIFIERS = {
     "PeriodicPro/Persistence/PersistenceController.swift":
         "os.log subsystem com.periodicpro.app",
     "PeriodicPro/Data/ElementStructureCatalog.swift":
+        "os.log subsystem com.periodicpro.app",
+    "PeriodicPro/Compounds/Data/CompoundCatalog.swift":
+        "os.log subsystem com.periodicpro.app",
+    "PeriodicPro/Compounds/Data/CompoundCache.swift":
+        "os.log subsystem com.periodicpro.app",
+    "PeriodicPro/Compounds/Networking/PubChemClient.swift":
+        "os.log subsystem com.periodicpro.app",
+    "PeriodicPro/StudyEngine/SavedQuiz.swift":
         "os.log subsystem com.periodicpro.app",
     "PeriodicPro/Utilities/SFSymbolAllowlist.swift":
         "names the PeriodicProTests target in a doc comment",
@@ -141,6 +153,9 @@ RETAINED_IDENTIFIERS = {
     "Tools/check_swift_syntax.py": "walks the PeriodicPro source tree",
     "Tools/build_structures.py": "writes PeriodicPro/Data/structures.json",
     "Tools/validate_structures.py": "reads PeriodicPro/Data/structures.json",
+    "Tools/build_compounds.py": "writes PeriodicPro/Data/compounds.json",
+    "Tools/validate_compounds.py": "reads PeriodicPro/Data/compounds.json",
+    "Tools/build_pubchem_fixtures.py": "writes PeriodicProTests/Fixtures",
 
     # --- Documentation, which has to explain the split to a human ---
     "README.md": "documents which identifiers are retained and why",
@@ -149,6 +164,7 @@ RETAINED_IDENTIFIERS = {
     "APP_ICON.md": "asset-catalog path",
     "DATA_SOURCES.md": "path to PeriodicPro/Data/elements.json",
     "STRUCTURE_SOURCES.md": "paths to PeriodicPro/Data/structures.json and the test bundle",
+    "COMPOUND_SOURCES.md": "paths to PeriodicPro/Data/compounds.json and the fixtures",
     "PRIVACY.md": "names the app bundle",
 }
 

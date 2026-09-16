@@ -11,13 +11,17 @@ deliberate — Apple binds the App Store record and every subscriber receipt to
 those strings, and they cannot be changed after an upload. See
 [Names versus identifiers](#names-versus-identifiers).
 
-All 118 elements, laid out correctly, in a table that fits the screen. Tap any
-element and its tile expands into a full detail page. When you are ready to
-remember rather than browse, three short practice modes turn what you read into
-recall.
+All 118 elements, laid out correctly, in a table that fits the screen and zooms
+under two fingers. Tap any element and its tile expands into a full detail page
+with its real 3D structure. Fifty bundled compounds, a compound search backed
+by PubChem, and a Compound Builder (beta) that looks up what you assemble. When
+you are ready to remember rather than browse, five practice modes — including
+quizzes you shape yourself and share as files — turn what you read into recall.
 
-Built entirely in Swift and SwiftUI. No backend, no account, no network request,
-no third-party dependencies. The whole thing works on a plane.
+Built entirely in Swift and SwiftUI. No backend, no account, no third-party
+dependencies. Everything about the elements works on a plane; the only network
+requests the app makes are compound lookups to PubChem, and only when you ask
+for one.
 
 ---
 
@@ -55,10 +59,15 @@ instantly — `oxygen`, `O` and `8` all land on the same element. Filter chips c
 the table to metals, nonmetals or metalloids; a compact filter sheet exposes all
 ten families. A compact key beneath the table names every family and its glyph.
 
-Two layouts: **fitted**, where every tile is on screen at once, and
-**comfortable**, which scrolls horizontally with full-size tiles showing atomic
-number, symbol and name. Accessibility text sizes switch to comfortable
-automatically.
+The table is pinch-to-zoom: fitted, with every column on screen, up to about
+3.5× with the content under your fingers held still. Tiles gain the atomic
+number and then the name as they grow, double tap toggles 2×, and a Fit chip
+and a Zoom menu do the same job for anyone who cannot pinch. Zoom and position
+survive a search and a detail push. Accessibility text sizes open already
+zoomed.
+
+Search also finds compounds: the bundled catalog at once, PubChem after a
+pause in typing, never for a bare atomic number.
 
 ### The expansion transition
 
@@ -82,15 +91,44 @@ facts people actually look up, a separate honest diagram of the element's
 *elemental form*, four more quick facts with the rest behind a disclosure, a
 short paragraph, four common uses, and a memory hook.
 
+### Compounds and the Build tab
+
+Fifty verified compounds ship in `compounds.json`, each with its PubChem
+identifier, a curated formula, a molar mass computed from the bundled IUPAC
+weights, a conservative classification where the constituents make it clear,
+and a structure that says what it is: a computed conformer, a formula unit of
+ions, or a representative unit cell. A compound page shows the formula, the
+structure with a Ball & Stick / Space Fill switch and the same RealityKit
+explorer the elements use, the facts, the elements in it, and "Data source:
+PubChem". Sources: [`COMPOUND_SOURCES.md`](COMPOUND_SOURCES.md).
+
+The **Build** tab is the Compound Builder, in beta and free for everyone.
+Add elements, watch the formula and molar mass update, read the clearly
+labeled heuristic hints, then look the composition up — in the catalog first,
+then PubChem. One match is shown; several are offered to choose between
+("Multiple known compounds share this formula."); none is reported as a miss
+and never as a discovery, and can be kept only as a hypothetical composition.
+
 ### Study
 
 A greeting, two status cards that lead to Progress, one strong card into a
-round, and four practice tiles:
+round, and five practice tiles:
 
 - **Flashcards** — name → symbol and symbol → name, reveal, then rate yourself
-- **Quiz** — four multiple-choice question types
+- **Quiz** — shaped before it starts: elements, compounds or both; everything,
+  favorites, recently missed, not mastered, or a custom selection; family,
+  state, period, group and atomic-number filters; Easy, Medium, Hard or Mixed
+  question types; 5, 10, 20 or a custom length; an optional timer; shuffle on
+  by default. Every session deals from a fresh seed and the deck is frozen for
+  the session.
+- **Match** — pair names with symbols and formulas, 6, 8 or 10 pairs
 - **Identify** — a glossy model of the atom, an atomic number, or a written clue
 - **Smart Review** — ten cards drawn from the elements you keep getting wrong
+
+**My Quizzes** keeps the quizzes you save: start, edit, duplicate, rename,
+delete, and share as a `.elemoraquiz` file that another copy of Elemora can
+import — after checking its format, version, size and every element and
+compound it names.
 
 Identify draws its model in neutral gray until you answer. The app teaches the
 family palette during onboarding, so a lavender model would narrow 118
@@ -105,9 +143,9 @@ a 0-day streak and 0% mastered, not a demo value.
 
 ### Progress
 
-Elements mastered out of 118 on a progress ring, a streak, cards answered, and a
-per-family breakdown. No dashboard, no fake statistics — every number is derived
-from something you actually did.
+Elements mastered out of 118 on a progress ring, a streak, cards answered,
+compounds in study and mastered, and a per-family breakdown. No dashboard, no
+fake statistics — every number is derived from something you actually did.
 
 ### Element artwork
 
@@ -580,9 +618,10 @@ python3 Tools/preview_study.py          # the Study tab, light and dark
 ## Not in v1
 
 Deliberately absent, and not accidentally missing: accounts, cloud sync, social
-features, an AI tutor, ads, analytics, achievements, chemistry calculators, AR,
-and a settings screen. The goal is one thing done properly — explore,
-understand, memorize.
+features, an AI tutor, ads, analytics, achievements, AR, and a settings screen.
+The Compound Builder looks compositions up; it does not predict, simulate or
+invent chemistry. The goal is one thing done properly — explore, understand,
+memorize.
 
 There is an optional subscription, Elemora Pro, and there is a 3D structure
 explorer. Neither changes the rule above: no account is required for either,
@@ -591,5 +630,6 @@ free in full.
 
 ## Privacy
 
-Nothing is collected. Everything you do stays on the device.
-See [`PRIVACY.md`](PRIVACY.md).
+Nothing is collected. Everything you do stays on the device. Online compound
+searches are sent to PubChem to retrieve requested chemical information, and
+nothing else leaves. See [`PRIVACY.md`](PRIVACY.md).

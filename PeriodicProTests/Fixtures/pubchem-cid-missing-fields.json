@@ -1,0 +1,20 @@
+{
+ "PC_Compounds": [
+  {
+   "id": {
+    "id": {
+     "cid": 5462222
+    }
+   },
+   "atoms": {
+    "aid": [
+     1
+    ],
+    "element": [
+     18
+    ]
+   },
+   "charge": 0
+  }
+ ]
+}

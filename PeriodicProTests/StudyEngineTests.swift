@@ -43,25 +43,31 @@ struct QuizGeneratorTests {
     func correctAnswersAreAccurate() {
         let quiz = QuizGenerator.makeQuiz(pool: pool, distractors: catalog.elements, seed: 7)
         for question in quiz {
+            guard let element = question.element else {
+                Issue.record("a Quick Quiz question should be about an element")
+                continue
+            }
             switch question.kind {
             case .symbolForName:
-                #expect(question.correctAnswer == question.element.symbol)
-                #expect(question.prompt.contains(question.element.name))
+                #expect(question.correctAnswer == element.symbol)
+                #expect(question.prompt.contains(element.name))
             case .nameForSymbol:
-                #expect(question.correctAnswer == question.element.name)
-                #expect(question.prompt.contains(question.element.symbol))
+                #expect(question.correctAnswer == element.name)
+                #expect(question.prompt.contains(element.symbol))
             case .numberForName:
-                #expect(question.correctAnswer == "\(question.element.atomicNumber)")
+                #expect(question.correctAnswer == "\(element.atomicNumber)")
             case .familyForElement:
-                #expect(question.correctAnswer == question.element.category.displayName)
+                #expect(question.correctAnswer == element.category.displayName)
+            default:
+                Issue.record("the Quick Quiz deals only the four classic kinds, not \(question.kind)")
             }
         }
     }
 
-    @Test("All four question kinds appear in a ten-question round")
+    @Test("All four classic question kinds appear in a ten-question round")
     func questionKindsAreMixed() {
         let quiz = QuizGenerator.makeQuiz(pool: pool, distractors: catalog.elements, seed: 5)
-        #expect(Set(quiz.map(\.kind)).count == QuizQuestion.Kind.allCases.count)
+        #expect(Set(quiz.map(\.kind)) == Set(QuizQuestion.Kind.classic))
     }
 
     @Test("Correct answers are not always in the same slot")

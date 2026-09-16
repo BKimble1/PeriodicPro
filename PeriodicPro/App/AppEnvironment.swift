@@ -1,16 +1,18 @@
 import SwiftUI
 
-/// Tabs are deliberately limited to three. Search lives inside Table, and
-/// favorites live inside Study and on each element's detail page.
+/// Four tabs. Search lives inside Table, favorites live inside Study and on
+/// each detail page, and Build is the Compound Builder beta.
 enum AppTab: String, Hashable, CaseIterable {
     case table
     case study
+    case build
     case progress
 
     var title: String {
         switch self {
         case .table: return "Table"
         case .study: return "Study"
+        case .build: return "Build"
         case .progress: return "Progress"
         }
     }
@@ -19,6 +21,7 @@ enum AppTab: String, Hashable, CaseIterable {
         switch self {
         case .table: return "square.grid.3x3.fill"
         case .study: return "graduationcap.fill"
+        case .build: return "circle.hexagongrid.fill"
         case .progress: return "chart.bar.fill"
         }
     }
@@ -46,6 +49,12 @@ enum RuntimeFlags {
     /// purchase sheet: nothing taps Subscribe, and the scheme points StoreKit
     /// at `Config/PeriodicPro.storekit`, so no request leaves the device.
     static let usesLocalStoreKit = ProcessInfo.processInfo.arguments.contains("-storeKitLocal")
+
+    /// Set alongside `-uiTesting` to answer PubChem requests from the bundled
+    /// catalog instead of the network, so compound search, the builder and the
+    /// screenshot tour are deterministic and offline. Without it a UI-test run
+    /// makes no network requests at all.
+    static let stubsCompoundNetwork = ProcessInfo.processInfo.arguments.contains("-compoundNetworkStub")
 }
 
 /// Environment storage for the bundled dataset.

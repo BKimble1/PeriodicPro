@@ -12,30 +12,23 @@ struct StudyScreen: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(ProgressStore.self) private var progress: ProgressStore
     @Environment(SubscriptionManager.self) private var store: SubscriptionManager
+    @Environment(CompoundStore.self) private var compounds: CompoundStore
+    @Environment(SavedQuizStore.self) private var savedQuizzes: SavedQuizStore
 
-    @State private var path: [ChemicalElement] = []
-    /// The round on screen, mode and deck together.
+    @State private var path = NavigationPath()
+    /// The round on screen: mode and deck together.
     ///
     /// The deck travels *inside* the item rather than beside it in its own
-    /// `@State`. It used to be a separate property, written on the line above
-    /// `activeMode`, and the session came up empty every time: two state writes
-    /// drive one presentation, and `fullScreenCover(item:)` builds its content
-    /// from the item it was handed, not from whatever else the view has since
-    /// been told. Every round in every mode opened on "Nothing to study yet".
-    ///
-    /// One value, one write, no window in which they disagree. The deck is
-    /// still captured once when the round starts — `studyQueue` is ordered by
+    /// `@State`. Two state writes driving one presentation is how
+    /// `fullScreenCover(item:)` ends up building its content from a stale
+    /// item, and every round used to open on "Nothing to study yet". One
+    /// value, one write, no window in which they disagree. The deck is still
+    /// captured once when the round starts — the study queue is ordered by
     /// mastery, which changes on every answer, and handing the session a live
     /// view of it reshuffled the learner's remaining cards after each one.
-    private struct ActiveRound: Identifiable {
-        let mode: StudyMode
-        let queue: [ChemicalElement]
-        // The same identity the mode had when it was the item on its own, so a
-        // second tap on the same mode still does not re-present.
-        var id: String { mode.id }
-    }
-
-    @State private var activeRound: ActiveRound?
+    @State private var activeRound: StudyRoundPlan?
+    /// The mode whose setup sheet is open: Quiz or Match.
+    @State private var setup: StudyMode?
     @State private var paywall: PaywallContext?
     /// Shown when Smart Review is unlocked but has nothing to review yet.
     @State private var smartReviewNotice: String?
@@ -74,6 +67,14 @@ struct StudyScreen: View {
         catalog.count == 0 ? 0 : Double(progress.masteredCount) / Double(catalog.count)
     }
 
+    /// Compounds the learner saved or favorited, for the shelf.
+    private var studyCompounds: [ChemicalCompound] {
+        let ids = Set(progress.savedCompoundIDs).union(progress.favoriteCompoundIDs)
+        return ids.compactMap { compounds.compound(id: $0) }
+            .filter { !$0.isHypothetical }
+            .sorted { $0.preferredName < $1.preferredName }
+    }
+
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
@@ -82,8 +83,10 @@ struct StudyScreen: View {
                     statusCards
                     heroCard
                     practiceSection
+                    myQuizzesSection
                     recentSearchesSection
                     favoritesSection
+                    if !studyCompounds.isEmpty { compoundsSection }
                     if !recentlyStudied.isEmpty { recentSection }
                 }
                 .padding(.top, Theme.Spacing.s)
@@ -97,6 +100,20 @@ struct StudyScreen: View {
                 ElementDetailScreen(element: element)
                     .zoomTransition(id: element.atomicNumber, namespace: studyNamespace)
             }
+            .navigationDestination(for: CompoundMatchCandidate.self) { candidate in
+                CompoundDetailScreen(candidate: candidate)
+            }
+            .navigationDestination(for: StudyRoute.self) { route in
+                switch route {
+                case .myQuizzes:
+                    MyQuizzesScreen { dealer in start(.quiz(dealer)) }
+                }
+            }
+            .sheet(item: $setup) { mode in
+                QuizSetupView(mode: mode) { dealer in
+                    start(mode == .match ? .match(dealer) : .quiz(dealer))
+                }
+            }
             .fullScreenCover(item: $activeRound) {
                 // onDismiss runs after the cover has finished dismissing.
                 // Reacting to the binding going nil instead would fire at the
@@ -106,10 +123,9 @@ struct StudyScreen: View {
                 guard let pending = paywallAfterSession else { return }
                 paywallAfterSession = nil
                 paywall = pending
-            } content: { round in
+            } content: { plan in
                 StudySessionContainer(
-                    mode: round.mode,
-                    queue: round.queue,
+                    plan: plan,
                     catalog: catalog,
                     onAllowanceSpent: { paywallAfterSession = .dailyLimit }
                 )
@@ -198,7 +214,7 @@ struct StudyScreen: View {
             title: StudyMode.flashcards.title,
             message: "Memorize, quiz and reinforce your knowledge.",
             symbolName: StudyMode.flashcards.symbolName,
-            action: { start(.flashcards) }
+            action: { open(.flashcards) }
         )
         .padding(.horizontal, Theme.Spacing.screenMargin)
         .accessibilityIdentifier("study.heroCard")
@@ -209,6 +225,7 @@ struct StudyScreen: View {
     private static let modeTints: [StudyMode: ElementCategory] = [
         .flashcards: .metalloid,
         .quiz: .lanthanide,
+        .match: .transitionMetal,
         .identify: .alkalineEarthMetal,
         .smartReview: .alkaliMetal,
     ]
@@ -232,13 +249,13 @@ struct StudyScreen: View {
             }
             .padding(.horizontal, Theme.Spacing.screenMargin)
 
-            // Four across normally, two at accessibility sizes: a quarter of a
-            // 375-point screen is 75 points, and "Smart Review" at forty points
+            // Five across normally, two at accessibility sizes: a fifth of a
+            // 375-point screen is 57 points, and "Smart Review" at forty points
             // does not go in it.
             LazyVGrid(
                 columns: Array(
-                    repeating: GridItem(.flexible(), spacing: Theme.Spacing.m),
-                    count: dynamicTypeSize.isAccessibilitySize ? 2 : 4
+                    repeating: GridItem(.flexible(), spacing: Theme.Spacing.s),
+                    count: dynamicTypeSize.isAccessibilitySize ? 2 : 5
                 ),
                 alignment: .leading,
                 spacing: Theme.Spacing.m
@@ -252,12 +269,87 @@ struct StudyScreen: View {
                         showsProBadge: mode.requiresPro
                             && !store.isPro
                             && !store.entitlement.isResolving,
-                        action: { start(mode) }
+                        action: { open(mode) }
                     )
                 }
             }
             .padding(.horizontal, Theme.Spacing.screenMargin)
         }
+    }
+
+    // MARK: - My Quizzes
+
+    private var myQuizzesSection: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            StudySectionHeader(title: "My Quizzes") {
+                NavigationLink(value: StudyRoute.myQuizzes) {
+                    Text(savedQuizzes.quizzes.isEmpty ? "Create" : "See all")
+                        .font(.system(.footnote, weight: .medium))
+                        .frame(minHeight: Theme.minimumTouchTarget)
+                }
+                .accessibilityIdentifier("study.myQuizzes.seeAll")
+            }
+            .padding(.horizontal, Theme.Spacing.screenMargin)
+
+            if savedQuizzes.quizzes.isEmpty {
+                CardContainer {
+                    Text("Shape a quiz from the Quiz tile — elements, compounds or both, any difficulty — "
+                         + "and save it here to play again or share as a file.")
+                        .font(AppFont.footnote)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+                .accessibilityIdentifier("study.myQuizzes.empty")
+            } else {
+                VStack(spacing: Theme.Spacing.s) {
+                    ForEach(savedQuizzes.quizzes.prefix(3)) { quiz in
+                        SavedQuizRow(quiz: quiz) { startSaved(quiz) }
+                    }
+                }
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("study.myQuizzes")
+    }
+
+    // MARK: - Compounds
+
+    private var compoundsSection: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            SectionHeader(title: "Compounds", subtitle: "\(studyCompounds.count) in your study material")
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+            ScrollView(.horizontal) {
+                HStack(spacing: Theme.Spacing.m) {
+                    ForEach(studyCompounds) { compound in
+                        Button {
+                            Haptics.tap()
+                            path.append(CompoundMatchCandidate(local: compound))
+                        } label: {
+                            VStack(spacing: 6) {
+                                CompoundTile(formula: compound.formula, size: 68)
+                                Text(compound.preferredName)
+                                    .font(AppFont.caption)
+                                    .foregroundStyle(AppColor.secondaryText)
+                                    .multilineTextAlignment(.center)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.7)
+                                    .frame(maxWidth: 74)
+                            }
+                        }
+                        .buttonStyle(ElementTileButtonStyle())
+                        .accessibilityLabel(compound.accessibilityDescription)
+                        .accessibilityIdentifier("study.compound.\(compound.pubChemCID ?? 0)")
+                    }
+                }
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+                .padding(.vertical, 2)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("study.compounds")
     }
 
     // MARK: - Recent searches
@@ -389,22 +481,55 @@ struct StudyScreen: View {
 
     // MARK: - Starting a round
 
-    /// The single gate for beginning a round from this screen.
-    ///
-    /// Snapshots the queue and presents in one pass, so the session never sees
-    /// a queue that changes beneath it. Everything that could stop a round —
-    /// the Pro-only mode, the free daily allowance, and Smart Review not having
-    /// enough history yet — is decided here, before anything is presented, and
-    /// never once a round is running.
-    private func start(_ mode: StudyMode) {
-        Task { @MainActor in await beginRound(mode) }
+    /// A tap on a practice tile. Quiz and Match open their setup sheet; the
+    /// card modes start straight away.
+    private func open(_ mode: StudyMode) {
+        if mode.opensSetup {
+            guard activeRound == nil, paywall == nil else { return }
+            setup = mode
+            return
+        }
+        let queue = mode == .smartReview
+            ? SmartReviewBuilder.queue(elements: catalog.elements, snapshots: progress.snapshots)
+            : studyQueue
+        start(.cards(mode, queue))
     }
 
-    /// Main-actor isolated because it assigns view state. The mode and the deck
-    /// are one value, so the session cannot be presented with one of them and
-    /// not the other.
+    /// Starts one of the learner's saved quizzes from the shelf.
+    private func startSaved(_ quiz: SavedQuiz) {
+        let pool = QuizPoolBuilder.subjects(
+            for: quiz.configuration,
+            catalog: catalog,
+            compounds: compounds.allKnownCompounds,
+            elementSnapshots: progress.snapshots,
+            compoundSnapshots: progress.compoundSnapshots
+        )
+        guard QuizPoolBuilder.unavailableReason(for: quiz.configuration, poolCount: pool.count) == nil else {
+            path.append(StudyRoute.myQuizzes)
+            return
+        }
+        start(.quiz(QuizRoundDealer(
+            configuration: quiz.configuration,
+            subjects: pool,
+            elementDistractors: catalog.elements,
+            compoundDistractors: compounds.allKnownCompounds.filter { !$0.isHypothetical }
+        )))
+    }
+
+    /// The single gate for beginning a round from this screen.
+    ///
+    /// The plan is captured before anything is presented, so the session
+    /// never sees a queue that changes beneath it. Everything that could stop
+    /// a round — the Pro-only mode, the free daily allowance, and Smart Review
+    /// not having enough history yet — is decided here, before anything is
+    /// presented, and never once a round is running.
+    private func start(_ plan: StudyRoundPlan) {
+        Task { @MainActor in await beginRound(plan) }
+    }
+
+    /// Main-actor isolated because it assigns view state.
     @MainActor
-    private func beginRound(_ mode: StudyMode) async {
+    private func beginRound(_ plan: StudyRoundPlan) async {
         // Nothing may start, and no paywall may appear, while a round is on
         // screen. Two taps during the suspension below would otherwise resume
         // in arbitrary order and put a paywall over a running session.
@@ -421,6 +546,7 @@ struct StudyScreen: View {
         // task was waiting.
         guard activeRound == nil, paywall == nil else { return }
 
+        let mode = plan.mode
         if mode.requiresPro, !store.isPro {
             paywall = .smartReview
             return
@@ -440,12 +566,64 @@ struct StudyScreen: View {
             return
         }
 
-        activeRound = ActiveRound(
-            mode: mode,
-            queue: mode == .smartReview
-                ? SmartReviewBuilder.queue(
-                    elements: catalog.elements, snapshots: progress.snapshots)
-                : studyQueue
-        )
+        activeRound = plan
+    }
+}
+
+/// Where the Study tab's stack can go besides an element or a compound.
+enum StudyRoute: Hashable {
+    case myQuizzes
+}
+
+/// One saved quiz on the Study tab's shelf, with its Start button.
+struct SavedQuizRow: View {
+    let quiz: SavedQuiz
+    let onStart: () -> Void
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.m) {
+            Image(systemName: "list.bullet.rectangle")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(AppColor.accent)
+                .frame(width: 34, height: 34)
+                .background { Circle().fill(AppColor.accent.opacity(0.10)) }
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(quiz.name)
+                    .font(.system(.body, weight: .semibold))
+                    .foregroundStyle(AppColor.primaryText)
+                    .lineLimit(1)
+                Text(quiz.configuration.summary)
+                    .font(AppFont.caption)
+                    .foregroundStyle(AppColor.secondaryText)
+                    .lineLimit(1)
+            }
+            Spacer(minLength: Theme.Spacing.s)
+            Button {
+                Haptics.tap()
+                onStart()
+            } label: {
+                Text("Start")
+                    .font(.system(.footnote, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, Theme.Spacing.l)
+                    .frame(minHeight: 36)
+                    .background { Capsule().fill(AppColor.accent) }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Start \(quiz.name)")
+            .accessibilityIdentifier("study.savedQuiz.start.\(quiz.id.uuidString)")
+        }
+        .padding(Theme.Spacing.m)
+        .background {
+            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                .fill(AppColor.surface)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                .strokeBorder(AppColor.hairline, lineWidth: 0.7)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("study.savedQuiz.\(quiz.id.uuidString)")
     }
 }

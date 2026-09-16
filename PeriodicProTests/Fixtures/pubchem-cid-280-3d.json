@@ -1,0 +1,101 @@
+{
+ "PC_Compounds": [
+  {
+   "id": {
+    "id": {
+     "cid": 280
+    }
+   },
+   "atoms": {
+    "aid": [
+     1,
+     2,
+     3
+    ],
+    "element": [
+     8,
+     6,
+     8
+    ]
+   },
+   "charge": 0,
+   "props": [
+    {
+     "urn": {
+      "label": "IUPAC Name",
+      "name": "Preferred"
+     },
+     "value": {
+      "sval": "carbon dioxide"
+     }
+    },
+    {
+     "urn": {
+      "label": "Molecular Formula"
+     },
+     "value": {
+      "sval": "CO2"
+     }
+    }
+   ],
+   "bonds": {
+    "aid1": [
+     1,
+     2
+    ],
+    "aid2": [
+     2,
+     3
+    ],
+    "order": [
+     2,
+     2
+    ]
+   },
+   "coords": [
+    {
+     "type": [
+      2,
+      5,
+      10
+     ],
+     "aid": [
+      1,
+      2,
+      3
+     ],
+     "conformers": [
+      {
+       "x": [
+        -1.405,
+        0.0,
+        1.405
+       ],
+       "y": [
+        -0.009,
+        -0.0,
+        0.009
+       ],
+       "z": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "data": [
+        {
+         "urn": {
+          "label": "Conformer",
+          "name": "ID"
+         },
+         "value": {
+          "sval": "0000000000000001"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

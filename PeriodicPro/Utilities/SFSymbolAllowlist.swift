@@ -57,6 +57,11 @@ enum SFSymbolAllowlist {
         // Pro, the paywall and the 3D structure explorer
         "xmark", "infinity", "scope", "cube.fill", "sparkles", "lock.fill",
         "arrow.up.right",
+        // Compounds, the builder and the Build tab
+        "circle.hexagongrid.fill", "plus.circle.fill", "plus", "minus",
+        // Match, quiz setup and My Quizzes
+        "arrow.left.arrow.right", "list.bullet.rectangle", "square.and.arrow.up",
+        "square.and.arrow.down", "doc.on.doc", "pencil", "textformat", "trash",
     ]
 
     /// Everything the app can ask UIKit to draw.

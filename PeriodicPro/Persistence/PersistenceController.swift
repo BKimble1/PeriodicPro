@@ -11,6 +11,9 @@ enum PersistenceController {
         ElementProgressRecord.self,
         RecentSearchRecord.self,
         StudyDayRecord.self,
+        CompoundProgressRecord.self,
+        CachedCompoundRecord.self,
+        SavedQuizRecord.self,
     ])
 
     /// How the learner's progress is actually being stored this launch.

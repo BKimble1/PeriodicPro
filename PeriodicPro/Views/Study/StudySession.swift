@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Hosts a single study round and owns the transition into the summary.
 struct StudySessionContainer: View {
-    let mode: StudyMode
+    let plan: StudyRoundPlan
     let catalog: ElementCatalog
     /// Called when a round finishes and the learner has no free rounds left.
     /// The caller presents the paywall once this cover has gone — never over a
@@ -18,53 +18,64 @@ struct StudySessionContainer: View {
     @State private var round = 0
     /// The seed for the round in progress.
     ///
-    /// Snapshotted rather than computed, because `SeededGenerator.dailySeed()`
-    /// reads the clock: a round that crossed local midnight was silently
-    /// re-dealt from a new seed while the card index carried on counting.
-    @State private var roundSeed: UInt64 = 0
+    /// Snapshotted once per round. Every session gets a fresh, UUID-derived
+    /// seed, so two rounds never deal the same order — and a test can inject
+    /// one, in which case the round is exactly reproducible.
+    @State private var roundSeed: UInt64
+    /// The deck, dealt once when the round starts and never reshuffled while
+    /// it is on screen.
+    @State private var questions: [QuizQuestion]
+    @State private var matchRound: MatchRound?
 
-    /// The queue this round draws from, already snapshotted by the caller.
-    let queue: [ChemicalElement]
+    private var mode: StudyMode { plan.mode }
 
     /// Practice draws from the least-familiar elements first, but keeps a wide
     /// enough pool that a round is never the same ten tiles twice over.
     ///
     /// Derived, not stored. It used to be `@State` seeded with
-    /// `State(initialValue:)` from `queue`, which takes effect only the first
+    /// `State(initialValue:)` from the queue, which takes effect only the first
     /// time this view's identity appears — so whichever value the very first
-    /// construction happened to see was the deck for good. In a real run that
-    /// value was the empty array, and every round in every mode opened on
-    /// "Nothing to study yet". Nothing caught it, because these tests had never
-    /// been run.
-    ///
-    /// Deriving it is safe for the reason the stored version was reaching for:
-    /// `queue` is `StudyScreen.sessionQueue`, which is itself captured once
-    /// when the round starts and never written again while the round is on
-    /// screen. The deck cannot reshuffle underneath the learner because its
-    /// source does not move. The seed still advances with `round`, so "Study
-    /// again" deals a different hand.
+    /// construction happened to see was the deck for good. Deriving it is safe
+    /// because the queue is captured once when the round starts and never
+    /// written again while the round is on screen.
     private var pool: [ChemicalElement] {
-        Array(queue.prefix(StudyDeckBuilder.defaultPoolSize))
+        guard case .cards(_, let queue) = plan else { return [] }
+        return Array(queue.prefix(StudyDeckBuilder.defaultPoolSize))
+    }
+
+    private var isEmpty: Bool {
+        switch plan {
+        case .cards: return pool.isEmpty
+        case .quiz: return questions.isEmpty
+        case .match: return matchRound?.pairs.isEmpty ?? true
+        }
     }
 
     init(
-        mode: StudyMode,
-        queue: [ChemicalElement],
+        plan: StudyRoundPlan,
         catalog: ElementCatalog,
+        seed: UInt64? = nil,
         onAllowanceSpent: @escaping () -> Void = {}
     ) {
-        self.mode = mode
-        self.queue = queue
+        self.plan = plan
         self.catalog = catalog
         self.onAllowanceSpent = onAllowanceSpent
-        _roundSeed = State(initialValue: Self.seed(round: 0, mode: mode))
+        let initialSeed = seed ?? QuizSeed.fresh()
+        _roundSeed = State(initialValue: initialSeed)
+        switch plan {
+        case .quiz(let dealer):
+            _questions = State(initialValue: dealer.questions(seed: initialSeed))
+            _matchRound = State(initialValue: nil)
+        case .match(let dealer):
+            _questions = State(initialValue: [])
+            _matchRound = State(initialValue: dealer.matchRound(seed: initialSeed))
+        case .cards:
+            _questions = State(initialValue: [])
+            _matchRound = State(initialValue: nil)
+        }
     }
 
-    private static func seed(round: Int, mode: StudyMode) -> UInt64 {
-        SeededGenerator.dailySeed() &+ UInt64(round) &* 7_919 &+ mode.seedSalt
-    }
-
-    private var seed: UInt64 { roundSeed }
+    private var seed: UInt64 { roundSeed &+ mode.seedSalt }
 
     /// Whether another round may start straight away from the summary.
     private var canStudyAgain: Bool {
@@ -81,23 +92,19 @@ struct StudySessionContainer: View {
                     SessionSummaryView(
                         result: result,
                         canStudyAgain: canStudyAgain,
-                        onRepeat: {
-                            round += 1
-                            roundSeed = Self.seed(round: round, mode: mode)
-                            self.result = nil
-                        },
+                        onRepeat: dealAgain,
                         onUnlock: {
                             onAllowanceSpent()
                             dismiss()
                         },
                         onDone: { dismiss() }
                     )
-                } else if pool.isEmpty {
+                } else if isEmpty {
                     ScrollView {
                         EmptyStateView(
                             symbolName: "tray",
                             title: "Nothing to study yet",
-                            message: "Element data could not be loaded, so there is nothing to practice right now.",
+                            message: "There is not enough material for this round right now.",
                             actionTitle: "Close",
                             action: { dismiss() }
                         )
@@ -124,51 +131,74 @@ struct StudySessionContainer: View {
 
     @ViewBuilder
     private var session: some View {
-        switch mode {
+        switch plan {
         // Smart Review is the flashcard format over a pool of the elements the
         // learner keeps missing — the pool is what makes it different, and it
         // was already chosen before this view was presented.
-        case .flashcards, .smartReview:
-            CardSessionView(
-                mode: mode,
-                cards: StudyDeckBuilder.flashcards(pool: pool, seed: seed),
-                onAnswer: record,
-                onFinish: finish
-            )
-            .id(round)
-        case .identify:
+        case .cards(let mode, _) where mode == .identify:
             CardSessionView(
                 mode: mode,
                 cards: StudyDeckBuilder.identifyCards(pool: pool, seed: seed),
-                onAnswer: record,
+                onAnswer: recordElement,
                 onFinish: finish
             )
             .id(round)
-        case .quiz:
-            QuizSessionView(
+        case .cards(let mode, _):
+            CardSessionView(
                 mode: mode,
-                questions: QuizGenerator.makeQuiz(
-                    pool: pool,
-                    distractors: catalog.elements,
-                    seed: seed
-                ),
+                cards: StudyDeckBuilder.flashcards(pool: pool, seed: seed),
+                onAnswer: recordElement,
+                onFinish: finish
+            )
+            .id(round)
+        case .quiz(let dealer):
+            QuizSessionView(
+                mode: .quiz,
+                questions: questions,
+                timerSeconds: dealer.configuration.timerSeconds,
                 onAnswer: record,
                 onFinish: finish
             )
             .id(round)
+        case .match:
+            if let matchRound {
+                MatchSessionView(round: matchRound, onAnswer: record, onFinish: finish)
+                    .id(round)
+            }
         }
     }
 
-    private func record(atomicNumber: Int, correct: Bool) {
+    /// "Study again": a fresh seed and a fresh deck.
+    private func dealAgain() {
+        round += 1
+        roundSeed = QuizSeed.fresh()
+        switch plan {
+        case .quiz(let dealer): questions = dealer.questions(seed: roundSeed)
+        case .match(let dealer): matchRound = dealer.matchRound(seed: roundSeed)
+        case .cards: break
+        }
+        result = nil
+    }
+
+    private func recordElement(atomicNumber: Int, correct: Bool) {
         progress.recordAnswer(atomicNumber: atomicNumber, correct: correct)
     }
 
-    /// The one place a round is counted as complete, for all four modes.
+    private func record(subject: QuizSubject, correct: Bool) {
+        switch subject {
+        case .element(let element):
+            progress.recordAnswer(atomicNumber: element.atomicNumber, correct: correct)
+        case .compound(let compound):
+            progress.recordCompoundAnswer(id: compound.id, correct: correct)
+        }
+    }
+
+    /// The one place a round is counted as complete, for every mode.
     ///
     /// `onFinish` fires exactly once per round, and only when the last card is
-    /// rated or the last quiz question is confirmed. Exiting part way through
-    /// never reaches here, so an interrupted round never costs the learner part
-    /// of the free daily allowance.
+    /// rated, the last question is confirmed or the last pair is matched.
+    /// Exiting part way through never reaches here, so an interrupted round
+    /// never costs the learner part of the free daily allowance.
     private func finish(_ result: StudyResult) {
         self.result = result
         progress.recordCompletedRound()
@@ -486,7 +516,9 @@ struct QuizSessionView: View {
     /// reuses the multiple-choice format.
     let mode: StudyMode
     let questions: [QuizQuestion]
-    let onAnswer: (Int, Bool) -> Void
+    /// Seconds allowed per question. `nil`, the default, means no clock.
+    var timerSeconds: Int?
+    let onAnswer: (QuizSubject, Bool) -> Void
     let onFinish: (StudyResult) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -494,10 +526,17 @@ struct QuizSessionView: View {
     @State private var index = 0
     @State private var selection: Int?
     @State private var correctCount = 0
+    /// Set when the clock ran out before an answer: the options lock, the
+    /// right one is shown, and the question counts as missed.
+    @State private var timedOut = false
+    @State private var remainingSeconds = 0
 
     private var question: QuizQuestion? {
         index < questions.count ? questions[index] : nil
     }
+
+    /// Answered, or out of time: either way the options are locked.
+    private var isResolved: Bool { selection != nil || timedOut }
 
     var body: some View {
         VStack(spacing: Theme.Spacing.l) {
@@ -514,6 +553,10 @@ struct QuizSessionView: View {
                             .padding(.top, Theme.Spacing.l)
                             .accessibilityIdentifier("quiz.prompt")
 
+                        if let timerSeconds, !isResolved {
+                            timerLine(total: timerSeconds)
+                        }
+
                         VStack(spacing: Theme.Spacing.s) {
                             ForEach(Array(question.options.indices), id: \.self) { offset in
                                 optionButton(
@@ -523,12 +566,33 @@ struct QuizSessionView: View {
                                 )
                             }
                         }
+
+                        if isResolved {
+                            VStack(spacing: 4) {
+                                if timedOut {
+                                    Text("Out of time. The answer is \(question.correctAnswer).")
+                                        .font(.system(.footnote, weight: .semibold))
+                                        .foregroundStyle(AppColor.warning)
+                                        .accessibilityIdentifier("quiz.timedOut")
+                                }
+                                if let detail = question.detail {
+                                    Text(detail)
+                                        .font(AppFont.footnote)
+                                        .foregroundStyle(AppColor.secondaryText)
+                                        .multilineTextAlignment(.center)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .accessibilityIdentifier("quiz.detail")
+                                }
+                            }
+                            .transition(.opacity)
+                        }
                     }
                     .padding(.horizontal, Theme.Spacing.screenMargin)
                     .padding(.bottom, Theme.Spacing.l)
                     .id(question.id)
                 }
                 .scrollIndicators(.hidden)
+                .task(id: index) { await runTimer(for: question) }
 
                 Button {
                     advanceToNextQuestion()
@@ -542,11 +606,11 @@ struct QuizSessionView: View {
                         .frame(minHeight: 52)
                         .background {
                             RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
-                                .fill(selection == nil ? AppColor.tertiaryText : AppColor.accent)
+                                .fill(isResolved ? AppColor.accent : AppColor.tertiaryText)
                         }
                 }
                 .buttonStyle(.plain)
-                .disabled(selection == nil)
+                .disabled(!isResolved)
                 .padding(.horizontal, Theme.Spacing.screenMargin)
                 .padding(.bottom, Theme.Spacing.l)
                 .accessibilityIdentifier("quiz.next")
@@ -566,10 +630,47 @@ struct QuizSessionView: View {
         .animation(reduceMotion ? nil : Theme.Motion.reveal, value: index)
     }
 
+    /// A countdown in words and as a bar, so it reads without color.
+    private func timerLine(total: Int) -> some View {
+        VStack(spacing: 4) {
+            Text("\(remainingSeconds) s left")
+                .font(.system(.footnote, weight: .medium).monospacedDigit())
+                .foregroundStyle(remainingSeconds <= 5 ? AppColor.warning : AppColor.secondaryText)
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(AppColor.surfaceMuted)
+                    Capsule()
+                        .fill(remainingSeconds <= 5 ? AppColor.warning : AppColor.accent)
+                        .frame(width: proxy.size.width * CGFloat(remainingSeconds) / CGFloat(max(total, 1)))
+                }
+            }
+            .frame(height: 4)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(remainingSeconds) seconds left")
+        .accessibilityIdentifier("quiz.timer")
+    }
+
+    /// Counts the question's clock down, one second at a time. Canceled by
+    /// SwiftUI when the question changes; stops on its own once answered.
+    private func runTimer(for question: QuizQuestion) async {
+        guard let timerSeconds else { return }
+        remainingSeconds = timerSeconds
+        while remainingSeconds > 0 {
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled, !isResolved else { return }
+            remainingSeconds -= 1
+        }
+        guard !isResolved else { return }
+        timedOut = true
+        Haptics.incorrect()
+        onAnswer(question.subject, false)
+    }
+
     private func optionButton(question: QuizQuestion, offset: Int, option: String) -> some View {
         let isChosen = selection == offset
         let isAnswer = question.isCorrect(offset)
-        let resolved = selection != nil
+        let resolved = isResolved
 
         let tint: Color = {
             guard resolved else { return AppColor.hairline }
@@ -584,7 +685,7 @@ struct QuizSessionView: View {
         }()
 
         return Button {
-            guard selection == nil else { return }
+            guard !isResolved else { return }
             selection = offset
             let correct = question.isCorrect(offset)
             if correct {
@@ -593,7 +694,7 @@ struct QuizSessionView: View {
             } else {
                 Haptics.incorrect()
             }
-            onAnswer(question.element.atomicNumber, correct)
+            onAnswer(question.subject, correct)
         } label: {
             HStack(spacing: Theme.Spacing.m) {
                 Text(option)
@@ -628,12 +729,13 @@ struct QuizSessionView: View {
     }
 
     private func advanceToNextQuestion() {
-        guard selection != nil else { return }
+        guard isResolved else { return }
         if index + 1 >= questions.count {
             Haptics.sessionComplete()
             onFinish(StudyResult(mode: mode, correct: correctCount, total: questions.count))
         } else {
             selection = nil
+            timedOut = false
             index += 1
         }
     }
