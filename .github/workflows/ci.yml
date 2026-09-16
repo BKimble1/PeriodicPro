@@ -297,7 +297,12 @@ jobs:
             [ -d "$bundle" ] || continue
             ./Tools/export_screenshots.sh "$bundle" screenshots
           done
-          ls -la screenshots || true
+          # The script already reports a count and the tour's own frames. A
+          # full listing here as well is what buried the failure: XCTest adds a
+          # screen recording, a snapshot per query and a synthesized-event
+          # image per tap, so this printed a couple of hundred lines after the
+          # one line worth reading.
+          echo "total: $(ls -1 screenshots | wc -l | tr -d ' ') file(s)"
 
       - name: Upload the screenshots
         if: always()
