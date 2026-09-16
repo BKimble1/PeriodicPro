@@ -129,8 +129,15 @@ struct OnboardingView: View {
                 Text(page < pages.count - 1 ? "Continue" : "Start exploring")
                     .font(.system(.body, weight: .semibold))
                     .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    // A floor, not a fixed height. `.body` is a scaling font:
+                    // at the largest accessibility sizes one line of it is
+                    // taller than 52 points on its own, and "Start exploring"
+                    // wraps to two — so a hard height cropped the label of the
+                    // button that leaves onboarding.
+                    .padding(.vertical, Theme.Spacing.s)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 52)
+                    .frame(minHeight: 52)
                     .background {
                         RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                             .fill(AppColor.accent)

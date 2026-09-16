@@ -118,10 +118,23 @@ struct StructureRealityView: View {
     private func runTicker() async {
         if reduceMotion {
             // No drift and no easing: go straight to wherever the model has
-            // been asked to be, then stop.
-            shownYaw = targetYaw
-            shownPitch = targetPitch
-            shownZoom = targetZoom
+            // been asked to be.
+            //
+            // But keep going while a finger is down. Reduce Motion asks an app
+            // to stop moving things by itself; it does not ask a model to stop
+            // following the hand turning it. Returning here after a single
+            // snap meant the only thing that moved the model during a drag —
+            // this loop — was not running, so the scene sat still until the
+            // gesture ended and then jumped to its final pose. Direct
+            // manipulation that does not track is not a calmer animation, it
+            // is a broken control.
+            repeat {
+                shownYaw = targetYaw
+                shownPitch = targetPitch
+                shownZoom = targetZoom
+                guard isInteracting else { return }
+                try? await Task.sleep(for: .milliseconds(16))
+            } while !Task.isCancelled
             return
         }
         while !Task.isCancelled {

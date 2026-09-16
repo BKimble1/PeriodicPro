@@ -405,8 +405,13 @@ struct CardSessionView: View {
                 Text("Reveal Answer")
                     .font(.system(.body, weight: .semibold))
                     .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    // A floor, not a fixed height — `.body` scales, and past
+                    // the larger accessibility sizes a single line of it no
+                    // longer fits in 52 points.
+                    .padding(.vertical, Theme.Spacing.s)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 52)
+                    .frame(minHeight: 52)
                     .background {
                         RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                             .fill(AppColor.accent)
@@ -528,8 +533,10 @@ struct QuizSessionView: View {
                     Text(index + 1 >= questions.count ? "See results" : "Next question")
                         .font(.system(.body, weight: .semibold))
                         .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, Theme.Spacing.s)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 52)
+                        .frame(minHeight: 52)
                         .background {
                             RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                                 .fill(selection == nil ? AppColor.tertiaryText : AppColor.accent)
@@ -686,8 +693,10 @@ struct SessionSummaryView: View {
                     Text(canStudyAgain ? "Study again" : "Get Elemora Pro")
                         .font(.system(.body, weight: .semibold))
                         .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, Theme.Spacing.s)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 52)
+                        .frame(minHeight: 52)
                         .background {
                             RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                                 .fill(AppColor.accent)
@@ -711,8 +720,10 @@ struct SessionSummaryView: View {
                     Text("Done")
                         .font(.system(.body, weight: .medium))
                         .foregroundStyle(AppColor.accent)
+                        .multilineTextAlignment(.center)
+                        .padding(.vertical, Theme.Spacing.s)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+                        .frame(minHeight: 50)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
