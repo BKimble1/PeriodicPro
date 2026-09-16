@@ -102,6 +102,7 @@ struct StudySessionContainer: View {
                             action: { dismiss() }
                         )
                     }
+                    .scrollIndicators(.hidden)
                     .scrollBounceBehavior(.basedOnSize)
                 } else {
                     session
@@ -256,6 +257,7 @@ struct CardSessionView: View {
                         .padding(.horizontal, Theme.Spacing.screenMargin)
                         .padding(.vertical, 2)
                 }
+                .scrollIndicators(.hidden)
                 .scrollBounceBehavior(.basedOnSize)
 
                 controls(for: card)
@@ -526,6 +528,7 @@ struct QuizSessionView: View {
                     .padding(.bottom, Theme.Spacing.l)
                     .id(question.id)
                 }
+                .scrollIndicators(.hidden)
 
                 Button {
                     advanceToNextQuestion()
@@ -555,6 +558,7 @@ struct QuizSessionView: View {
                         message: "There are not enough elements loaded to build a quiz."
                     )
                 }
+                .scrollIndicators(.hidden)
                 .scrollBounceBehavior(.basedOnSize)
             }
         }
@@ -683,6 +687,7 @@ struct SessionSummaryView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, Theme.Spacing.xxl)
             }
+            .scrollIndicators(.hidden)
             .scrollBounceBehavior(.basedOnSize)
 
             VStack(spacing: Theme.Spacing.s) {

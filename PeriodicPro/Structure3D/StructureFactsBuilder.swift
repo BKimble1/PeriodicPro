@@ -8,7 +8,8 @@ import Foundation
 ///
 /// * a strut in a metallic lattice is never called a bond;
 /// * an electron is never described as orbiting;
-/// * a nucleus that is drawn as a sample says so.
+/// * a nucleus that is drawn as a sample says so;
+/// * a lattice atom names its lattice and its real coordination number.
 enum StructureFactsBuilder {
     static func facts(
         for selection: StructureSelection,
@@ -36,15 +37,32 @@ enum StructureFactsBuilder {
     ) -> StructureFacts {
         switch node.role {
         case .atom:
+            var rows: [StructureFacts.Row] = [
+                .init(label: "Protons", value: "\(element.atomicNumber)"),
+                .init(label: "Electrons", value: "\(element.atomicNumber)"),
+                .init(label: "Family", value: element.category.displayName),
+            ]
+            switch scene.kind {
+            case .metallicLattice, .covalentNetwork:
+                rows.append(.init(label: "Structure", value: scene.allotropeName ?? scene.detail ?? scene.formula))
+                if let coordination = scene.coordination {
+                    rows.append(.init(
+                        label: "Coordination",
+                        value: coordination == 1 ? "1 nearest neighbor" : "\(coordination) nearest neighbors"
+                    ))
+                }
+            case .monatomicGas:
+                rows.append(.init(label: "Bonding", value: "None — a closed-shell atom on its own"))
+            case .liquid:
+                rows.append(.init(label: "Neighbors", value: "In contact, but not in fixed positions"))
+            case .diatomicMolecule, .polyatomicMolecule, .molecularCrystal, .compound, .atomModel:
+                break
+            }
+            rows.append(.init(label: "In this picture", value: neighborSummary(for: node, in: scene)))
             return StructureFacts(
                 title: "\(element.name) atom",
                 subtitle: "\(element.symbol) · Atomic number \(element.atomicNumber)",
-                rows: [
-                    .init(label: "Protons", value: "\(element.atomicNumber)"),
-                    .init(label: "Electrons", value: "\(element.atomicNumber)"),
-                    .init(label: "Family", value: element.category.displayName),
-                    .init(label: "In this structure", value: neighborSummary(for: node, in: scene)),
-                ]
+                rows: rows
             )
 
         case .proton:
@@ -95,7 +113,13 @@ enum StructureFactsBuilder {
     /// lattice — where the struts mark contact — than for a molecule.
     private static func neighborSummary(for node: StructureNode, in scene: StructureScene) -> String {
         let links = scene.bonds.filter { $0.from == node.id || $0.to == node.id }
-        guard !links.isEmpty else { return "Not bonded to another atom" }
+        guard !links.isEmpty else {
+            switch scene.kind {
+            case .monatomicGas: return "Not bonded to another atom"
+            case .liquid: return "No fixed neighbors"
+            default: return "Not bonded to another atom in this fragment"
+            }
+        }
         let discrete = links.allSatisfy(\.isDiscreteBond)
         let count = links.count
         if discrete {
@@ -143,7 +167,7 @@ enum StructureFactsBuilder {
         if scene.kind == .diatomicMolecule {
             rows.append(.init(label: "Molecule", value: scene.formula))
         } else {
-            rows.append(.init(label: "Structure", value: scene.formula))
+            rows.append(.init(label: "Structure", value: scene.allotropeName ?? scene.formula))
         }
         return StructureFacts(
             title: bond.order.displayName,
@@ -161,16 +185,25 @@ enum StructureFactsBuilder {
         var parts: [String] = []
         switch scene.kind {
         case .diatomicMolecule:
+            let order = scene.bonds.first?.order ?? .single
             parts.append("\(element.name) exists as \(scene.formula), two atoms joined by a "
-                + "\(StructureSceneBuilder.bondOrder(forDiatomic: element.symbol).displayName.lowercased()).")
-        case .polyatomicMolecule:
+                + "\(order.displayName.lowercased()).")
+        case .polyatomicMolecule, .molecularCrystal:
             parts.append("\(element.name) forms \(scene.formula), a molecule of \(scene.atoms.count) atoms.")
         case .metallicLattice:
-            parts.append("\(element.name) forms a metallic lattice. "
-                + "\(scene.atoms.count) atoms are shown: one central atom and the neighbors touching it.")
+            let name = scene.allotropeName ?? scene.detail ?? "a metallic lattice"
+            parts.append("\(element.name) forms \(name). \(scene.atoms.count) atoms are shown.")
         case .covalentNetwork:
             parts.append("\(element.name) forms a covalent network. "
                 + "\(scene.atoms.count) atoms of the network are shown.")
+        case .monatomicGas:
+            parts.append("\(element.name) is a monatomic gas: \(scene.atoms.count) separate atoms are "
+                + "shown, none of them bonded.")
+        case .liquid:
+            parts.append("\(element.name) is a liquid: \(scene.atoms.count) atoms are shown in a "
+                + "representative arrangement with no lattice.")
+        case .compound:
+            parts.append("A structure of \(scene.atoms.count) atoms.")
         case .atomModel:
             let protons = scene.nodes.filter { $0.role == .proton }.count
             let neutrons = scene.nodes.filter { $0.role == .neutron }.count
@@ -183,6 +216,7 @@ enum StructureFactsBuilder {
                     .joined(separator: ", ")
                 + ".")
         }
+        parts.append(scene.representationLabel + ".")
         parts.append(scene.caption)
         return parts.joined(separator: " ")
     }

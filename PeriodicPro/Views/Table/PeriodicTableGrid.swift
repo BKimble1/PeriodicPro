@@ -5,7 +5,8 @@ import SwiftUI
 /// Tiles are positioned absolutely inside three `ZStack`s (main block,
 /// lanthanides, actinides) rather than through nested stacks or a lazy grid.
 /// That means 118 leaf views, no per-tile `GeometryReader`, and an exact
-/// layout at every tile size.
+/// layout at every tile size — which is what lets the pinch-to-zoom table
+/// rebuild it at any size on every frame.
 struct PeriodicTableGrid: View {
     let catalog: ElementCatalog
     let filter: ElementFilter
@@ -17,6 +18,10 @@ struct PeriodicTableGrid: View {
     let mastery: (Int) -> MasteryLevel
     let showsMastery: Bool
     let onSelect: (ChemicalElement) -> Void
+    /// A double tap on empty table, with its location in
+    /// `ZoomableTableView.contentSpace`. Tiles are buttons and keep their own
+    /// taps; only the space between and around them reaches this.
+    var onDoubleTap: ((CGPoint) -> Void)?
 
     static let columns = 18
 
@@ -65,6 +70,10 @@ struct PeriodicTableGrid: View {
                     width: totalWidth,
                     height: CGFloat(rows) * tileSize + CGFloat(rows - 1) * spacing
                 )
+                .contentShape(Rectangle())
+                .onTapGesture(count: 2, coordinateSpace: .named(ZoomableTableView.contentSpace)) { location in
+                    onDoubleTap?(location)
+                }
                 .accessibilityHidden(true)
 
             ForEach(elements) { element in

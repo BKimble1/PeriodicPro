@@ -76,6 +76,7 @@ struct DataUnavailableView: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .scrollIndicators(.hidden)
         .scrollBounceBehavior(.basedOnSize)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(AppColor.canvas)

@@ -35,7 +35,10 @@ enum StructureEntityFactory {
                 sphereMeshes[key] = mesh
             }
 
-            let entity = ModelEntity(mesh: mesh, materials: [palette.material(for: node.role, state: .normal)])
+            let entity = ModelEntity(
+                mesh: mesh,
+                materials: [palette.material(for: node.role, tintHex: node.tintHex, state: .normal)]
+            )
             entity.name = StructureEntityName.node(node.id)
             entity.position = node.position
             // Hit testing is RealityKit's own, against a sphere that matches the
@@ -202,7 +205,11 @@ enum StructureEntityFactory {
             model.model?.materials = [
                 palette.isStrut(entityNamed: child.name)
                     ? palette.strutMaterial(state: state)
-                    : palette.material(for: palette.role(ofEntityNamed: child.name), state: state),
+                    : palette.material(
+                        for: palette.role(ofEntityNamed: child.name),
+                        tintHex: palette.tint(ofEntityNamed: child.name),
+                        state: state
+                    ),
             ]
         }
     }
@@ -215,23 +222,35 @@ enum StructureEntityFactory {
         case dimmed
     }
 
-    /// One material per (role, state), built once per scene.
+    /// One material per (role, tint, state), built once per scene.
+    ///
+    /// A scene of one element has one tint; a compound has one per element.
+    /// Either way the count stays in single figures, because the key is the
+    /// color and not the atom.
     final class MaterialPalette {
         private var materials: [String: PhysicallyBasedMaterial] = [:]
         private var roles: [String: StructureNodeRole] = [:]
+        private var tints: [String: UInt32] = [:]
         private let accent: Color
         private let isMetal: Bool
 
         init(scene: StructureScene, accent: Color) {
             self.accent = accent
-            self.isMetal = scene.kind == .metallicLattice
+            self.isMetal = scene.isMetallic
             for node in scene.nodes {
                 roles[StructureEntityName.node(node.id)] = node.role
+                if let tint = node.tintHex {
+                    tints[StructureEntityName.node(node.id)] = tint
+                }
             }
         }
 
         func role(ofEntityNamed name: String) -> StructureNodeRole {
             roles[name] ?? .atom
+        }
+
+        func tint(ofEntityNamed name: String) -> UInt32? {
+            tints[name]
         }
 
         /// A strut is anything the node table does not know about: the extra
@@ -240,17 +259,25 @@ enum StructureEntityFactory {
             roles[name] == nil
         }
 
-        func material(for role: StructureNodeRole, state: MaterialState) -> PhysicallyBasedMaterial {
-            cached(key: "\(role.rawValue)-\(state.rawValue)") {
+        func material(
+            for role: StructureNodeRole,
+            tintHex: UInt32?,
+            state: MaterialState
+        ) -> PhysicallyBasedMaterial {
+            let tintKey = tintHex.map { String($0, radix: 16) } ?? "accent"
+            return cached(key: "\(role.rawValue)-\(tintKey)-\(state.rawValue)") {
                 var material = PhysicallyBasedMaterial()
-                material.baseColor = .init(tint: Self.tint(role: role, accent: accent, state: state))
+                material.baseColor = .init(
+                    tint: Self.tint(role: role, tintHex: tintHex, accent: accent, state: state)
+                )
                 material.roughness = .init(floatLiteral: Self.roughness(role: role, isMetal: isMetal))
-                // Not fully metallic. A metallic PBR surface gets almost all of
-                // its color from reflections, and this scene has directional
-                // lights but no environment map — at 1.0 a gold lattice renders
-                // nearly black. Partly metallic keeps the sheen and keeps the
-                // element's own color.
-                material.metallic = .init(floatLiteral: role == .atom && isMetal ? 0.45 : 0.0)
+                // Metals are metallic — that is what makes gold read as gold
+                // and iron as iron rather than as painted balls — but not
+                // fully so. A metallic PBR surface gets most of its color from
+                // reflections, and this scene has a four-light rig rather than
+                // an environment map; at 1.0 a lattice renders nearly black.
+                // 0.7 keeps the sheen and the element's own color.
+                material.metallic = .init(floatLiteral: role == .atom && isMetal ? 0.7 : 0.0)
                 if state == .highlighted {
                     material.emissiveColor = .init(color: UIColor(AppColor.accent))
                     material.emissiveIntensity = 0.45
@@ -286,12 +313,13 @@ enum StructureEntityFactory {
 
         private static func tint(
             role: StructureNodeRole,
+            tintHex: UInt32?,
             accent: Color,
             state: MaterialState
         ) -> UIColor {
             let base: UIColor
             switch role {
-            case .atom: base = UIColor(accent)
+            case .atom: base = tintHex.map { UIColor(hex: $0) } ?? UIColor(accent)
             case .proton: base = UIColor(AppColor.warning)
             case .neutron: base = UIColor(white: 0.62, alpha: 1)
             case .electron: base = UIColor(AppColor.accent)
@@ -307,7 +335,8 @@ enum StructureEntityFactory {
 
         private static func roughness(role: StructureNodeRole, isMetal: Bool) -> Float {
             switch role {
-            case .atom: return isMetal ? 0.28 : 0.16
+            // A polished metal, and a glossy-but-not-plastic molecule.
+            case .atom: return isMetal ? 0.26 : 0.32
             case .proton, .neutron: return 0.4
             case .electron: return 0.1
             }

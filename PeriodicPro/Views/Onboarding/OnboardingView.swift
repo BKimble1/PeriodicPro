@@ -111,6 +111,7 @@ struct OnboardingView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, Theme.Spacing.l)
                     }
+                    .scrollIndicators(.hidden)
                     .scrollBounceBehavior(.basedOnSize)
                     .tag(item.id)
                 }

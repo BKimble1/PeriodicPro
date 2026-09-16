@@ -230,6 +230,75 @@ final class PeriodicProUITests: XCTestCase {
         }
     }
 
+    // MARK: - Zoom
+
+    /// The table is pinch-to-zoom. XCUITest's pinch is a real two-finger
+    /// gesture on the simulator, so this is the interaction itself, not a
+    /// stand-in: the tiles must grow, the tile that was under the pinch must
+    /// still be on screen, and a tap on it must still open its page.
+    func testPinchZoomsTheTableAndTilesStayTappable() {
+        waitFor(app.buttons["element.H"])
+        let table = el("table.zoomView")
+        waitFor(table)
+
+        let oxygen = app.buttons["element.O"]
+        let before = oxygen.frame.width
+        XCTAssertGreaterThan(before, 12, "the fitted table should have real tiles\(onScreen())")
+
+        table.pinch(withScale: 2.5, velocity: 1.0)
+
+        // Wait for the layout to settle at the new size rather than
+        // asserting mid-animation.
+        let grew = NSPredicate { _, _ in oxygen.exists && oxygen.frame.width > before * 1.5 }
+        let expectation = XCTNSPredicateExpectation(predicate: grew, object: nil)
+        XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: 6), .completed,
+                       "Pinching out should make the tiles larger; oxygen was \(before) and is "
+                       + "\(oxygen.frame.width)\(onScreen())")
+
+        XCTAssertTrue(el("table.fit").waitForExistence(timeout: 4),
+                      "A zoomed table should offer a Fit control\(onScreen())")
+
+        // Oxygen is in the top rows near the middle, so it stays in the window
+        // after a pinch about the middle. Tapping it must still open its page.
+        XCTAssertTrue(oxygen.isHittable, "oxygen should still be tappable while zoomed\(onScreen())")
+        oxygen.tap()
+        waitFor(app.buttons["detail.favoriteButton"])
+        XCTAssertTrue(labelContaining("Oxygen").exists)
+        goBack()
+
+        // Coming back, the table is still zoomed — the position survived the
+        // push — and Fit takes it home.
+        let stillZoomed = el("table.fit")
+        waitFor(stillZoomed)
+        stillZoomed.tap()
+        let fitted = NSPredicate { _, _ in oxygen.exists && oxygen.frame.width < before * 1.2 }
+        let fittedExpectation = XCTNSPredicateExpectation(predicate: fitted, object: nil)
+        XCTAssertEqual(XCTWaiter().wait(for: [fittedExpectation], timeout: 6), .completed,
+                       "Fit should return the tiles to their fitted size\(onScreen())")
+        XCTAssertTrue(app.buttons["element.Og"].exists, "every column should be back on screen")
+    }
+
+    /// The pinch's accessible twin: the zoom menu reaches the same levels.
+    func testZoomMenuZoomsInAndFits() {
+        waitFor(app.buttons["element.H"])
+        let hydrogen = app.buttons["element.H"]
+        let before = hydrogen.frame.width
+
+        tap(app.buttons["table.zoomMenu"])
+        tap(app.buttons["table.zoomIn"])
+        let grew = NSPredicate { _, _ in hydrogen.exists && hydrogen.frame.width > before * 1.3 }
+        XCTAssertEqual(XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: grew, object: nil)],
+                                        timeout: 6), .completed,
+                       "Zoom in should enlarge the tiles\(onScreen())")
+
+        tap(app.buttons["table.zoomMenu"])
+        tap(app.buttons["table.fitTable"])
+        let fitted = NSPredicate { _, _ in hydrogen.exists && hydrogen.frame.width < before * 1.2 }
+        XCTAssertEqual(XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: fitted, object: nil)],
+                                        timeout: 6), .completed,
+                       "Fit table should return to the fitted size\(onScreen())")
+    }
+
     // MARK: - Detail
 
     func testTappingAnElementOpensItsDetailPage() {

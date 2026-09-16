@@ -2,79 +2,57 @@ import SwiftUI
 
 /// The app's primary screen: search, filters, the full periodic table and the
 /// color key — and the source side of the signature zoom transition.
+///
+/// The table is pinch-to-zoom (`ZoomableTableView`). Its zoom, scroll position
+/// and last offset are owned here rather than by the table view, so that
+/// searching (which replaces the table with a results list) and opening an
+/// element (which pushes a page over it) both return the learner to the same
+/// place at the same size.
 struct PeriodicTableScreen: View {
-    /// Fitted mode keeps all 118 tiles on screen. Comfortable mode trades
-    /// horizontal scrolling for full-size, easily tappable tiles and is chosen
-    /// automatically at accessibility text sizes.
-    enum LayoutMode: String, CaseIterable {
-        case fitted
-        case comfortable
-
-        var symbolName: String {
-            self == .fitted
-                ? "arrow.up.left.and.arrow.down.right"
-                : "arrow.down.right.and.arrow.up.left"
-        }
-
-        var accessibilityLabel: String {
-            self == .fitted ? "Switch to large tiles" : "Fit the whole table on screen"
-        }
-    }
-
     @Environment(\.elementCatalog) private var catalog
     @Environment(ProgressStore.self) private var progress: ProgressStore
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var query = ""
     @State private var filter: ElementFilter = .all
-    @State private var path: [ChemicalElement] = []
+    @State private var path = NavigationPath()
     @State private var showsFilterSheet = false
     @State private var screenWidth: CGFloat = 0
-    @State private var preferredLayout: LayoutMode = .fitted
+    @State private var screenHeight: CGFloat = 0
+
+    /// 1 is every column on screen; up to 3.5× is a pinch away.
+    @State private var zoom: CGFloat = 1
+    @State private var tablePosition = ScrollPosition(edge: .top)
+    @State private var savedTableOffset: CGPoint = .zero
+    @State private var isPinching = false
+    @State private var zoomCommand: ZoomCommand?
+    /// Whether the accessibility-size default zoom has been applied. Once
+    /// only: a learner who then pinches back out has made a choice.
+    @State private var hasAppliedAccessibilityZoom = false
 
     @Namespace private var tableNamespace
 
-    /// The comfortable layout exists to be read, so its tiles grow with the
-    /// learner's text size rather than staying a fixed 64 points — capped,
-    /// because past ~112pt a tile stops being a tile and the table becomes a
-    /// 3,000-point scroll in both directions.
-    @ScaledMetric(relativeTo: .body) private var scaledComfortableTile: CGFloat = 64
-
-    private var comfortableTileSize: CGFloat { min(scaledComfortableTile, 112) }
-
-    private static let fittedSpacing: CGFloat = 1.5
-    private static let comfortableSpacing: CGFloat = 4
     private static let horizontalInset = Theme.Spacing.l
-
-    private var layout: LayoutMode {
-        dynamicTypeSize.isAccessibilitySize ? .comfortable : preferredLayout
-    }
 
     /// Width to lay the table out in. Until the first layout pass reports the
     /// real width, a modern iPhone's width is assumed so the table never paints
     /// a frame of undersized tiles.
     private var usableWidth: CGFloat {
-        let width = screenWidth > 0 ? screenWidth : 393
-        return max(width - Self.horizontalInset * 2, 260)
+        screenWidth > 0 ? screenWidth : 393
     }
 
-    private var tileSize: CGFloat {
-        guard layout == .fitted else { return comfortableTileSize }
-        let columns = CGFloat(PeriodicTableGrid.columns)
-        let gaps = Self.fittedSpacing * (columns - 1)
-        return max(13, ((usableWidth - gaps) / columns).rounded(.down))
+    private var fittedTileSize: CGFloat {
+        TableZoomLayout.fittedTileSize(viewportWidth: usableWidth)
     }
 
-    private var tileSpacing: CGFloat {
-        layout == .fitted ? Self.fittedSpacing : Self.comfortableSpacing
-    }
-
-    /// In landscape the fitted table gets ~44-point tiles, which is plenty of
-    /// room for the atomic number as well as the symbol. Density follows the
-    /// tile size rather than the layout mode so that space is never wasted.
-    private var tileDensity: ElementTile.Density {
-        guard layout == .fitted else { return .detailed }
-        return tileSize >= 38 ? .standard : .minimal
+    /// At accessibility text sizes the fitted tiles are too small to read,
+    /// so the table opens already zoomed to standard density. It is still a
+    /// pinch, a double tap or the Fit button away from fitted.
+    private var accessibilityStartZoom: CGFloat {
+        TableZoomLayout.clampZoom(
+            TableZoomLayout.standardDensityTile / max(fittedTileSize, 1) * 1.05,
+            fittedTileSize: fittedTileSize
+        )
     }
 
     private var searchResults: [ChemicalElement] {
@@ -91,11 +69,13 @@ struct PeriodicTableScreen: View {
                     results: searchResults,
                     recentSearches: progress.recentSearches,
                     namespace: tableNamespace,
-                    tileSize: tileSize,
-                    tileSpacing: tileSpacing,
-                    density: tileDensity,
-                    showsMastery: tileDensity != .minimal,
-                    scrollsHorizontally: layout == .comfortable,
+                    viewportWidth: usableWidth,
+                    screenHeight: screenHeight > 0 ? screenHeight : 700,
+                    zoom: $zoom,
+                    tablePosition: $tablePosition,
+                    savedTableOffset: $savedTableOffset,
+                    isPinching: $isPinching,
+                    zoomCommand: $zoomCommand,
                     isFavorite: { progress.isFavorite($0) },
                     mastery: { progress.mastery(for: $0) },
                     onSelect: open,
@@ -104,6 +84,9 @@ struct PeriodicTableScreen: View {
                     onOpenFilters: { showsFilterSheet = true }
                 )
             }
+            .scrollIndicators(.hidden)
+            // The page must not scroll while two fingers are zooming the table.
+            .scrollDisabled(isPinching)
             .scrollDismissesKeyboard(.immediately)
             .background(AppColor.canvas)
             .navigationTitle("Periodic Table")
@@ -127,11 +110,17 @@ struct PeriodicTableScreen: View {
             // The safe width, not the raw frame width: in landscape the sensor
             // housing eats 60-odd points on one side, and a vertical ScrollView
             // lays its content out inside those insets.
-            .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing
-            } action: { width in
-                screenWidth = width
+            .onGeometryChange(for: CGSize.self) { proxy in
+                CGSize(
+                    width: proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing,
+                    height: proxy.size.height
+                )
+            } action: { size in
+                screenWidth = size.width
+                screenHeight = size.height
             }
+            .onAppear(perform: applyAccessibilityZoomIfNeeded)
+            .onChange(of: dynamicTypeSize) { _, _ in applyAccessibilityZoomIfNeeded() }
         }
         .tint(AppColor.accent)
     }
@@ -139,18 +128,42 @@ struct PeriodicTableScreen: View {
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                Haptics.tap()
-                withAnimation(Theme.Motion.reveal) {
-                    preferredLayout = preferredLayout == .fitted ? .comfortable : .fitted
+            // The pinch's accessible twin: three plain commands that reach
+            // every zoom level two fingers can, for VoiceOver, Switch Control
+            // and anyone using one hand.
+            Menu {
+                Button {
+                    zoomCommand = .zoomIn
+                } label: {
+                    Label("Zoom in", systemImage: "plus.magnifyingglass")
                 }
+                .accessibilityIdentifier("table.zoomIn")
+                Button {
+                    zoomCommand = .zoomOut
+                } label: {
+                    Label("Zoom out", systemImage: "minus.magnifyingglass")
+                }
+                .disabled(zoom <= 1)
+                .accessibilityIdentifier("table.zoomOut")
+                Button {
+                    zoomCommand = .fit
+                } label: {
+                    Label("Fit table", systemImage: "arrow.down.right.and.arrow.up.left")
+                }
+                .disabled(zoom <= 1)
+                .accessibilityIdentifier("table.fitTable")
             } label: {
-                Image(systemName: layout.symbolName)
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
             }
-            .disabled(dynamicTypeSize.isAccessibilitySize)
-            .accessibilityLabel(layout.accessibilityLabel)
-            .accessibilityIdentifier("table.layoutToggle")
+            .accessibilityLabel("Zoom")
+            .accessibilityIdentifier("table.zoomMenu")
         }
+    }
+
+    private func applyAccessibilityZoomIfNeeded() {
+        guard dynamicTypeSize.isAccessibilitySize, !hasAppliedAccessibilityZoom else { return }
+        hasAppliedAccessibilityZoom = true
+        zoom = max(zoom, accessibilityStartZoom)
     }
 
     private func open(_ element: ChemicalElement) {
@@ -172,11 +185,13 @@ private struct TableScreenContent: View {
     let results: [ChemicalElement]
     let recentSearches: [String]
     let namespace: Namespace.ID
-    let tileSize: CGFloat
-    let tileSpacing: CGFloat
-    let density: ElementTile.Density
-    let showsMastery: Bool
-    let scrollsHorizontally: Bool
+    let viewportWidth: CGFloat
+    let screenHeight: CGFloat
+    @Binding var zoom: CGFloat
+    @Binding var tablePosition: ScrollPosition
+    @Binding var savedTableOffset: CGPoint
+    @Binding var isPinching: Bool
+    @Binding var zoomCommand: ZoomCommand?
     let isFavorite: (Int) -> Bool
     let mastery: (Int) -> MasteryLevel
     let onSelect: (ChemicalElement) -> Void
@@ -213,7 +228,7 @@ private struct TableScreenContent: View {
 
     private var tableSection: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.l) {
-            Text("Tap an element to explore its structure, key facts and everyday uses.")
+            Text("Tap an element to explore it. Pinch to zoom the table, and drag to look around.")
                 .font(AppFont.subheadline)
                 .foregroundStyle(AppColor.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -221,8 +236,28 @@ private struct TableScreenContent: View {
 
             CategoryFilterBar(filter: $filter, onOpenDetailedFilters: onOpenFilters)
 
-            tableView
-                .padding(.top, Theme.Spacing.xs)
+            // No accessibility identifier on the grid itself, deliberately.
+            // SwiftUI propagates an accessibility identifier down to every
+            // descendant element, replacing theirs — so naming the container
+            // renamed all 118 tiles to "periodicTable.grid" and there was no
+            // longer any way to address one. The zoom view names itself as a
+            // container, which does not.
+            ZoomableTableView(
+                catalog: catalog,
+                filter: filter,
+                namespace: namespace,
+                viewportWidth: viewportWidth,
+                screenHeight: screenHeight,
+                zoom: $zoom,
+                position: $tablePosition,
+                savedOffset: $savedTableOffset,
+                isPinching: $isPinching,
+                command: $zoomCommand,
+                isFavorite: isFavorite,
+                mastery: mastery,
+                onSelect: onSelect
+            )
+            .padding(.top, Theme.Spacing.xs)
 
             CardContainer {
                 TableLegend(catalog: catalog)
@@ -238,39 +273,6 @@ private struct TableScreenContent: View {
                 .foregroundStyle(AppColor.tertiaryText)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, Theme.Spacing.screenMargin)
-        }
-    }
-
-    @ViewBuilder
-    private var tableView: some View {
-        let grid = PeriodicTableGrid(
-            catalog: catalog,
-            filter: filter,
-            tileSize: tileSize,
-            spacing: tileSpacing,
-            density: density,
-            namespace: namespace,
-            isFavorite: isFavorite,
-            mastery: mastery,
-            showsMastery: showsMastery,
-            onSelect: onSelect
-        )
-        // No accessibility identifier on the grid itself, deliberately.
-        // SwiftUI propagates an accessibility identifier down to every
-        // descendant element, replacing theirs — so naming the container
-        // renamed all 118 tiles to "periodicTable.grid" and there was no
-        // longer any way to address one. Nothing referenced the container
-        // name; the tiles are what anything wants to reach.
-
-        if scrollsHorizontally {
-            ScrollView(.horizontal) {
-                grid
-                    .padding(.horizontal, Theme.Spacing.screenMargin)
-                    .padding(.vertical, 2)
-            }
-            .scrollIndicators(.visible)
-        } else {
-            grid.frame(maxWidth: .infinity)
         }
     }
 }

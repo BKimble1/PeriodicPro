@@ -41,6 +41,7 @@ enum SFSymbolAllowlist {
         "arrow.counterclockwise", "line.3.horizontal.decrease.circle",
         "line.3.horizontal.decrease.circle.fill", "magnifyingglass", "clock",
         "arrow.up.left.and.arrow.down.right", "arrow.down.right.and.arrow.up.left",
+        "plus.magnifyingglass", "minus.magnifyingglass",
         // States and empty states
         "heart", "heart.fill", "exclamationmark.triangle", "exclamationmark.triangle.fill",
         "tray", "questionmark.circle", "lightbulb.fill",

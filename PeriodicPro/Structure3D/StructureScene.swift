@@ -27,6 +27,30 @@ struct StructureNode: Identifiable, Hashable, Sendable {
     /// Which electron shell this node belongs to, 1-based. Only meaningful for
     /// `.electron`; `nil` everywhere else.
     let shellIndex: Int?
+    /// The element this atom is, for scenes that mix elements — a compound.
+    /// `nil` means the scene's own element.
+    let atomicNumber: Int?
+    /// Packed RGB for the atom's own color: gold for gold, red for oxygen.
+    /// `nil` means the renderer falls back to the family accent.
+    let tintHex: UInt32?
+
+    init(
+        id: Int,
+        role: StructureNodeRole,
+        position: SIMD3<Float>,
+        radius: Float,
+        shellIndex: Int? = nil,
+        atomicNumber: Int? = nil,
+        tintHex: UInt32? = nil
+    ) {
+        self.id = id
+        self.role = role
+        self.position = position
+        self.radius = radius
+        self.shellIndex = shellIndex
+        self.atomicNumber = atomicNumber
+        self.tintHex = tintHex
+    }
 }
 
 /// How strongly two atoms are held together. Used for the visual (one, two or
@@ -70,9 +94,17 @@ struct StructureBond: Identifiable, Hashable, Sendable {
 enum StructureSceneKind: String, Hashable, Sendable {
     case diatomicMolecule
     case polyatomicMolecule
+    /// A solid made of discrete molecules (S₈, I₂, P₄); one molecule is shown.
+    case molecularCrystal
     case metallicLattice
     case covalentNetwork
+    /// Separate closed-shell atoms — a noble gas.
+    case monatomicGas
+    /// Mercury, bromine: close contact, no lattice.
+    case liquid
     case atomModel
+    /// A molecule or ionic unit of more than one element.
+    case compound
 }
 
 /// A complete, renderer-independent description of one structure.
@@ -88,16 +120,74 @@ struct StructureScene: Identifiable, Hashable, Sendable {
     let kind: StructureSceneKind
     let nodes: [StructureNode]
     let bonds: [StructureBond]
-    /// Short label, e.g. "O₂" or "Metallic lattice".
+    /// Short label, e.g. "O₂" or "Au".
     let formula: String
-    /// One honest sentence about what is being shown.
+    /// One honest paragraph about what is being shown.
     let caption: String
-    /// True when the picture is a teaching simplification rather than a
-    /// depiction of measured structure. The viewer always shows a note when so.
+    /// True when the picture is a teaching simplification or a fragment
+    /// rather than a faithful cell or molecule. The viewer always shows a
+    /// badge when so.
     let isSimplified: Bool
     /// Set when the nucleus shows fewer nucleons than the element really has,
     /// so the caption can say so rather than implying a miscount.
     let nucleonSampleNote: String?
+    /// The honesty label: "Representative crystal unit cell", "Simplified
+    /// atomic model", "Bulk structure not established", and so on.
+    let representationLabel: String
+    /// The lattice or molecule in one line: "face-centered cubic (Fm-3m) ·
+    /// a = 4.078 Å". `nil` when there is nothing established to say.
+    let detail: String?
+    /// "Graphite", "α-iron (ferrite)": the allotrope, when it has a name.
+    let allotropeName: String?
+    /// Nearest-neighbor count in the real structure, when known.
+    let coordination: Int?
+    /// Electrons shared across the whole structure: rendered as metal, and
+    /// its struts described as contacts rather than bonds.
+    let isMetallic: Bool
+    /// False when the bulk form has never been observed.
+    let isEstablished: Bool
+    /// Where the numbers come from, in a few words.
+    let source: String?
+
+    init(
+        id: String,
+        atomicNumber: Int,
+        symbol: String,
+        elementName: String,
+        kind: StructureSceneKind,
+        nodes: [StructureNode],
+        bonds: [StructureBond],
+        formula: String,
+        caption: String,
+        isSimplified: Bool,
+        nucleonSampleNote: String? = nil,
+        representationLabel: String,
+        detail: String? = nil,
+        allotropeName: String? = nil,
+        coordination: Int? = nil,
+        isMetallic: Bool = false,
+        isEstablished: Bool = true,
+        source: String? = nil
+    ) {
+        self.id = id
+        self.atomicNumber = atomicNumber
+        self.symbol = symbol
+        self.elementName = elementName
+        self.kind = kind
+        self.nodes = nodes
+        self.bonds = bonds
+        self.formula = formula
+        self.caption = caption
+        self.isSimplified = isSimplified
+        self.nucleonSampleNote = nucleonSampleNote
+        self.representationLabel = representationLabel
+        self.detail = detail
+        self.allotropeName = allotropeName
+        self.coordination = coordination
+        self.isMetallic = isMetallic
+        self.isEstablished = isEstablished
+        self.source = source
+    }
 
     var atoms: [StructureNode] { nodes.filter { $0.role == .atom } }
     var electrons: [StructureNode] { nodes.filter { $0.role == .electron } }
@@ -111,6 +201,45 @@ struct StructureScene: Identifiable, Hashable, Sendable {
         nodes.reduce(Float(0)) { longest, node in
             max(longest, length(node.position) + node.radius)
         }
+    }
+
+    /// The same scene with every node and bond scaled so the bounding radius
+    /// is 1, which lets the viewer frame every structure with one camera.
+    func normalized() -> StructureScene {
+        let radius = boundingRadius
+        guard radius > 0.0001, abs(radius - 1) > 0.0001 else { return self }
+        let factor = 1 / radius
+        let scaled = nodes.map { node in
+            StructureNode(
+                id: node.id,
+                role: node.role,
+                position: node.position * factor,
+                radius: node.radius * factor,
+                shellIndex: node.shellIndex,
+                atomicNumber: node.atomicNumber,
+                tintHex: node.tintHex
+            )
+        }
+        return StructureScene(
+            id: id,
+            atomicNumber: atomicNumber,
+            symbol: symbol,
+            elementName: elementName,
+            kind: kind,
+            nodes: scaled,
+            bonds: bonds,
+            formula: formula,
+            caption: caption,
+            isSimplified: isSimplified,
+            nucleonSampleNote: nucleonSampleNote,
+            representationLabel: representationLabel,
+            detail: detail,
+            allotropeName: allotropeName,
+            coordination: coordination,
+            isMetallic: isMetallic,
+            isEstablished: isEstablished,
+            source: source
+        )
     }
 }
 

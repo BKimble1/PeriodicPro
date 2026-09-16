@@ -18,7 +18,9 @@ run() {
 }
 
 run "Element dataset"        python3 Tools/validate_elements.py
+run "Structure profiles"     python3 Tools/validate_structures.py
 run "Swift source hygiene"   python3 Tools/lint_sources.py
+run "Swift syntax (tree-sitter, skipped if not installed)" python3 Tools/check_swift_syntax.py
 run "Xcode project structure" python3 Tools/validate_project.py
 run "Initializer call sites"  python3 Tools/check_initializers.py
 run "Colour contrast"        python3 Tools/check_contrast.py

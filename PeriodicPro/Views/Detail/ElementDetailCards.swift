@@ -71,10 +71,24 @@ struct StructureCard: View {
         }
     }
 
+    /// The primary form — the first representation the explorer would show.
     private var scene: StructureScene {
         StructureSceneBuilder.scene(
             for: element,
-            representation: StructureSceneBuilder.representations(for: element).first ?? .atom
+            representation: StructureSceneBuilder.representations(for: element).first?.representation ?? .atom
+        )
+    }
+
+    /// Why nothing more can be shown, for an element with no established
+    /// bulk structure: the profile's own note.
+    private var unknownNote: String? {
+        StructureSceneBuilder.entry(for: element).primary.notes
+    }
+
+    private var profile: ElementStructureProfile? {
+        StructureSceneBuilder.profile(
+            for: element,
+            representation: StructureSceneBuilder.representations(for: element).first?.representation ?? .atom
         )
     }
 
@@ -109,16 +123,33 @@ struct StructureCard: View {
                         .foregroundStyle(AppColor.secondaryText)
                     if scene.isSimplified { SimplifiedBadge() }
                 }
-                Text(element.elementalForm)
+                // What the picture is, from the structure profile: the
+                // allotrope or lattice by name, then the cell or molecule in
+                // one line, then the honesty label. An element whose bulk
+                // form has never been observed says exactly that.
+                Text(profile?.headline ?? StructureRepresentationKind.unknown.honestLabel)
                     .font(.system(.subheadline, weight: .semibold))
                     .foregroundStyle(AppColor.primaryText)
                     .fixedSize(horizontal: false, vertical: true)
-                Text(element.structure.displayName)
+                if let detail = scene.detail {
+                    Text(detail)
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Text(scene.representationLabel)
                     .font(AppFont.caption2)
-                    .foregroundStyle(AppColor.tertiaryText)
+                    .foregroundStyle(scene.isEstablished ? AppColor.tertiaryText : AppColor.warning)
+                if !scene.isEstablished, let notes = unknownNote {
+                    Text(notes)
+                        .font(AppFont.caption2)
+                        .foregroundStyle(AppColor.tertiaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("detail.elementalForm")
 
             exploreButton
         }

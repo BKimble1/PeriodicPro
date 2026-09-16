@@ -20,11 +20,12 @@ struct StructureExplorerView: View {
     init(element: ChemicalElement) {
         self.element = element
         _representation = State(
-            initialValue: StructureSceneBuilder.representations(for: element).first ?? .atom
+            initialValue: StructureSceneBuilder.representations(for: element).first?.representation ?? .atom
         )
     }
 
-    private var representations: [StructureSceneBuilder.Representation] {
+    /// The primary form, any allotropes worth a picker, and the atom.
+    private var representations: [StructureSceneBuilder.RepresentationOption] {
         StructureSceneBuilder.representations(for: element)
     }
 
@@ -42,7 +43,7 @@ struct StructureExplorerView: View {
                 if representations.count > 1 {
                     Picker("View", selection: $representation) {
                         ForEach(representations) { option in
-                            Text(option.title).tag(option)
+                            Text(option.title).tag(option.representation)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -175,7 +176,7 @@ struct StructureExplorerView: View {
     private var sceneSummary: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: Theme.Spacing.s) {
-                Text(scene.formula)
+                Text(scene.allotropeName ?? scene.formula)
                     .font(.system(.headline, weight: .semibold))
                     .foregroundStyle(AppColor.primaryText)
                     .minimumScaleFactor(0.7)
@@ -184,14 +185,34 @@ struct StructureExplorerView: View {
                     SimplifiedBadge()
                 }
             }
+            // The honesty label first, every time: a cell says it is a cell, a
+            // fragment says it is a fragment, an atom model says it is a
+            // simplification, and an element nobody has seen in bulk says so.
+            Text(scene.representationLabel)
+                .font(.system(.caption, weight: .semibold))
+                .foregroundStyle(scene.isEstablished ? AppColor.secondaryText : AppColor.warning)
+                .textCase(.uppercase)
+                .kerning(0.5)
+            if let detail = scene.detail {
+                Text(detail)
+                    .font(AppFont.footnote)
+                    .foregroundStyle(AppColor.primaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             Text(scene.caption)
                 .font(AppFont.footnote)
                 .foregroundStyle(AppColor.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
-                .lineLimit(5)
+                .lineLimit(6)
             if let note = scene.nucleonSampleNote {
                 Text(note)
                     .font(AppFont.caption)
+                    .foregroundStyle(AppColor.tertiaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if let source = scene.source {
+                Text("Structure data: \(source)")
+                    .font(AppFont.caption2)
                     .foregroundStyle(AppColor.tertiaryText)
                     .fixedSize(horizontal: false, vertical: true)
             }

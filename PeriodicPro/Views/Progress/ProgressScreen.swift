@@ -28,6 +28,7 @@ struct ProgressScreen: View {
                 .padding(.top, Theme.Spacing.xs)
                 .padding(.bottom, Theme.Spacing.xxxl)
             }
+            .scrollIndicators(.hidden)
             .background(AppColor.canvas)
             .navigationTitle("Progress")
             .navigationBarTitleDisplayMode(.large)
@@ -286,6 +287,7 @@ struct AboutSheet: View {
                     LabeledContent("Version", value: version)
                 }
             }
+            .scrollIndicators(.hidden)
             .navigationTitle("About")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

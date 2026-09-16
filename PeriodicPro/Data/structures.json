@@ -1,0 +1,3932 @@
+[
+ {
+  "atomicNumber": 1,
+  "primary": {
+   "representationKind": "diatomicMolecule",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "linear",
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 0.741,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "NIST Chemistry WebBook, Constants of Diatomic Molecules (Huber & Herzberg)",
+   "notes": "H₂ is the free element at every ordinary temperature.",
+   "geometry": {
+    "template": "diatomic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 2,
+  "primary": {
+   "representationKind": "monatomicGas",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "single atoms",
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 0,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A noble gas: closed-shell atoms that do not bond to each other. Several are shown to convey a gas, not a molecule.",
+   "geometry": {
+    "template": "monatomicGas"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 3,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 3.51,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Body-centered cubic at room temperature; a martensitic transformation below about 78 K gives a close-packed form.",
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 4,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.286,
+    "b": null,
+    "c": 3.584,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5678
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 5,
+  "primary": {
+   "representationKind": "complexCrystal",
+   "allotropeName": "β-rhombohedral boron",
+   "phase": "solid",
+   "crystalSystem": "trigonal",
+   "latticeType": "B₁₂ icosahedra linked into a network",
+   "spaceGroup": "R-3m",
+   "latticeParameters": {
+    "a": 10.93,
+    "b": null,
+    "c": 23.82,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 5,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "The stable form has 105 atoms per cell built from B₁₂ icosahedra. One icosahedron is shown; the network continues between them.",
+   "geometry": {
+    "template": "icosahedron"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 6,
+  "primary": {
+   "representationKind": "graphite",
+   "allotropeName": "Graphite",
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal layered (A9, graphite)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.461,
+    "b": null,
+    "c": 6.708,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 1.42,
+   "coordination": 3,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Graphite is the standard state of carbon. Each layer is a sheet of hexagons with three bonds per atom; the layers 3.35 Å apart are held only by weak forces, which is why graphite is soft and flakes.",
+   "geometry": {
+    "template": "graphite"
+   },
+   "pickerTitle": "Graphite"
+  },
+  "alternatives": [
+   {
+    "representationKind": "diamondCubic",
+    "allotropeName": "Diamond",
+    "phase": "solid",
+    "crystalSystem": "cubic",
+    "latticeType": "diamond cubic (A4)",
+    "spaceGroup": "Fd-3m",
+    "latticeParameters": {
+     "a": 3.567,
+     "b": null,
+     "c": null,
+     "alpha": null,
+     "beta": null,
+     "gamma": null
+    },
+    "molecularGeometry": null,
+    "bondOrders": [
+     1
+    ],
+    "bondLengthAngstrom": null,
+    "coordination": 4,
+    "temperatureContext": "298 K, 1 atm",
+    "isExperimentallyEstablished": true,
+    "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+    "notes": "Diamond is metastable at ordinary conditions: every atom bonded to four neighbors in a continuous network, which is why it is so hard.",
+    "geometry": {
+     "template": "diamondCubic"
+    },
+    "pickerTitle": "Diamond"
+   }
+  ]
+ },
+ {
+  "atomicNumber": 7,
+  "primary": {
+   "representationKind": "diatomicMolecule",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "linear",
+   "bondOrders": [
+    3
+   ],
+   "bondLengthAngstrom": 1.098,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "NIST Chemistry WebBook, Constants of Diatomic Molecules (Huber & Herzberg)",
+   "notes": "The N≡N triple bond is one of the strongest known, which is why nitrogen gas is so unreactive.",
+   "geometry": {
+    "template": "diatomic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 8,
+  "primary": {
+   "representationKind": "diatomicMolecule",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "linear",
+   "bondOrders": [
+    2
+   ],
+   "bondLengthAngstrom": 1.208,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "NIST Chemistry WebBook, Constants of Diatomic Molecules (Huber & Herzberg)",
+   "notes": "O₂ has a double bond. Ozone, O₃, is a separate allotrope.",
+   "geometry": {
+    "template": "diatomic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 9,
+  "primary": {
+   "representationKind": "diatomicMolecule",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "linear",
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 1.412,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "NIST Chemistry WebBook, Constants of Diatomic Molecules (Huber & Herzberg)",
+   "notes": null,
+   "geometry": {
+    "template": "diatomic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 10,
+  "primary": {
+   "representationKind": "monatomicGas",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "single atoms",
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 0,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A noble gas: closed-shell atoms that do not bond to each other. Several are shown to convey a gas, not a molecule.",
+   "geometry": {
+    "template": "monatomicGas"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 11,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 4.291,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 12,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.209,
+    "b": null,
+    "c": 5.211,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.6239
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 13,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 4.05,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 14,
+  "primary": {
+   "representationKind": "diamondCubic",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "diamond cubic (A4)",
+   "spaceGroup": "Fd-3m",
+   "latticeParameters": {
+    "a": 5.431,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": null,
+   "coordination": 4,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "diamondCubic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 15,
+  "primary": {
+   "representationKind": "molecularCrystal",
+   "allotropeName": "White phosphorus (P₄)",
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "molecular crystal of P₄ tetrahedra",
+   "spaceGroup": "I-43m",
+   "latticeParameters": {
+    "a": 18.51,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": "tetrahedral",
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 2.21,
+   "coordination": 3,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "Donohue, The Structures of the Elements (1974)",
+   "notes": "White phosphorus is the reference allotrope but not the most stable one; red phosphorus is amorphous polymeric chains and black phosphorus is a layered crystal.",
+   "geometry": {
+    "template": "tetrahedron"
+   },
+   "pickerTitle": "White"
+  },
+  "alternatives": [
+   {
+    "representationKind": "orthorhombic",
+    "allotropeName": "Black phosphorus",
+    "phase": "solid",
+    "crystalSystem": "orthorhombic",
+    "latticeType": "puckered layers (A17, black phosphorus)",
+    "spaceGroup": "Cmce",
+    "latticeParameters": {
+     "a": 3.314,
+     "b": 10.478,
+     "c": 4.376,
+     "alpha": null,
+     "beta": null,
+     "gamma": null
+    },
+    "molecularGeometry": null,
+    "bondOrders": null,
+    "bondLengthAngstrom": null,
+    "coordination": 3,
+    "temperatureContext": "298 K, 1 atm",
+    "isExperimentallyEstablished": true,
+    "source": "Donohue, The Structures of the Elements (1974)",
+    "notes": "The thermodynamically stable allotrope: puckered layers in which every atom is bonded to three neighbors.",
+    "geometry": {
+     "template": "lattice",
+     "basis": [
+      [
+       0,
+       0.1017,
+       0.0806
+      ],
+      [
+       0,
+       0.3983,
+       0.5806
+      ],
+      [
+       0,
+       0.6017,
+       0.4194
+      ],
+      [
+       0,
+       0.8983,
+       0.9194
+      ],
+      [
+       0.5,
+       0.6017,
+       0.0806
+      ],
+      [
+       0.5,
+       0.8983,
+       0.5806
+      ],
+      [
+       0.5,
+       0.1017,
+       0.4194
+      ],
+      [
+       0.5,
+       0.3983,
+       0.9194
+      ]
+     ],
+     "contactFactor": 1.06,
+     "discreteBonds": true
+    },
+    "pickerTitle": "Black"
+   }
+  ]
+ },
+ {
+  "atomicNumber": 16,
+  "primary": {
+   "representationKind": "molecularCrystal",
+   "allotropeName": "α-sulfur (S₈)",
+   "phase": "solid",
+   "crystalSystem": "orthorhombic",
+   "latticeType": "molecular crystal of S₈ crown rings",
+   "spaceGroup": "Fddd",
+   "latticeParameters": {
+    "a": 10.465,
+    "b": 12.866,
+    "c": 24.486,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": "puckered eight-membered ring (crown)",
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 2.05,
+   "coordination": 2,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "Donohue, The Structures of the Elements (1974)",
+   "notes": "128 atoms — sixteen S₈ rings — per unit cell. One ring is shown.",
+   "geometry": {
+    "template": "crownRing"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 17,
+  "primary": {
+   "representationKind": "diatomicMolecule",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "linear",
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 1.988,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "NIST Chemistry WebBook, Constants of Diatomic Molecules (Huber & Herzberg)",
+   "notes": null,
+   "geometry": {
+    "template": "diatomic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 18,
+  "primary": {
+   "representationKind": "monatomicGas",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "single atoms",
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 0,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A noble gas: closed-shell atoms that do not bond to each other. Several are shown to convey a gas, not a molecule.",
+   "geometry": {
+    "template": "monatomicGas"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 19,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 5.328,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 20,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 5.588,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 21,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.309,
+    "b": null,
+    "c": 5.268,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.592
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 22,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": "α-titanium",
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.951,
+    "b": null,
+    "c": 4.686,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5879
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 23,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 3.024,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 24,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 2.885,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 25,
+  "primary": {
+   "representationKind": "complexCrystal",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "α-manganese (A12)",
+   "spaceGroup": "I-43m",
+   "latticeParameters": {
+    "a": 8.913,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "58 atoms per unit cell in several distinct environments — too complex to draw as a cell. A close-packed fragment stands in for the metallic packing, and is labeled simplified.",
+   "geometry": {
+    "template": "closePackedCluster"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 26,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": "α-iron (ferrite)",
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 2.867,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Body-centered cubic up to 912 °C. Steel's heat treatment turns on the change to face-centered γ-iron above that temperature.",
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": "α (BCC)"
+  },
+  "alternatives": [
+   {
+    "representationKind": "fcc",
+    "allotropeName": "γ-iron (austenite)",
+    "phase": "solid",
+    "crystalSystem": "cubic",
+    "latticeType": "face-centered cubic (A1, Cu-type)",
+    "spaceGroup": "Fm-3m",
+    "latticeParameters": {
+     "a": 3.65,
+     "b": null,
+     "c": null,
+     "alpha": null,
+     "beta": null,
+     "gamma": null
+    },
+    "molecularGeometry": null,
+    "bondOrders": null,
+    "bondLengthAngstrom": null,
+    "coordination": 12,
+    "temperatureContext": "912–1394 °C",
+    "isExperimentallyEstablished": true,
+    "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+    "notes": "The face-centered cubic form stable between 912 and 1394 °C, in which carbon dissolves far more readily than in ferrite.",
+    "geometry": {
+     "template": "fcc"
+    },
+    "pickerTitle": "γ (FCC)"
+   }
+  ]
+ },
+ {
+  "atomicNumber": 27,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": "ε-cobalt",
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.507,
+    "b": null,
+    "c": 4.07,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.6235
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 28,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 3.524,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 29,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 3.615,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 30,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.665,
+    "b": null,
+    "c": 4.947,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Noticeably stretched along c (c/a = 1.86 against the ideal 1.63), so the six neighbors in the layer are closer than the six above and below.",
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.8563
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 31,
+  "primary": {
+   "representationKind": "orthorhombic",
+   "allotropeName": "α-gallium",
+   "phase": "solid",
+   "crystalSystem": "orthorhombic",
+   "latticeType": "α-gallium (A11): Ga₂ dimers in a buckled network",
+   "spaceGroup": "Cmce",
+   "latticeParameters": {
+    "a": 4.52,
+    "b": 7.663,
+    "c": 4.526,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "Donohue, The Structures of the Elements (1974)",
+   "notes": "Each atom has one neighbor at 2.44 Å — the Ga₂ pair drawn here — and six more between 2.7 and 2.8 Å. The pairs are why gallium melts in the hand.",
+   "geometry": {
+    "template": "lattice",
+    "basis": [
+     [
+      0,
+      0.1549,
+      0.081
+     ],
+     [
+      0,
+      0.3451,
+      0.581
+     ],
+     [
+      0,
+      0.6549,
+      0.419
+     ],
+     [
+      0,
+      0.8451,
+      0.919
+     ],
+     [
+      0.5,
+      0.6549,
+      0.081
+     ],
+     [
+      0.5,
+      0.8451,
+      0.581
+     ],
+     [
+      0.5,
+      0.1549,
+      0.419
+     ],
+     [
+      0.5,
+      0.3451,
+      0.919
+     ]
+    ],
+    "contactFactor": 1.03,
+    "discreteBonds": false
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 32,
+  "primary": {
+   "representationKind": "diamondCubic",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "diamond cubic (A4)",
+   "spaceGroup": "Fd-3m",
+   "latticeParameters": {
+    "a": 5.658,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": null,
+   "coordination": 4,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "diamondCubic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 33,
+  "primary": {
+   "representationKind": "rhombohedral",
+   "allotropeName": "Gray arsenic",
+   "phase": "solid",
+   "crystalSystem": "trigonal (rhombohedral)",
+   "latticeType": "rhombohedral layered (A7, As-type)",
+   "spaceGroup": "R-3m",
+   "latticeParameters": {
+    "a": 3.76,
+    "b": null,
+    "c": 10.548,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": null,
+   "coordination": 3,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Each atom has three near neighbors in its own puckered layer and three more distant ones in the next; the layers are shown as one fragment.",
+   "geometry": {
+    "template": "puckeredLayer"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 34,
+  "primary": {
+   "representationKind": "helicalChain",
+   "allotropeName": "Gray (trigonal) selenium",
+   "phase": "solid",
+   "crystalSystem": "trigonal",
+   "latticeType": "helical chains (A8, Se-type)",
+   "spaceGroup": "P3_121",
+   "latticeParameters": {
+    "a": 4.366,
+    "b": null,
+    "c": 4.954,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": null,
+   "coordination": 2,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Infinite helical chains, three atoms per turn, shown as one open fragment. Red selenium is Se₈ rings.",
+   "geometry": {
+    "template": "helicalChain"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 35,
+  "primary": {
+   "representationKind": "molecularLiquid",
+   "allotropeName": null,
+   "phase": "liquid",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "linear",
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 2.281,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "NIST Chemistry WebBook, Constants of Diatomic Molecules (Huber & Herzberg)",
+   "notes": "One of two elements liquid at room temperature: Br₂ molecules in close contact with no long-range order.",
+   "geometry": {
+    "template": "molecularLiquid"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 36,
+  "primary": {
+   "representationKind": "monatomicGas",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "single atoms",
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 0,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A noble gas: closed-shell atoms that do not bond to each other. Several are shown to convey a gas, not a molecule.",
+   "geometry": {
+    "template": "monatomicGas"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 37,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 5.585,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 38,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 6.085,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 39,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.647,
+    "b": null,
+    "c": 5.731,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5714
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 40,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": "α-zirconium",
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.232,
+    "b": null,
+    "c": 5.147,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5925
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 41,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 3.301,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 42,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 3.147,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 43,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.735,
+    "b": null,
+    "c": 4.388,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.6044
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 44,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.706,
+    "b": null,
+    "c": 4.282,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5824
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 45,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 3.803,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 46,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 3.89,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 47,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 4.086,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 48,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.979,
+    "b": null,
+    "c": 5.619,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Like zinc, stretched along c (c/a = 1.89).",
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.8862
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 49,
+  "primary": {
+   "representationKind": "tetragonal",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "tetragonal",
+   "latticeType": "body-centered tetragonal (A6, In-type)",
+   "spaceGroup": "I4/mmm",
+   "latticeParameters": {
+    "a": 3.253,
+    "b": null,
+    "c": 4.946,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A face-centered cubic lattice stretched 8% along one axis: four neighbors at 3.25 Å and eight at 3.38 Å.",
+   "geometry": {
+    "template": "lattice",
+    "basis": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0.5,
+      0.5,
+      0.5
+     ]
+    ],
+    "contactFactor": 1.06,
+    "discreteBonds": false
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 50,
+  "primary": {
+   "representationKind": "tetragonal",
+   "allotropeName": "White (β) tin",
+   "phase": "solid",
+   "crystalSystem": "tetragonal",
+   "latticeType": "β-tin (A5): body-centered tetragonal, four atoms per cell",
+   "spaceGroup": "I4_1/amd",
+   "latticeParameters": {
+    "a": 5.831,
+    "b": null,
+    "c": 3.182,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 6,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "Donohue, The Structures of the Elements (1974)",
+   "notes": "Four neighbors at 3.02 Å and two at 3.18 Å. Below 13.2 °C it slowly converts to gray tin — the 'tin pest' — with a different structure.",
+   "geometry": {
+    "template": "lattice",
+    "basis": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0.5,
+      0.25
+     ],
+     [
+      0.5,
+      0.5,
+      0.5
+     ],
+     [
+      0.5,
+      0,
+      0.75
+     ]
+    ],
+    "contactFactor": 1.06,
+    "discreteBonds": false
+   },
+   "pickerTitle": "White"
+  },
+  "alternatives": [
+   {
+    "representationKind": "diamondCubic",
+    "allotropeName": "Gray (α) tin",
+    "phase": "solid",
+    "crystalSystem": "cubic",
+    "latticeType": "diamond cubic (A4)",
+    "spaceGroup": "Fd-3m",
+    "latticeParameters": {
+     "a": 6.489,
+     "b": null,
+     "c": null,
+     "alpha": null,
+     "beta": null,
+     "gamma": null
+    },
+    "molecularGeometry": null,
+    "bondOrders": [
+     1
+    ],
+    "bondLengthAngstrom": null,
+    "coordination": 4,
+    "temperatureContext": "below 13.2 °C",
+    "isExperimentallyEstablished": true,
+    "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+    "notes": "The diamond-cubic form, a brittle semimetal rather than a metal.",
+    "geometry": {
+     "template": "diamondCubic"
+    },
+    "pickerTitle": "Gray"
+   }
+  ]
+ },
+ {
+  "atomicNumber": 51,
+  "primary": {
+   "representationKind": "rhombohedral",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "trigonal (rhombohedral)",
+   "latticeType": "rhombohedral layered (A7, As-type)",
+   "spaceGroup": "R-3m",
+   "latticeParameters": {
+    "a": 4.307,
+    "b": null,
+    "c": 11.273,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": null,
+   "coordination": 3,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Each atom has three near neighbors in its own puckered layer and three more distant ones in the next; the layers are shown as one fragment.",
+   "geometry": {
+    "template": "puckeredLayer"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 52,
+  "primary": {
+   "representationKind": "helicalChain",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "trigonal",
+   "latticeType": "helical chains (A8, Se-type)",
+   "spaceGroup": "P3_121",
+   "latticeParameters": {
+    "a": 4.457,
+    "b": null,
+    "c": 5.929,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": null,
+   "coordination": 2,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "helicalChain"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 53,
+  "primary": {
+   "representationKind": "molecularCrystal",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "orthorhombic",
+   "latticeType": "molecular crystal of I₂ (A14)",
+   "spaceGroup": "Cmce",
+   "latticeParameters": {
+    "a": 7.18,
+    "b": 4.71,
+    "c": 9.81,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": "linear I₂ molecules",
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": 2.72,
+   "coordination": 1,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "Donohue, The Structures of the Elements (1974)",
+   "notes": "The bond drawn is the I–I bond within each molecule; molecules sit 3.5 Å and more apart.",
+   "geometry": {
+    "template": "lattice",
+    "basis": [
+     [
+      0,
+      0.1543,
+      0.1174
+     ],
+     [
+      0,
+      0.3457,
+      0.6174
+     ],
+     [
+      0,
+      0.6543,
+      0.3826
+     ],
+     [
+      0,
+      0.8457,
+      0.8826
+     ],
+     [
+      0.5,
+      0.6543,
+      0.1174
+     ],
+     [
+      0.5,
+      0.8457,
+      0.6174
+     ],
+     [
+      0.5,
+      0.1543,
+      0.3826
+     ],
+     [
+      0.5,
+      0.3457,
+      0.8826
+     ]
+    ],
+    "contactFactor": 1.05,
+    "discreteBonds": true
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 54,
+  "primary": {
+   "representationKind": "monatomicGas",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "single atoms",
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 0,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A noble gas: closed-shell atoms that do not bond to each other. Several are shown to convey a gas, not a molecule.",
+   "geometry": {
+    "template": "monatomicGas"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 55,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 6.141,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 56,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 5.028,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 57,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": "α-lanthanum",
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.774,
+    "b": null,
+    "c": 12.171,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.225
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 58,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": "γ-cerium",
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 5.161,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Room-temperature cerium is mostly γ (face-centered cubic) with some β (double hexagonal) present; the two interconvert slowly.",
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 59,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.672,
+    "b": null,
+    "c": 11.833,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.2225
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 60,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.658,
+    "b": null,
+    "c": 11.797,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.225
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 61,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.65,
+    "b": null,
+    "c": 11.65,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Determined on milligram-scale samples of the radioactive metal.",
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.1918
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 62,
+  "primary": {
+   "representationKind": "rhombohedral",
+   "allotropeName": "α-samarium",
+   "phase": "solid",
+   "crystalSystem": "trigonal (rhombohedral)",
+   "latticeType": "Sm-type close packing (nine-layer ABABCBCAC stacking)",
+   "spaceGroup": "R-3m",
+   "latticeParameters": {
+    "a": 3.629,
+    "b": null,
+    "c": 26.207,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A close-packed metal whose stacking repeats only every nine layers. A 12-coordinated fragment is shown; the full repeat is not.",
+   "geometry": {
+    "template": "closePackedCluster"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 63,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 4.581,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 64,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.636,
+    "b": null,
+    "c": 5.783,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5905
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 65,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.601,
+    "b": null,
+    "c": 5.694,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5812
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 66,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.593,
+    "b": null,
+    "c": 5.654,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5736
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 67,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.578,
+    "b": null,
+    "c": 5.618,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5702
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 68,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.559,
+    "b": null,
+    "c": 5.585,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5693
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 69,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.538,
+    "b": null,
+    "c": 5.554,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5698
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 70,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": "β-ytterbium",
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 5.485,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 71,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.505,
+    "b": null,
+    "c": 5.549,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5832
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 72,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.195,
+    "b": null,
+    "c": 5.051,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5809
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 73,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 3.303,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 74,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 3.165,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 75,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.761,
+    "b": null,
+    "c": 4.456,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.6139
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 76,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 2.734,
+    "b": null,
+    "c": 4.32,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5801
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 77,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 3.839,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 78,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 3.924,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 79,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 4.078,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 80,
+  "primary": {
+   "representationKind": "liquidMetal",
+   "allotropeName": null,
+   "phase": "liquid",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "The only metal liquid at room temperature: atoms in close contact with no fixed lattice. Solid mercury (below −38.8 °C) is rhombohedral.",
+   "geometry": {
+    "template": "liquidMetal"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 81,
+  "primary": {
+   "representationKind": "hcp",
+   "allotropeName": "α-thallium",
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "hexagonal close-packed (A3, Mg-type)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.457,
+    "b": null,
+    "c": 5.525,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "hcp",
+    "cOverA": 1.5982
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 82,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 4.95,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 83,
+  "primary": {
+   "representationKind": "rhombohedral",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "trigonal (rhombohedral)",
+   "latticeType": "rhombohedral layered (A7, As-type)",
+   "spaceGroup": "R-3m",
+   "latticeParameters": {
+    "a": 4.546,
+    "b": null,
+    "c": 11.862,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": [
+    1
+   ],
+   "bondLengthAngstrom": null,
+   "coordination": 3,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Each atom has three near neighbors in its own puckered layer and three more distant ones in the next; the layers are shown as one fragment.",
+   "geometry": {
+    "template": "puckeredLayer"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 84,
+  "primary": {
+   "representationKind": "simpleCubic",
+   "allotropeName": "α-polonium",
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "simple cubic (Ah, Po-type)",
+   "spaceGroup": "Pm-3m",
+   "latticeParameters": {
+    "a": 3.359,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 6,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "The only element with a simple cubic structure at ordinary conditions, determined on small radioactive samples.",
+   "geometry": {
+    "template": "simpleCubic"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 85,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; its metallic structure is predicted, not measured.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 86,
+  "primary": {
+   "representationKind": "monatomicGas",
+   "allotropeName": null,
+   "phase": "gas",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": "single atoms",
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 0,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A noble gas: closed-shell atoms that do not bond to each other. Several are shown to convey a gas, not a molecule.",
+   "geometry": {
+    "template": "monatomicGas"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 87,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a body-centered cubic metal is predicted from its group.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 88,
+  "primary": {
+   "representationKind": "bcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "body-centered cubic (A2, W-type)",
+   "spaceGroup": "Im-3m",
+   "latticeParameters": {
+    "a": 5.148,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 8,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "bcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 89,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 5.311,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 90,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 5.084,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 91,
+  "primary": {
+   "representationKind": "tetragonal",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "tetragonal",
+   "latticeType": "body-centered tetragonal (Pa-type)",
+   "spaceGroup": "I4/mmm",
+   "latticeParameters": {
+    "a": 3.925,
+    "b": null,
+    "c": 3.238,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 10,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A body-centered tetragonal cell squashed along c.",
+   "geometry": {
+    "template": "lattice",
+    "basis": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0.5,
+      0.5,
+      0.5
+     ]
+    ],
+    "contactFactor": 1.06,
+    "discreteBonds": false
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 92,
+  "primary": {
+   "representationKind": "orthorhombic",
+   "allotropeName": "α-uranium",
+   "phase": "solid",
+   "crystalSystem": "orthorhombic",
+   "latticeType": "α-uranium (A20): corrugated layers",
+   "spaceGroup": "Cmcm",
+   "latticeParameters": {
+    "a": 2.854,
+    "b": 5.87,
+    "c": 4.955,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 4,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "Donohue, The Structures of the Elements (1974)",
+   "notes": "Each atom has two neighbors at 2.75 Å and two at 2.85 Å, in corrugated sheets; four more sit at 3.26 Å.",
+   "geometry": {
+    "template": "lattice",
+    "basis": [
+     [
+      0,
+      0.1025,
+      0.25
+     ],
+     [
+      0,
+      0.8975,
+      0.75
+     ],
+     [
+      0.5,
+      0.6025,
+      0.25
+     ],
+     [
+      0.5,
+      0.3975,
+      0.75
+     ]
+    ],
+    "contactFactor": 1.06,
+    "discreteBonds": false
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 93,
+  "primary": {
+   "representationKind": "orthorhombic",
+   "allotropeName": "α-neptunium",
+   "phase": "solid",
+   "crystalSystem": "orthorhombic",
+   "latticeType": "orthorhombic, eight atoms per cell",
+   "spaceGroup": "Pnma",
+   "latticeParameters": {
+    "a": 6.663,
+    "b": 4.723,
+    "c": 4.887,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "Donohue, The Structures of the Elements (1974)",
+   "notes": "Two crystallographically distinct atom sites with irregular coordination. A close-packed fragment stands in, labeled simplified.",
+   "geometry": {
+    "template": "closePackedCluster"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 94,
+  "primary": {
+   "representationKind": "complexCrystal",
+   "allotropeName": "α-plutonium",
+   "phase": "solid",
+   "crystalSystem": "monoclinic",
+   "latticeType": "α-plutonium",
+   "spaceGroup": "P2_1/m",
+   "latticeParameters": {
+    "a": 6.183,
+    "b": 4.822,
+    "c": 10.963,
+    "alpha": null,
+    "beta": 101.79,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "16 atoms per unit cell in several distinct environments — too complex to draw as a cell. A close-packed fragment stands in for the metallic packing, and is labeled simplified.",
+   "geometry": {
+    "template": "closePackedCluster"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 95,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.468,
+    "b": null,
+    "c": 11.241,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.2413
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 96,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.496,
+    "b": null,
+    "c": 11.331,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.2411
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 97,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.416,
+    "b": null,
+    "c": 11.069,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": null,
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.2403
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 98,
+  "primary": {
+   "representationKind": "dhcp",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "hexagonal",
+   "latticeType": "double hexagonal close-packed (A3', La-type, ABAC stacking)",
+   "spaceGroup": "P6_3/mmc",
+   "latticeParameters": {
+    "a": 3.38,
+    "b": null,
+    "c": 11.03,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "Determined on microgram-scale samples.",
+   "geometry": {
+    "template": "dhcp",
+    "cOverA": 3.2633
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 99,
+  "primary": {
+   "representationKind": "fcc",
+   "allotropeName": null,
+   "phase": "solid",
+   "crystalSystem": "cubic",
+   "latticeType": "face-centered cubic (A1, Cu-type)",
+   "spaceGroup": "Fm-3m",
+   "latticeParameters": {
+    "a": 5.75,
+    "b": null,
+    "c": null,
+    "alpha": null,
+    "beta": null,
+    "gamma": null
+   },
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": 12,
+   "temperatureContext": "298 K, 1 atm",
+   "isExperimentallyEstablished": true,
+   "source": "CRC Handbook of Chemistry and Physics, 104th ed., Crystal Structures of the Elements",
+   "notes": "A single determination on microgram-scale samples (Haire & Baybarz, 1979); treat the value as approximate.",
+   "geometry": {
+    "template": "fcc"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 100,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 101,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 102,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 103,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a hexagonal close-packed metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 104,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a hexagonal close-packed metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 105,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a body-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 106,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a body-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 107,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a hexagonal close-packed metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 108,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a hexagonal close-packed metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 109,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 110,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a body-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 111,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a body-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 112,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; calculations disagree on whether it is a metal or a volatile solid.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 113,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a hexagonal close-packed metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 114,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic solid is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 115,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 116,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic metal is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 117,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a hexagonal close-packed solid is predicted.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ },
+ {
+  "atomicNumber": 118,
+  "primary": {
+   "representationKind": "unknown",
+   "allotropeName": null,
+   "phase": "unknown",
+   "crystalSystem": null,
+   "latticeType": null,
+   "spaceGroup": null,
+   "latticeParameters": null,
+   "molecularGeometry": null,
+   "bondOrders": null,
+   "bondLengthAngstrom": null,
+   "coordination": null,
+   "temperatureContext": "not established",
+   "isExperimentallyEstablished": false,
+   "source": "No bulk sample has ever been produced; a face-centered cubic solid is predicted; it may be a gas.",
+   "notes": "Bulk crystal structure not established. Only individual atoms have been made, so the app shows the atom and says so rather than drawing a lattice nobody has observed.",
+   "geometry": {
+    "template": "atom"
+   },
+   "pickerTitle": null
+  },
+  "alternatives": []
+ }
+]

@@ -131,6 +131,7 @@ struct CategoryFilterSheet: View {
                     Text("Choosing one or more families replaces the Metals / Nonmetals / Metalloids chip.")
                 }
             }
+            .scrollIndicators(.hidden)
             .navigationTitle("Filter")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -72,3 +72,27 @@ extension Color {
         })
     }
 }
+
+extension UIColor {
+    /// A color from packed RGB (`0xRRGGBB`), the form the structure scenes
+    /// carry so they stay free of SwiftUI.
+    convenience init(hex: UInt32) {
+        self.init(
+            red: CGFloat((hex >> 16) & 0xFF) / 255,
+            green: CGFloat((hex >> 8) & 0xFF) / 255,
+            blue: CGFloat(hex & 0xFF) / 255,
+            alpha: 1
+        )
+    }
+}
+
+extension Color {
+    /// A color from packed RGB (`0xRRGGBB`).
+    init(hex: UInt32) {
+        self.init(
+            red: Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 8) & 0xFF) / 255,
+            blue: Double(hex & 0xFF) / 255
+        )
+    }
+}

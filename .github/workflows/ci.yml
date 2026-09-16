@@ -36,8 +36,19 @@ jobs:
       - name: Validate elements.json
         run: python3 Tools/validate_elements.py
 
+      - name: Validate structures.json
+        run: python3 Tools/validate_structures.py
+
       - name: Lint Swift sources
         run: python3 Tools/lint_sources.py
+
+      # A parse of every Swift file with tree-sitter. Not a compile — that is
+      # the Mac job — but a stray brace fails here in seconds instead of
+      # forty minutes in.
+      - name: Check Swift syntax
+        run: |
+          python3 -m pip install --quiet tree-sitter tree-sitter-swift
+          python3 Tools/check_swift_syntax.py
 
       - name: Validate Xcode project structure
         run: python3 Tools/validate_project.py

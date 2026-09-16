@@ -51,6 +51,7 @@ struct PaywallView: View {
                 .padding(.top, Theme.Spacing.s)
                 .padding(.bottom, Theme.Spacing.xxl)
             }
+            .scrollIndicators(.hidden)
             .scrollBounceBehavior(.basedOnSize)
             .background(backdrop)
             .navigationTitle("")
@@ -470,6 +471,7 @@ struct PrivacySummarySheet: View {
                 .padding(.horizontal, Theme.Spacing.screenMargin)
                 .padding(.vertical, Theme.Spacing.l)
             }
+            .scrollIndicators(.hidden)
             .scrollBounceBehavior(.basedOnSize)
             .background(AppColor.canvas)
             .navigationTitle("Privacy")

@@ -74,10 +74,15 @@ struct StructureSceneTests {
 
     private func allScenes() -> [(ChemicalElement, StructureScene)] {
         catalog.elements.flatMap { element in
-            StructureSceneBuilder.representations(for: element).map { representation in
-                (element, StructureSceneBuilder.scene(for: element, representation: representation))
+            StructureSceneBuilder.representations(for: element).map { option in
+                (element, StructureSceneBuilder.scene(for: element, representation: option.representation))
             }
         }
+    }
+
+    /// The primary elemental form of an element.
+    private func form(_ symbol: String) -> StructureScene {
+        StructureSceneBuilder.scene(for: TestCatalog.element(symbol), representation: .form(0))
     }
 
     @Test("Every element produces a scene with something in it")
@@ -141,9 +146,11 @@ struct StructureSceneTests {
     func everyKindIsReachable() {
         let kinds = Set(allScenes().map { $0.1.kind })
         #expect(kinds.contains(.diatomicMolecule))
-        #expect(kinds.contains(.polyatomicMolecule))
+        #expect(kinds.contains(.molecularCrystal))
         #expect(kinds.contains(.metallicLattice))
         #expect(kinds.contains(.covalentNetwork))
+        #expect(kinds.contains(.monatomicGas))
+        #expect(kinds.contains(.liquid))
         #expect(kinds.contains(.atomModel))
     }
 
@@ -153,43 +160,54 @@ struct StructureSceneTests {
     func diatomicBondOrders() {
         let expectations: [String: StructureBondOrder] = [
             "H": .single, "N": .triple, "O": .double,
-            "F": .single, "Cl": .single, "Br": .single, "I": .single,
+            "F": .single, "Cl": .single,
         ]
         for (symbol, order) in expectations {
-            let scene = StructureSceneBuilder.scene(
-                for: TestCatalog.element(symbol), representation: .elementalForm
-            )
+            let scene = form(symbol)
             #expect(scene.kind == .diatomicMolecule)
             #expect(scene.atoms.count == 2, "\(symbol) is not drawn as two atoms")
             #expect(scene.bonds.count == 1)
             #expect(scene.bonds.first?.order == order,
                     "\(symbol) should have a \(order.displayName.lowercased())")
         }
+        // Bromine is a liquid of Br₂ molecules: several molecules, each with
+        // one single bond, and no bonds between them.
+        let bromine = form("Br")
+        #expect(bromine.kind == .liquid)
+        #expect(bromine.atoms.count == bromine.bonds.count * 2)
+        #expect(bromine.bonds.allSatisfy { $0.order == .single && $0.isDiscreteBond })
     }
 
     @Test("A metallic lattice is never described as a molecule or as bonds")
     func latticesAreHonest() {
-        for element in catalog.elements where element.structure == .metallicLattice {
-            let scene = StructureSceneBuilder.scene(for: element, representation: .elementalForm)
-            #expect(scene.kind == .metallicLattice)
+        for element in catalog.elements {
+            let entry = StructureSceneBuilder.entry(for: element)
+            guard entry.primary.representationKind.isMetallic else { continue }
+            let scene = StructureSceneBuilder.scene(for: element, representation: .form(0))
+            #expect(scene.kind == .metallicLattice || scene.kind == .liquid,
+                    "\(element.symbol) is metallic but drawn as \(scene.kind.rawValue)")
+            #expect(scene.isMetallic, "\(element.symbol) should render as metal")
             #expect(scene.bonds.allSatisfy { !$0.isDiscreteBond },
                     "\(element.symbol): a lattice contact must not be marked a discrete bond")
             #expect(!scene.caption.lowercased().contains("molecule"),
                     "\(element.symbol): a lattice must not be called a molecule")
-            #expect(scene.isSimplified)
         }
     }
 
-    @Test("A noble gas is shown as one atom, not an invented molecule")
+    @Test("A noble gas is shown as separate atoms, never an invented molecule")
     func nobleGasesAreSingleAtoms() {
         for symbol in ["He", "Ne", "Ar", "Kr", "Xe", "Rn"] {
             let element = TestCatalog.element(symbol)
-            let representations = StructureSceneBuilder.representations(for: element)
-            #expect(representations == [.atom],
-                    "\(symbol) should only offer the atom, since that is its elemental form")
-            let scene = StructureSceneBuilder.scene(for: element, representation: .atom)
-            #expect(scene.kind == .atomModel)
-            #expect(scene.bonds.isEmpty, "\(symbol) must not be drawn with bonds")
+            let options = StructureSceneBuilder.representations(for: element)
+            #expect(options.map(\.representation) == [.form(0), .atom],
+                    "\(symbol) should offer the gas and the atom")
+            let gas = StructureSceneBuilder.scene(for: element, representation: .form(0))
+            #expect(gas.kind == .monatomicGas)
+            #expect(gas.atoms.count > 1, "\(symbol) should show several separate atoms")
+            #expect(gas.bonds.isEmpty, "\(symbol) must not be drawn with bonds")
+            let atom = StructureSceneBuilder.scene(for: element, representation: .atom)
+            #expect(atom.kind == .atomModel)
+            #expect(atom.bonds.isEmpty)
         }
     }
 
@@ -201,10 +219,7 @@ struct StructureSceneTests {
             "B": 12,   // B₁₂ icosahedron
         ]
         for (symbol, atomCount) in expectations {
-            let scene = StructureSceneBuilder.scene(
-                for: TestCatalog.element(symbol), representation: .elementalForm
-            )
-            #expect(scene.atoms.count == atomCount,
+            #expect(form(symbol).atoms.count == atomCount,
                     "\(symbol) should be built from \(atomCount) atoms")
         }
     }
@@ -212,9 +227,7 @@ struct StructureSceneTests {
     @Test("Selenium and tellurium are open chains, not closed rings")
     func chainsStayOpen() {
         for symbol in ["Se", "Te"] {
-            let scene = StructureSceneBuilder.scene(
-                for: TestCatalog.element(symbol), representation: .elementalForm
-            )
+            let scene = form(symbol)
             // An open chain of n atoms has n-1 links; a ring would have n.
             #expect(scene.bonds.count == scene.atoms.count - 1,
                     "\(symbol) should be an open chain")
@@ -350,7 +363,7 @@ struct StructureSceneTests {
     func projectionStaysOnScreen() {
         let size = CGSize(width: 320, height: 320)
         let scene = StructureSceneBuilder.scene(
-            for: TestCatalog.element("Au"), representation: .elementalForm
+            for: TestCatalog.element("Au"), representation: .form(0)
         )
         for step in 0..<12 {
             let projection = StructureProjection(
@@ -375,7 +388,7 @@ struct StructureSceneTests {
     @Test("The draw list is sorted back to front")
     func drawOrderIsPainterly() {
         let scene = StructureSceneBuilder.scene(
-            for: TestCatalog.element("S"), representation: .elementalForm
+            for: TestCatalog.element("S"), representation: .form(0)
         )
         let projection = StructureProjection(yaw: 0.6, pitch: 0.3, zoom: 1,
                                              size: CGSize(width: 200, height: 200))
@@ -400,7 +413,7 @@ struct StructureFactsTests {
     @Test("A lattice contact is never described as a bond")
     func latticeContactsAreNotBonds() {
         let gold = TestCatalog.element("Au")
-        let scene = StructureSceneBuilder.scene(for: gold, representation: .elementalForm)
+        let scene = StructureSceneBuilder.scene(for: gold, representation: .form(0))
         guard let bond = scene.bonds.first else {
             Issue.record("gold's lattice should have contacts to select")
             return
@@ -416,7 +429,7 @@ struct StructureFactsTests {
     @Test("A real bond reports the right number of shared electrons")
     func bondFactsAreRight() {
         let oxygen = TestCatalog.element("O")
-        let scene = StructureSceneBuilder.scene(for: oxygen, representation: .elementalForm)
+        let scene = StructureSceneBuilder.scene(for: oxygen, representation: .form(0))
         let facts = StructureFactsBuilder.facts(
             for: .bond(scene.bonds[0].id), in: scene, element: oxygen
         )
@@ -476,8 +489,8 @@ struct StructureFactsTests {
     @Test("The VoiceOver summary describes every scene")
     func summariesExistForEveryElement() {
         for element in TestCatalog.shared.elements {
-            for representation in StructureSceneBuilder.representations(for: element) {
-                let scene = StructureSceneBuilder.scene(for: element, representation: representation)
+            for option in StructureSceneBuilder.representations(for: element) {
+                let scene = StructureSceneBuilder.scene(for: element, representation: option.representation)
                 let summary = StructureFactsBuilder.summary(of: scene, element: element)
                 #expect(summary.count > 20, "\(element.symbol) has no usable spoken summary")
                 #expect(summary.contains(element.name))

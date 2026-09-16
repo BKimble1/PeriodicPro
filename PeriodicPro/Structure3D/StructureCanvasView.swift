@@ -61,29 +61,33 @@ struct StructureCanvasView: View {
         let base = color(for: node)
         let isSelected = selection.nodeID == node.id
         let dim = !selection.isEmpty && !isSelected
+        let metallic = scene.isMetallic && node.role == .atom && usesElementColor
 
         // Depth cue: things further away are slightly darker and softer, which
         // is what stops a flat circle from reading as a sticker.
         let depthShade = 0.72 + 0.28 * ((placed.depth + 1) / 2)
         let bodyOpacity = (dim ? 0.28 : 1.0) * depthShade
 
+        // A metal falls off to a darker rim than a matte sphere does: the
+        // contrast between the lit face and the edge is most of what reads
+        // as "metallic" in a still image.
         context.fill(
             Path(ellipseIn: rect),
             with: .radialGradient(
                 Gradient(colors: [
                     base.opacity(bodyOpacity),
-                    base.opacity(bodyOpacity * 0.55),
+                    base.opacity(bodyOpacity * (metallic ? 0.38 : 0.55)),
                 ]),
                 center: CGPoint(x: rect.midX + radius * 0.1, y: rect.midY + radius * 0.16),
                 startRadius: radius * 0.1,
-                endRadius: radius * 1.15
+                endRadius: radius * (metallic ? 1.05 : 1.15)
             )
         )
 
         // Specular highlight, up and to the left, matching a single soft key
         // light. Same light direction for every sphere, which is what makes a
-        // cluster read as one lit object.
-        let highlightRadius = radius * 0.46
+        // cluster read as one lit object. Metals get a tighter, brighter one.
+        let highlightRadius = radius * (metallic ? 0.36 : 0.46)
         let highlight = CGRect(
             x: rect.midX - radius * 0.34 - highlightRadius / 2,
             y: rect.midY - radius * 0.36 - highlightRadius / 2,
@@ -94,7 +98,7 @@ struct StructureCanvasView: View {
             Path(ellipseIn: highlight),
             with: .radialGradient(
                 Gradient(colors: [
-                    Color.white.opacity((dim ? 0.18 : 0.85) * depthShade),
+                    Color.white.opacity((dim ? 0.18 : (metallic ? 0.95 : 0.85)) * depthShade),
                     Color.white.opacity(0),
                 ]),
                 center: CGPoint(x: highlight.midX, y: highlight.midY),
@@ -102,6 +106,27 @@ struct StructureCanvasView: View {
                 endRadius: highlightRadius
             )
         )
+
+        if metallic, !dim {
+            // A faint second reflection low on the sphere: the environment
+            // bouncing back, which matte materials do not show.
+            let rimRadius = radius * 0.5
+            let rim = CGRect(
+                x: rect.midX + radius * 0.22 - rimRadius / 2,
+                y: rect.midY + radius * 0.42 - rimRadius / 2,
+                width: rimRadius,
+                height: rimRadius
+            )
+            context.fill(
+                Path(ellipseIn: rim),
+                with: .radialGradient(
+                    Gradient(colors: [Color.white.opacity(0.22 * depthShade), Color.white.opacity(0)]),
+                    center: CGPoint(x: rim.midX, y: rim.midY),
+                    startRadius: 0,
+                    endRadius: rimRadius
+                )
+            )
+        }
 
         if isSelected {
             context.stroke(
@@ -162,18 +187,22 @@ struct StructureCanvasView: View {
 
     private var strutWidthFraction: Double {
         switch scene.kind {
-        case .atomModel: return 0
+        case .atomModel, .monatomicGas: return 0
         // A contact line in a lattice is drawn thinner than a covalent bond,
         // so the two never read as the same thing.
         case .metallicLattice: return 0.013
-        default: return 0.024
+        case .diatomicMolecule, .polyatomicMolecule, .molecularCrystal, .covalentNetwork,
+             .liquid, .compound:
+            return 0.024
         }
     }
 
     private func color(for node: StructureNode) -> Color {
         switch node.role {
         case .atom:
-            return usesElementColor ? atomColor : AppColor.secondaryText
+            guard usesElementColor else { return AppColor.secondaryText }
+            if let hex = node.tintHex { return Color(hex: hex) }
+            return atomColor
         case .proton:
             return usesElementColor ? AppColor.warning : AppColor.secondaryText
         case .neutron:

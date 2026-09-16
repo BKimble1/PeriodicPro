@@ -101,12 +101,16 @@ RETAINED_IDENTIFIERS = {
     "PeriodicProTests/SearchAndFilterTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/SmartReviewTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/StudyEngineTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/TableZoomTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/StructureProfileTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/TestSupport.swift": "@testable import PeriodicPro",
 
     # --- Source naming the log subsystem or the test target ---
     "PeriodicPro/Store/SubscriptionManager.swift":
         "os.log subsystem com.periodicpro.app",
     "PeriodicPro/Persistence/PersistenceController.swift":
+        "os.log subsystem com.periodicpro.app",
+    "PeriodicPro/Data/ElementStructureCatalog.swift":
         "os.log subsystem com.periodicpro.app",
     "PeriodicPro/Utilities/SFSymbolAllowlist.swift":
         "names the PeriodicProTests target in a doc comment",
@@ -134,6 +138,9 @@ RETAINED_IDENTIFIERS = {
     "Tools/verify.sh": "runs the checkers over the PeriodicPro source tree",
     "Tools/check_branding.py": "this allowlist",
     "Tools/check_app_icon.py": "reads PeriodicPro/Assets.xcassets and the project",
+    "Tools/check_swift_syntax.py": "walks the PeriodicPro source tree",
+    "Tools/build_structures.py": "writes PeriodicPro/Data/structures.json",
+    "Tools/validate_structures.py": "reads PeriodicPro/Data/structures.json",
 
     # --- Documentation, which has to explain the split to a human ---
     "README.md": "documents which identifiers are retained and why",
@@ -141,6 +148,7 @@ RETAINED_IDENTIFIERS = {
     "MONETIZATION.md": "documents the product identifiers",
     "APP_ICON.md": "asset-catalog path",
     "DATA_SOURCES.md": "path to PeriodicPro/Data/elements.json",
+    "STRUCTURE_SOURCES.md": "paths to PeriodicPro/Data/structures.json and the test bundle",
     "PRIVACY.md": "names the app bundle",
 }
 

@@ -94,6 +94,7 @@ struct ElementDetailScreen: View {
             .padding(.horizontal, Theme.Spacing.screenMargin)
             .padding(.bottom, Theme.Spacing.xxxl)
         }
+        .scrollIndicators(.hidden)
         .background {
             backdrop
         }

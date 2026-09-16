@@ -89,6 +89,7 @@ struct StudyScreen: View {
                 .padding(.top, Theme.Spacing.s)
                 .padding(.bottom, Theme.Spacing.xxxl)
             }
+            .scrollIndicators(.hidden)
             .background(AppColor.canvas)
             .navigationTitle("Study")
             .navigationBarTitleDisplayMode(.inline)

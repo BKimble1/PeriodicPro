@@ -25,10 +25,12 @@ enum StructurePartList {
         switch scene.kind {
         case .atomModel:
             return atomModelParts(of: scene)
-        case .metallicLattice:
+        case .metallicLattice, .covalentNetwork:
             return latticeParts(of: scene)
-        case .diatomicMolecule, .polyatomicMolecule, .covalentNetwork:
+        case .diatomicMolecule, .polyatomicMolecule, .molecularCrystal, .compound:
             return moleculeParts(of: scene)
+        case .monatomicGas, .liquid:
+            return looseParts(of: scene)
         }
     }
 
@@ -51,17 +53,24 @@ enum StructurePartList {
         return parts
     }
 
+    /// The atom nearest the middle — the one with the most neighbors drawn —
+    /// a neighbor of it, and one contact or bond.
     private static func latticeParts(of scene: StructureScene) -> [Part] {
         var parts: [Part] = []
         let atoms = scene.atoms
-        if let center = atoms.first {
-            parts.append(Part(label: "Center atom", selection: .node(center.id)))
+        guard let center = atoms.min(by: { magnitude($0.position) < magnitude($1.position) }) else {
+            return parts
         }
-        if atoms.count > 1 {
-            parts.append(Part(label: "Neighboring atom", selection: .node(atoms[1].id)))
-        }
-        if let contact = scene.bonds.first {
-            parts.append(Part(label: "Contact", selection: .bond(contact.id)))
+        parts.append(Part(label: "Atom", selection: .node(center.id)))
+        let neighborLink = scene.bonds.first { $0.from == center.id || $0.to == center.id }
+        if let link = neighborLink {
+            let neighborID = link.from == center.id ? link.to : link.from
+            if scene.node(id: neighborID) != nil {
+                parts.append(Part(label: "Neighboring atom", selection: .node(neighborID)))
+            }
+            parts.append(Part(label: link.isDiscreteBond ? "Bond" : "Contact", selection: .bond(link.id)))
+        } else if atoms.count > 1, let other = atoms.first(where: { $0.id != center.id }) {
+            parts.append(Part(label: "Another atom", selection: .node(other.id)))
         }
         return parts
     }
@@ -89,5 +98,22 @@ enum StructurePartList {
             parts.append(Part(label: bond.order.displayName, selection: .bond(bond.id)))
         }
         return parts
+    }
+
+    /// A gas or a liquid: one atom stands for all of them, plus a bond if the
+    /// liquid is molecular.
+    private static func looseParts(of scene: StructureScene) -> [Part] {
+        var parts: [Part] = []
+        if let atom = scene.atoms.first {
+            parts.append(Part(label: "Atom", selection: .node(atom.id)))
+        }
+        if let bond = scene.bonds.first(where: \.isDiscreteBond) {
+            parts.append(Part(label: bond.order.displayName, selection: .bond(bond.id)))
+        }
+        return parts
+    }
+
+    private static func magnitude(_ vector: SIMD3<Float>) -> Float {
+        (vector.x * vector.x + vector.y * vector.y + vector.z * vector.z).squareRoot()
     }
 }

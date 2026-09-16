@@ -288,14 +288,17 @@ struct StructureRealityView: View {
         return camera
     }
 
-    /// A three-point rig: a key light for form, a fill to keep the shadow side
-    /// readable, and a rim from behind to separate the model from the
-    /// background. This is what makes the spheres read as lit objects.
+    /// A four-light rig: a key light for form, a fill to keep the shadow side
+    /// readable, a rim from behind to separate the model from the background,
+    /// and a low, cool bounce from below. The bounce is there for the metals:
+    /// a metallic surface shows only what lights it, and with nothing under
+    /// the model the lower half of a gold lattice went black.
     private static func makeLights() -> [Entity] {
         [
-            directionalLight(from: SIMD3(2.2, 3.0, 3.4), intensity: 3_200, white: 1),
-            directionalLight(from: SIMD3(-3.0, -0.6, 2.4), intensity: 1_100, white: 0.92),
-            directionalLight(from: SIMD3(-1.2, 1.8, -3.2), intensity: 1_600, white: 1),
+            directionalLight(from: SIMD3(2.2, 3.0, 3.4), intensity: 3_400, white: 1),
+            directionalLight(from: SIMD3(-3.0, -0.6, 2.4), intensity: 1_200, white: 0.92),
+            directionalLight(from: SIMD3(-1.2, 1.8, -3.2), intensity: 1_700, white: 1),
+            directionalLight(from: SIMD3(0.6, -3.0, 1.0), intensity: 700, white: 0.88),
         ]
     }
 

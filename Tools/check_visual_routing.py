@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Checks that every element resolves to artwork and to a 3D structure.
 
-Both systems route an element to a treatment by rule, with a short list of
-named exceptions. The failure they share is a silent gap: an element that falls
-through to nothing, or a named exception that points at a symbol whose data has
-since changed, so the exception is dead and the element quietly gets the wrong
-picture.
+The artwork routes an element to a treatment by rule, with a short list of
+named exceptions; the 3D structure routes through the profile in
+structures.json. The failure they share is a silent gap: an element that falls
+through to nothing, a named exception that points at a symbol whose data has
+since changed, or a profile whose geometry template the scene builder does not
+implement.
 
 Neither can be caught by reading the Swift alone, and the Swift unit tests that
 assert the same properties cannot run without a Mac. This mirrors the routing
-rules against the real dataset instead.
+rules against the real datasets instead.
 
     python3 Tools/check_visual_routing.py
 """
@@ -22,6 +23,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ELEMENTS = os.path.join(ROOT, "PeriodicPro", "Data", "elements.json")
+STRUCTURES = os.path.join(ROOT, "PeriodicPro", "Data", "structures.json")
 ARTWORK = os.path.join(ROOT, "PeriodicPro", "Artwork", "ElementArtwork.swift")
 BUILDER = os.path.join(ROOT, "PeriodicPro", "Structure3D", "StructureSceneBuilder.swift")
 
@@ -46,31 +48,30 @@ STRUCTURE_TO_KIND = {
     "atom": "orbitalArcs",
 }
 
-# Mirrors StructureSceneBuilder: how many atoms each generator produces.
+# Mirrors StructureSceneBuilder.formScene: every template the builder
+# implements, with the atom count it draws. A profile that names anything
+# else would fall through to the atom model — silently, which is what this
+# check exists to prevent.
 GENERATOR_ATOM_COUNTS = {
     "diatomic": 2,
+    "monatomicGas": 6,
     "tetrahedron": 4,
     "crownRing": 8,
     "helicalChain": 7,
     "icosahedron": 12,
-    "diamondNetwork": 8,
-    "puckeredLayer": 6,
+    "puckeredLayer": 12,
+    "graphite": 24,
+    "fcc": 14,
+    "bcc": 9,
+    "simpleCubic": 8,
+    "diamondCubic": 18,
+    "hcp": 17,
+    "dhcp": 27,
+    "lattice": None,       # depends on the basis
     "closePackedCluster": 13,
-}
-# Named routing inside StructureSceneBuilder.elementalFormScene.
-NAMED_STRUCTURE_ROUTES = {
-    "P": ("polyatomicMolecule", "tetrahedron"),
-    "Se": ("polyatomicMolecule", "helicalChain"),
-    "B": ("covalentNetwork", "icosahedron"),
-    "As": ("covalentNetwork", "puckeredLayer"),
-    "Sb": ("covalentNetwork", "puckeredLayer"),
-    "Te": ("covalentNetwork", "helicalChain"),
-}
-DEFAULT_STRUCTURE_ROUTES = {
-    "diatomic": "diatomic",
-    "polyatomicMolecule": "crownRing",
-    "covalentNetwork": "diamondNetwork",
-    "metallicLattice": "closePackedCluster",
+    "liquidMetal": 19,
+    "molecularLiquid": 8,
+    "atom": None,          # the atom model
 }
 
 
@@ -112,14 +113,15 @@ def artwork_kind(element: dict, named: set[str]) -> str:
     return ""
 
 
-def structure_generator(element: dict) -> str:
-    structure = element["structure"]
-    if structure in ("monatomicGas", "atom"):
-        return "atomModel"
-    route = NAMED_STRUCTURE_ROUTES.get(element["symbol"])
-    if route and route[0] == structure:
-        return route[1]
-    return DEFAULT_STRUCTURE_ROUTES.get(structure, "")
+def builder_templates() -> set[str]:
+    """The template strings StructureSceneBuilder.formScene switches on."""
+    source = open(BUILDER, encoding="utf-8").read()
+    body = source[source.index("private static func formScene"):source.index("private static func caption")]
+    return set(re.findall(r'case "([a-zA-Z]+)":', body))
+
+
+def structure_generator(entry: dict) -> str:
+    return ((entry.get("primary") or {}).get("geometry") or {}).get("template") or ""
 
 
 def main() -> int:
@@ -137,34 +139,47 @@ def main() -> int:
                 "resolves to no artwork treatment"
             )
 
-    # --- every element resolves to a structure generator --------------------
+    # --- every element's profile resolves to a generator the builder has ----
+    structures = {e["atomicNumber"]: e for e in json.load(open(STRUCTURES, encoding="utf-8"))}
+    implemented = builder_templates()
+    for template in GENERATOR_ATOM_COUNTS:
+        if template != "atom" and template not in implemented:
+            errors.append(f"this check lists template {template}, but StructureSceneBuilder "
+                          "no longer implements it")
+    for template in implemented:
+        if template not in GENERATOR_ATOM_COUNTS:
+            errors.append(f"StructureSceneBuilder implements template {template}, which this "
+                          "check does not know; add its atom count")
     for element in elements:
-        generator = structure_generator(element)
-        if not generator:
-            errors.append(
-                f"{element['symbol']} ({element['structure']}) resolves to no structure generator"
-            )
+        entry = structures.get(element["atomicNumber"])
+        if entry is None:
+            errors.append(f"{element['symbol']} has no entry in structures.json")
             continue
-        if generator == "atomModel":
-            if not element.get("shellElectrons"):
-                errors.append(f"{element['symbol']} has no shellElectrons for its atom model")
-            continue
-        count = GENERATOR_ATOM_COUNTS.get(generator, 0)
-        if count < 1:
-            errors.append(f"{element['symbol']} routes to {generator}, which draws no atoms")
+        profiles = [entry["primary"]] + list(entry.get("alternatives") or [])
+        for profile in profiles:
+            template = (profile.get("geometry") or {}).get("template") or ""
+            if template == "atom":
+                if profile.get("representationKind") != "unknown":
+                    errors.append(f"{element['symbol']} draws the atom for a structure it "
+                                  "claims to know")
+                if not element.get("shellElectrons"):
+                    errors.append(f"{element['symbol']} has no shellElectrons for its atom model")
+                continue
+            if template not in implemented:
+                errors.append(
+                    f"{element['symbol']} names geometry template {template!r}, which "
+                    "StructureSceneBuilder does not implement — it would silently draw the atom"
+                )
+                continue
+            count = GENERATOR_ATOM_COUNTS.get(template)
+            if count is None and template != "lattice":
+                errors.append(f"{element['symbol']} routes to {template}, whose atom count is unknown")
+            if template == "lattice":
+                basis = (profile.get("geometry") or {}).get("basis") or []
+                if not basis:
+                    errors.append(f"{element['symbol']} has an explicit lattice with no basis")
 
-    # --- named exceptions must still match the data -------------------------
     by_symbol = {element["symbol"]: element for element in elements}
-    for symbol, (structure, generator) in sorted(NAMED_STRUCTURE_ROUTES.items()):
-        element = by_symbol.get(symbol)
-        if element is None:
-            errors.append(f"structure route names {symbol}, which is not in the dataset")
-        elif element["structure"] != structure:
-            errors.append(
-                f"structure route for {symbol} expects {structure} but the dataset says "
-                f"{element['structure']}, so the {generator} case is dead"
-            )
-
     for symbol in sorted(named | tints):
         if symbol not in by_symbol:
             errors.append(f"artwork names {symbol}, which is not in the dataset")
@@ -184,9 +199,14 @@ def main() -> int:
         print(f"\n{len(errors)} issue(s) across {len(elements)} elements")
         return 1
 
+    templates_used = {
+        (p.get("geometry") or {}).get("template")
+        for e in structures.values()
+        for p in [e["primary"]] + list(e.get("alternatives") or [])
+    }
     print(
         f"OK — all {len(elements)} elements resolve to artwork and to a structure "
-        f"({len(named)} named artwork treatments, {len(NAMED_STRUCTURE_ROUTES)} named structures)"
+        f"({len(named)} named artwork treatments, {len(templates_used)} geometry templates in use)"
     )
     return 0
 
