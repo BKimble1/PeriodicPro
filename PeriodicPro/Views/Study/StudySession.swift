@@ -703,6 +703,13 @@ struct SessionSummaryView: View {
             .padding(.bottom, Theme.Spacing.l)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // A container element, not a relabelling of everything inside it.
+        // SwiftUI applies an accessibility identifier to every descendant
+        // element when the view it is attached to is not an element itself,
+        // so this alone renamed every control below to the container's name.
+        // `children: .contain` makes this an accessibility container that
+        // holds its children rather than replacing them.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("session.summary")
     }
 }

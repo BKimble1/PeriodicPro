@@ -255,7 +255,12 @@ private struct TableScreenContent: View {
             showsMastery: showsMastery,
             onSelect: onSelect
         )
-        .accessibilityIdentifier("periodicTable.grid")
+        // No accessibility identifier on the grid itself, deliberately.
+        // SwiftUI propagates an accessibility identifier down to every
+        // descendant element, replacing theirs — so naming the container
+        // renamed all 118 tiles to "periodicTable.grid" and there was no
+        // longer any way to address one. Nothing referenced the container
+        // name; the tiles are what anything wants to reach.
 
         if scrollsHorizontally {
             ScrollView(.horizontal) {

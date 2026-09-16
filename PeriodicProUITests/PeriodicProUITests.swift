@@ -172,6 +172,29 @@ final class PeriodicProUITests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Progress"].exists)
     }
 
+    /// Every tile addressable on its own.
+    ///
+    /// The regression this exists for: `PeriodicTableScreen` put an
+    /// `accessibilityIdentifier` on the whole grid. SwiftUI applies an
+    /// accessibility identifier to every descendant element when the view it is
+    /// attached to is not an element itself, so all 118 tiles came back named
+    /// after the container and not one of them could be addressed. Nothing
+    /// caught it, because a spot check for a single tile is not what fails —
+    /// the clobbered identifier still matches *something*. Distinctness is.
+    func testElementTilesAreIndividuallyAddressable() {
+        waitFor(app.buttons["element.H"])
+        let tiles = app.buttons
+            .allElementsBoundByAccessibilityElement
+            .map(\.identifier)
+            .filter { $0.hasPrefix("element.") }
+
+        XCTAssertGreaterThan(tiles.count, 100,
+                             "The fitted table should vend a button per element\(onScreen())")
+        XCTAssertEqual(Set(tiles).count, tiles.count,
+                       "Element tiles share identifiers, so something above them is "
+                       + "overwriting their own\(onScreen())")
+    }
+
     func testAllOneHundredAndEighteenTilesAreReachable() {
         // Spot-check one element from every row of the table, including both
         // detached f-block rows. Reachable, which is what the name says: the
