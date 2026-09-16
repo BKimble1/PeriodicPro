@@ -268,7 +268,22 @@ jobs:
           VERSION_BUILT=$(plutil -extract CFBundleShortVersionString raw "$PLIST")
           BUILD_BUILT=$(plutil -extract CFBundleVersion raw "$PLIST")
           FAMILIES=$(plutil -extract UIDeviceFamily json -o - "$PLIST")
-          ENCRYPTION=$(plutil -extract ITSAppUsesNonExemptEncryption json -o - "$PLIST" 2>/dev/null || echo missing)
+
+          # Read as XML rather than JSON or raw, because the question is the
+          # value's *type*, not its text. A real boolean comes out as <false/>
+          # and the string App Store Connect ignores comes out as
+          # <string>NO</string>; `raw` renders both as something false-looking
+          # and `json` cannot render either — JSON has no bare scalar at the
+          # top level, so plutil answers "invalid object in plist for JSON
+          # format", on stdout, and a redirect of stderr does not catch it.
+          ENCRYPTION_XML=$(plutil -extract ITSAppUsesNonExemptEncryption xml1 \
+            -o - "$PLIST" 2>&1 || true)
+          case "$ENCRYPTION_XML" in
+            *"<false/>"*) ENCRYPTION="false (boolean)" ;;
+            *"<true/>"*)  ENCRYPTION="true (boolean)" ;;
+            *"No value at that key path"*|*"invalid key path"*) ENCRYPTION="absent" ;;
+            *) ENCRYPTION="present but not a boolean" ;;
+          esac
 
           echo "bundle identifier: $BUNDLE_ID_BUILT"
           echo "display name:      $DISPLAY_NAME"
@@ -285,13 +300,22 @@ jobs:
           esac
           [ "$DISPLAY_NAME" = "Elemora" ] || {
             echo "::error::The Home Screen name is '$DISPLAY_NAME', not Elemora"; fail=1; }
-          [ "$ENCRYPTION" = "false" ] || {
-            echo "::error::ITSAppUsesNonExemptEncryption is $ENCRYPTION, and App Store \
-          Connect reads only a real boolean. The build would land in Missing Compliance."
-            fail=1; }
           [ "$BUILD_BUILT" = "$BUILD_NUMBER" ] || {
             echo "::error::Built build number $BUILD_BUILT does not match the resolved \
           $BUILD_NUMBER, so the upload would collide with an earlier build."; fail=1; }
+
+          # A warning, not a failure, and deliberately so. The three checks
+          # above describe a build that should not be sent at all — the wrong
+          # devices, the wrong name on the Home Screen, a build number that
+          # would collide with one already uploaded. This one describes a build
+          # that arrives fine and then waits on one checkbox in App Store
+          # Connect. Refusing to upload over it would cost a whole cycle to
+          # save a click.
+          [ "$ENCRYPTION" = "false (boolean)" ] || {
+            echo "::warning::ITSAppUsesNonExemptEncryption is $ENCRYPTION. App Store \
+          Connect reads only a real boolean, so this build will land in Missing \
+          Compliance and need the export-compliance question answered by hand."; }
+
           [ "$fail" -eq 0 ]
 
       - name: Write export options
