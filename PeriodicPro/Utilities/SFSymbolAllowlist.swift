@@ -68,12 +68,20 @@ enum SFSymbolAllowlist {
 
     /// Never returns a name that would render as a blank space.
     ///
-    /// The allowlist is the first gate and `PeriodicProTests` proves every entry
-    /// in it resolves; this second check means even a symbol withdrawn by a
-    /// future OS release degrades to the fallback rather than to nothing.
+    /// Checked against `allNames`, not `names`. The two lists exist because the
+    /// dataset and the interface are trusted differently — `contains(_:)` is
+    /// what gates the dataset, and the unit tests enforce it — but both lists
+    /// are equally "symbols this app draws on purpose". Gating this on the
+    /// dataset list alone silently turned the paywall's `infinity` and
+    /// `square.grid.3x3.fill` rows into atoms, because those are interface
+    /// symbols and nothing in the dataset happens to use them.
+    ///
+    /// The allowlist is the first gate and `PeriodicProTests` proves every
+    /// entry in it resolves; the `UIImage` check means even a symbol withdrawn
+    /// by a future OS release degrades to the fallback rather than to nothing.
     @MainActor
     static func resolved(_ name: String) -> String {
-        guard names.contains(name), UIImage(systemName: name) != nil else { return fallback }
+        guard allNames.contains(name), UIImage(systemName: name) != nil else { return fallback }
         return name
     }
 }

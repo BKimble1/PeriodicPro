@@ -57,25 +57,48 @@ jobs:
           xcrun simctl list devices available --json \
             | python3 Tools/pick_simulators.py >> "$GITHUB_ENV"
 
+      # Presence only. A secret's value is never echoed, never written to a
+      # file the artifact step can reach, and never interpolated into a message
+      # — the most this step will ever say about one is "configured".
       - name: Check required configuration
         env:
-          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
           BUNDLE_ID: ${{ vars.BUNDLE_IDENTIFIER }}
-          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
         run: |
           set -euo pipefail
           missing=0
-          for name in TEAM_ID KEY_ID ISSUER_ID PRIVATE_KEY; do
+          for name in APPLE_TEAM_ID APP_STORE_CONNECT_KEY_ID \
+                      APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_PRIVATE_KEY; do
             if [ -z "${!name:-}" ]; then
+              echo "$name: MISSING"
               echo "::error::Missing required secret: $name (see TESTFLIGHT.md)"
               missing=1
+            else
+              echo "$name: configured"
             fi
           done
+
+          # The bundle identifier is not a secret — it ships inside the app and
+          # is visible to anyone who downloads it — so checking its value is
+          # both safe and necessary. The repository variable overrides the
+          # committed one, which makes a typo there silently fatal: signing
+          # fails for an identifier this account does not own.
+          COMMITTED=$(sed -n 's/^PRODUCT_BUNDLE_IDENTIFIER_BASE = //p' \
+            Config/Shared.xcconfig | tr -d '[:space:]')
+          echo "Config/Shared.xcconfig bundle identifier: $COMMITTED"
           if [ -z "${BUNDLE_ID:-}" ]; then
-            echo "::warning::Repository variable BUNDLE_IDENTIFIER is not set; \
-          falling back to the placeholder in Config/Shared.xcconfig, which you do not own."
+            echo "BUNDLE_IDENTIFIER variable: not set (using the committed value)"
+          elif [ "$BUNDLE_ID" != "$COMMITTED" ]; then
+            echo "BUNDLE_IDENTIFIER variable: $BUNDLE_ID"
+            echo "::error::The BUNDLE_IDENTIFIER repository variable and \
+          Config/Shared.xcconfig disagree. The variable wins, so the archive would be \
+          signed for $BUNDLE_ID. Make them match before uploading."
+            missing=1
+          else
+            echo "BUNDLE_IDENTIFIER variable: $BUNDLE_ID (matches)"
           fi
           [ "$missing" -eq 0 ]
 

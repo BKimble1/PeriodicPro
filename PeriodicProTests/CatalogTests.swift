@@ -41,6 +41,27 @@ struct SFSymbolTests {
         }
     }
 
+    /// The regression this is here for: `resolved(_:)` used to consult only the
+    /// dataset allowlist, so every interface symbol that no element happened to
+    /// reference — `infinity` and `square.grid.3x3.fill` among them — came back
+    /// as the fallback atom. Two of the four rows on the Elemora Pro paywall
+    /// drew the wrong glyph, and nothing failed.
+    @Test("Every symbol the interface draws resolves to itself, not to the fallback")
+    func interfaceSymbolsResolveToThemselves() {
+        for name in SFSymbolAllowlist.uiNames.sorted() {
+            #expect(SFSymbolAllowlist.resolved(name) == name,
+                    "\(name) is an interface symbol but resolved() replaces it with the fallback")
+        }
+    }
+
+    @Test("The paywall's own feature symbols survive resolution")
+    func paywallSymbolsResolve() {
+        for name in ["cube.fill", "infinity", "scope", "square.grid.3x3.fill"] {
+            #expect(SFSymbolAllowlist.resolved(name) == name,
+                    "the Elemora Pro paywall would draw a fallback atom instead of \(name)")
+        }
+    }
+
     @Test("An unknown name degrades to the fallback rather than to nothing")
     func unknownNameFallsBack() {
         #expect(SFSymbolAllowlist.resolved("definitely.not.a.symbol") == SFSymbolAllowlist.fallback)

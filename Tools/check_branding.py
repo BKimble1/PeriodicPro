@@ -83,10 +83,14 @@ RETAINED_IDENTIFIERS = {
         "the shared scheme CI builds by name",
     "PeriodicPro/App/PeriodicProApp.swift":
         "the @main App type and the com.periodicpro.app log subsystem",
+    "PeriodicPro/App/AppEnvironment.swift":
+        "names Config/PeriodicPro.storekit, the scheme's StoreKit configuration",
     "PeriodicProUITests/PeriodicProUITests.swift":
         "UI test class and target names",
     "PeriodicProUITests/PeriodicProLaunchTests.swift":
         "UI test class and target names",
+    "PeriodicProUITests/ElemoraScreenshotTests.swift":
+        "queries the paywall rows by their periodicpro.* product identifiers",
 
     # --- `@testable import PeriodicPro`: the module name is the target name ---
     "PeriodicProTests/ArtworkAndStructureTests.swift": "@testable import PeriodicPro",

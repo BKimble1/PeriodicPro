@@ -35,6 +35,17 @@ enum RuntimeFlags {
     /// contacted during a UI test — a sandbox purchase sheet cannot be driven
     /// reliably from XCUITest — so entitlement is decided here instead.
     static let forcesProEntitlement = ProcessInfo.processInfo.arguments.contains("-proEntitled")
+
+    /// Set alongside `-uiTesting` to load products from the *local* StoreKit
+    /// configuration instead of stubbing StoreKit out entirely.
+    ///
+    /// The paywall's prices come from `Product.displayPrice`, so with StoreKit
+    /// stubbed there is no way to see whether the prices, the per-month figure
+    /// and the savings badge actually render — the paywall just says its
+    /// options are unavailable. This flag closes that hole. It never reaches a
+    /// purchase sheet: nothing taps Subscribe, and the scheme points StoreKit
+    /// at `Config/PeriodicPro.storekit`, so no request leaves the device.
+    static let usesLocalStoreKit = ProcessInfo.processInfo.arguments.contains("-storeKitLocal")
 }
 
 /// Environment storage for the bundled dataset.

@@ -73,7 +73,10 @@ jobs:
   build-and-test:
     name: Build and test
     runs-on: macos-15
-    timeout-minutes: 60
+    # A cold build, the unit suite, thirty-one end-to-end UI tests and an
+    # unsigned Release build. Measured at around forty-five minutes, so sixty
+    # is thinner margin than it looks.
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
 
@@ -137,6 +140,10 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer github-actions
 
+      # The screenshot tour lives in the same bundle but is captured by the
+      # `screenshots` job, which controls the simulator's appearance. Running it
+      # here too would add four minutes and photograph whatever appearance the
+      # runner happened to be in.
       - name: Run UI tests
         run: |
           set -o pipefail
@@ -147,6 +154,7 @@ jobs:
             -destination "id=${SIM_DEFAULT}" \
             -derivedDataPath build/DerivedData \
             -only-testing:PeriodicProUITests \
+            -skip-testing:PeriodicProUITests/ElemoraScreenshotTests \
             -resultBundlePath build/UITests.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer github-actions
@@ -171,6 +179,120 @@ jobs:
           path: build/*.xcresult
           retention-days: 7
           if-no-files-found: ignore
+
+  screenshots:
+    name: Simulator screenshots
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          set -euo pipefail
+          if [ -d "/Applications/Xcode_${XCODE_VERSION}.app" ]; then
+            sudo xcode-select -s "/Applications/Xcode_${XCODE_VERSION}.app"
+          fi
+          xcodebuild -version
+
+      - name: Ensure xcbeautify is available
+        run: which xcbeautify || brew install xcbeautify
+
+      - name: Resolve simulators
+        run: |
+          set -euo pipefail
+          xcrun simctl list devices available --json \
+            | python3 Tools/pick_simulators.py >> "$GITHUB_ENV"
+
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "id=${SIM_DEFAULT}" \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      # Light and dark are two runs of the same tour with the simulator's
+      # appearance changed underneath it, rather than an in-app override — so
+      # what is captured is what iOS actually composites, navigation bars,
+      # status bar and all.
+      - name: Capture — light
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          xcrun simctl boot "${SIM_DEFAULT}" || true
+          xcrun simctl bootstatus "${SIM_DEFAULT}" -b
+          xcrun simctl ui "${SIM_DEFAULT}" appearance light
+          SCREENSHOT_SUFFIX=light xcodebuild test-without-building \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "id=${SIM_DEFAULT}" \
+            -derivedDataPath build/DerivedData \
+            -only-testing:PeriodicProUITests/ElemoraScreenshotTests \
+            -resultBundlePath build/Screenshots-light.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Capture — dark
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          xcrun simctl ui "${SIM_DEFAULT}" appearance dark
+          SCREENSHOT_SUFFIX=dark xcodebuild test-without-building \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "id=${SIM_DEFAULT}" \
+            -derivedDataPath build/DerivedData \
+            -only-testing:PeriodicProUITests/ElemoraScreenshotTests \
+            -resultBundlePath build/Screenshots-dark.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      # A smaller phone as well, light only: the point is to see what the
+      # layout does at 375 points, not to have every screen twice again.
+      - name: Capture — smaller phone
+        if: always()
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          xcrun simctl boot "${SIM_SMALL}" || true
+          xcrun simctl bootstatus "${SIM_SMALL}" -b
+          xcrun simctl ui "${SIM_SMALL}" appearance light
+          SCREENSHOT_SUFFIX="light-${SIM_SMALL_NAME// /-}" xcodebuild test-without-building \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "id=${SIM_SMALL}" \
+            -derivedDataPath build/DerivedData \
+            -only-testing:PeriodicProUITests/ElemoraScreenshotTests \
+            -resultBundlePath build/Screenshots-small.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: Export the screenshots
+        if: always()
+        run: |
+          set -euo pipefail
+          for bundle in build/Screenshots-*.xcresult; do
+            [ -d "$bundle" ] || continue
+            ./Tools/export_screenshots.sh "$bundle" screenshots
+          done
+          ls -la screenshots || true
+
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: elemora-simulator-screenshots
+          path: screenshots/*.png
+          retention-days: 30
+          if-no-files-found: error
 
   smaller-and-larger-phones:
     name: Layout check (${{ matrix.size }})

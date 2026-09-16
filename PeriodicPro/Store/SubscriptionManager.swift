@@ -33,8 +33,12 @@ final class SubscriptionManager {
     private static let logger = Logger(subsystem: "com.periodicpro.app", category: "store")
 
     init() {
-        isStoreKitEnabled = !RuntimeFlags.isUITesting
-        if RuntimeFlags.isUITesting {
+        // A UI test stubs StoreKit out unless it has explicitly asked for the
+        // local configuration, which is the only way to see real prices on the
+        // paywall without a sandbox account.
+        let stubsStoreKit = RuntimeFlags.isUITesting && !RuntimeFlags.usesLocalStoreKit
+        isStoreKitEnabled = !stubsStoreKit
+        if stubsStoreKit {
             // UI tests drive the paywall and the Pro-gated paths deterministically
             // from a launch argument rather than from a sandbox account.
             entitlement = RuntimeFlags.forcesProEntitlement ? .pro(Self.uiTestingSubscription) : .free
