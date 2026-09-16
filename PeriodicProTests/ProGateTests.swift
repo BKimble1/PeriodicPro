@@ -92,6 +92,16 @@ struct ProEntitlementTests {
 @MainActor
 @Suite("Waiting for StoreKit")
 struct EntitlementResolutionTests {
+    /// The longest a bounded wait may take in this process. Not a timing
+    /// budget for the code: a `@MainActor` test resumes behind every other
+    /// main-actor test in the parallel run, and one pass of that queue has
+    /// measured over thirty seconds. Two minutes is clear of the queue and
+    /// still nowhere near "never".
+    static let contendedBound: Duration = .seconds(120)
+    /// A deadline the code must return well before when it has its answer.
+    /// Longer than `contendedBound` by enough that sitting it out would fail.
+    static let generousDeadline: Duration = .seconds(300)
+
     /// The defect this pins: `beginRound` awaited `refresh()` unbounded. On a
     /// CI simulator where StoreKit never answered, the entitlement stayed
     /// unresolved and tapping Smart Review did nothing — no round, no paywall,
@@ -114,9 +124,14 @@ struct EntitlementResolutionTests {
         // whole of the defect — it used to be unbounded. It is not a claim
         // about precision: this suite is `@MainActor` and Swift Testing runs
         // suites in parallel, so each 50ms sleep resumes behind whatever else
-        // is queued on the main actor. A first attempt at three seconds
-        // measured that contention rather than this code, and failed at 5.4.
-        #expect(elapsed < .seconds(30), "but it must not wait forever: \(elapsed)")
+        // is queued on the main actor — in practice behind every other
+        // main-actor test that is waiting its turn. A first attempt at three
+        // seconds measured that contention rather than this code, and failed
+        // at 5.4; thirty seconds failed at 30.9 once the suite had grown to
+        // nearly three hundred tests. The bound only has to separate "ended"
+        // from "never ends", so it is set well clear of a full pass of the
+        // queue.
+        #expect(elapsed < Self.contendedBound, "but it must not wait forever: \(elapsed)")
     }
 
     /// The sibling of the defect above, in the same file, missed the first
@@ -143,8 +158,10 @@ struct EntitlementResolutionTests {
         let elapsed = ContinuousClock.now - started
         #expect(elapsed >= .milliseconds(250), "it should wait for the answer first")
         // Generous for the same reason as the wait above: the claim is that it
-        // ends, not that it ends punctually on a contended main actor.
-        #expect(elapsed < .seconds(30), "but it must not wait forever: \(elapsed)")
+        // ends, not that it ends punctually on a contended main actor. The
+        // stand-in sleeps for ten minutes, so the bound still tells the two
+        // apart.
+        #expect(elapsed < Self.contendedBound, "but it must not wait forever: \(elapsed)")
         #expect(store.products.isEmpty)
         // The state matters as much as the timing: this is the one the paywall
         // draws the Try again button from. Ending in `.loadingProducts` would
@@ -162,9 +179,12 @@ struct EntitlementResolutionTests {
             productRequest: { [] })
         let started = ContinuousClock.now
 
-        await store.loadProducts(within: .seconds(30))
+        // The deadline is far longer than any queue pass, so that sitting it
+        // out and returning promptly are still distinguishable when a pass
+        // of the contended main actor alone takes half a minute.
+        await store.loadProducts(within: Self.generousDeadline)
 
-        #expect(ContinuousClock.now - started < .seconds(25),
+        #expect(ContinuousClock.now - started < Self.contendedBound,
                 "an answered request should not sit out the deadline")
         // An empty catalog is still an answer, and it is the unavailable
         // state rather than the timeout message.
@@ -184,10 +204,10 @@ struct EntitlementResolutionTests {
                                 expirationDate: nil))] {
             let store = SubscriptionManager(testingEntitlement: entitlement)
             let started = ContinuousClock.now
-            await store.resolveEntitlement(within: .seconds(5))
+            await store.resolveEntitlement(within: Self.generousDeadline)
             // Same reasoning as above: the claim is "does not wait", and on a
             // contended main actor even returning immediately is not instant.
-            #expect(ContinuousClock.now - started < .seconds(5),
+            #expect(ContinuousClock.now - started < Self.contendedBound,
                     "a resolved entitlement should not wait for the deadline")
         }
     }
