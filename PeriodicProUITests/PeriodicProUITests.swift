@@ -10,6 +10,14 @@ final class PeriodicProUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        // Portrait, explicitly. `PeriodicProLaunchTests` runs each of its
+        // checks once per target application UI configuration, and those
+        // include landscape — the simulator keeps that rotation, and the next
+        // class to run inherits it. The Study tab in landscape then reported
+        // "Activation point invalid" for controls it could not resolve, which
+        // reads as a broken screen rather than a rotated device. Landscape is
+        // still covered, by the launch tests that deliberately ask for it.
+        XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
         // Skips onboarding, uses an in-memory store and silences haptics.
         app.launchArguments = ["-uiTesting"]

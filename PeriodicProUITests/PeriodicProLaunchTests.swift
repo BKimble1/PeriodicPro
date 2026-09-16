@@ -12,6 +12,14 @@ final class PeriodicProLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
+    override func tearDownWithError() throws {
+        // This class asks to be run in every UI configuration the app
+        // supports, which rotates the simulator. The rotation outlives the
+        // test, so put it back rather than leaving it for whichever class
+        // runs next.
+        XCUIDevice.shared.orientation = .portrait
+    }
+
     /// The accessibility tree, attached and inlined into the failure message.
     ///
     /// This test runs once per target application UI configuration, and the

@@ -32,6 +32,10 @@ final class ElemoraScreenshotTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        // Screenshots are portrait. The launch tests rotate the simulator and
+        // the rotation persists, so without this the tour photographs whatever
+        // orientation the previous class happened to leave behind.
+        XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
         app.launchArguments = ["-uiTesting"]
         app.launch()
