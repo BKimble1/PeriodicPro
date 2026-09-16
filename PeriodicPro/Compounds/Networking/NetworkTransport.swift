@@ -74,17 +74,23 @@ final class StubTransport: NetworkTransport, @unchecked Sendable {
         lock.unlock()
     }
 
+    /// Records the request and finds its route, under the lock, in a
+    /// synchronous helper: taking an `NSLock` inside an async function is an
+    /// error in the Swift 6 language mode.
+    private func route(for path: String) -> Route? {
+        lock.lock()
+        defer { lock.unlock() }
+        requestedPaths.append(path)
+        return routes.first { path.contains($0.pathContains) }
+    }
+
     func perform(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
         if latency > .zero {
             try await Task.sleep(for: latency)
         }
         try Task.checkCancellation()
         let path = (request.url?.path ?? "") + (request.url?.query.map { "?" + $0 } ?? "")
-        lock.lock()
-        requestedPaths.append(path)
-        let route = routes.first { path.contains($0.pathContains) }
-        lock.unlock()
-        guard let route, let url = request.url else {
+        guard let route = route(for: path), let url = request.url else {
             throw URLError(.notConnectedToInternet)
         }
         guard let response = HTTPURLResponse(

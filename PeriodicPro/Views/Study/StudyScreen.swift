@@ -607,7 +607,7 @@ struct SavedQuizRow: View {
                     .font(.system(.footnote, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, Theme.Spacing.l)
-                    .frame(minHeight: 36)
+                    .frame(minHeight: Theme.minimumTouchTarget)
                     .background { Capsule().fill(AppColor.accent) }
             }
             .buttonStyle(.plain)

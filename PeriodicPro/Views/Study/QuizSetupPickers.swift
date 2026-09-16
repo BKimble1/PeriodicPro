@@ -30,7 +30,7 @@ struct ChipGrid<Item: Hashable>: View {
                     .foregroundStyle(isOn ? Color.white : AppColor.primaryText)
                     .padding(.horizontal, Theme.Spacing.m)
                     .frame(maxWidth: .infinity)
-                    .frame(minHeight: 36)
+                    .frame(minHeight: Theme.minimumTouchTarget)
                     .background {
                         Capsule(style: .continuous).fill(isOn ? AppColor.accent : AppColor.surfaceMuted)
                     }

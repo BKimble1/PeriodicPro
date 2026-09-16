@@ -27,12 +27,19 @@ private final class FlakyTransport: NetworkTransport, @unchecked Sendable {
         self.then = then
     }
 
-    func perform(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+    /// Counts the attempt and decides whether it fails, under the lock, in a
+    /// synchronous helper so no lock is taken inside async code.
+    private func recordAttempt() -> Bool {
         lock.lock()
+        defer { lock.unlock() }
         attempts += 1
         let shouldFail = failuresLeft > 0
         if shouldFail { failuresLeft -= 1 }
-        lock.unlock()
+        return shouldFail
+    }
+
+    func perform(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        let shouldFail = recordAttempt()
         guard shouldFail, let url = request.url,
               let response = HTTPURLResponse(url: url, statusCode: failureStatus, httpVersion: nil,
                                              headerFields: nil) else {

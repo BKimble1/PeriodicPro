@@ -44,8 +44,9 @@ struct OnboardingView: View {
             symbolName: "graduationcap.fill",
             title: "Practice to remember",
             message: """
-                Flashcards, a quick quiz and identify rounds turn what you have read into \
-                something you recall.
+                Flashcards, quizzes you shape yourself, Match and identify rounds turn what \
+                you have read into something you recall. Compounds join in, and the Build \
+                tab lets you look up what you assemble.
                 """,
             tint: ElementCategory.nobleGas.accentColor
         ),

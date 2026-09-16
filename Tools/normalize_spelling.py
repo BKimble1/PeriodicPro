@@ -157,8 +157,20 @@ def match_case(source: str, replacement: str) -> str:
     return replacement
 
 
+# Lines that spell out an Apple API keep Apple's spelling. `URLError.Code`
+# has a `.cancelled` case, and normalizing that produced a build error, not a
+# more American one.
+API_MARKERS = ("URLError", "NSURLError", "// spelling: keep")
+
+
+def normalize_line(line: str) -> str:
+    if any(marker in line for marker in API_MARKERS):
+        return line
+    return PATTERN.sub(lambda m: match_case(m.group(0), REPLACEMENTS[m.group(0).lower()]), line)
+
+
 def normalize(text: str) -> str:
-    return PATTERN.sub(lambda m: match_case(m.group(0), REPLACEMENTS[m.group(0).lower()]), text)
+    return "\n".join(normalize_line(line) for line in text.split("\n"))
 
 
 def main() -> int:

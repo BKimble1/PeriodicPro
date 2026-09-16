@@ -289,7 +289,7 @@ actor PubChemClient {
             return .offline
         case .timedOut:
             return .timeout
-        case .canceled:
+        case URLError.Code.cancelled:
             return .canceled
         default:
             return .serverError(error.errorCode)
