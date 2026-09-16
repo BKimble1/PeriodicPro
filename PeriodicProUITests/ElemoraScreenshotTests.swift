@@ -55,25 +55,37 @@ final class ElemoraScreenshotTests: XCTestCase {
                       "Timed out waiting for \(element)", file: file, line: line)
     }
 
+    /// Scrolls while looking, rather than waiting for the element to exist and
+    /// only then scrolling. SwiftUI does not vend an accessibility element for
+    /// content far outside a ScrollView's viewport, so waiting for something
+    /// below the fold times out before a single swipe has happened.
+    @discardableResult
     private func scrollTo(_ element: XCUIElement,
                           file: StaticString = #filePath,
                           line: UInt = #line) -> XCUIElement {
-        waitFor(element, 15, file: file, line: line)
+        if element.waitForExistence(timeout: 3), element.isHittable { return element }
+
         var attempts = 0
-        while !element.isHittable && attempts < 8 {
+        while attempts < 8 {
             app.swipeUp()
             attempts += 1
+            if element.exists, element.isHittable { return element }
         }
-        XCTAssertTrue(element.isHittable,
-                      "\(element) never became tappable", file: file, line: line)
+        for _ in 0..<attempts {
+            app.swipeDown()
+            if element.exists, element.isHittable { return element }
+        }
+
+        XCTAssertTrue(element.exists && element.isHittable,
+                      "\(element) never became tappable, scrolling both ways",
+                      file: file, line: line)
         return element
     }
 
     private func tap(_ element: XCUIElement,
                      file: StaticString = #filePath,
                      line: UInt = #line) {
-        _ = scrollTo(element, file: file, line: line)
-        element.tap()
+        scrollTo(element, file: file, line: line).tap()
     }
 
     private func openTab(_ name: String) {
@@ -83,9 +95,7 @@ final class ElemoraScreenshotTests: XCTestCase {
     }
 
     private func openElement(_ symbol: String) {
-        let tile = app.buttons["element.\(symbol)"]
-        waitFor(tile)
-        tile.tap()
+        tap(app.buttons["element.\(symbol)"])
         waitFor(app.buttons["detail.favoriteButton"])
     }
 
@@ -138,7 +148,7 @@ final class ElemoraScreenshotTests: XCTestCase {
         capture("03-gold-detail-scrolled")
 
         // 4. The 3D explorer, on a free demo element
-        explore.tap()
+        scrollTo(explore).tap()
         waitFor(el("explorer.viewer"))
         // Longer than elsewhere: this one waits for RealityKit to have a frame
         // on screen, not merely for the hosting view to exist.
