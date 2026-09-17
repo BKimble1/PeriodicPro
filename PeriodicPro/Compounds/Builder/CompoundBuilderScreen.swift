@@ -54,6 +54,12 @@ struct CompoundBuilderScreen: View {
                 .padding(.horizontal, Theme.Spacing.screenMargin)
                 .padding(.top, Theme.Spacing.s)
                 .padding(.bottom, Theme.Spacing.xxxl)
+                // Capped and centered on a wide screen. Everything on this
+                // tab is a card of text and controls, and a card stretched to
+                // a thousand points is a phone layout that has been pulled
+                // apart rather than an iPad layout.
+                .frame(maxWidth: Theme.readableWidth)
+                .frame(maxWidth: .infinity)
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.immediately)

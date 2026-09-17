@@ -50,6 +50,15 @@ enum Theme {
     /// Minimum comfortable hit target. Used by the expanded table layout and
     /// every control outside the compact table.
     static let minimumTouchTarget: CGFloat = 44
+
+    /// The widest a column of cards and running text is allowed to get.
+    ///
+    /// Wider than any phone, so nothing changes there; on an iPad it keeps a
+    /// stack of cards a readable column rather than a phone layout stretched
+    /// across a thousand points. The periodic table itself is deliberately
+    /// exempt — it is the one thing on the screen that should use every point
+    /// of width it is given.
+    static let readableWidth: CGFloat = 700
 }
 
 extension View {
