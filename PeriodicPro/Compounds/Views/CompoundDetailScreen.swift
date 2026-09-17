@@ -18,6 +18,9 @@ struct CompoundDetailScreen: View {
     @State private var loadError: String?
     @State private var style: CompoundRenderStyle = .ballAndStick
     @State private var showsExplorer = false
+    @State private var recheck = HypotheticalRecheckModel()
+    @State private var showsDeleteConfirmation = false
+    @Environment(\.dismiss) private var dismiss
 
     private var compoundID: String { compound?.id ?? candidate.id }
     private var isFavorite: Bool { progress.isCompoundFavorite(compoundID) }
@@ -79,6 +82,16 @@ struct CompoundDetailScreen: View {
                 CompoundExplorerView(compound: compound, tint: tint, initialStyle: style)
             }
         }
+        .alert("Delete this composition?", isPresented: $showsDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                if let compound { deleteComposition(compound) }
+            }
+            .accessibilityIdentifier("compound.confirmDelete")
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This composition was built here and is not a record from anywhere else, so "
+                 + "deleting it removes it — along with its place in Study — for good.")
+        }
         .accessibilityIdentifier("compound.screen")
     }
 
@@ -116,7 +129,14 @@ struct CompoundDetailScreen: View {
             .softRise(enabled: !reduceMotion)
         }
         if compound.isHypothetical {
-            hypotheticalNotice.softRise(enabled: !reduceMotion)
+            UnverifiedCompositionCard(
+                compound: compound,
+                recheck: recheck,
+                onCheckAgain: { recheck.check(compound, store: store) },
+                onReplace: { candidate in replace(compound, with: candidate) },
+                onDelete: { showsDeleteConfirmation = true }
+            )
+            .softRise(enabled: !reduceMotion)
         }
         CompoundClassificationCard(compound: compound).softRise(enabled: !reduceMotion)
         CompoundElementsCard(compound: compound, catalog: catalog).softRise(enabled: !reduceMotion)
@@ -137,20 +157,30 @@ struct CompoundDetailScreen: View {
         attribution(compound)
     }
 
-    private var hypotheticalNotice: some View {
-        CardContainer {
-            VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-                Text("Hypothetical composition")
-                    .font(AppFont.cardTitle)
-                    .foregroundStyle(AppColor.primaryText)
-                Text("No known PubChem match found. This composition may be hypothetical, unstable, unindexed, "
-                     + "or otherwise unknown. A database miss is not evidence of a new chemical discovery.")
-                    .font(AppFont.footnote)
-                    .foregroundStyle(AppColor.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
+    /// Swaps a saved composition for a verified record the learner picked.
+    ///
+    /// The composition's own place in Study carries over — saved stays saved,
+    /// a favorite stays a favorite — and the unverified record goes, so the
+    /// learner is left with one compound rather than two of the same thing.
+    private func replace(_ composition: ChemicalCompound, with candidate: CompoundMatchCandidate) {
+        Task { @MainActor in
+            guard let verified = try? await store.resolve(candidate) else { return }
+            let snapshot = progress.compoundSnapshot(for: composition.id)
+            store.retain(verified)
+            if snapshot.isSaved { progress.setCompoundSaved(verified.id, true) }
+            if snapshot.isFavorite, !progress.isCompoundFavorite(verified.id) {
+                _ = progress.toggleCompoundFavorite(verified.id)
             }
+            _ = store.remove(composition, progress: progress)
+            recheck.reset()
+            compound = verified
         }
-        .accessibilityIdentifier("compound.hypotheticalNotice")
+    }
+
+    private func deleteComposition(_ composition: ChemicalCompound) {
+        Haptics.tap()
+        _ = store.remove(composition, progress: progress)
+        dismiss()
     }
 
     private func attribution(_ compound: ChemicalCompound) -> some View {

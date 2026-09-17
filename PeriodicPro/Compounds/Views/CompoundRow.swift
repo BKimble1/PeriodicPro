@@ -126,3 +126,40 @@ struct BetaBadge: View {
             .accessibilityLabel("Beta")
     }
 }
+
+/// The badge on a composition nothing has verified.
+///
+/// Deliberately not "does not exist". A database miss is a fact about the
+/// database, and the wording everywhere this appears keeps the two apart.
+struct UnverifiedBadge: View {
+    var body: some View {
+        Text("UNVERIFIED")
+            .font(.system(size: 10, weight: .bold))
+            .kerning(0.8)
+            .foregroundStyle(AppColor.warning)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background { Capsule().fill(AppColor.warning.opacity(0.12)) }
+            .overlay { Capsule().strokeBorder(AppColor.warning.opacity(0.35), lineWidth: 0.7) }
+            .accessibilityLabel("Unverified composition")
+            .accessibilityIdentifier("compound.unverifiedBadge")
+    }
+}
+
+/// The badge on a compound that is a record in PubChem or in Elemora's own
+/// catalog, as opposed to a composition somebody assembled.
+struct VerifiedBadge: View {
+    var source: CompoundDataSource = .pubChem
+
+    var body: some View {
+        Label("Verified", systemImage: "checkmark.seal.fill")
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(AppColor.positive)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background { Capsule().fill(AppColor.positive.opacity(0.12)) }
+            .overlay { Capsule().strokeBorder(AppColor.positive.opacity(0.32), lineWidth: 0.7) }
+            .accessibilityLabel("Verified in \(source.displayName)")
+            .accessibilityIdentifier("compound.verifiedBadge")
+    }
+}

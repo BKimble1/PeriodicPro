@@ -312,6 +312,17 @@ final class CompoundBuilderModel {
         identify(store: store, catalog: catalog, debounced: false)
     }
 
+    /// Waits for whatever lookup is in flight to finish.
+    ///
+    /// For tests. The interface never needs it — it renders whatever state
+    /// arrives — but a test that wants to assert on the result of a debounced
+    /// request otherwise has to guess how long a loaded CI runner will take to
+    /// schedule the work, which is a guess that is wrong on some runs and not
+    /// others.
+    func waitForPendingLookup() async {
+        await task?.value
+    }
+
     private func fetchRemote(hillFormula formula: String, store: CompoundStore) async {
         remoteRequestCount += 1
         do {

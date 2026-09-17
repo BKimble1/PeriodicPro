@@ -97,9 +97,11 @@ RETAINED_IDENTIFIERS = {
     # --- `@testable import PeriodicPro`: the module name is the target name ---
     "PeriodicProTests/ArtworkAndStructureTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/CatalogTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/ChemicalQueryTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ElementDataTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/FormattingTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ProgressTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/SavedCompoundTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/SearchAndFilterTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/SmartReviewTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/StudyEngineTests.swift": "@testable import PeriodicPro",

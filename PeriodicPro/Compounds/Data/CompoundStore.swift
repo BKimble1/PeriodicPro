@@ -187,6 +187,60 @@ final class CompoundStore {
         cacheVersion += 1
     }
 
+    // MARK: - Removing
+
+    /// What removing a compound can mean, which depends on where it came from.
+    enum RemovalOutcome: Equatable, Sendable {
+        /// A bundled record: its state was cleared, the record itself stays.
+        /// The catalog is the app's own data and is never deleted.
+        case clearedState
+        /// A fetched record with nothing left pointing at it: purged from the
+        /// cache as well, so it will be fetched again if it is ever wanted.
+        case purgedFromCache
+        /// A composition the learner built and has now deleted: gone.
+        case deleted
+    }
+
+    /// Clears a compound's saved and favorite state, and purges the cached
+    /// record when nothing refers to it any more.
+    ///
+    /// Never deletes from the bundled catalog: that is the app's own data, and
+    /// "remove from saved" is a statement about the learner's list, not about
+    /// whether water exists.
+    @discardableResult
+    func remove(_ compound: ChemicalCompound, progress: ProgressStore) -> RemovalOutcome {
+        if compound.isHypothetical {
+            progress.removeCompoundProgress(compound.id)
+            forget(id: compound.id)
+            return .deleted
+        }
+        progress.setCompoundSaved(compound.id, false)
+        if progress.isCompoundFavorite(compound.id) {
+            _ = progress.toggleCompoundFavorite(compound.id)
+        }
+        guard catalog.compound(id: compound.id) == nil else { return .clearedState }
+        guard !progress.hasCompoundReferences(compound.id) else { return .clearedState }
+        forget(id: compound.id)
+        return .purgedFromCache
+    }
+
+    /// Everything the learner has chosen to keep, resolved to records.
+    ///
+    /// Saved, favorited and every composition they built, in one list, so
+    /// there is a single place to tidy up.
+    func keptCompounds(progress: ProgressStore) -> [ChemicalCompound] {
+        _ = cacheVersion
+        var seen = Set<String>()
+        let identifiers = progress.savedCompoundIDs + progress.favoriteCompoundIDs
+        var kept = identifiers
+            .filter { seen.insert($0).inserted }
+            .compactMap { compound(id: $0) }
+        // A composition the learner built is kept whether or not they also
+        // pressed Save, because there is nowhere else for it to live.
+        kept += cachedCompounds.filter { $0.isHypothetical && seen.insert($0.id).inserted }
+        return kept.sorted { $0.preferredName.localizedCaseInsensitiveCompare($1.preferredName) == .orderedAscending }
+    }
+
     private func attachLocal(_ hits: [CompoundMatchCandidate]) -> [CompoundMatchCandidate] {
         hits.map { hit in
             guard let local = compound(cid: hit.cid) else { return hit }

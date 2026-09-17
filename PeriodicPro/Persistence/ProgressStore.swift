@@ -250,6 +250,32 @@ final class ProgressStore {
         save()
     }
 
+    /// Whether anything still points at this compound.
+    ///
+    /// The cache and the learner's choices are stored separately on purpose,
+    /// so this is the question that decides whether a cached record can be
+    /// thrown away: a compound nobody has favorited, saved or answered is one
+    /// nothing will ask for by identifier again.
+    func hasCompoundReferences(_ id: String) -> Bool {
+        guard let snapshot = compoundSnapshots[id] else { return false }
+        return snapshot.isFavorite || snapshot.isSaved || snapshot.attempts > 0
+            || snapshot.mastery != .notStarted
+    }
+
+    /// Erases everything the learner's progress holds about a compound.
+    ///
+    /// Used when a composition is deleted outright, which only a hypothetical
+    /// one can be. Nothing is left behind pointing at an identifier that no
+    /// longer resolves — there is no dangling progress row, because the row
+    /// itself goes.
+    func removeCompoundProgress(_ id: String) {
+        compoundSnapshots.removeValue(forKey: id)
+        if let record = compoundRecords.removeValue(forKey: id), let context {
+            context.delete(record)
+        }
+        save()
+    }
+
     private static func snapshot(from record: CompoundProgressRecord) -> CompoundProgressSnapshot {
         CompoundProgressSnapshot(
             compoundID: record.compoundID,

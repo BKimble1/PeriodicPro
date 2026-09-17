@@ -347,25 +347,21 @@ struct BuilderIdentificationTests {
         #expect(model.origin == .remote)
         #expect(model.remoteRequestCount == 0, "nothing is sent while the tray is still changing")
 
-        // Waited for rather than slept through. The debounce is 650 ms, but a
-        // loaded runner can take several times that to schedule the work, and
-        // a fixed sleep then reads the counter before the request has gone —
-        // which is how this passed at 3.257 seconds and failed on the next
-        // run with nothing changed between them.
-        let deadline = ContinuousClock.now + .seconds(20)
-        while model.remoteRequestCount == 0, ContinuousClock.now < deadline {
-            try await Task.sleep(for: .milliseconds(25))
-        }
+        // Awaited, not polled and not slept through. Earlier versions of this
+        // waited on a clock — first a flat sleep, then a twenty-second poll —
+        // and asked a 650 ms debounce, a request and an answer to all fit
+        // inside a window a loaded runner does not promise. It passed at 3.2
+        // seconds on one run and failed on the next with nothing changed
+        // between them. The model can say when its lookup has finished, so it
+        // does.
+        await model.waitForPendingLookup()
         #expect(model.remoteRequestCount == 1, "nine changes, one request")
 
         // And it stays one: a debounce that merely delayed the nine requests
         // rather than coalescing them would show the rest arriving now.
-        try await Task.sleep(for: .milliseconds(400))
+        try await Task.sleep(for: .milliseconds(250))
         #expect(model.remoteRequestCount == 1, "the other eight changes must never be sent")
 
-        while model.state == .searching, ContinuousClock.now < deadline {
-            try await Task.sleep(for: .milliseconds(25))
-        }
         // The stub answers like an offline device, which is a failure to ask
         // rather than a miss — and never a discovery.
         guard case .failed = model.state else {

@@ -22,6 +22,7 @@ struct CompoundBuilderScreen: View {
     @State private var showsPicker = false
     @State private var explored: ChemicalCompound?
     @State private var showsHints = false
+    @State private var showsSaved = false
 
     /// The family whose colors dress the result: the heaviest element added.
     private var tint: ElementCategory {
@@ -68,6 +69,24 @@ struct CompoundBuilderScreen: View {
             .background(AppColor.canvas)
             .navigationTitle("Build")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Haptics.tap()
+                        showsSaved = true
+                    } label: {
+                        Image(systemName: "bookmark")
+                            .font(.system(size: 16, weight: .medium))
+                            .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
+                            .contentShape(Rectangle())
+                    }
+                    .accessibilityLabel("Saved compounds")
+                    .accessibilityIdentifier("build.savedCompounds")
+                }
+            }
+            .sheet(isPresented: $showsSaved) {
+                SavedCompoundsScreen()
+            }
             .navigationDestination(for: CompoundMatchCandidate.self) { candidate in
                 CompoundDetailScreen(candidate: candidate)
             }
