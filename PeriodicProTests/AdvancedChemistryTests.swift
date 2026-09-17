@@ -49,7 +49,8 @@ struct AdvancedChemistryTests {
         #expect(abs(carbonInCO2 - 27.29) < 0.1)
         // And the percentages of a compound add to a hundred.
         guard let glucose = CompoundFormula.parse("C6H12O6", catalog: elements) else {
-            return Issue.record("C6H12O6 should parse")
+            Issue.record("C6H12O6 should parse")
+            return
         }
         let total = mass("C6H12O6")
         let sum = glucose.reduce(0.0) { running, entry in
@@ -216,7 +217,7 @@ struct AdvancedChemistryTests {
         for (symbol, states) in AdvancedQuestionBuilder.curatedOxidationStates {
             #expect(TestCatalog.shared.element(symbol: symbol) != nil, "\(symbol) is not an element")
             #expect(!states.isEmpty)
-            #expect(states.allSatisfy { (1...8).contains($0) })
+            #expect(states.allSatisfy { $0 >= 1 && $0 <= 8 })
         }
         #expect(AdvancedQuestionBuilder.curatedOxidationStates["Fe"] == [2, 3])
         #expect(AdvancedQuestionBuilder.curatedOxidationStates["Cu"] == [1, 2])

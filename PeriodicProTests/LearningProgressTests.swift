@@ -191,9 +191,14 @@ struct LearningPathTests {
     func newLearner() {
         let path = steps()
         #expect(path.count == LearningPathStage.allCases.count)
-        #expect(path.allSatisfy { $0.progress == 0 })
+        // Bound rather than written inside #expect: the macro rewrites a bare
+        // call so it can describe the receiver on failure, and that rewrite
+        // could not be type-checked here.
+        let allUnstarted = path.allSatisfy { $0.progress == 0 }
+        #expect(allUnstarted)
         #expect(path.first?.isCurrent == true)
-        #expect(path.dropFirst().allSatisfy { !$0.isCurrent }, "only one stage is next")
+        let oneCurrent = path.dropFirst().allSatisfy { !$0.isCurrent }
+        #expect(oneCurrent, "only one stage is next")
         #expect(LearningPathBuilder.completion(path) == 0)
     }
 
@@ -320,7 +325,10 @@ struct DailyChallengeTests {
     @Test("Completion is recorded per day and does not carry over")
     func completionIsPerDay() {
         let defaults = UserDefaults(suiteName: "DailyChallengeTests-\(UUID().uuidString)")
-        guard let defaults else { return Issue.record("could not make a test defaults suite") }
+        guard let defaults else {
+            Issue.record("could not make a test defaults suite")
+            return
+        }
         defer { DailyChallengeRecord.clear(defaults: defaults) }
 
         #expect(!DailyChallengeRecord.isComplete(on: day, defaults: defaults))

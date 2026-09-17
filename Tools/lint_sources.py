@@ -83,6 +83,10 @@ MACRO_CALL = re.compile(r"#(?:expect|require)\s*\(")
 # A value receiver (lowercase) calling a method, optionally negated. An
 # uppercase receiver is a type, and a static method is never mutating.
 BARE_CALL = re.compile(r"^!?\s*([a-z]\w*)\.(\w+)\(")
+# `return Issue.record("...")` in a test: `record` returns a value, and a test
+# function returns Void, so this is `unexpected non-void return value in void
+# function`. It reads like an early exit and is not one.
+RETURNS_A_VALUE = re.compile(r"\breturn\s+(Issue\.record|#expect|#require)\b")
 
 
 def mutating_method_names() -> set[str]:
@@ -234,6 +238,17 @@ def check(path: str, errors: list[str], mutating: set[str] | None = None) -> Non
         depth_braces += code.count("{") - code.count("}")
         depth_parens += code.count("(") - code.count(")")
         depth_brackets += code.count("[") - code.count("]")
+
+        # Anchored on the word, not the line: the shape that actually occurs
+        # is `guard let x else { return Issue.record("...") }`, where the
+        # `return` is mid-line and reads like an early exit.
+        returning = RETURNS_A_VALUE.search(code)
+        if returning:
+            errors.append(
+                f"{path}:{number}: returning the result of "
+                f"{returning.group(1)} from a test, which returns Void — call "
+                "it, then return on the next line"
+            )
 
         for pattern, label in BANNED:
             if not pattern.search(code):
