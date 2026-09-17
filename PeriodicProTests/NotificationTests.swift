@@ -43,7 +43,7 @@ struct StudyNotificationPlannerTests {
 
     @Test("Without permission, nothing is ever scheduled")
     func noPermissionMeansNothing() {
-        let state = StudyNotificationState(dueReviewCount: 20, currentStreak: 9)
+        let state = StudyNotificationState(currentStreak: 9, dueReviewCount: 20)
         #expect(plan(preferences(), state, authorization: .notDetermined).isEmpty)
         #expect(plan(preferences(), state, authorization: .denied).isEmpty)
         // And with it, something is.
@@ -53,7 +53,7 @@ struct StudyNotificationPlannerTests {
 
     @Test("The master switch is the master switch")
     func masterSwitch() {
-        let state = StudyNotificationState(dueReviewCount: 20, currentStreak: 9)
+        let state = StudyNotificationState(currentStreak: 9, dueReviewCount: 20)
         #expect(plan(preferences(enabled: false), state).isEmpty)
         #expect(plan(preferences(categories: []), state).isEmpty)
     }

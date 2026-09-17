@@ -96,7 +96,11 @@ struct SystemNotificationScheduler: NotificationScheduling {
 final class StudyNotificationScheduler {
     /// Everything Elemora schedules starts with this, so reconciling can
     /// remove its own requests and nothing else's.
-    static let identifierPrefix = "elemora.study."
+    ///
+    /// `nonisolated` because it is a constant string with no isolation to
+    /// lose, and the tests read it from outside the main actor — which is an
+    /// error rather than a warning in the Swift 6 language mode.
+    nonisolated static let identifierPrefix = "elemora.study."
     /// When an inactivity reminder was last scheduled, so the week's silence
     /// after one survives the app being closed.
     static let lastInactivityKey = "notifications.lastInactivity"
