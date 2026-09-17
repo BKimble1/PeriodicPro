@@ -7,6 +7,15 @@ import Foundation
 //  contents. `Tools/check_widget_shared.py` fails the build if the two ever
 //  differ by a single byte.
 //
+//  Dates here use JSONCoder's default strategy on purpose. It writes
+//  `timeIntervalSinceReferenceDate` straight out as a number, which is the
+//  only strategy that survives a round trip exactly: ISO 8601 carries whole
+//  seconds (milliseconds at best), and seconds-since-1970 adds and then
+//  subtracts an epoch offset large enough to cost the low bits. A decoded
+//  record that is merely close to the one written would break the ordering of
+//  two taps in the same second, and would make "write it, read it, get it
+//  back" a property that is nearly true.
+//
 //  Why a copy rather than one file in two targets: the project uses
 //  file-system synchronized groups, where a folder belongs to a target. Two
 //  targets sharing one folder is expressible but fragile to hand-maintain, and
@@ -159,7 +168,6 @@ struct WidgetEventLog: Sendable {
     func read() -> [WidgetAnswerEvent] {
         guard let url, let text = try? String(contentsOf: url, encoding: .utf8) else { return [] }
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
         var found: [WidgetAnswerEvent] = []
         for line in text.split(separator: "\n") {
             guard let data = line.data(using: .utf8),
@@ -182,7 +190,6 @@ struct WidgetEventLog: Sendable {
 
     static func encode(_ event: WidgetAnswerEvent) -> String? {
         let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
         guard let data = try? encoder.encode(event) else { return nil }
         return String(data: data, encoding: .utf8)
     }
@@ -199,14 +206,12 @@ struct WidgetSnapshotStore: Sendable {
     func read() -> WidgetProgressSnapshot? {
         guard let url, let data = try? Data(contentsOf: url) else { return nil }
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
         return try? decoder.decode(WidgetProgressSnapshot.self, from: data)
     }
 
     func write(_ snapshot: WidgetProgressSnapshot) {
         guard let url else { return }
         let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
         guard let data = try? encoder.encode(snapshot) else { return }
         try? data.write(to: url, options: .atomic)
     }
@@ -291,7 +296,6 @@ struct WidgetStateStore: Sendable {
     func read() -> WidgetInteractionState {
         guard let url, let data = try? Data(contentsOf: url) else { return WidgetInteractionState() }
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
         return (try? decoder.decode(WidgetInteractionState.self, from: data))
             ?? WidgetInteractionState()
     }
@@ -299,7 +303,6 @@ struct WidgetStateStore: Sendable {
     func write(_ state: WidgetInteractionState) {
         guard let url else { return }
         let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
         guard let data = try? encoder.encode(state) else { return }
         try? data.write(to: url, options: .atomic)
     }

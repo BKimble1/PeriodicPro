@@ -34,6 +34,13 @@ BANNED = [
     # round trip to a Mac for a transposition.
     (re.compile(r"\.system\(\s*\.\w+\s*,\s*weight:[^)]*design:"),
      "Font.system text style with weight before design"),
+    # Every `Date` this project encodes is also read back and compared, so it
+    # has to survive the round trip exactly. Only the default strategy does:
+    # ISO 8601 carries whole seconds (milliseconds at best), and
+    # `.secondsSince1970` adds an epoch offset and subtracts it again, which
+    # changes the value about half the time. Measured, not assumed.
+    (re.compile(r"date(?:En|De)codingStrategy\s*=\s*\.(?:iso8601|secondsSince1970|millisecondsSince1970)"),
+     "a lossy JSON date strategy; the default round-trips exactly"),
 ]
 
 # Files where a given check is legitimately allowed, with the reason.
