@@ -25,6 +25,7 @@ run "Swift syntax (tree-sitter, skipped if not installed)" python3 Tools/check_s
 run "Xcode project structure" python3 Tools/validate_project.py
 run "Initializer call sites"  python3 Tools/check_initializers.py
 run "Synthesized conformances" python3 Tools/check_conformances.py
+run "Undeclared identifiers"  python3 Tools/check_undeclared.py
 run "Colour contrast"        python3 Tools/check_contrast.py
 run "StoreKit configuration" python3 Tools/check_storekit.py
 run "Branding (Elemora)"     python3 Tools/check_branding.py

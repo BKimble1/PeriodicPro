@@ -76,6 +76,7 @@ RETAINED_IDENTIFIERS = {
     "PeriodicPro/Store/SubscriptionProduct.swift":
         "those product identifiers and the periodicpro.pro group identifier",
     "PeriodicProTests/NotificationTests.swift": "@testable import PeriodicPro",
+    "Tools/check_undeclared.py": "walks the same source trees as the other checkers",
     "PeriodicProTests/ProGateTests.swift":
         "asserts the product identifiers have not drifted",
     "APP_STORE_READINESS.md":

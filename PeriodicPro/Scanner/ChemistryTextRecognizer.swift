@@ -260,10 +260,51 @@ enum ChemistryTextRecognizer {
         if lowered.range(of: "^[nopsr](,[nopsr])*-", options: .regularExpression) != nil { return true }
         if isElementAndAnion(words, elements: elements) { return true }
 
-        let hasPrefix = prefixes.contains { lowered.hasPrefix($0) }
-        let hasSuffix = suffixes.contains { lowered.hasSuffix($0) }
+        if matchesSystematicNomenclature(lowered) { return true }
+
+        let hasPrefix = namePrefixes.contains { lowered.hasPrefix($0) }
+        let hasSuffix = nameSuffixes.contains { lowered.hasSuffix($0) }
         return hasPrefix && hasSuffix
     }
+
+    /// A systematic carbon-chain name, by the rule that builds one: a chain
+    /// stem, a saturation infix, and an ending.
+    ///
+    /// This exists because the prefix-and-suffix pair below cannot express it
+    /// safely. "dec" is a chain stem and "ide" is an ending, but "decide" is
+    /// an English word; requiring the -an-/-en-/-yn- in between is what tells
+    /// "decane" from "decide" and "nonanone" from "none".
+    static func matchesSystematicNomenclature(_ lowered: String) -> Bool {
+        let pattern = "^(meth|eth|prop|but|pent|hex|hept|oct|non|dec|undec|dodec)"
+            + "(an|en|yn)(e|ol|al|oic acid|oic|oate|one|amine|amide|edione|ediol)$"
+        return lowered.range(of: pattern, options: .regularExpression) != nil
+    }
+
+    /// Stems chemistry uses at the start of a name.
+    ///
+    /// Every one of them had to fail a simple test: no ordinary English word
+    /// begins with it and also ends with one of the endings below. That is why
+    /// "pro", "con" and "out" are absent although they open plenty of chemical
+    /// names — with "-ide" and "-ate" after them they would turn "provide",
+    /// "control" and "outside" into compound lookups.
+    private static let namePrefixes: [String] = [
+        "acet", "acryl", "alk", "amino", "anhydr", "benz", "brom", "butyl",
+        "carb", "chlor", "cyan", "cycl", "ethyl", "fluor", "form", "hydro",
+        "hydroxy", "iod", "isoprop", "keto", "meth", "methyl", "nitr", "oxal",
+        "perchlor", "peroxy", "phen", "phosph", "poly", "propyl", "silic",
+        "sulf", "thio", "vinyl",
+    ]
+
+    /// Endings chemistry uses, and English mostly does not.
+    ///
+    /// "-one" and "-al" are deliberately missing: "cyclone" and "formal" are
+    /// ordinary words that a stem above would otherwise complete. Ketones and
+    /// aldehydes are reached by the systematic rule instead, which is where
+    /// they are unambiguous.
+    private static let nameSuffixes: [String] = [
+        "acid", "ide", "ate", "ite", "ol", "ane", "ene", "yne",
+        "amine", "amide", "aldehyde", "oxide", "ose", "yl", "ine",
+    ]
 
     /// "sodium chloride", "calcium carbonate", "potassium iodide" — an element
     /// name and an anion ending, which is how a binary or oxyanion salt is

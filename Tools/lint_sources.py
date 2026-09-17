@@ -14,7 +14,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests"]
+SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests", "ElemoraWidgets"]
 
 MAX_LINE = 118
 BANNED = [
@@ -49,6 +49,11 @@ ALLOWANCES = {
 
 STRING_OR_COMMENT = re.compile(r'("(?:[^"\\]|\\.)*")|(//.*$)')
 
+LOG_CALL = re.compile(r"\.(?:debug|info|notice|warning|error|fault|critical|log)\s*\(")
+# A closing quote, a `+`, an opening quote — the shape of two string literals
+# joined. Ordinary Swift strings concatenate; an os_log message does not.
+JOINED_LITERALS = re.compile(r'"\s*\+\s*"', re.S)
+
 # `var app: XCUIApplication!` is an implicitly-unwrapped optional declaration,
 # which is the idiomatic XCUITest fixture pattern, not a force-unwrap.
 IUO_DECLARATION = re.compile(
@@ -73,6 +78,45 @@ def strip_literals(line: str) -> str:
     return STRING_OR_COMMENT.sub(lambda m: " " * len(m.group(0)), line)
 
 
+def balanced_argument_text(source: str, open_index: int) -> str:
+    """The text between `(` at `open_index` and its matching `)`."""
+    depth = 0
+    for index in range(open_index, len(source)):
+        if source[index] == "(":
+            depth += 1
+        elif source[index] == ")":
+            depth -= 1
+            if depth == 0:
+                return source[open_index + 1:index]
+    return source[open_index + 1:]
+
+
+def check_log_messages(path: str, raw: str, errors: list[str]) -> None:
+    """A log message is one compile-time literal, never two added together.
+
+        Self.logger.error("Could not schedule \\(id): " + "\\(error)")
+
+    reads as ordinary Swift and is not: an `OSLogMessage` has no `+`, so this
+    is `binary operator '+' cannot be applied to two 'OSLogMessage' operands`
+    — an error that only a Mac reports, forty minutes into a CI run. Wrapping
+    a long log line is exactly when somebody reaches for it.
+    """
+    for match in LOG_CALL.finditer(raw):
+        arguments = balanced_argument_text(raw, match.end() - 1)
+        if not JOINED_LITERALS.search(arguments):
+            continue
+        # Only a message that interpolates is an OSLogMessage in practice;
+        # two plain literals added together compile fine.
+        if "\\(" not in arguments:
+            continue
+        line = raw.count("\n", 0, match.start()) + 1
+        errors.append(
+            f"{path}:{line}: a log message is built by adding two string "
+            "literals; os_log takes one literal, so interpolate into a single "
+            "string (hoist the parts into lets first if the line is long)"
+        )
+
+
 def check(path: str, errors: list[str]) -> None:
     with open(os.path.join(ROOT, path), encoding="utf-8") as handle:
         raw = handle.read()
@@ -84,6 +128,8 @@ def check(path: str, errors: list[str]) -> None:
         errors.append(f"{path}: contains CRLF line endings")
     if "\t" in raw:
         errors.append(f"{path}: contains a tab character")
+
+    check_log_messages(path, raw, errors)
 
     depth_braces = depth_parens = depth_brackets = 0
     in_block_comment = False

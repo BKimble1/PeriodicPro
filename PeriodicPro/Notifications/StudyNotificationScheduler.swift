@@ -74,8 +74,12 @@ struct SystemNotificationScheduler: NotificationScheduling {
         do {
             try await UNUserNotificationCenter.current().add(request)
         } catch {
-            Self.logger.error("Could not schedule \(notification.id, privacy: .public): "
-                              + "\(String(describing: error), privacy: .public)")
+            // One interpolation, not two joined with +: an os_log message is
+            // a compile-time literal, and two of them cannot be added.
+            let reason = String(describing: error)
+            Self.logger.error(
+                "Could not schedule \(notification.id, privacy: .public): \(reason, privacy: .public)"
+            )
         }
     }
 }
