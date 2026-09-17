@@ -59,6 +59,9 @@ jobs:
       - name: Check initializer call sites
         run: python3 Tools/check_initializers.py
 
+      - name: Check the whole periodic table fits at fitted zoom
+        run: python3 Tools/check_table_fit.py
+
       - name: Check color contrast
         run: python3 Tools/check_contrast.py
 

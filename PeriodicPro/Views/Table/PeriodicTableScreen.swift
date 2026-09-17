@@ -15,7 +15,6 @@ struct PeriodicTableScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(ProgressStore.self) private var progress: ProgressStore
     @Environment(CompoundStore.self) private var compounds: CompoundStore
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var query = ""
     /// The compound half of the search: local at once, PubChem after a pause.
@@ -24,15 +23,27 @@ struct PeriodicTableScreen: View {
     @State private var path = NavigationPath()
     @State private var screenWidth: CGFloat = 0
     @State private var screenHeight: CGFloat = 0
+    /// The room between the navigation bar and the tab bar, and the window
+    /// size it was measured at.
+    ///
+    /// Latched at its smallest for a given window: the large navigation title
+    /// collapses as the page scrolls, and re-fitting the table to the room
+    /// that frees up would resize all 118 tiles under the learner's thumb. The
+    /// smallest reading is the one taken at rest, which is the state the table
+    /// has to open correctly in, so the latch settles on the first frame and
+    /// never moves again until the device is turned.
+    @State private var pageViewportHeight: CGFloat = 0
+    @State private var pageViewportKey: CGSize = .zero
+    /// The hint line and the families filter bar: what the table sits under
+    /// inside the page. Constant for a given width, and never a function of
+    /// the tile size, so feeding it back into the fit cannot oscillate.
+    @State private var tableHeaderHeight: CGFloat = 0
 
     /// 1 is every column on screen; up to 3.5× is a pinch away.
     @State private var zoom: CGFloat = 1
     @State private var tablePosition = ScrollPosition(edge: .top)
     @State private var savedTableOffset: CGPoint = .zero
     @State private var isPinching = false
-    /// Whether the accessibility-size default zoom has been applied. Once
-    /// only: a learner who then pinches back out has made a choice.
-    @State private var hasAppliedAccessibilityZoom = false
 
     @Namespace private var tableNamespace
 
@@ -48,17 +59,18 @@ struct PeriodicTableScreen: View {
         screenWidth > 0 ? screenWidth : 393
     }
 
-    private var fittedTileSize: CGFloat {
-        TableZoomLayout.fittedTileSize(viewportWidth: usableWidth)
-    }
-
-    /// At accessibility text sizes the fitted tiles are too small to read,
-    /// so the table opens already zoomed to standard density. A pinch, a
-    /// double tap or the VoiceOver Fit action still returns it to fitted.
-    private var accessibilityStartZoom: CGFloat {
-        TableZoomLayout.clampZoom(
-            TableZoomLayout.standardDensityTile / max(fittedTileSize, 1) * 1.05,
-            fittedTileSize: fittedTileSize
+    /// The vertical room the table is fitted into.
+    ///
+    /// Before the first layout pass, an assumption close enough that the
+    /// measurement replacing it does not move the tile on any phone the app
+    /// ships for — on those the eighteen columns bind first and the height
+    /// pass changes nothing at all.
+    private var availableTableHeight: CGFloat {
+        TableZoomLayout.availableTableHeight(
+            pageViewportHeight: pageViewportHeight > 0
+                ? pageViewportHeight
+                : TableZoomLayout.assumedPageViewportHeight(screenHeight: screenHeight > 0 ? screenHeight : 852),
+            headerHeight: tableHeaderHeight > 0 ? tableHeaderHeight : TableZoomLayout.assumedHeaderHeight
         )
     }
 
@@ -80,7 +92,9 @@ struct PeriodicTableScreen: View {
                         namespace: tableNamespace,
                         viewportWidth: usableWidth,
                         screenHeight: screenHeight > 0 ? screenHeight : 700,
+                        availableTableHeight: availableTableHeight,
                         tableAnchor: Self.tableAnchor,
+                        headerHeight: $tableHeaderHeight,
                         zoom: $zoom,
                         tablePosition: $tablePosition,
                         savedTableOffset: $savedTableOffset,
@@ -97,6 +111,25 @@ struct PeriodicTableScreen: View {
                     )
                 }
                 .scrollIndicators(.hidden)
+                // What is actually visible between the bars: the scroll view
+                // spans the window and reports the navigation bar and the tab
+                // bar as safe-area insets.
+                .onGeometryChange(for: TablePageMetrics.self) { proxy in
+                    TablePageMetrics(
+                        window: proxy.size,
+                        visibleHeight: proxy.size.height
+                            - proxy.safeAreaInsets.top
+                            - proxy.safeAreaInsets.bottom
+                    )
+                } action: { metrics in
+                    guard metrics.visibleHeight > 0 else { return }
+                    if pageViewportKey != metrics.window {
+                        pageViewportKey = metrics.window
+                        pageViewportHeight = metrics.visibleHeight
+                    } else {
+                        pageViewportHeight = min(pageViewportHeight, metrics.visibleHeight)
+                    }
+                }
                 // The page must not scroll while two fingers are zooming the table.
                 .scrollDisabled(isPinching)
                 .scrollDismissesKeyboard(.immediately)
@@ -144,16 +177,8 @@ struct PeriodicTableScreen: View {
                 screenWidth = size.width
                 screenHeight = size.height
             }
-            .onAppear(perform: applyAccessibilityZoomIfNeeded)
-            .onChange(of: dynamicTypeSize) { _, _ in applyAccessibilityZoomIfNeeded() }
         }
         .tint(AppColor.accent)
-    }
-
-    private func applyAccessibilityZoomIfNeeded() {
-        guard dynamicTypeSize.isAccessibilitySize, !hasAppliedAccessibilityZoom else { return }
-        hasAppliedAccessibilityZoom = true
-        zoom = max(zoom, accessibilityStartZoom)
     }
 
     private func open(_ element: ChemicalElement) {
@@ -164,6 +189,22 @@ struct PeriodicTableScreen: View {
     private func openCompound(_ candidate: CompoundMatchCandidate) {
         if !query.isEmpty { progress.recordSearch(query) }
         path.append(candidate)
+    }
+}
+
+// MARK: - Page metrics
+
+/// The window the page is laid out in, and the room visible inside it.
+///
+/// Rounded, so the stream of sub-pixel geometry updates a scroll produces
+/// collapses to the changes that can actually move a tile.
+struct TablePageMetrics: Equatable {
+    let window: CGSize
+    let visibleHeight: CGFloat
+
+    init(window: CGSize, visibleHeight: CGFloat) {
+        self.window = CGSize(width: window.width.rounded(), height: window.height.rounded())
+        self.visibleHeight = visibleHeight.rounded()
     }
 }
 
@@ -183,7 +224,9 @@ private struct TableScreenContent: View {
     let namespace: Namespace.ID
     let viewportWidth: CGFloat
     let screenHeight: CGFloat
+    let availableTableHeight: CGFloat
     let tableAnchor: String
+    @Binding var headerHeight: CGFloat
     @Binding var zoom: CGFloat
     @Binding var tablePosition: ScrollPosition
     @Binding var savedTableOffset: CGPoint
@@ -240,13 +283,31 @@ private struct TableScreenContent: View {
 
     private var tableSection: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.l) {
-            Text("Tap an element to explore it. Pinch to zoom the table, and drag to look around.")
-                .font(AppFont.subheadline)
-                .foregroundStyle(AppColor.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, Theme.Spacing.screenMargin)
+            // Everything the table sits under, measured as one piece: its
+            // height is what the table's vertical room is the rest of. The
+            // trailing stack spacing and the table's own top padding are added
+            // here rather than measured, because they are constants.
+            VStack(alignment: .leading, spacing: Theme.Spacing.l) {
+                Text("Tap an element to explore it. Pinch to zoom the table, and drag to look around.")
+                    .font(AppFont.subheadline)
+                    .foregroundStyle(AppColor.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    // A hint about the table, capped so it cannot push the
+                    // table itself off the first screenful. It still scales a
+                    // long way — through the first accessibility size — and
+                    // what it says is a description of a gesture the table
+                    // already announces to VoiceOver, so the cap costs a
+                    // learner at the largest sizes nothing they need.
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility1)
+                    .padding(.horizontal, Theme.Spacing.screenMargin)
 
-            CategoryFilterBar(filter: $filter)
+                CategoryFilterBar(filter: $filter)
+            }
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                (proxy.size.height + Theme.Spacing.l + Theme.Spacing.xs).rounded()
+            } action: { measured in
+                if headerHeight != measured { headerHeight = measured }
+            }
 
             // No accessibility identifier on the grid itself, deliberately.
             // SwiftUI propagates an accessibility identifier down to every
@@ -260,6 +321,7 @@ private struct TableScreenContent: View {
                 namespace: namespace,
                 viewportWidth: viewportWidth,
                 screenHeight: screenHeight,
+                availableHeight: availableTableHeight,
                 zoom: $zoom,
                 position: $tablePosition,
                 savedOffset: $savedTableOffset,
@@ -271,11 +333,15 @@ private struct TableScreenContent: View {
             .padding(.top, Theme.Spacing.xs)
             .id(tableAnchor)
 
+            // Families sits a clear step below the table rather than close
+            // under it: at fitted zoom the table's last row is the bottom of
+            // a complete object, and the card should read as the next thing
+            // on the page, not as part of it.
             CardContainer {
                 TableLegend(catalog: catalog, filter: $filter)
             }
             .padding(.horizontal, Theme.Spacing.screenMargin)
-            .padding(.top, Theme.Spacing.s)
+            .padding(.top, Theme.Spacing.xl)
 
             Text("""
                 Standard atomic weights follow IUPAC 2021. Elements without a stable isotope \

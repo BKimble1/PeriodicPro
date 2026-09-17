@@ -279,13 +279,70 @@ final class PeriodicProUITests: XCTestCase {
     }
 
     func testAllOneHundredAndEighteenTilesAreReachable() {
-        // Spot-check one element from every row of the table, including both
-        // detached f-block rows. Reachable, which is what the name says: the
-        // lanthanide and actinide rows sit below the main block and a small
-        // phone does not hold all of it at once.
+        // One element from every row of the table, including both detached
+        // f-block rows.
         for symbol in ["H", "He", "Li", "Na", "K", "Rb", "Cs", "Fr", "La", "Lu", "Ac", "Lr", "Og"] {
             assertReachable(app.buttons["element.\(symbol)"], "the \(symbol) tile")
         }
+    }
+
+    /// Build 5's central claim about the Table screen: when it appears, the
+    /// whole table is there.
+    ///
+    /// Not "reachable" and not "scrollable into view" — on screen, on the
+    /// first frame, with no gesture of any kind first. All eighteen columns,
+    /// all seven periods, the lanthanides and the actinides.
+    func testTheWholeTableIsOnScreenAtLaunchWithoutScrolling() {
+        waitFor(app.buttons["element.H"])
+        let table = el("table.zoomView")
+        waitFor(table)
+
+        // Deliberately no swipe, no pinch and no scrollTo before this point.
+        var tiles: [String: CGRect] = [:]
+        for node in Self.walk(app) where node.identifier.hasPrefix("element.") {
+            tiles[node.identifier] = node.frame
+        }
+        XCTAssertEqual(tiles.count, 118,
+                       "The table opened with \(tiles.count) of 118 tiles on screen\(onScreen())")
+
+        // Every row, named, so a failure says which part of the table was cut
+        // off rather than only that a count was short.
+        for symbol in ["H", "He", "Li", "Ne", "Na", "Ar", "K", "Kr", "Rb", "Xe",
+                       "Cs", "Rn", "Fr", "Og", "La", "Lu", "Ac", "Lr"] {
+            XCTAssertNotNil(tiles["element.\(symbol)"],
+                            "the \(symbol) tile was not on screen at launch\(onScreen())")
+        }
+
+        // And every one of them is inside the table's own window, which is
+        // what makes the fitted table unscrollable: there is no content
+        // outside the viewport for a scroll to reveal.
+        let viewport = table.frame
+        let window = app.windows.firstMatch.frame
+        XCTAssertTrue(window.contains(viewport.insetBy(dx: 0, dy: 1)),
+                      "the table's own viewport \(viewport) is not inside the window \(window)")
+        for (identifier, frame) in tiles {
+            XCTAssertGreaterThanOrEqual(frame.minY, viewport.minY - 1,
+                                        "\(identifier) sits above the table's viewport")
+            XCTAssertLessThanOrEqual(frame.maxY, viewport.maxY + 1,
+                                     "\(identifier) is below the fold of the table's viewport — "
+                                     + "the fitted table is vertically scrollable")
+            XCTAssertGreaterThanOrEqual(frame.minX, viewport.minX - 1,
+                                        "\(identifier) is off the leading edge of the table")
+            XCTAssertLessThanOrEqual(frame.maxX, viewport.maxX + 1,
+                                     "\(identifier) is off the trailing edge of the table — "
+                                     + "the fitted table is horizontally scrollable")
+        }
+
+        // The f-block rows are the ones a width-driven fit loses first, so
+        // they get the explicit claim: they are below the main block and
+        // still inside the viewport.
+        guard let radon = tiles["element.Rn"], let lawrencium = tiles["element.Lr"] else {
+            return XCTFail("the seventh period or the actinide row is missing\(onScreen())")
+        }
+        XCTAssertGreaterThan(lawrencium.minY, radon.minY,
+                             "the actinide row should sit below the main block")
+        XCTAssertLessThanOrEqual(lawrencium.maxY, viewport.maxY + 1,
+                                 "the actinide row is cut off by the table's viewport")
     }
 
     // MARK: - Zoom

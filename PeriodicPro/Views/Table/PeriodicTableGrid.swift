@@ -23,7 +23,7 @@ struct PeriodicTableGrid: View {
     /// taps; only the space between and around them reaches this.
     var onDoubleTap: ((CGPoint) -> Void)?
 
-    static let columns = 18
+    static let columns = TableZoomLayout.columns
 
     private var step: CGFloat { tileSize + spacing }
 
@@ -32,10 +32,10 @@ struct PeriodicTableGrid: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: max(Theme.Spacing.s, tileSize * 0.45)) {
-            block(elements: catalog.mainTableElements, rows: 7, baseRow: 1)
+        VStack(alignment: .leading, spacing: TableZoomLayout.blockGap(forTileSize: tileSize)) {
+            block(elements: catalog.mainTableElements, rows: TableZoomLayout.mainRows, baseRow: 1)
 
-            VStack(alignment: .leading, spacing: max(4, tileSize * 0.2)) {
+            VStack(alignment: .leading, spacing: TableZoomLayout.captionGap(forTileSize: tileSize)) {
                 caption("Lanthanides")
                 block(elements: catalog.lanthanideRow, rows: 1, baseRow: 9)
                 caption("Actinides")
@@ -45,22 +45,23 @@ struct PeriodicTableGrid: View {
         .frame(width: totalWidth, alignment: .leading)
     }
 
-    /// Once the tiles are big enough to sit beside real text, the caption uses
-    /// a text style so it scales; below that it stays hand-sized, because the
-    /// fitted table has no room to grow.
-    @ViewBuilder
+    /// The f-block captions, in a box of a height the layout already knows.
+    ///
+    /// The box comes from `TableZoomLayout.captionHeight`, which is also the
+    /// term `TableZoomLayout.gridHeight` uses for them — so the table's height
+    /// is arithmetic rather than something the view has to be measured for.
+    /// The type scales down to fit rather than pushing rows off the bottom at
+    /// accessibility text sizes; the caption is still a header in the
+    /// accessibility tree, with its full text, so nothing is lost to
+    /// VoiceOver.
     private func caption(_ text: String) -> some View {
-        if tileSize >= 38 {
-            Text(text)
-                .font(.system(.caption, weight: .medium))
-                .foregroundStyle(AppColor.tertiaryText)
-                .accessibilityAddTraits(.isHeader)
-        } else {
-            Text(text)
-                .font(.system(size: max(9, min(11, tileSize * 0.6)), weight: .medium))
-                .foregroundStyle(AppColor.tertiaryText)
-                .accessibilityAddTraits(.isHeader)
-        }
+        Text(text)
+            .font(.system(size: TableZoomLayout.captionFontSize(forTileSize: tileSize), weight: .medium))
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .foregroundStyle(AppColor.tertiaryText)
+            .frame(height: TableZoomLayout.captionHeight(forTileSize: tileSize), alignment: .leading)
+            .accessibilityAddTraits(.isHeader)
     }
 
     private func block(elements: [ChemicalElement], rows: Int, baseRow: Int) -> some View {

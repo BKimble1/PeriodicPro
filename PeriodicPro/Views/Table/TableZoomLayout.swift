@@ -43,20 +43,111 @@ enum TableZoomLayout {
     /// of slack.
     static let zoomedThreshold: CGFloat = 1.04
 
+    // MARK: - Rows
+
+    /// Periods 1 to 7, the block the f-block is lifted out of.
+    static let mainRows = 7
+    /// The lanthanide row and the actinide row, each with its own caption.
+    static let detachedRows = 2
+
+    /// The gap between the main block and the two detached rows, and the gap
+    /// between a caption and the row it names. Both are written here rather
+    /// than only in `PeriodicTableGrid` so the height below is the same
+    /// arithmetic the view lays out with.
+    static func blockGap(forTileSize tile: CGFloat) -> CGFloat {
+        max(Theme.Spacing.s, tile * 0.45)
+    }
+
+    static func captionGap(forTileSize tile: CGFloat) -> CGFloat {
+        max(4, tile * 0.2)
+    }
+
+    /// The height reserved for a "Lanthanides" / "Actinides" caption.
+    ///
+    /// Reserved, not measured. A caption laid out by its own text would make
+    /// the table's height depend on the text size the learner has chosen,
+    /// which is exactly the dependency that made the fitted height an
+    /// estimate; the label scales its font down inside this box instead, and
+    /// the full text stays in the accessibility tree for VoiceOver.
+    static func captionHeight(forTileSize tile: CGFloat) -> CGFloat {
+        max(12, min(18, (tile * 0.5).rounded()))
+    }
+
+    /// The point size the caption is set at to sit inside `captionHeight`.
+    static func captionFontSize(forTileSize tile: CGFloat) -> CGFloat {
+        max(9, min(13, (captionHeight(forTileSize: tile) * 0.78).rounded()))
+    }
+
+    // MARK: - Content bounds
+
+    /// The exact height `PeriodicTableGrid` lays out at a tile size.
+    ///
+    /// Seven periods and the gaps between them, the gap beneath that block,
+    /// then the two detached rows with a caption above each and a gap between
+    /// every one of those four items. Every term is a constant or a function
+    /// of the tile, so this is the height, not an approximation of it.
+    static func gridHeight(forTileSize tile: CGFloat) -> CGFloat {
+        let gap = spacing(forTileSize: tile)
+        let main = CGFloat(mainRows) * tile + CGFloat(mainRows - 1) * gap
+        let caption = captionHeight(forTileSize: tile)
+        let inner = captionGap(forTileSize: tile)
+        // caption, row, caption, row — four items, three gaps.
+        let fBlock = CGFloat(detachedRows) * (caption + tile) + 3 * inner
+        return main + blockGap(forTileSize: tile) + fBlock
+    }
+
+    /// The grid plus the padding `ZoomableTableView` puts around it: the
+    /// height of the scroll view's content, which at fitted zoom is also the
+    /// height of the scroll view itself.
+    static func contentHeight(forTileSize tile: CGFloat) -> CGFloat {
+        gridHeight(forTileSize: tile) + Theme.Spacing.m * 2
+    }
+
+    /// A point of slack on the viewport so that a rounding difference between
+    /// this arithmetic and the layout engine leaves dead space rather than a
+    /// scrollable row of hidden elements.
+    static let contentHeightCushion: CGFloat = 1
+
     // MARK: - Tile size
+
+    /// The smallest fitted tile. Below this a tile is no longer a target, so
+    /// a screen too short for the whole table at this size keeps it and lets
+    /// the page scroll instead of shrinking the table into illegibility.
+    static let smallestFittedTile: CGFloat = 13
 
     /// The fitted tile: eighteen columns in the viewport width, minus the
     /// page inset either side. Floored so the gaps stay on whole points.
-    static func fittedTileSize(viewportWidth: CGFloat) -> CGFloat {
+    ///
+    /// `availableHeight` is the vertical room the table has on screen. The
+    /// tile is then stepped down until all ten rows fit that too, so "fitted"
+    /// means fitted in both directions rather than fitted across. On a
+    /// portrait phone the eighteen columns are the binding constraint and the
+    /// height pass changes nothing; on an iPad in landscape, and on a phone
+    /// turned sideways, the height is what decides.
+    static func fittedTileSize(
+        viewportWidth: CGFloat,
+        availableHeight: CGFloat = .greatestFiniteMagnitude
+    ) -> CGFloat {
         let usable = max(viewportWidth - Theme.Spacing.l * 2, 260)
         let gaps = fittedSpacing * CGFloat(columns - 1)
-        var tile = max(13, ((usable - gaps) / CGFloat(columns)).rounded(.down))
+        var tile = max(smallestFittedTile, ((usable - gaps) / CGFloat(columns)).rounded(.down))
         // The gap between tiles grows with the tile, so on a wide screen the
         // first estimate — made with the smallest gap — can overflow by a few
         // points. Step down until the row really fits.
-        while tile > 13, CGFloat(columns) * tile + CGFloat(columns - 1) * spacing(forTileSize: tile) > usable {
+        while tile > smallestFittedTile,
+              CGFloat(columns) * tile + CGFloat(columns - 1) * spacing(forTileSize: tile) > usable {
             tile -= 1
         }
+        guard availableHeight.isFinite, availableHeight > 0 else { return tile }
+        let widthFitted = tile
+        while tile > smallestFittedTile, contentHeight(forTileSize: tile) > availableHeight {
+            tile -= 1
+        }
+        // Shrinking is only worth it if it actually brings the whole table on
+        // screen. A phone held sideways has room for about four periods at any
+        // tile size worth tapping; making the tiles unreadable would not change
+        // that, so the width-fitted table stays and the page scrolls instead.
+        guard contentHeight(forTileSize: tile) <= availableHeight else { return widthFitted }
         return tile
     }
 
@@ -184,5 +275,46 @@ enum TableZoomLayout {
 
     static func expandedViewportHeight(screenHeight: CGFloat) -> CGFloat {
         max(280, min(screenHeight * 0.62, screenHeight - screenChromeAllowance))
+    }
+
+    // MARK: - The room the table has on screen
+
+    /// The least room the table is ever fitted into. Below this the tile has
+    /// bottomed out anyway, so squeezing further only shrinks the tiles
+    /// without bringing another row on screen.
+    static let smallestTableRegion: CGFloat = 170
+
+    /// A little air under the last row, so the table does not finish flush
+    /// against the bottom of the window with the Families card cut in half
+    /// behind it.
+    static let tableRegionBreathingRoom: CGFloat = Theme.Spacing.s
+
+    /// How much vertical room the table has on the Table screen.
+    ///
+    /// `pageViewportHeight` is what is visible between the navigation bar and
+    /// the tab bar; `headerHeight` is everything the table sits under inside
+    /// the page — the hint line, the families filter bar and the spacing
+    /// between them. Neither depends on the tile size, so feeding the result
+    /// back into `fittedTileSize` cannot oscillate.
+    static func availableTableHeight(pageViewportHeight: CGFloat, headerHeight: CGFloat) -> CGFloat {
+        guard pageViewportHeight > 0 else { return .greatestFiniteMagnitude }
+        return max(
+            smallestTableRegion,
+            pageViewportHeight - max(0, headerHeight) - tableRegionBreathingRoom
+        )
+    }
+
+    /// The room to assume before the first layout pass has measured anything.
+    ///
+    /// Only a starting point: the measured value replaces it on the same
+    /// frame the screen appears. It is deliberately generous, because
+    /// guessing too little would open the table smaller than it needs to be
+    /// and then grow it, which is the visible jump worth avoiding.
+    static let assumedHeaderHeight: CGFloat = 120
+
+    static func assumedPageViewportHeight(screenHeight: CGFloat) -> CGFloat {
+        // Status bar, a large navigation title, the search field and the tab
+        // bar, measured across the phones the app ships for.
+        max(240, screenHeight - 300)
     }
 }

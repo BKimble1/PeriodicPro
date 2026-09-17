@@ -69,6 +69,10 @@ struct ZoomableTableView: View {
     let viewportWidth: CGFloat
     /// The height of the screen, which bounds how tall the zoomed window gets.
     let screenHeight: CGFloat
+    /// The vertical room the table has on screen at fitted zoom. The fitted
+    /// tile is stepped down until all ten rows fit inside it, so the table
+    /// opens as one complete object rather than as its top half.
+    let availableHeight: CGFloat
     @Binding var zoom: CGFloat
     @Binding var position: ScrollPosition
     /// Where the table was scrolled to when it last went off screen.
@@ -94,28 +98,31 @@ struct ZoomableTableView: View {
     @State private var pinchEndedAt: Date = .distantPast
     /// How long after a pinch ends the tiles still treat a lift as its tail.
     private static let pinchSettleInterval: TimeInterval = 0.4
-    /// The table's height at fitted zoom, measured once the layout settles.
-    @State private var fittedContentHeight: CGFloat?
 
     /// The named space the grid reports double-tap locations in: the content
     /// of the scroll view, which is the space scroll offsets are measured in.
     static let contentSpace = "periodicTable.zoomContent"
 
-    private var fittedTile: CGFloat { TableZoomLayout.fittedTileSize(viewportWidth: viewportWidth) }
+    private var fittedTile: CGFloat {
+        TableZoomLayout.fittedTileSize(viewportWidth: viewportWidth, availableHeight: availableHeight)
+    }
     private var tileSize: CGFloat { TableZoomLayout.tileSize(fitted: fittedTile, zoom: zoom) }
     private var spacing: CGFloat { TableZoomLayout.spacing(forTileSize: tileSize) }
     private var isZoomed: Bool { zoom >= TableZoomLayout.zoomedThreshold }
 
-    /// Until the first layout reports the real height: seven main rows, the
-    /// gap beneath them, two captions and two detached rows.
-    private var estimatedFittedHeight: CGFloat {
-        let step = fittedTile + TableZoomLayout.fittedSpacing
-        return step * 9 + max(Theme.Spacing.s, fittedTile * 0.45) + 2 * 16 + Theme.Spacing.m * 2 + 8
+    /// The height of the whole table at fitted zoom — computed, not measured.
+    ///
+    /// Every term is a constant or a function of the tile size, so the window
+    /// this view gets is exactly the height of what is inside it. That is what
+    /// makes the fitted table unscrollable in both directions: there is no
+    /// scroll range to leave a row hidden in.
+    private var fittedContentHeight: CGFloat {
+        TableZoomLayout.contentHeight(forTileSize: fittedTile) + TableZoomLayout.contentHeightCushion
     }
 
     private func viewportHeight(at zoom: CGFloat) -> CGFloat {
         TableZoomLayout.viewportHeight(
-            fittedHeight: fittedContentHeight ?? estimatedFittedHeight,
+            fittedHeight: fittedContentHeight,
             expandedHeight: TableZoomLayout.expandedViewportHeight(screenHeight: screenHeight),
             zoom: zoom
         )
@@ -142,13 +149,6 @@ struct ZoomableTableView: View {
             // nothing scrolls sideways and the grid sits centered.
             .frame(minWidth: viewportWidth)
             .coordinateSpace(.named(Self.contentSpace))
-            .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.size.height.rounded()
-            } action: { height in
-                if abs(zoom - 1) < 0.001, fittedContentHeight != height {
-                    fittedContentHeight = height
-                }
-            }
         }
         .scrollIndicators(.hidden)
         .scrollPosition($position)
