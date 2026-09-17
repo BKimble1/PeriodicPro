@@ -252,19 +252,24 @@ struct StructureHonestyTests {
             // And the same bonds, with the same orders. A 2D diagram showing
             // a double bond where the 3D scene shows a single one would be
             // two different molecules on one page.
-            let drawn = Set(drawing.bonds.map(\.order))
-            let modeled = Set(scene.bonds.map { $0.order.rawValue })
-            if !drawn.isEmpty, !modeled.isEmpty {
-                // One interpolated literal, not two joined: #expect's message
-                // is a `Comment`, which a string literal becomes and a String
-                // expression does not.
-                let drawnOrders = drawn.sorted()
-                let modeledOrders = modeled.sorted()
+            //
+            // Not the same *set* of orders: a skeletal formula of ethylene is
+            // the double bond alone, because its C–H bonds are implied by the
+            // notation, while the scene models all of them. Drawing fewer
+            // bonds is what skeletal notation is. Drawing a different bond is
+            // the error — so every bond the diagram does draw must be the
+            // scene's bond of the same identity, at the same order.
+            let modeledOrders = Dictionary(
+                scene.bonds.map { ($0.id, $0.order.rawValue) },
+                uniquingKeysWith: { first, _ in first }
+            )
+            for bond in drawing.bonds {
                 #expect(
-                    drawn == modeled,
+                    modeledOrders[bond.id] == bond.order,
                     """
-                    \(compound.preferredName): the diagram draws bond orders \
-                    \(drawnOrders) and the scene models \(modeledOrders)
+                    \(compound.preferredName): the diagram draws bond \(bond.id) \
+                    at order \(bond.order) and the scene models it at \
+                    \(modeledOrders[bond.id].map(String.init) ?? "no such bond")
                     """
                 )
             }

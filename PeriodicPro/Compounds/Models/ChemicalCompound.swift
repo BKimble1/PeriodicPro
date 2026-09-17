@@ -235,7 +235,14 @@ struct CompoundStructure: Codable, Hashable, Sendable {
     /// structure, rather than giving the flat graph a z of zero and
     /// presenting the result as a conformer.
     var hasThreeDGeometry: Bool {
-        is3D && atoms.contains { $0.z != 0 }
+        guard is3D else { return false }
+        // Three points always define a plane, so a record of three atoms or
+        // fewer cannot be judged by its depth at all: water is bent, carbon
+        // dioxide is linear, and both have real bond angles and no z. Past
+        // three atoms, a conformer with every atom at z = 0 is a flat
+        // depiction wearing a 3D label, which is the thing worth catching.
+        if atoms.count <= 3 { return true }
+        return atoms.contains { $0.z != 0 }
     }
 
     /// How many atoms are worth drawing one at a time.

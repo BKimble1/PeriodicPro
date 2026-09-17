@@ -254,12 +254,13 @@ struct FittedTableTests {
         }
     }
 
-    @Test("All ten rows are accounted for: seven periods, the lanthanides and the actinides")
+    @Test("All nine rows are accounted for: seven periods, the lanthanides and the actinides")
     func everyRowIsInTheHeight() {
-        // Ten rows of tiles, whatever else the height contains.
+        // Nine rows of tiles, whatever else the height contains: seven
+        // periods, then the lanthanides and the actinides.
         let tile: CGFloat = 20
         let rows = CGFloat(TableZoomLayout.mainRows + TableZoomLayout.detachedRows)
-        #expect(TableZoomLayout.mainRows + TableZoomLayout.detachedRows == 10)
+        #expect(TableZoomLayout.mainRows + TableZoomLayout.detachedRows == 9)
         #expect(TableZoomLayout.gridHeight(forTileSize: tile) > rows * tile)
         // And the captions are really reserved for, not rounded away.
         #expect(TableZoomLayout.captionHeight(forTileSize: tile) >= 12)

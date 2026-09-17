@@ -218,11 +218,16 @@ struct ScanStabilizerTests {
         var stabilizer = ScanStabilizer()
         let start = ContinuousClock.now
         let water = candidate("H2O")
-        for step in 0..<3 { _ = stabilizer.observe(water, at: start.advanced(by: .milliseconds(200 * step))) }
+        // Two sightings, deliberately: a third at 400 ms would already span
+        // `minimumDuration` and deliver, and the result being tested here is
+        // the one at 600.
+        _ = stabilizer.observe(water, at: start)
+        _ = stabilizer.observe(water, at: start.advanced(by: .milliseconds(200)))
         #expect(stabilizer.observe(water, at: start.advanced(by: .milliseconds(600))) != nil)
-        // Straight afterwards, everything is ignored.
-        for step in 4..<8 {
-            #expect(stabilizer.observe(candidate("NaCl"), at: start.advanced(by: .milliseconds(200 * step))) == nil)
+        // Straight afterwards, everything is ignored for `settleAfterResult`.
+        for step in 1...4 {
+            #expect(stabilizer.observe(candidate("NaCl"),
+                                       at: start.advanced(by: .milliseconds(600 + 200 * step))) == nil)
         }
     }
 
