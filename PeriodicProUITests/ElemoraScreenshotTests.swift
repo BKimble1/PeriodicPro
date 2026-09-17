@@ -72,16 +72,18 @@ final class ElemoraScreenshotTests: XCTestCase {
     /// families card were both in the tree. A snapshot is one round trip and
     /// every attribute comes back inside it.
     private static func identified(in element: XCUIElement) -> [String] {
-        walk(element).compactMap { node in
-            node.identifier.isEmpty ? nil : "\(node.identifier)<\(node.elementType.rawValue)>"
+        var described: [String] = []
+        for node in walk(element) where !node.identifier.isEmpty {
+            described.append("\(node.identifier)<\(node.elementType.rawValue)>")
         }
+        return described
     }
 
     /// Every node under `element`, depth first, from one snapshot.
     private static func walk(_ element: XCUIElement) -> [XCUIElementSnapshot] {
         guard let root = try? element.snapshot() else { return [] }
         var found: [XCUIElementSnapshot] = []
-        var stack = [root]
+        var stack: [XCUIElementSnapshot] = [root]
         while let node = stack.popLast() {
             found.append(node)
             stack.append(contentsOf: node.children)
@@ -91,10 +93,12 @@ final class ElemoraScreenshotTests: XCTestCase {
 
     /// The widest element tile the table currently vends, or zero.
     private static func widestTile(in element: XCUIElement) -> CGFloat {
-        walk(element)
-            .filter { $0.identifier.hasPrefix("element.") }
-            .map { $0.frame.width }
-            .max() ?? 0
+        var widest: CGFloat = 0
+        for node in walk(element) where node.identifier.hasPrefix("element.") {
+            let width: CGFloat = node.frame.width
+            if width > widest { widest = width }
+        }
+        return widest
     }
 
     private func waitFor(_ element: XCUIElement,

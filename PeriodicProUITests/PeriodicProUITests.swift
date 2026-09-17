@@ -54,8 +54,9 @@ final class PeriodicProUITests: XCTestCase {
     /// those apart from a CI log was worth a whole round trip. This lists the
     /// identifiers the app is currently vending, which answers it directly.
     private func onScreen() -> String {
-        let described = Self.walk(app).compactMap { node in
-            node.identifier.isEmpty ? nil : "\(node.identifier)<\(node.elementType.rawValue)>"
+        var described: [String] = []
+        for node in Self.walk(app) where !node.identifier.isEmpty {
+            described.append("\(node.identifier)<\(node.elementType.rawValue)>")
         }
         let shown = described.prefix(40).joined(separator: " ")
         let more = described.count > 40 ? " …+\(described.count - 40)" : ""
@@ -265,9 +266,10 @@ final class PeriodicProUITests: XCTestCase {
     /// the clobbered identifier still matches *something*. Distinctness is.
     func testElementTilesAreIndividuallyAddressable() {
         waitFor(app.buttons["element.H"])
-        let tiles = Self.walk(app)
-            .map { $0.identifier }
-            .filter { $0.hasPrefix("element.") }
+        var tiles: [String] = []
+        for node in Self.walk(app) where node.identifier.hasPrefix("element.") {
+            tiles.append(node.identifier)
+        }
 
         XCTAssertGreaterThan(tiles.count, 100,
                              "The fitted table should vend a button per element\(onScreen())")
@@ -373,7 +375,7 @@ final class PeriodicProUITests: XCTestCase {
     private static func walk(_ element: XCUIElement) -> [XCUIElementSnapshot] {
         guard let root = try? element.snapshot() else { return [] }
         var found: [XCUIElementSnapshot] = []
-        var stack = [root]
+        var stack: [XCUIElementSnapshot] = [root]
         while let node = stack.popLast() {
             found.append(node)
             stack.append(contentsOf: node.children)
@@ -393,7 +395,11 @@ final class PeriodicProUITests: XCTestCase {
     /// The widest element tile currently vended, or zero. Used instead of a
     /// named symbol so the measurement survives panning.
     private static func largestTileWidth(in app: XCUIApplication) -> CGFloat {
-        tileFrames(in: app).values.map(\.width).max() ?? 0
+        var widest: CGFloat = 0
+        for frame in tileFrames(in: app).values where frame.width > widest {
+            widest = frame.width
+        }
+        return widest
     }
 
     /// A tile that is on screen and will take a tap.
@@ -403,17 +409,22 @@ final class PeriodicProUITests: XCTestCase {
     /// a handful of candidates rather than all of them.
     private static func tappableTile(in app: XCUIApplication,
                                      canTap: (XCUIElement) -> Bool) -> XCUIElement? {
-        let window = app.windows.firstMatch.frame
-        let candidates = tileFrames(in: app)
-            .map { (identifier: $0.key, visible: $0.value.intersection(window)) }
-            .filter { $0.visible.width >= 8 && $0.visible.height >= 8 }
-            // Most fully on screen first, so the tile that is asked about is
-            // the one most likely to answer yes — a tile clipped by the tab
-            // bar is exactly the one that is not hittable.
-            .sorted { $0.visible.width * $0.visible.height > $1.visible.width * $1.visible.height }
-            .map { $0.identifier }
-        for identifier in candidates.prefix(8) where canTap(app.buttons[identifier]) {
-            return app.buttons[identifier]
+        // Written out rather than chained: the same work as a map, filter,
+        // sort and map over a dictionary of tuples defeated the type checker
+        // outright — "unable to type-check this expression in reasonable time".
+        let window: CGRect = app.windows.firstMatch.frame
+        var ranked: [(identifier: String, area: CGFloat)] = []
+        for (identifier, frame) in tileFrames(in: app) {
+            let visible: CGRect = frame.intersection(window)
+            guard visible.width >= 8, visible.height >= 8 else { continue }
+            ranked.append((identifier: identifier, area: visible.width * visible.height))
+        }
+        // Most fully on screen first, so the tile that is asked about is the
+        // one most likely to answer yes — a tile clipped by the tab bar is
+        // exactly the one that is not hittable.
+        ranked.sort { $0.area > $1.area }
+        for entry in ranked.prefix(8) where canTap(app.buttons[entry.identifier]) {
+            return app.buttons[entry.identifier]
         }
         return nil
     }
