@@ -296,7 +296,11 @@ struct StructureHonestyTests {
         let structure = try #require(salt.structure)
         #expect(structure.source == .curatedLattice)
         // Every join in it is a nearest-neighbor contact, not a covalent bond.
-        #expect(structure.bonds.allSatisfy(\.isContact),
+        // A closure rather than `\.isContact`: when the whole expectation is
+        // one call, #expect rewrites it to describe the receiver on failure,
+        // and a key path converted to a function in that rewrite resolves to
+        // the throwing overload of `allSatisfy`.
+        #expect(structure.bonds.allSatisfy { $0.isContact },
                 "an ionic lattice has no covalent bonds to draw")
         // More than two ions, because a formula unit is not the structure.
         #expect(structure.atoms.count > 2,

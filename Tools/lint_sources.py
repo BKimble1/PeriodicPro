@@ -116,6 +116,47 @@ def first_argument(arguments: str) -> str:
     return arguments
 
 
+# A call whose function argument is a key path: `xs.allSatisfy(\.isContact)`.
+KEY_PATH_CALL = re.compile(r"^!?\s*[a-z]\w*(?:\.\w+(?:\([^()]*\))?)*\.(\w+)\(\s*\\\.")
+
+
+def check_key_path_expectations(path: str, raw: str, errors: list[str]) -> None:
+    """A key path cannot be the function argument of a bare `#expect` call.
+
+        #expect(bonds.allSatisfy(\.isContact))     // does not compile
+        #expect(bonds.allSatisfy { $0.isContact }) // compiles
+        #expect(xs.map(\.id) == ys.map(\.id))      // compiles
+
+    When the whole expectation is a single call, the macro rewrites it so it
+    can name the receiver in a failure message. A closure literal keeps its
+    non-throwing type through that rewrite; a key path has to be converted to
+    a function inside it, and the conversion lands on the throwing overload of
+    whatever `rethrows` method it was passed to — so the call wants a `try`
+    nobody wrote, reported against a synthesized line.
+
+    Inside a comparison there is no rewrite and no problem, which is why every
+    `map(\.id) == …` in the suite is fine.
+    """
+    for match in MACRO_CALL.finditer(raw):
+        arguments = balanced_argument_text(raw, match.end() - 1)
+        argument = first_argument(arguments).strip()
+        call = KEY_PATH_CALL.match(argument)
+        if not call:
+            continue
+        # Only when the call is the whole expectation: anything trailing its
+        # closing parenthesis is a comparison, which takes the value path.
+        opening = argument.index("(", call.start(1))
+        inner = balanced_argument_text(argument, opening)
+        if argument[opening + len(inner) + 2:].strip():
+            continue
+        line = raw.count("\n", 0, match.start()) + 1
+        errors.append(
+            f"{path}:{line}: '{call.group(1)}' is given a key path and is the "
+            "whole of an #expect/#require, where the macro's rewrite converts "
+            "it to a throwing function; write it as a closure"
+        )
+
+
 def check_expectation_comments(path: str, raw: str, errors: list[str]) -> None:
     """An expectation's message is a literal, not a String expression.
 
@@ -234,6 +275,7 @@ def check(path: str, errors: list[str], mutating: set[str] | None = None) -> Non
     lines = raw.split("\n")
     check_mutating_in_expectations(path, raw, mutating or set(), errors)
     check_expectation_comments(path, raw, errors)
+    check_key_path_expectations(path, raw, errors)
 
     if not raw.endswith("\n"):
         errors.append(f"{path}: file does not end with a newline")
