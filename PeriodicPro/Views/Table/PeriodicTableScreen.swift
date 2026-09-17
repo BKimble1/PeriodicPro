@@ -44,6 +44,7 @@ struct PeriodicTableScreen: View {
     @State private var tablePosition = ScrollPosition(edge: .top)
     @State private var savedTableOffset: CGPoint = .zero
     @State private var isPinching = false
+    @State private var showsScanner = false
 
     @Namespace private var tableNamespace
 
@@ -147,6 +148,28 @@ struct PeriodicTableScreen: View {
             .background(AppColor.canvas)
             .navigationTitle("Periodic Table")
             .navigationBarTitleDisplayMode(.large)
+            // In the navigation bar, deliberately. Scan is worth reaching in
+            // one tap from the app's first screen, and a bar button costs the
+            // table none of the height it needs to fit.
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Haptics.tap()
+                        showsScanner = true
+                    } label: {
+                        Image(systemName: "camera.viewfinder")
+                            .font(.system(size: 16, weight: .medium))
+                            .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
+                            .contentShape(Rectangle())
+                    }
+                    .accessibilityLabel("Scan chemistry")
+                    .accessibilityHint("Reads chemical names and formulas with the camera")
+                    .accessibilityIdentifier("table.scan")
+                }
+            }
+            .fullScreenCover(isPresented: $showsScanner) {
+                ChemistryScannerScreen()
+            }
             .searchable(
                 text: $query,
                 placement: .navigationBarDrawer(displayMode: .always),

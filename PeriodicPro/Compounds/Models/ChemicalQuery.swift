@@ -71,13 +71,22 @@ enum ChemicalQueryClassifier {
     /// Longer than this is not a query.
     static let maximumLength = 900
 
-    static func classify(_ raw: String, catalog: ElementCatalog = .bundledOrEmpty) -> ChemicalQuery {
+    /// - Parameter allowsBareNumber: whether a bare positive integer is a
+    ///   CID. True in a search field, where somebody who typed 2244 meant a
+    ///   CID; false for the camera, where a number on a page is a page
+    ///   number, a figure number or a coefficient far more often than it is a
+    ///   compound identifier. `CID 2244` is recognized either way.
+    static func classify(
+        _ raw: String,
+        catalog: ElementCatalog = .bundledOrEmpty,
+        allowsBareNumber: Bool = true
+    ) -> ChemicalQuery {
         let text = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, text.count <= maximumLength else { return .empty }
 
         if isInChI(text) { return .inchi(text) }
         if isInChIKey(text) { return .inchiKey(text.uppercased()) }
-        if let cid = cid(in: text) { return .cid(cid) }
+        if let cid = cid(in: text, allowsBareNumber: allowsBareNumber) { return .cid(cid) }
         // `Fe(III)` is a name for an oxidation state. It is neither a formula
         // nor a structure string, and both of the readers below would
         // otherwise take it for one.
@@ -103,9 +112,10 @@ enum ChemicalQueryClassifier {
     // MARK: - CID
 
     /// `2244`, `CID 2244`, `cid:2244`, `CID2244`.
-    static func cid(in text: String) -> Int? {
+    static func cid(in text: String, allowsBareNumber: Bool = true) -> Int? {
         let trimmed = text.trimmingCharacters(in: .whitespaces)
-        if let bare = Int(trimmed), bare > 0 { return bare }
+        if allowsBareNumber, let bare = Int(trimmed), bare > 0 { return bare }
+        if Int(trimmed) != nil { return nil }
         guard let match = trimmed.range(
             of: "^[Cc][Ii][Dd][ :=#]*([0-9]{1,9})$", options: .regularExpression
         ), match.lowerBound == trimmed.startIndex else { return nil }

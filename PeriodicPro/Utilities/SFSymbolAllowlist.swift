@@ -68,6 +68,8 @@ enum SFSymbolAllowlist {
         // Verified, unverified and what a search made of what was typed
         "checkmark.seal", "checkmark.seal.fill", "questionmark.circle",
         "exclamationmark.circle", "wifi.slash",
+        // The chemistry scanner
+        "camera.viewfinder", "viewfinder", "text.viewfinder",
     ]
 
     /// Everything the app can ask UIKit to draw.

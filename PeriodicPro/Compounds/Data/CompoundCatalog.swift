@@ -124,6 +124,10 @@ struct CompoundCatalog: Sendable {
         }
     }
 
+    /// The bundled catalog, loaded once, for callers with no store to read it
+    /// from. Empty rather than crashing if the resource is unreadable.
+    static let bundled: CompoundCatalog = loadFromApplicationBundle()
+
     static func loadFromApplicationBundle() -> CompoundCatalog {
         var lastError: Error = LoadError.resourceMissing
         for bundle in [Bundle.main, Bundle(for: BundleToken.self)] {

@@ -587,6 +587,41 @@ final class PeriodicProUITests: XCTestCase {
 
     // MARK: - Detail
 
+    /// Scan is reachable from the app's first screen, in one tap, and asks
+    /// for the camera only when it is opened.
+    ///
+    /// A simulator has no camera and cannot run VisionKit's live text
+    /// recognition, so what this drives is the path that matters most for App
+    /// Review and for a learner who says no: the screen appears, explains
+    /// itself, and offers a way forward that does not need a camera. The
+    /// recognition itself is unit-tested against fixtures in `ScannerTests`;
+    /// it cannot be exercised here, and a test that pretended otherwise would
+    /// be testing nothing.
+    func testScanIsOneTapFromTheTableAndFallsBackWithoutACamera() {
+        waitFor(app.buttons["element.H"])
+        let scan = el("table.scan")
+        waitFor(scan)
+        // And it costs the table none of its height: every tile is still on
+        // screen with the button there.
+        var tiles = 0
+        for node in Self.walk(app) where node.identifier.hasPrefix("element.") { tiles += 1 }
+        XCTAssertEqual(tiles, 118, "the scan button pushed the table off screen\(onScreen())")
+
+        scan.tap()
+        waitFor(el("scanner.screen"))
+
+        // No camera here, so the screen says so rather than showing black.
+        let unavailable = el("scanner.unavailable")
+        XCTAssertTrue(unavailable.waitForExistence(timeout: 10),
+                      "the scanner should explain itself when it cannot run\(onScreen())")
+        assertReachable(el("scanner.manualSearch"), "the manual search fallback")
+        // And it is honest about what it does not read.
+        assertReachable(el("scanner.structureNote"), "the note about structure diagrams")
+
+        tap(el("scanner.done"))
+        waitFor(app.navigationBars["Periodic Table"])
+    }
+
     func testTappingAnElementOpensItsDetailPage() {
         openElement("Na")
         XCTAssertTrue(labelContaining("Sodium").waitForExistence(timeout: 6),
