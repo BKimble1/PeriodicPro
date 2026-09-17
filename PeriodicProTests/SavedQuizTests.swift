@@ -185,14 +185,37 @@ struct QuizShareLinkTests {
                                          catalog: catalog)
         }
 
-        // An oversized configuration is refused rather than turned into a
-        // link nothing can open.
+    }
+
+    @Test("A link is refused when it would not fit, and the full-size quiz still does")
+    func lengthLimit() throws {
+        // Two hundred scattered nine-digit CIDs is what a link cannot carry:
+        // the payload is deflated, so what costs space is distinct text, not
+        // the number of items. This is the case that has to be refused rather
+        // than handed over as a URL nothing can open.
         var huge = QuizConfiguration.standard
+        huge.content = .both
         huge.scope = .custom
-        huge.customCompoundIDs = (0..<QuizConfiguration.maximumCustomItems).map { "pubchem-\(100_000 + $0)" }
+        huge.customElementIDs = Array(1...118)
+        huge.customCompoundIDs = (0..<QuizConfiguration.maximumCustomItems)
+            .map { "pubchem-\(100_000_000 + $0 * 4_177_777)" }
         #expect(throws: QuizLinkError.tooLarge) {
-            _ = try QuizShareLink.encode(name: "Everything", configuration: huge)
+            _ = try QuizShareLink.encode(name: String(repeating: "A", count: 60), configuration: huge)
         }
+
+        // And the quiz a learner can actually build at full size — every
+        // element, two hundred compounds, the longest name the app keeps —
+        // still fits, so the limit never refuses ordinary work.
+        var full = QuizConfiguration.standard
+        full.content = .both
+        full.scope = .custom
+        full.questionCount = QuizConfiguration.maximumQuestions
+        full.customElementIDs = Array(1...118)
+        full.customCompoundIDs = (0..<QuizConfiguration.maximumCustomItems).map { "pubchem-\($0 + 962)" }
+        let link = try QuizShareLink.encode(name: String(repeating: "A", count: 60), configuration: full)
+        #expect(link.count <= QuizShareLink.maximumEncodedLength)
+        let decoded = try QuizShareLink.decode(link, catalog: catalog)
+        #expect(decoded.configuration.customCompoundIDs.count == QuizConfiguration.maximumCustomItems)
     }
 
     /// Builds a payload without going through `encode`, which sanitizes — the
