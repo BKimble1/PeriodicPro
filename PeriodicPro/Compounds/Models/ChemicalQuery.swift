@@ -8,7 +8,7 @@ import Foundation
 /// InChIKey string pasted out of a paper. Each of those reaches PubChem
 /// through a different endpoint, so recognizing which one is in the field is
 /// the whole job.
-enum ChemicalQuery: Equatable, Sendable {
+enum ChemicalQuery: Hashable, Sendable {
     /// Nothing worth searching for.
     case empty
     /// A common name, an IUPAC name or a synonym.

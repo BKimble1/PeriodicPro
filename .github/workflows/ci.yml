@@ -59,6 +59,12 @@ jobs:
       - name: Check initializer call sites
         run: python3 Tools/check_initializers.py
 
+      # Swift derives Equatable, Hashable, Codable and Sendable only when
+      # every stored property already has them. Without this, a property that
+      # does not arrives as "type X does not conform" forty minutes in.
+      - name: Check synthesized conformances
+        run: python3 Tools/check_conformances.py
+
       - name: Check the whole periodic table fits at fitted zoom
         run: python3 Tools/check_table_fit.py
 

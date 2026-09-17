@@ -1,7 +1,7 @@
 import Foundation
 
 /// A molecular formula that has been read, rather than pattern-matched.
-struct ParsedFormula: Equatable, Sendable {
+struct ParsedFormula: Hashable, Sendable {
     /// Atomic number → how many atoms of it.
     var composition: [Int: Int]
     /// The species charge. Zero when none was written.

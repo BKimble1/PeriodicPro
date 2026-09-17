@@ -149,6 +149,7 @@ RETAINED_IDENTIFIERS = {
     "Tools/check_initializers.py": "walks the PeriodicPro source tree",
     "Tools/check_storekit.py": "reads Config/PeriodicPro.storekit and the scheme",
     "Tools/check_visual_routing.py": "walks the PeriodicPro source tree",
+    "Tools/check_conformances.py": "walks the PeriodicPro source tree",
     "Tools/check_table_fit.py": "reads PeriodicPro/Views/Table/TableZoomLayout.swift",
     "Tools/check_website.py": "reads PeriodicPro/Utilities/ElemoraLinks.swift and the app ID",
     "Tools/lint_sources.py": "walks the PeriodicPro source tree",
