@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Written out rather than generated. The rest of the widget's Info.plist
+	     comes from INFOPLIST_KEY_* build settings, but NSExtension is a nested
+	     dictionary and there is no INFOPLIST_KEY_ spelling for one — an
+	     extension whose point identifier is missing builds cleanly and then
+	     never appears in the widget gallery, which is a failure with no error
+	     message attached to it. -->
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.widgetkit-extension</string>
+	</dict>
+</dict>
+</plist>

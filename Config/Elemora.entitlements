@@ -16,5 +16,18 @@
 	<array>
 		<string>applinks:elemora.idlery.com</string>
 	</array>
+	<!-- The App Group the Home Screen widget shares with the app. The widget
+	     appends answers to a log in this container and the app merges them
+	     into the learner's progress; the app publishes the snapshot the widget
+	     draws. Nothing in this container is sent anywhere — it is a folder two
+	     processes on the same device can both open.
+
+	     The identifier is derived from the bundle identifier and must match
+	     ElemoraAppGroup.identifier in the shared widget source, which
+	     Tools/check_widget_shared.py verifies. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.idlery.periodicpro</string>
+	</array>
 </dict>
 </plist>

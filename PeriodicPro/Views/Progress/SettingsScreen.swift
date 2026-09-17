@@ -46,6 +46,7 @@ struct SettingsScreen: View {
         List {
             proSection
             notificationsSection
+            widgetSection
             appearanceSection
             supportSection
             legalSection
@@ -232,6 +233,57 @@ struct SettingsScreen: View {
     }
 
     // MARK: - Appearance
+
+    // MARK: - Home Screen widget
+
+    /// Not a switch. There is nothing to turn on: a widget is added from the
+    /// Home Screen, which no app can do on the learner's behalf. This section
+    /// says the widget exists, says what it does with the answers, and — the
+    /// part worth a row — says whether the shared container is actually
+    /// working, because a widget stuck on a placeholder otherwise gives no
+    /// reason at all.
+    @ViewBuilder
+    private var widgetSection: some View {
+        Section {
+            HStack(spacing: Theme.Spacing.m) {
+                Image(systemName: "square.grid.2x2")
+                    .font(.system(size: 15))
+                    .foregroundStyle(AppColor.accent)
+                    .frame(width: 24)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Quick Question")
+                        .foregroundStyle(AppColor.primaryText)
+                    Text("Touch and hold the Home Screen, tap Edit, then Add Widget.")
+                        .font(AppFont.footnote)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("settings.widget.howTo")
+
+            if !isWidgetStorageAvailable {
+                Label(
+                    "Widget storage is unavailable on this device, so the widget "
+                        + "will show a placeholder.",
+                    systemImage: "exclamationmark.triangle"
+                )
+                .font(AppFont.footnote)
+                .foregroundStyle(AppColor.secondaryText)
+                .accessibilityIdentifier("settings.widget.unavailable")
+            }
+        } header: {
+            Text("Home Screen")
+        } footer: {
+            Text("""
+                Questions answered on the Home Screen count towards your progress \
+                the next time you open Elemora. Nothing about them leaves this device.
+                """)
+        }
+    }
+
+    private var isWidgetStorageAvailable: Bool { ElemoraAppGroup.isAvailable }
 
     private var appearanceSection: some View {
         Section {

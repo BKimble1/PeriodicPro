@@ -16,7 +16,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests"]
+SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests", "ElemoraWidgets"]
 
 TYPE_DECL = re.compile(r"^(?:@\w+(?:\([^)]*\))?\s*)*(?:public |internal |private |fileprivate )?"
                        r"(?:final )?(struct|class|enum) ([A-Z]\w*)")

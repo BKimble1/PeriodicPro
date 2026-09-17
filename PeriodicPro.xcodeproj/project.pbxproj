@@ -16,13 +16,35 @@
 		CAFE0000000000000000000B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CAFE0000000000000000002B /* PeriodicPro.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = PeriodicPro.storekit; sourceTree = "<group>"; };
 		CAFE0000000000000000002C /* Elemora.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Elemora.entitlements; sourceTree = "<group>"; };
+		CAFE0000000000000000002D /* ElemoraWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ElemoraWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAFE0000000000000000002E /* ElemoraWidgets-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ElemoraWidgets-Info.plist"; sourceTree = "<group>"; };
+		CAFE0000000000000000002F /* ElemoraWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ElemoraWidgets.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CAFE0000000000000000000C /* PeriodicPro */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PeriodicPro; sourceTree = "<group>"; };
 		CAFE0000000000000000000D /* PeriodicProTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PeriodicProTests; sourceTree = "<group>"; };
 		CAFE0000000000000000000E /* PeriodicProUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PeriodicProUITests; sourceTree = "<group>"; };
+		CAFE00000000000000000030 /* ElemoraWidgets */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ElemoraWidgets; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CAFE00000000000000000034 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CAFE00000000000000000035 /* ElemoraWidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXBuildFile section */
+		CAFE00000000000000000035 /* ElemoraWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CAFE0000000000000000002D /* ElemoraWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		CAFE00000000000000000013 /* Frameworks */ = {
@@ -46,6 +68,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CAFE00000000000000000031 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -56,6 +85,7 @@
 				CAFE0000000000000000000C /* PeriodicPro */,
 				CAFE0000000000000000000D /* PeriodicProTests */,
 				CAFE0000000000000000000E /* PeriodicProUITests */,
+				CAFE00000000000000000030 /* ElemoraWidgets */,
 				CAFE00000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,6 +96,7 @@
 				CAFE00000000000000000005 /* PeriodicPro.app */,
 				CAFE00000000000000000006 /* PeriodicProTests.xctest */,
 				CAFE00000000000000000007 /* PeriodicProUITests.xctest */,
+				CAFE0000000000000000002D /* ElemoraWidgetsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -78,6 +109,8 @@
 				CAFE0000000000000000000A /* Release.xcconfig */,
 				CAFE0000000000000000000B /* Info.plist */,
 				CAFE0000000000000000002C /* Elemora.entitlements */,
+				CAFE0000000000000000002E /* ElemoraWidgets-Info.plist */,
+				CAFE0000000000000000002F /* ElemoraWidgets.entitlements */,
 				CAFE0000000000000000002B /* PeriodicPro.storekit */,
 			);
 			path = Config;
@@ -93,10 +126,12 @@
 				CAFE00000000000000000012 /* Sources */,
 				CAFE00000000000000000013 /* Frameworks */,
 				CAFE00000000000000000014 /* Resources */,
+				CAFE00000000000000000034 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CAFE00000000000000000036 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				CAFE0000000000000000000C /* PeriodicPro */,
@@ -148,6 +183,26 @@
 			productReference = CAFE00000000000000000007 /* PeriodicProUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		CAFE00000000000000000038 /* ElemoraWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CAFE00000000000000000039 /* Build configuration list for PBXNativeTarget "ElemoraWidgetsExtension" */;
+			buildPhases = (
+				CAFE00000000000000000033 /* Sources */,
+				CAFE00000000000000000031 /* Frameworks */,
+				CAFE00000000000000000032 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CAFE00000000000000000030 /* ElemoraWidgets */,
+			);
+			name = ElemoraWidgetsExtension;
+			productName = ElemoraWidgetsExtension;
+			productReference = CAFE0000000000000000002D /* ElemoraWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -169,6 +224,9 @@
 						CreatedOnToolsVersion = 26.0;
 						TestTargetID = CAFE0000000000000000000F;
 					};
+					CAFE00000000000000000038 = {
+						CreatedOnToolsVersion = 26.0;
+					};
 				};
 			};
 			buildConfigurationList = CAFE0000000000000000001F /* Build configuration list for PBXProject "PeriodicPro" */;
@@ -189,6 +247,7 @@
 				CAFE0000000000000000000F /* PeriodicPro */,
 				CAFE00000000000000000010 /* PeriodicProTests */,
 				CAFE00000000000000000011 /* PeriodicProUITests */,
+				CAFE00000000000000000038 /* ElemoraWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -209,6 +268,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CAFE0000000000000000001A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAFE00000000000000000032 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -239,6 +305,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CAFE00000000000000000033 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -251,6 +324,11 @@
 			isa = PBXTargetDependency;
 			target = CAFE0000000000000000000F /* PeriodicPro */;
 			targetProxy = CAFE0000000000000000001E /* PBXContainerItemProxy */;
+		};
+		CAFE00000000000000000036 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CAFE00000000000000000038 /* ElemoraWidgetsExtension */;
+			targetProxy = CAFE00000000000000000037 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -268,6 +346,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = CAFE0000000000000000000F;
 			remoteInfo = PeriodicPro;
+		};
+		CAFE00000000000000000037 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CAFE00000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CAFE00000000000000000038;
+			remoteInfo = ElemoraWidgetsExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -484,6 +569,54 @@
 			};
 			name = Release;
 		};
+		CAFE0000000000000000003A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/ElemoraWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "$(APP_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/ElemoraWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER_BASE).widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CAFE0000000000000000003B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/ElemoraWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "$(APP_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/ElemoraWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER_BASE).widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -519,6 +652,15 @@
 			buildConfigurations = (
 				CAFE00000000000000000029 /* Debug */,
 				CAFE0000000000000000002A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CAFE00000000000000000039 /* Build configuration list for PBXNativeTarget "ElemoraWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAFE0000000000000000003A /* Debug */,
+				CAFE0000000000000000003B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
