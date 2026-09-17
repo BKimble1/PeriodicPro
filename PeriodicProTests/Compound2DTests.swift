@@ -255,9 +255,18 @@ struct StructureHonestyTests {
             let drawn = Set(drawing.bonds.map(\.order))
             let modeled = Set(scene.bonds.map { $0.order.rawValue })
             if !drawn.isEmpty, !modeled.isEmpty {
-                #expect(drawn == modeled,
-                        "\(compound.preferredName): the diagram draws bond orders \(drawn.sorted()) "
-                        + "and the scene models \(modeled.sorted())")
+                // One interpolated literal, not two joined: #expect's message
+                // is a `Comment`, which a string literal becomes and a String
+                // expression does not.
+                let drawnOrders = drawn.sorted()
+                let modeledOrders = modeled.sorted()
+                #expect(
+                    drawn == modeled,
+                    """
+                    \(compound.preferredName): the diagram draws bond orders \
+                    \(drawnOrders) and the scene models \(modeledOrders)
+                    """
+                )
             }
         }
     }

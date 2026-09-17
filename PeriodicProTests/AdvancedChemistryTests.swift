@@ -217,7 +217,7 @@ struct AdvancedChemistryTests {
         for (symbol, states) in AdvancedQuestionBuilder.curatedOxidationStates {
             #expect(TestCatalog.shared.element(symbol: symbol) != nil, "\(symbol) is not an element")
             #expect(!states.isEmpty)
-            #expect(states.allSatisfy { $0 >= 1 && $0 <= 8 })
+            #expect(states.allSatisfy { (1...8).contains($0) })
         }
         #expect(AdvancedQuestionBuilder.curatedOxidationStates["Fe"] == [2, 3])
         #expect(AdvancedQuestionBuilder.curatedOxidationStates["Cu"] == [1, 2])

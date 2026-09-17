@@ -116,6 +116,41 @@ def first_argument(arguments: str) -> str:
     return arguments
 
 
+def check_expectation_comments(path: str, raw: str, errors: list[str]) -> None:
+    """An expectation's message is a literal, not a String expression.
+
+        #expect(a == b,
+                "the diagram draws \\(x) "
+                    + "and the scene models \\(y)")
+
+    `#expect`'s second parameter is a `Comment`, which a string *literal*
+    becomes implicitly and a `String` does not — so joining two literals with
+    `+` produces `cannot convert value of type 'String' to expected argument
+    type 'Comment?'`. Worse, the failed conversion takes the rest of the call
+    down with it: the first argument is reported as needing a `try` it does
+    not need, which sends you looking in entirely the wrong place.
+
+    The same mistake as concatenating an os_log message, for the same reason,
+    and it happens for the same innocent motive: the line was too long.
+    Interpolate into one literal, or use a multi-line string.
+    """
+    for match in MACRO_CALL.finditer(raw):
+        arguments = balanced_argument_text(raw, match.end() - 1)
+        first = first_argument(arguments)
+        # Only the comment argument. `#expect("a" + "b" == "ab")` is a
+        # perfectly good expectation about string concatenation.
+        comment = arguments[len(first):]
+        if not JOINED_LITERALS.search(comment):
+            continue
+        line = raw.count("\n", 0, match.start()) + 1
+        errors.append(
+            f"{path}:{line}: the message given to #expect/#require is two "
+            "string literals joined with '+', but the parameter is a Comment, "
+            "which only a literal becomes — interpolate into one literal or "
+            "use a multi-line string"
+        )
+
+
 def check_mutating_in_expectations(path: str, raw: str, mutating: set[str],
                                    errors: list[str]) -> None:
     """A bare mutating call cannot be the whole of an `#expect`.
@@ -198,6 +233,7 @@ def check(path: str, errors: list[str], mutating: set[str] | None = None) -> Non
         raw = handle.read()
     lines = raw.split("\n")
     check_mutating_in_expectations(path, raw, mutating or set(), errors)
+    check_expectation_comments(path, raw, errors)
 
     if not raw.endswith("\n"):
         errors.append(f"{path}: file does not end with a newline")

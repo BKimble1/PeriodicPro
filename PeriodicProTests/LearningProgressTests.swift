@@ -191,14 +191,9 @@ struct LearningPathTests {
     func newLearner() {
         let path = steps()
         #expect(path.count == LearningPathStage.allCases.count)
-        // Bound rather than written inside #expect: the macro rewrites a bare
-        // call so it can describe the receiver on failure, and that rewrite
-        // could not be type-checked here.
-        let allUnstarted = path.allSatisfy { $0.progress == 0 }
-        #expect(allUnstarted)
+        #expect(path.allSatisfy { $0.progress == 0 })
         #expect(path.first?.isCurrent == true)
-        let oneCurrent = path.dropFirst().allSatisfy { !$0.isCurrent }
-        #expect(oneCurrent, "only one stage is next")
+        #expect(path.dropFirst().allSatisfy { !$0.isCurrent }, "only one stage is next")
         #expect(LearningPathBuilder.completion(path) == 0)
     }
 
