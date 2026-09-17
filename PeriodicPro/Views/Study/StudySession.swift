@@ -177,7 +177,7 @@ struct StudySessionContainer: View {
         case .advanced:
             AdvancedSessionView(
                 questions: advancedQuestions,
-                onAnswer: record,
+                onAnswer: recordAdvanced,
                 onFinish: finish
             )
             .id(round)
@@ -208,6 +208,14 @@ struct StudySessionContainer: View {
         case .compound(let compound):
             progress.recordCompoundAnswer(id: compound.id, correct: correct)
         }
+    }
+
+    /// An advanced answer counts twice: once against whatever element or
+    /// compound it was about, and once against the harder material as a
+    /// whole, which is what the learning rank's depth term reads.
+    private func recordAdvanced(subject: QuizSubject, correct: Bool) {
+        record(subject: subject, correct: correct)
+        progress.recordAdvancedAnswer(correct: correct)
     }
 
     /// The one place a round is counted as complete, for every mode.

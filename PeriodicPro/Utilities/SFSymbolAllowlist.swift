@@ -72,6 +72,10 @@ enum SFSymbolAllowlist {
         "camera.viewfinder", "viewfinder", "text.viewfinder",
         // Advanced chemistry: calculations rather than recall
         "function",
+        // The learning path and the learning rank
+        "chart.line.uptrend.xyaxis", "seal.fill", "laurel.leading",
+        // The Daily Challenge
+        "flag.checkered",
     ]
 
     /// Everything the app can ask UIKit to draw.

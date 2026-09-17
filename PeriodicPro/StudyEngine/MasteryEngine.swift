@@ -34,6 +34,17 @@ enum MasteryEngine {
 enum StreakCalculator {
     /// `yyyy-MM-dd` in the learner's own calendar, built by hand rather than
     /// with a `DateFormatter` so the key never shifts with locale or region.
+    /// The inverse of `dayKey(for:)`: the start of the day a key names.
+    static func date(fromDayKey key: String, calendar: Calendar = .current) -> Date? {
+        let parts = key.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        var components = DateComponents()
+        components.year = parts[0]
+        components.month = parts[1]
+        components.day = parts[2]
+        return calendar.date(from: components)
+    }
+
     static func dayKey(for date: Date, calendar: Calendar = .current) -> String {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
         let year = components.year ?? 0

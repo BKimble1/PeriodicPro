@@ -99,6 +99,7 @@ struct StudyScreen: View {
                 VStack(alignment: .leading, spacing: Theme.Spacing.section) {
                     greeting
                     statusCards
+                    dailyChallengeCard
                     heroCard
                     practiceSection
                     myQuizzesSection
@@ -240,6 +241,80 @@ struct StudyScreen: View {
             .accessibilityIdentifier("study.masteryCard")
         }
         .padding(.horizontal, Theme.Spacing.screenMargin)
+    }
+
+    // MARK: - Daily Challenge
+
+    /// Five questions, the same five all day.
+    ///
+    /// Counts for the streak like any other round, and is deterministic per
+    /// calendar day — backing out and coming back does not reshuffle it.
+    @ViewBuilder
+    private var dailyChallengeCard: some View {
+        let done = DailyChallengeRecord.isComplete()
+        Button {
+            guard !done else { return }
+            Haptics.tap()
+            startDailyChallenge()
+        } label: {
+            CardContainer {
+                HStack(spacing: Theme.Spacing.m) {
+                    Image(systemName: done ? "checkmark.seal.fill" : "flag.checkered")
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundStyle(done ? AppColor.positive : AppColor.accent)
+                        .frame(width: 34)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Daily Challenge")
+                            .font(.system(.headline, weight: .semibold))
+                            .foregroundStyle(AppColor.primaryText)
+                        Text(done
+                             ? "Done for today. A new set tomorrow."
+                             : "\(DailyChallenge.questionCount) questions, chosen for where you are.")
+                            .font(AppFont.caption)
+                            .foregroundStyle(AppColor.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: 0)
+                    if !done {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(AppColor.tertiaryText)
+                            .accessibilityHidden(true)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+        }
+        .buttonStyle(.plain)
+        .disabled(done)
+        .padding(.horizontal, Theme.Spacing.screenMargin)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("study.dailyChallenge")
+    }
+
+    private func startDailyChallenge() {
+        let questions = DailyChallenge.questions(
+            catalog: catalog,
+            snapshots: progress.snapshots,
+            compounds: compounds.allKnownCompounds
+        )
+        guard !questions.isEmpty else { return }
+        DailyChallengeRecord.markComplete()
+        start(.quiz(QuizRoundDealer(
+            configuration: QuizConfiguration(
+                difficulty: .mixed,
+                questionCount: DailyChallenge.questionCount
+            ),
+            subjects: DailyChallenge.subjects(
+                catalog: catalog,
+                snapshots: progress.snapshots,
+                seed: DailyChallenge.seed()
+            ).map(QuizSubject.element),
+            elementDistractors: catalog.elements,
+            compoundDistractors: compounds.allKnownCompounds.filter { !$0.isHypothetical }
+        )))
     }
 
     // MARK: - Hero

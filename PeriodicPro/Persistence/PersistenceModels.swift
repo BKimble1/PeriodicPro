@@ -53,10 +53,29 @@ final class StudyDayRecord {
     /// migration rather than a schema break for anyone already on a build.
     var completedRounds: Int = 0
 
-    init(dayKey: String, answeredCount: Int = 0, completedRounds: Int = 0) {
+    /// Advanced-chemistry questions answered on this day, and how many were
+    /// right. The learning rank's depth term reads these — it is about the
+    /// harder material specifically, which the per-element counts cannot
+    /// distinguish.
+    ///
+    /// Defaulted, so this is the same lightweight SwiftData migration
+    /// `completedRounds` was rather than a schema break for anyone on an
+    /// earlier build.
+    var advancedAnswered: Int = 0
+    var advancedCorrect: Int = 0
+
+    init(
+        dayKey: String,
+        answeredCount: Int = 0,
+        completedRounds: Int = 0,
+        advancedAnswered: Int = 0,
+        advancedCorrect: Int = 0
+    ) {
         self.dayKey = dayKey
         self.answeredCount = answeredCount
         self.completedRounds = completedRounds
+        self.advancedAnswered = advancedAnswered
+        self.advancedCorrect = advancedCorrect
     }
 }
 

@@ -5,21 +5,86 @@ import SwiftUI
 struct ProgressScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(ProgressStore.self) private var progress: ProgressStore
+    @Environment(CompoundStore.self) private var compounds: CompoundStore
+    @Environment(\.selectTab) private var selectTab
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
 
     private var total: Int { max(catalog.count, 1) }
     private var mastered: Int { progress.masteredCount }
     private var fraction: Double { Double(mastered) / Double(total) }
 
+    /// The path, measured from progress the app already keeps.
+    private var pathSteps: [LearningPathStep] {
+        LearningPathBuilder.steps(
+            catalog: catalog,
+            elements: progress.snapshots,
+            compounds: progress.compoundSnapshots,
+            advancedAnswered: progress.advancedAnswered
+        )
+    }
+
+    /// The rank the score adds up to, weighted for breadth.
+    private var standing: RankStanding {
+        LearningRankCalculator.standing(
+            elements: progress.snapshots,
+            elementCount: catalog.count,
+            compounds: progress.compoundSnapshots,
+            hardQuestionsCorrect: progress.advancedCorrect,
+            hardQuestionsAnswered: progress.advancedAnswered,
+            studyDaysInLastMonth: progress.studyDayCount(inLast: 30),
+            pathCompletion: LearningPathBuilder.completion(pathSteps)
+        )
+    }
+
+    /// Accuracy across everything answered. `nil` before anything has been.
+    private var recentAccuracy: Double? {
+        let correct = progress.snapshots.values.reduce(0) { $0 + $1.correctCount }
+        let attempts = progress.totalAnswered
+        guard attempts > 0 else { return nil }
+        return Double(correct) / Double(attempts)
+    }
+
+    private var familyRows: [FamilyMasteryCard.Row] {
+        ElementCategory.displayOrder.map { category in
+            let members = catalog.elements(in: category)
+            let snapshots = members.compactMap { progress.snapshots[$0.atomicNumber] }
+            let correct = snapshots.reduce(0) { $0 + $1.correctCount }
+            let attempts = snapshots.reduce(0) { $0 + $1.attempts }
+            let due = snapshots.filter {
+                ReviewSchedule.isDue(lastReviewed: $0.lastReviewed, mastery: $0.mastery,
+                                     correct: $0.correctCount, incorrect: $0.incorrectCount)
+            }.count
+            return FamilyMasteryCard.Row(
+                category: category,
+                mastered: progress.masteredCount(in: category, catalog: catalog),
+                total: catalog.count(of: category),
+                accuracy: attempts > 0 ? Double(correct) / Double(attempts) : nil,
+                due: due
+            )
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Theme.Spacing.section) {
-                    overviewCard
+                    PeriodicMasteryHero(
+                        mastered: mastered,
+                        total: total,
+                        compoundsStudied: progress.studyCompoundIDs.count,
+                        recentAccuracy: recentAccuracy,
+                        standing: standing
+                    )
                     statsRow
-                    categoryBreakdown
+                    LearningPathCard(steps: pathSteps) { _ in
+                        // The path recommends; Study is where a round starts,
+                        // and nothing here is a gate on going anywhere else.
+                        selectTab(.study)
+                    }
+                    FamilyMasteryCard(rows: familyRows) { _ in
+                        selectTab(.study)
+                    }
                     storageNotices
                 }
                 .padding(.horizontal, Theme.Spacing.screenMargin)
@@ -48,47 +113,6 @@ struct ProgressScreen: View {
             }
         }
         .tint(AppColor.accent)
-    }
-
-    private var overviewCard: some View {
-        CardContainer(padding: Theme.Spacing.xl) {
-            VStack(spacing: Theme.Spacing.l) {
-                ProgressRing(
-                    progress: fraction,
-                    lineWidth: 12,
-                    diameter: 158,
-                    tint: AppColor.positive,
-                    centerTitle: "\(mastered)",
-                    centerCaption: "of \(total) mastered"
-                )
-                .accessibilityIdentifier("progress.ring")
-
-                VStack(spacing: 4) {
-                    Text(headline)
-                        .font(.system(.title3, weight: .semibold))
-                        .foregroundStyle(AppColor.primaryText)
-                        .multilineTextAlignment(.center)
-                    Text("""
-                        An element becomes mastered after three correct answers, and slips \
-                        back a step whenever you miss one.
-                        """)
-                        .font(AppFont.caption)
-                        .foregroundStyle(AppColor.secondaryText)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
-
-    private var headline: String {
-        switch mastered {
-        case 0: return "Your first mastered element is a round away"
-        case 1..<12: return "\(Int((fraction * 100).rounded()))% of the table mastered"
-        case 12..<80: return "Steady progress across the table"
-        default: return "Most of the table is yours"
-        }
     }
 
     /// Two across normally, one across once the caption no longer fits a
@@ -145,24 +169,6 @@ struct ProgressScreen: View {
                     tint: AppColor.positive
                 )
             }
-        }
-    }
-
-    private var categoryBreakdown: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-            SectionHeader(title: "By family", subtitle: "Mastered elements in each family")
-            CardContainer {
-                VStack(spacing: Theme.Spacing.l) {
-                    ForEach(ElementCategory.displayOrder) { category in
-                        CategoryProgressBar(
-                            category: category,
-                            mastered: progress.masteredCount(in: category, catalog: catalog),
-                            total: catalog.count(of: category)
-                        )
-                    }
-                }
-            }
-            .accessibilityIdentifier("progress.byFamily")
         }
     }
 

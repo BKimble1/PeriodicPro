@@ -171,6 +171,53 @@ final class ProgressStore {
         StreakCalculator.currentStreak(days: studyDayKeys, today: Date(), calendar: calendar)
     }
 
+    /// Whether the learner has answered anything today.
+    func hasStudied(on date: Date = Date()) -> Bool {
+        studyDayKeys.contains(StreakCalculator.dayKey(for: date, calendar: calendar))
+    }
+
+    /// The last day anything was answered.
+    var lastStudyDay: Date? {
+        studyDayKeys.compactMap { StreakCalculator.date(fromDayKey: $0, calendar: calendar) }.max()
+    }
+
+    /// How many distinct days in the last `days` the learner studied on.
+    ///
+    /// The rank's consistency term: turning up regularly, which is different
+    /// from a streak — a streak is broken by one missed day and this is not.
+    func studyDayCount(inLast days: Int, from date: Date = Date()) -> Int {
+        guard days > 0 else { return 0 }
+        let cutoff = date.addingTimeInterval(-Double(days) * .day)
+        return studyDayKeys.compactMap {
+            StreakCalculator.date(fromDayKey: $0, calendar: calendar)
+        }.filter { $0 >= cutoff && $0 <= date }.count
+    }
+
+    // MARK: - Advanced chemistry
+
+    /// Advanced questions answered, and how many were right, across every day.
+    var advancedAnswered: Int { dayRecords.values.reduce(0) { $0 + $1.advancedAnswered } }
+    var advancedCorrect: Int { dayRecords.values.reduce(0) { $0 + $1.advancedCorrect } }
+
+    /// Records one advanced question. Kept separately from the per-element
+    /// counts because the rank's depth term is about the harder material
+    /// specifically, which those counts cannot distinguish.
+    func recordAdvancedAnswer(correct: Bool, date: Date = Date()) {
+        let key = StreakCalculator.dayKey(for: date, calendar: calendar)
+        if let existing = dayRecords[key] {
+            existing.advancedAnswered += 1
+            if correct { existing.advancedCorrect += 1 }
+        } else if let context {
+            let record = StudyDayRecord(
+                dayKey: key, answeredCount: 0, completedRounds: 0,
+                advancedAnswered: 1, advancedCorrect: correct ? 1 : 0
+            )
+            context.insert(record)
+            dayRecords[key] = record
+        }
+        save()
+    }
+
     /// Most recently reviewed elements, newest first.
     func recentlyStudied(limit: Int = 8) -> [Int] {
         guard limit > 0 else { return [] }

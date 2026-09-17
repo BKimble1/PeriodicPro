@@ -101,6 +101,7 @@ RETAINED_IDENTIFIERS = {
     "PeriodicProTests/ChemicalQueryTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ElementDataTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/FormattingTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/LearningProgressTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ProgressTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/SavedCompoundTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ScannerTests.swift": "@testable import PeriodicPro",
