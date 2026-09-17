@@ -350,10 +350,11 @@ final class ElemoraScreenshotTests: XCTestCase {
         )
         settle(0.8)
         capture("09-table-zoomed")
-        // Back to fitted with a double tap, which is the gesture that replaced
-        // the Fit chip.
-        table.doubleTap()
-        settle(0.8)
+        // Back to fitted by pinching in. Not a double tap: XCUITest taps the
+        // middle of the element, and the middle of a zoomed table is a tile,
+        // which would open an element's page instead.
+        table.pinch(withScale: 0.35, velocity: -2.0)
+        settle(1.0)
 
         // 9b. The Families card as the detailed filter, with two selected.
         tap(app.buttons["legend.nobleGas"])
@@ -362,6 +363,11 @@ final class ElemoraScreenshotTests: XCTestCase {
         capture("20-table-family-filter")
         tap(app.buttons["legend.clear"])
         settle(0.5)
+        // Back to the top, so the next step starts where the tour expects.
+        for _ in 0..<6 where !canTap(app.buttons["element.H"]) {
+            app.swipeDown()
+            settle(0.4)
+        }
 
         // 10. Compound search: the bundled catalog answers at once
         let field = app.searchFields.firstMatch

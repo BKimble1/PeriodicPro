@@ -342,9 +342,14 @@ final class PeriodicProUITests: XCTestCase {
             "Returning from a detail page should keep the table's zoom\(onScreen())"
         )
 
-        // And a double tap on the zoomed table brings it back to fitted, with
-        // every column on screen again.
-        table.doubleTap()
+        // And pinching back in returns the table to fitted, with every column
+        // on screen again — the zoom does not go below the fitted state.
+        //
+        // Deliberately a pinch rather than a double tap: XCUITest taps the
+        // middle of the element, the middle of a zoomed table is a tile, and a
+        // tile is a button — the double tap would open an element's page
+        // rather than exercise the gesture.
+        table.pinch(withScale: 0.35, velocity: -2.0)
         let fitted = NSPredicate { _, _ in
             hydrogen.exists && hydrogen.frame.width > 0 && hydrogen.frame.width < before * 1.2
         }
@@ -501,18 +506,27 @@ final class PeriodicProUITests: XCTestCase {
     /// The Families card under the table is the only detailed filter, and it
     /// is a real one: rows are buttons, several can be on at once, and the
     /// table follows.
+    ///
+    /// The card is below the table, so every check on the table itself comes
+    /// after scrolling back to it. A tile that is merely off screen does not
+    /// exist as far as XCUITest is concerned, and asserting "filtered out" on
+    /// that would pass for the wrong reason.
     func testFamiliesCardFiltersTheTable() {
         waitFor(app.buttons["element.H"])
-        tap(app.buttons["legend.nobleGas"])
 
-        XCTAssertTrue(app.buttons["element.Ne"].waitForExistence(timeout: 5),
+        tap(app.buttons["legend.nobleGas"])
+        XCTAssertTrue(app.buttons["legend.nobleGas"].isSelected,
+                      "a tapped family should read as selected\(onScreen())")
+        scrollToTable()
+        XCTAssertTrue(app.buttons["element.Ne"].exists,
                       "neon should survive a noble-gas filter\(onScreen())")
         XCTAssertFalse(app.buttons["element.Fe"].exists,
                        "iron is not a noble gas and should be filtered out")
 
         // A second family joins the first rather than replacing it.
         tap(app.buttons["legend.transitionMetal"])
-        XCTAssertTrue(app.buttons["element.Fe"].waitForExistence(timeout: 5),
+        scrollToTable()
+        XCTAssertTrue(app.buttons["element.Fe"].exists,
                       "adding transition metals should bring iron back\(onScreen())")
         XCTAssertTrue(app.buttons["element.Ne"].exists, "and neon should still be there")
         XCTAssertFalse(app.buttons["element.Na"].exists,
@@ -520,12 +534,25 @@ final class PeriodicProUITests: XCTestCase {
 
         // Tapping a selected family removes it.
         tap(app.buttons["legend.transitionMetal"])
-        XCTAssertFalse(app.buttons["element.Fe"].waitForExistence(timeout: 3),
+        scrollToTable()
+        XCTAssertFalse(app.buttons["element.Fe"].exists,
                        "removing transition metals should filter iron out again")
 
         tap(app.buttons["legend.clear"])
-        XCTAssertTrue(app.buttons["element.Na"].waitForExistence(timeout: 5),
+        scrollToTable()
+        XCTAssertTrue(app.buttons["element.Na"].exists,
                       "clearing should restore every element\(onScreen())")
+    }
+
+    /// Brings the periodic table back onto the screen after something below it
+    /// has been tapped.
+    private func scrollToTable() {
+        for _ in 0..<6 {
+            if canTap(app.buttons["element.H"]) { return }
+            app.swipeDown()
+            settle(0.5)
+        }
+        settle(0.4)
     }
 
     // MARK: - Study
@@ -1088,8 +1115,8 @@ final class PeriodicProUITests: XCTestCase {
         waitFor(el("build.candidates"))
         XCTAssertTrue(labelContaining("2 known compounds share this formula").exists,
                       "an ambiguous formula must say so rather than pick one\(onScreen())")
-        XCTAssertFalse(labelContaining("build.identity.match").exists,
-                       "C2H6O must not be auto-named")
+        XCTAssertFalse(el("build.identity.match").exists,
+                       "C2H6O must not be auto-named\(onScreen())")
         XCTAssertTrue(app.buttons["build.candidate.702"].exists, "Ethanol is offered")
         XCTAssertTrue(app.buttons["build.candidate.8254"].exists, "Dimethyl ether is offered")
         tap(app.buttons["build.candidate.8254"])
@@ -1152,7 +1179,7 @@ final class PeriodicProUITests: XCTestCase {
         // Everything advanced is behind Customize, and stays there until it is
         // opened. The families chips are the tell: eighteen group chips and
         // seven period chips used to be the first thing on this screen.
-        XCTAssertFalse(app.buttons["quizSetup.family.Alkali"].exists,
+        XCTAssertFalse(app.buttons["quizSetup.family.alkaliMetal"].exists,
                        "advanced filters must start collapsed\(onScreen())")
         XCTAssertFalse(app.buttons["quizSetup.group.5"].exists)
         assertReachable(el("quizSetup.customize"), "the Customize section")
@@ -1170,9 +1197,11 @@ final class PeriodicProUITests: XCTestCase {
         tap(app.buttons["quizSetup.content.both"])
         tap(el("quizSetup.customize"))
 
-        for identifier in ["quizSetup.family.Alkali", "quizSetup.phase.Gas", "quizSetup.period.3",
-                           "quizSetup.group.17", "quizSetup.minimumZ", "quizSetup.maximumZ",
-                           "quizSetup.bonding.Ionic", "quizSetup.onlySaved",
+        // `ChipGrid` names each chip after the case, not the title.
+        for identifier in ["quizSetup.family.alkaliMetal", "quizSetup.phase.gas",
+                           "quizSetup.period.3", "quizSetup.group.17",
+                           "quizSetup.minimumZ", "quizSetup.maximumZ",
+                           "quizSetup.bonding.ionic", "quizSetup.onlySaved",
                            "quizSetup.timer", "quizSetup.shuffle"] {
             assertReachable(el(identifier), identifier)
         }
