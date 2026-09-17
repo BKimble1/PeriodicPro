@@ -266,6 +266,18 @@ jobs:
           Capabilities), then re-run. Do not remove the entitlement: shared quiz links \
           stop opening the app without it."
             fi
+            # New in Build 5. Automatic provisioning normally registers both
+            # the App Group and the widget's App ID on the first archive, but
+            # only with an App Manager key; with a Developer key it cannot.
+            if grep -qi "application-groups\|app group\|periodicpro.widgets" build/archive.log; then
+              echo "::error::The archive failed on the widget's signing. Create the App \
+          Group group.com.idlery.periodicpro in the Apple Developer portal (Certificates, \
+          Identifiers & Profiles -> Identifiers -> App Groups) and enable App Groups on \
+          both com.idlery.periodicpro and com.idlery.periodicpro.widgets, then re-run. \
+          If the API key was created with Developer rather than App Manager access, that \
+          is why it could not do this itself. To ship Build 5 without the widget instead, \
+          revert the commit that added it - it is the only one that touches signing."
+            fi
             exit "$STATUS"
           fi
 
@@ -314,6 +326,29 @@ jobs:
           echo "app icon:          $(ls "$APP" | grep -c '^AppIcon') file(s)"
 
           fail=0
+
+          # The widget extension is embedded rather than a product of its own,
+          # so nothing about a successful archive says it is in there. An app
+          # that ships without its .appex installs cleanly and simply has no
+          # widget, with nothing in the log to say so.
+          APPEX="$APP/PlugIns/ElemoraWidgetsExtension.appex"
+          if [ -d "$APPEX" ]; then
+            WIDGET_ID=$(plutil -extract CFBundleIdentifier raw "$APPEX/Info.plist")
+            WIDGET_POINT=$(plutil -extract NSExtension.NSExtensionPointIdentifier raw \
+              "$APPEX/Info.plist" 2>/dev/null || echo "missing")
+            echo "Widget extension: $WIDGET_ID ($WIDGET_POINT)"
+            [ "$WIDGET_POINT" = "com.apple.widgetkit-extension" ] || {
+              echo "::error::The widget extension's NSExtensionPointIdentifier is \
+          '$WIDGET_POINT'. iOS will never load it, so the widget would not appear in the \
+          gallery. Check Config/ElemoraWidgets-Info.plist."; fail=1; }
+          else
+            echo "::error::The archive contains no widget extension at PlugIns/\
+          ElemoraWidgetsExtension.appex. The app would install with no widget and nothing \
+          would say so. Check that the app target still has its Embed Foundation \
+          Extensions phase - Tools/validate_project.py checks this too."
+            fail=1
+          fi
+
           case "$FAMILIES" in
             *2*) ;;
             *) echo "::error::The archive is iPhone-only. TARGETED_DEVICE_FAMILY \

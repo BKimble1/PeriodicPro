@@ -366,12 +366,16 @@ struct WidgetContentTests {
         let progress = makeTestStore()
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
-        let morning = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 12, hour: 8))!
-        let evening = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 12, hour: 21))!
-        let tomorrow = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 13, hour: 8))!
+        // Midday and an hour later, in UTC. The snapshot keys its questions
+        // by the *current* calendar's day, so two instants an hour either side
+        // of noon UTC fall on the same local day in every time zone on Earth,
+        // and a runner that is not in UTC cannot turn this into a flake.
+        let midday = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 12, hour: 12))!
+        let anHourLater = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 12, hour: 13))!
+        let tomorrow = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 13, hour: 12))!
 
-        let first = snapshot(progress: progress, date: morning).questions
-        let later = snapshot(progress: progress, date: evening).questions
+        let first = snapshot(progress: progress, date: midday).questions
+        let later = snapshot(progress: progress, date: anHourLater).questions
         let next = snapshot(progress: progress, date: tomorrow).questions
 
         #expect(first.map(\.id) == later.map(\.id))
@@ -402,8 +406,9 @@ struct WidgetContentTests {
         let progress = makeTestStore()
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
-        let today = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 12, hour: 8))!
-        let tomorrow = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 13, hour: 8))!
+        // Exactly a day apart, which is a different day in every calendar.
+        let today = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 12, hour: 12))!
+        let tomorrow = calendar.date(from: DateComponents(year: 2_026, month: 5, day: 13, hour: 12))!
 
         var state = WidgetInteractionState()
         for question in snapshot(progress: progress, date: today).questions {

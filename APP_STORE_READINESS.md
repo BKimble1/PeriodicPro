@@ -189,3 +189,8 @@ Nothing in the repository. Everything below needs a person.
    cannot run live text recognition, so the recognition core is unit-tested
    against text fixtures and the camera path is not exercised by CI. The
    TestFlight notes list the exact cases to try.
+8. **Run the live PubChem smoke suite** (`python3 Tools/smoke_pubchem.py`) from
+   a machine that can reach the internet. It is not in CI on purpose, and it
+   has not been run from the environment that wrote this build — PubChem is
+   unreachable from there, which the tool reports as unreachable rather than
+   as a pass.
