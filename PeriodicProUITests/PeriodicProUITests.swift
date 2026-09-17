@@ -379,6 +379,36 @@ final class PeriodicProUITests: XCTestCase {
             .first(where: canTap)
     }
 
+    /// Dragging a zoomed table moves it. Without this the pinch test alone
+    /// could pass on a table that grew its tiles and then refused to pan.
+    func testAZoomedTableCanBePanned() {
+        waitFor(app.buttons["element.H"])
+        let table = el("table.zoomView")
+        waitFor(table)
+        table.pinch(withScale: 2.5, velocity: 1.0)
+        settle(1.0)
+
+        let before = Self.visibleTileSymbols(in: app)
+        XCTAssertFalse(before.isEmpty, "the zoomed table should still vend tiles\(onScreen())")
+
+        table.swipeLeft()
+        settle(1.0)
+        let after = Self.visibleTileSymbols(in: app)
+        XCTAssertFalse(after.isEmpty, "panning should not empty the table\(onScreen())")
+        XCTAssertNotEqual(before, after,
+                          "dragging a zoomed table should show a different part of it"
+                          + onScreen())
+    }
+
+    /// The symbols currently vended by the table, as a set.
+    private static func visibleTileSymbols(in app: XCUIApplication) -> Set<String> {
+        Set(
+            app.buttons.allElementsBoundByAccessibilityElement
+                .map(\.identifier)
+                .filter { $0.hasPrefix("element.") }
+        )
+    }
+
     /// There is no zoom control on the table, and there must not be one.
     ///
     /// The pinch is the interface. A Fit chip, a plus/minus zoom menu and a

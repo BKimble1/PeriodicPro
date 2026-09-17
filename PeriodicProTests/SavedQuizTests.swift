@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import UIKit
 import Testing
 @testable import PeriodicPro
 
@@ -288,5 +289,34 @@ struct QuizImportTests {
         }
         // Nothing the learner already had was touched.
         #expect(store.quizzes.map(\.id) == [existing.id])
+    }
+}
+
+/// What the share sheet hands Messages. The blank white tile this replaces was
+/// the absence of exactly this metadata.
+@MainActor
+@Suite("Shared quiz link previews")
+struct QuizSharePreviewTests {
+    @Test("The link preview is branded and points at the quiz's own URL")
+    func metadata() throws {
+        let url = try #require(URL(string: ElemoraLinks.quizBaseString + "1abc"))
+        let source = QuizShareItemSource(url: url, title: "Halogens", image: nil)
+        #expect(source.previewTitle == "Halogens \u{2014} Elemora Quiz")
+
+        let controller = UIActivityViewController(activityItems: [source], applicationActivities: nil)
+        let metadata = try #require(source.activityViewControllerLinkMetadata(controller))
+        #expect(metadata.title == "Halogens \u{2014} Elemora Quiz")
+        #expect(metadata.url == url)
+        #expect(metadata.originalURL == url)
+        // And the item itself is the URL, not a file.
+        #expect(source.activityViewControllerPlaceholderItem(controller) as? URL == url)
+        #expect(source.activityViewController(controller, itemForActivityType: nil) as? URL == url)
+    }
+
+    @Test("The rendered card is the size a link preview wants")
+    func card() throws {
+        let image = try #require(QuizShareImage.render(title: "Halogens", subtitle: "10 questions"))
+        #expect(image.size.width == QuizShareCard.size.width)
+        #expect(image.size.height == QuizShareCard.size.height)
     }
 }
