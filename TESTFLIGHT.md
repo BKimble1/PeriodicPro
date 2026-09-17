@@ -219,14 +219,74 @@ succeeds.
 5. **External Testing** needs a short Beta App Review (usually under 24 hours)
    the first time. Fill in the *Test Information* fields:
 
-   - **What to Test:** "Tap any element to open its detail page. Try the search
-     field with a name, a symbol and an atomic number. Run a flashcard round and
-     a quick quiz, then check the Progress tab."
+   - **What to Test** (Build 5): "The whole periodic table is visible the
+     moment the app opens — check it fits your screen without scrolling. Point
+     the scanner at a printed formula or compound name. Add the Elemora widget
+     to your Home Screen, answer a question there, then open the app and check
+     it counted. Build a compound with more than thirty atoms. Try the Advanced
+     mode in Study, and look at your rank and learning path in Progress."
+     Section 7a lists the cases in full.
    - **Feedback Email:** yours.
    - **Beta App Description:** "A clean, offline reference and study app for the
      periodic table. Explore all 118 elements, then practice with flashcards,
      quizzes and identify rounds."
    - **Sign-in required:** No.
+
+---
+
+## 7a. Build 5 — what to test on a real device
+
+Build 5 adds three things a simulator cannot fully exercise. These are the
+cases worth a person's time; everything else in the build is covered by the
+automated tests.
+
+**The chemistry scanner** — Table tab → the scan button in the toolbar.
+A simulator has no camera, so none of this has been run against live video.
+
+- The camera permission prompt appears the *first time you open the scanner*
+  and never at launch. Decline it: you should get a screen that explains and
+  offers a search field, not a dead end. Grant it in iOS Settings and reopen.
+- Point it at a printed formula — `H2O`, `NaCl`, `C8H10N4O2`. A match should
+  settle rather than flicker: the reading has to hold still before it is
+  offered.
+- Point it at a compound name in a textbook — "sodium chloride", "acetic
+  acid". Names need to look like names, so ordinary prose should be ignored.
+  Sweep across a paragraph and confirm nothing is offered for "provide",
+  "solution" or "state".
+- Point it at an InChIKey or a SMILES string if you have one to hand.
+- Point it at a **drawn skeletal structure**. It should *not* claim to
+  recognize the molecule. Reading a drawing is a different problem from
+  reading text, and `OCSR.md` records why nothing in this build claims to do
+  it. If it ever says it has identified a structure from a drawing, that is a
+  bug worth reporting immediately.
+- Cover the lens, point it at a blank wall, point it at a moving page. None of
+  those should produce a result or a crash.
+
+**The Home Screen widget** — touch and hold the Home Screen → Edit → Add
+Widget → Elemora.
+
+- Both widgets should be offered: *Quick Question* (medium and large) and
+  *Progress* (small and medium). If neither appears, the App Group did not
+  survive signing — see `APP_STORE_READINESS.md` §4a.
+- Answer a question on the Home Screen. It should tell you right or wrong and
+  show the fact behind it, then move on when you tap Next.
+- **Then open Elemora and check the Progress tab.** The answer should be
+  counted: cards answered goes up, and the element you answered about moves.
+  Answer one late at night and open the app the next morning — it should count
+  for the night you answered it, not the morning you opened the app.
+- Answer several, then open and close the app twice. Nothing should be counted
+  twice.
+- Add both widgets and answer in one. The other should keep working.
+
+**Notifications** — Progress → ⚙︎ → Notifications.
+
+- Nothing should have asked for permission before you get here.
+- Turn the master switch on: the system prompt appears then, and two
+  categories turn on, not five.
+- Decline the prompt. The switch should go back off and say that iOS is
+  blocking, with a way through to Settings.
+- Set a reminder time and leave it a day. At most one notification should
+  arrive.
 
 ---
 
@@ -367,6 +427,22 @@ That build number already exists in App Store Connect. Set the
 Deployment target and simulator destination disagree. `IPHONEOS_DEPLOYMENT_TARGET`
 is 18.0 in `Config/Shared.xcconfig`; the archive destination must be
 `generic/platform=iOS`.
+
+**`No profiles for 'com.idlery.periodicpro.widgets' were found`, or an App
+Group error, on the first Build 5 archive**
+The widget extension is new in Build 5 and needs two things registered under
+the team: its own App ID, and the App Group `group.com.idlery.periodicpro`.
+`-allowProvisioningUpdates` normally creates both on the first archive, but
+only if the API key has **App Manager** access rather than Developer. If it
+does not, create them by hand — *Certificates, Identifiers & Profiles →
+Identifiers*, add the App Group, then enable **App Groups** on both
+`com.idlery.periodicpro` and `com.idlery.periodicpro.widgets` — and re-run.
+Nothing about the main app's identifier changes either way.
+
+If you would rather ship Build 5 without the widget than wait, revert the
+commit that added it ("Answer a chemistry question without opening the app").
+It is deliberately the only commit that touches signing, and reverting it
+leaves every other Build 5 feature intact.
 
 **Upload succeeds but the build never appears**
 Check the email on the Apple ID that owns the API key. App Store Connect emails

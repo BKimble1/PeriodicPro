@@ -33,6 +33,7 @@ for one.
 - [Getting started](#getting-started)
 - [Architecture](#architecture)
 - [Folder structure](#folder-structure)
+- [The Home Screen widget](#the-home-screen-widget)
 - [How element data works](#how-element-data-works)
 - [How study progress works](#how-study-progress-works)
 - [Design system](#design-system)
@@ -319,6 +320,10 @@ PeriodicPro/
 ├── Structure3D/            Scene description, Canvas preview, RealityKit explorer
 ├── Store/                  StoreKit 2, entitlement, gating rules, paywall
 ├── StudyEngine/            Quiz and deck generation, mastery, Smart Review, RNG
+├── Scanner/                Live text recognition, candidate ranking, stability
+├── Notifications/          Local study reminders: preferences, planner, scheduler
+├── Widgets/                The app's half of the Home Screen widget
+├── WidgetShared/           Shared with the widget — see "The Home Screen widget"
 ├── Services/               Haptics
 ├── Utilities/              SF Symbol allowlist
 ├── Views/
@@ -330,12 +335,60 @@ PeriodicPro/
 ├── Assets.xcassets/        App icon (light/dark/tinted) and accent color
 └── PrivacyInfo.xcprivacy   Privacy manifest
 
+ElemoraWidgets/             The widget extension target
+├── Shared/                 A byte-identical copy of PeriodicPro/WidgetShared/
+└── *.swift                 Widgets, timeline provider, App Intents, palette
+
 PeriodicProTests/           Swift Testing unit tests
 PeriodicProUITests/         XCUITest end-to-end flows
 Config/                     xcconfig, Info.plist, StoreKit configuration
 Tools/                      Dataset generation, validation and icon rendering
 .github/workflows/          CI and TestFlight pipelines
 ```
+
+---
+
+## The Home Screen widget
+
+Two widgets: *Quick Question*, which asks one question with four tappable
+answers, and *Progress*, which shows how far through the table you are.
+
+The constraint that shapes the whole design is that a widget runs in its own
+process and **must never write the learner's progress**. Two writers on one
+SwiftData store is how progress gets corrupted. So:
+
+```
+widget                          app group container            app
+------                          -------------------            ---
+draws from ──────────────────►  widget-snapshot.json  ◄──────── writes
+appends to ──────────────────►  widget-events.jsonl   ◄──────── drains, then clears
+owns ────────────────────────►  widget-state.json
+```
+
+`WidgetBridge` (in the app) merges the log into `ProgressStore` on launch, on
+every foreground, and on the way to the background. Every event carries a UUID
+minted at the tap, and the app keeps a bounded ledger of the ones it has
+counted, so a retried App Intent, a duplicated line and a re-read of a log that
+was never cleared all count exactly once. An answer counts on the day it was
+given rather than the day it was merged.
+
+### Why the shared file exists twice
+
+`PeriodicPro/WidgetShared/ElemoraSharedStore.swift` and
+`ElemoraWidgets/Shared/ElemoraSharedStore.swift` are the same file. The project
+uses file-system synchronized groups, where a folder belongs to a target; two
+targets sharing one folder is expressible and fragile to hand-maintain, and a
+serialization contract that silently diverges between a widget and its app is
+the exact bug this arrangement exists to prevent.
+
+`Tools/check_widget_shared.py` compares them byte for byte and fails the build
+on any difference, naming the first line that disagrees and printing the `cp`
+that fixes it. It also checks the App Group identifier in the source against
+both entitlements files, the extension point identifier that decides whether
+iOS loads the widget at all, and the widget's written-out palette against the
+app icon's.
+
+**If you edit one, copy it to the other.** That is the whole rule.
 
 ---
 
@@ -498,6 +551,31 @@ Symbol name that does not exist, a dangling reference in the Xcode project, a
 table that would overflow the screen, a StoreKit product identifier that exists
 in the configuration but not in the app, an element that resolves to no artwork
 or no structure, and a color pairing that would miss WCAG AA.
+
+Several of them exist because the mistake they catch cost a full macOS CI
+cycle — forty-five minutes to be told one word. Each was added with the bug
+still in the tree, so it is known to fire on the thing it is named for:
+
+| Check | The error it replaces |
+| --- | --- |
+| `check_conformances.py` | `type 'X' does not conform to protocol 'Hashable'`, where the error names the outer type and not the property responsible |
+| `check_undeclared.py` | `cannot find 'x' in scope` |
+| `check_initializers.py` | an initializer call that no longer matches its type |
+| `check_widget_shared.py` | a widget that builds and shows a placeholder forever |
+| `check_table_fit.py` | a table that does not fit, which only a screenshot shows |
+| `lint_sources.py` | `binary operator '+' cannot be applied to two 'OSLogMessage' operands`; `cannot use mutating member on immutable value: '$0' is immutable`; `Font.system` with its arguments transposed |
+
+None of them is a compiler and none tries to be. Each answers one narrow
+question that has a cheap, accurate answer without types, and skips whatever it
+cannot read honestly rather than guessing.
+
+**The live PubChem smoke suite** (`Tools/smoke_pubchem.py`) is deliberately not
+in CI: it would make a green build depend on somebody else's uptime. Run it by
+hand before a release and after any change to `PubChemClient`. It asks the real
+service the questions the app asks — name lookup, formula search, auto-complete,
+3D conformers, InChIKey and SMILES resolution — and checks the answers against
+compounds whose identity will not change. It exits 2, distinctly from a
+failure, when the network cannot be reached at all.
 
 **UI tests** (XCUITest) cover launch, tapping an element into its detail page,
 favoriting and seeing it appear in Study, searching by name, symbol and atomic
