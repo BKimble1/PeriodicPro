@@ -35,6 +35,10 @@ struct StudyScreen: View {
     /// Set when a round ends with the allowance spent. The paywall is only
     /// presented once the session cover has actually gone, never over a round.
     @State private var paywallAfterSession: PaywallContext?
+    /// What to do once the shared-quiz sheet has finished dismissing. The same
+    /// lesson as `paywallAfterSession`: asking to present a round, or to push
+    /// a page, from a host that is still presenting does nothing at all.
+    @State private var sharedQuizAction: SharedQuizAction?
     @Namespace private var studyNamespace
 
     private var favorites: [ChemicalElement] {
@@ -154,13 +158,13 @@ struct StudyScreen: View {
                     get: { savedQuizzes.lastImportOutcome != nil },
                     set: { if !$0 { savedQuizzes.lastImportOutcome = nil } }
                 ),
-                onDismiss: { savedQuizzes.lastImportOutcome = nil }
+                onDismiss: performSharedQuizAction
             ) {
                 if let outcome = savedQuizzes.lastImportOutcome {
                     SharedQuizResultView(
                         outcome: outcome,
-                        onStart: { startSaved($0) },
-                        onViewAll: { path.append(StudyRoute.myQuizzes) }
+                        onStart: { sharedQuizAction = .start($0) },
+                        onViewAll: { sharedQuizAction = .viewAll }
                     )
                 }
             }
@@ -553,6 +557,17 @@ struct StudyScreen: View {
         .scrollIndicators(.hidden)
     }
 
+    /// Runs once the shared-quiz sheet has actually gone.
+    private func performSharedQuizAction() {
+        savedQuizzes.lastImportOutcome = nil
+        guard let action = sharedQuizAction else { return }
+        sharedQuizAction = nil
+        switch action {
+        case .start(let quiz): startSaved(quiz)
+        case .viewAll: path.append(StudyRoute.myQuizzes)
+        }
+    }
+
     // MARK: - Starting a round
 
     /// A tap on a practice tile. Quiz and Match open their setup sheet; the
@@ -647,6 +662,12 @@ struct StudyScreen: View {
 /// Where the Study tab's stack can go besides an element or a compound.
 enum StudyRoute: Hashable {
     case myQuizzes
+}
+
+/// What the shared-quiz sheet asked for, held until it has finished dismissing.
+enum SharedQuizAction: Hashable {
+    case start(SavedQuiz)
+    case viewAll
 }
 
 /// One saved quiz on the Study tab's shelf, with its Start button.
