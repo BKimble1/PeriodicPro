@@ -92,13 +92,56 @@ final class CompoundStore {
         return attachLocal(hits)
     }
 
-    /// Formula search on PubChem. Many compounds can share a formula; every
-    /// neutral match with exactly this formula comes back, and the learner
-    /// chooses.
-    func remoteCandidates(hillFormula: String) async throws -> [CompoundMatchCandidate] {
+    /// Formula search on PubChem.
+    ///
+    /// Many compounds can share a formula, and all of them come back — neutral
+    /// species and ions alike, ranked but never filtered down to one. The
+    /// page carries a cursor so "Load more" costs a page of properties rather
+    /// than a second search.
+    func remoteCandidates(hillFormula: String) async throws -> FormulaSearchPage {
+        guard isOnlineLookupEnabled else { return .empty }
+        let page = try await client.search(hillFormula: hillFormula)
+        return page.replacingCandidates(attachLocal(page.candidates))
+    }
+
+    /// The next page of a formula search already under way.
+    func moreCandidates(after cursor: FormulaSearchCursor) async throws -> FormulaSearchPage {
+        guard isOnlineLookupEnabled else { return .empty }
+        let page = try await client.page(of: cursor)
+        return page.replacingCandidates(attachLocal(page.candidates))
+    }
+
+    /// Whatever the learner typed, resolved to compounds.
+    ///
+    /// The classifier decides which PubChem namespace the text belongs to;
+    /// this dispatches to it. A name, a formula, a CID, a SMILES string, an
+    /// InChI or an InChIKey all arrive through the same field and all work.
+    func remoteSearch(query: ChemicalQuery) async throws -> [CompoundMatchCandidate] {
         guard isOnlineLookupEnabled else { return [] }
-        let hits = try await client.search(hillFormula: hillFormula)
-        return attachLocal(hits)
+        switch query {
+        case .empty:
+            return []
+        case .name(let name):
+            return attachLocal(try await client.search(name: name))
+        case .formula(_, let text):
+            let hill = ChemicalFormulaParser.parse(text)?.hill() ?? text
+            return try await remoteCandidates(hillFormula: hill).candidates
+        case .cid(let cid):
+            return attachLocal(try await client.candidates(cids: [cid]))
+        case .smiles(let smiles):
+            return attachLocal(try await client.search(smiles: smiles))
+        case .inchi(let inchi):
+            return attachLocal(try await client.search(inchi: inchi))
+        case .inchiKey(let key):
+            return attachLocal(try await client.search(inchiKey: key))
+        }
+    }
+
+    /// Name suggestions while the learner is still typing. Only for names:
+    /// a formula, an identifier or a structure string has an exact answer.
+    func suggestions(for query: ChemicalQuery) async throws -> [String] {
+        guard isOnlineLookupEnabled, case .name(let name) = query else { return [] }
+        return try await client.suggestions(startingWith: name)
     }
 
     /// The full compound for a candidate: what the app already holds, or a

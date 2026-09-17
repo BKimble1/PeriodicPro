@@ -14,6 +14,20 @@ struct CatalogBackedStubTransport: NetworkTransport {
     func perform(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
         guard let url = request.url else { throw URLError(.badURL) }
         let parts = url.path.split(separator: "/").map(String.init)
+
+        // …/rest/autocomplete/compound/<term>/JSON
+        if parts.contains("autocomplete"), let index = parts.firstIndex(of: "compound"),
+           parts.count > index + 1 {
+            let term = (parts[index + 1].removingPercentEncoding ?? parts[index + 1]).lowercased()
+            let terms = catalog.compounds
+                .flatMap { [$0.preferredName] + $0.alternateNames }
+                .filter { $0.lowercased().hasPrefix(term) }
+                .sorted()
+            return try respond(json: ["total": terms.count,
+                                      "dictionary_terms": ["compound": Array(terms.prefix(12))]],
+                               url: url)
+        }
+
         // …/rest/pug/compound/<domain>/<identifier>/<what>/…
         guard let index = parts.firstIndex(of: "compound"), parts.count > index + 3 else {
             return try respond(status: 404, json: Self.fault, url: url)
@@ -24,11 +38,21 @@ struct CatalogBackedStubTransport: NetworkTransport {
 
         switch (domain, what) {
         case ("name", "cids"):
-            let hits = catalog.search(identifier, limit: 6).compactMap(\.pubChemCID)
+            let hits = catalog.search(identifier, limit: 16).compactMap(\.pubChemCID)
             guard !hits.isEmpty else { return try respond(status: 404, json: Self.fault, url: url) }
             return try respond(json: ["IdentifierList": ["CID": hits]], url: url)
         case ("fastformula", "cids"):
-            let hits = catalog.compounds(hillFormula: identifier).compactMap(\.pubChemCID)
+            // MaxRecords is honored the way PubChem honors it, so the paging
+            // the client does is exercised rather than bypassed.
+            let all = catalog.compounds(hillFormula: identifier).compactMap(\.pubChemCID)
+            let maximum = Self.maxRecords(in: url) ?? all.count
+            let hits = Array(all.prefix(max(1, maximum)))
+            guard !hits.isEmpty else { return try respond(status: 404, json: Self.fault, url: url) }
+            return try respond(json: ["IdentifierList": ["CID": hits]], url: url)
+        case ("smiles", "cids"), ("inchikey", "cids"), ("inchi", "cids"):
+            let hits = catalog.compounds
+                .filter { $0.canonicalSMILES?.caseInsensitiveCompare(identifier) == .orderedSame }
+                .compactMap(\.pubChemCID)
             guard !hits.isEmpty else { return try respond(status: 404, json: Self.fault, url: url) }
             return try respond(json: ["IdentifierList": ["CID": hits]], url: url)
         case ("cid", "property"):
@@ -49,6 +73,13 @@ struct CatalogBackedStubTransport: NetworkTransport {
         default:
             return try respond(status: 404, json: Self.fault, url: url)
         }
+    }
+
+    private static func maxRecords(in url: URL) -> Int? {
+        guard let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
+              let item = query.first(where: { $0.name == "MaxRecords" }), let value = item.value
+        else { return nil }
+        return Int(value)
     }
 
     private static let fault: [String: Any] = [

@@ -12,6 +12,11 @@ struct CompoundSearchSection: View {
     let mastery: (String) -> MasteryLevel
     let onSelect: (CompoundMatchCandidate) -> Void
     let onRetry: () -> Void
+    /// Fetches the next page of a formula search. Absent on the Table screen,
+    /// whose compound section is a short list beneath the elements.
+    var onLoadMore: (() -> Void)?
+    /// Runs the search again for a suggested name.
+    var onPickSuggestion: ((String) -> Void)?
     /// The table lays this out inside a full-bleed scroll view and needs the
     /// page margin; the Build tab has already applied it.
     var horizontalPadding: CGFloat = Theme.Spacing.screenMargin
@@ -28,6 +33,22 @@ struct CompoundSearchSection: View {
                 statusLine
             }
             .padding(.horizontal, Theme.Spacing.xs)
+
+            if let kind = model.recognizedKind {
+                // What the app made of what was typed, said out loud: a
+                // formula search and a name search return different things,
+                // and a learner who pasted a SMILES string should be able to
+                // see that it was read as one.
+                Label(kind, systemImage: "checkmark.seal")
+                    .font(AppFont.caption)
+                    .foregroundStyle(AppColor.secondaryText)
+                    .padding(.horizontal, Theme.Spacing.xs)
+                    .accessibilityIdentifier("search.compounds.kind")
+            }
+
+            if !model.suggestions.isEmpty, let onPickSuggestion {
+                suggestionRow(onPickSuggestion)
+            }
 
             if model.isEmpty {
                 emptyLine
@@ -50,6 +71,28 @@ struct CompoundSearchSection: View {
                 }
             }
 
+            if model.hasMore, let onLoadMore {
+                Button {
+                    Haptics.tap()
+                    onLoadMore()
+                } label: {
+                    HStack(spacing: Theme.Spacing.s) {
+                        if model.isLoadingMore {
+                            ProgressView().controlSize(.mini)
+                        }
+                        Text(model.isLoadingMore ? "Loading…" : "Load more matches")
+                    }
+                    .font(.system(.subheadline, weight: .semibold))
+                    .foregroundStyle(AppColor.accent)
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: Theme.minimumTouchTarget)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(model.isLoadingMore)
+                .accessibilityIdentifier("search.compounds.loadMore")
+            }
+
             if model.askedRemote {
                 Text("Online compound searches are sent to PubChem.")
                     .font(AppFont.caption2)
@@ -60,6 +103,39 @@ struct CompoundSearchSection: View {
         .padding(.horizontal, horizontalPadding)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("search.compounds")
+    }
+
+    /// PubChem's own index terms, offered while the learner is still typing.
+    ///
+    /// Terms, not records — nothing here claims to be a compound the app has
+    /// found. Tapping one runs the ordinary exact lookup for that name.
+    private func suggestionRow(_ pick: @escaping (String) -> Void) -> some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: Theme.Spacing.s) {
+                ForEach(model.suggestions.prefix(10), id: \.self) { term in
+                    Button {
+                        Haptics.tap()
+                        pick(term)
+                    } label: {
+                        Text(term)
+                            .font(AppFont.caption)
+                            .foregroundStyle(AppColor.primaryText)
+                            .lineLimit(1)
+                            .padding(.horizontal, Theme.Spacing.m)
+                            .frame(height: 32)
+                            .background { Capsule().fill(AppColor.surfaceMuted) }
+                            .overlay { Capsule().strokeBorder(AppColor.hairline, lineWidth: 0.7) }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("search.compounds.suggestion")
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.xs)
+        }
+        .scrollIndicators(.hidden)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Suggestions from PubChem")
+        .accessibilityIdentifier("search.compounds.suggestions")
     }
 
     @ViewBuilder

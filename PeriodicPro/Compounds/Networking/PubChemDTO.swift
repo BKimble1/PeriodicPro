@@ -75,6 +75,26 @@ struct PubChemIdentifierListDTO: Decodable, Sendable {
     }
 }
 
+/// `…/rest/autocomplete/compound/<term>/JSON` — the Auto-Complete Search
+/// Service.
+///
+/// Terms, not records: what comes back is a list of chemical names PubChem
+/// indexes that start with what was typed. Selecting one is what performs a
+/// lookup, so nothing here is ever shown as a compound the app has found.
+struct PubChemAutocompleteDTO: Decodable, Sendable {
+    let total: Int
+    let dictionaryTerms: Terms
+
+    struct Terms: Decodable, Sendable {
+        let compound: [String]
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case total
+        case dictionaryTerms = "dictionary_terms"
+    }
+}
+
 /// `/compound/cid/<cid>/JSON` — the full record, 2D or 3D.
 struct PubChemRecordResponseDTO: Decodable, Sendable {
     let compounds: [PubChemRecordDTO]

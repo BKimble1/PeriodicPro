@@ -65,6 +65,9 @@ enum SFSymbolAllowlist {
         "sun.max.fill", "moon.stars.fill",
         // Saving and favoriting a compound
         "bookmark", "bookmark.fill",
+        // Verified, unverified and what a search made of what was typed
+        "checkmark.seal", "checkmark.seal.fill", "questionmark.circle",
+        "exclamationmark.circle", "wifi.slash",
     ]
 
     /// Everything the app can ask UIKit to draw.

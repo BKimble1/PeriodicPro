@@ -5,46 +5,14 @@ import Foundation
 /// Pure functions over the element catalog, so the ordering rules below are
 /// unit-tested rather than eyeballed.
 enum CompoundFormula {
-    /// "C2H6O" → [6: 2, 1: 6, 8: 1]. Returns `nil` if a symbol is not an
-    /// element, or the string is empty. Trailing charges (`+`, `-`, `2-`)
-    /// and subscript digits are tolerated.
+    /// "C2H6O" → [6: 2, 1: 6, 8: 1]. `nil` for anything that is not a
+    /// formula.
+    ///
+    /// The reading itself lives in `ChemicalFormulaParser`, which also
+    /// understands parentheses, hydrates and charges; this is the composition
+    /// half of it, for the callers that only want to know what is in there.
     static func parse(_ formula: String, catalog: ElementCatalog = .bundledOrEmpty) -> [Int: Int]? {
-        let normalized = unsubscripted(formula).trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !normalized.isEmpty else { return nil }
-        var counts: [Int: Int] = [:]
-        var symbol = ""
-        var digits = ""
-
-        func flush() -> Bool {
-            guard !symbol.isEmpty else { return true }
-            guard let element = catalog.element(symbol: symbol) else { return false }
-            let count = Int(digits) ?? 1
-            guard count > 0 else { return false }
-            counts[element.atomicNumber, default: 0] += count
-            symbol = ""
-            digits = ""
-            return true
-        }
-
-        for character in normalized {
-            if character.isUppercase {
-                guard flush() else { return nil }
-                symbol = String(character)
-            } else if character.isLowercase {
-                guard !symbol.isEmpty, digits.isEmpty else { return nil }
-                symbol.append(character)
-            } else if character.isNumber {
-                guard !symbol.isEmpty else { return nil }
-                digits.append(character)
-            } else if character == "+" || character == "-" || character == " " {
-                // A trailing charge: the composition is what matters here.
-                break
-            } else {
-                return nil
-            }
-        }
-        guard flush(), !counts.isEmpty else { return nil }
-        return counts
+        ChemicalFormulaParser.parse(formula, catalog: catalog)?.composition
     }
 
     /// Hill order, which is what PubChem indexes: C first, H second, then the

@@ -49,6 +49,40 @@ final class CompoundBuilderModel {
         case remote
     }
 
+    /// What the learner says about the species' charge, if anything.
+    ///
+    /// Unspecified is the default and means "do not decide for me": neutral
+    /// records are shown first and charged ones stay in the list with a
+    /// badge, because NH₄ really is ammonium and hiding it would be the app
+    /// answering a question it was not asked. Choosing a charge is a filter
+    /// the learner applied, and only then does anything disappear.
+    enum ChargePreference: Int, CaseIterable, Identifiable, Sendable {
+        case unspecified = 99
+        case minusFour = -4, minusThree = -3, minusTwo = -2, minusOne = -1
+        case neutral = 0
+        case plusOne = 1, plusTwo = 2, plusThree = 3, plusFour = 4
+
+        var id: Int { rawValue }
+
+        /// The charge asked for, or `nil` for unspecified.
+        var charge: Int? { self == .unspecified ? nil : rawValue }
+
+        var label: String {
+            switch self {
+            case .unspecified: return "Any"
+            case .neutral: return "Neutral"
+            default: return rawValue > 0 ? "+\(rawValue)" : "\(rawValue)"
+            }
+        }
+
+        /// Ordered the way a chemist reads a scale, negative to positive,
+        /// with "Any" first because it is the default.
+        static let ordered: [ChargePreference] = [
+            .unspecified, .minusFour, .minusThree, .minusTwo, .minusOne,
+            .neutral, .plusOne, .plusTwo, .plusThree, .plusFour,
+        ]
+    }
+
     /// How many different elements one composition may name.
     ///
     /// Sixteen, not six. Six ruled out a great deal of real chemistry —
@@ -81,6 +115,14 @@ final class CompoundBuilderModel {
     private(set) var entries: [Entry] = []
     private(set) var state: LookupState = .idle
     private(set) var origin: LookupOrigin = .local
+    /// The charge the learner asked for, if any.
+    var charge: ChargePreference = .unspecified {
+        didSet { if charge != oldValue { compositionChanged() } }
+    }
+    /// Where the formula search has got to, for Load more.
+    private(set) var formulaCursor: FormulaSearchCursor?
+    private(set) var hasMoreCandidates = false
+    private(set) var isLoadingMore = false
     /// How many times PubChem has been asked in this session. Read by a test
     /// that proves the builder debounces rather than requesting per tap.
     private(set) var remoteRequestCount = 0
@@ -207,6 +249,9 @@ final class CompoundBuilderModel {
         task = nil
         state = .idle
         origin = .local
+        formulaCursor = nil
+        hasMoreCandidates = false
+        isLoadingMore = false
     }
 
     // MARK: - Automatic identification
@@ -229,13 +274,16 @@ final class CompoundBuilderModel {
     func identify(store: CompoundStore, catalog: ElementCatalog, debounced: Bool) {
         task?.cancel()
         task = nil
+        formulaCursor = nil
+        hasMoreCandidates = false
+        isLoadingMore = false
         guard !entries.isEmpty else {
             state = .idle
             origin = .local
             return
         }
         let formula = hillFormula(catalog: catalog)
-        let local = store.localCandidates(hillFormula: formula)
+        let local = filteredByCharge(store.localCandidates(hillFormula: formula))
         if !local.isEmpty {
             origin = .local
             settle(on: local, store: store)
@@ -267,8 +315,11 @@ final class CompoundBuilderModel {
     private func fetchRemote(hillFormula formula: String, store: CompoundStore) async {
         remoteRequestCount += 1
         do {
-            let remote = try await store.remoteCandidates(hillFormula: formula)
+            let page = try await store.remoteCandidates(hillFormula: formula)
             guard !Task.isCancelled else { return }
+            formulaCursor = page.cursor
+            hasMoreCandidates = page.hasMore
+            let remote = filteredByCharge(page.candidates)
             if remote.isEmpty {
                 state = .noMatch
             } else {
@@ -284,6 +335,50 @@ final class CompoundBuilderModel {
         } catch {
             guard !Task.isCancelled else { return }
             state = .failed(PubChemError.malformed("").userMessage)
+        }
+    }
+
+    /// Applies the learner's charge choice, if they made one.
+    ///
+    /// With no choice this returns everything: neutral species already rank
+    /// first, and a charged record that shares the formula is a real answer,
+    /// not noise. Only an explicit choice removes anything.
+    func filteredByCharge(_ candidates: [CompoundMatchCandidate]) -> [CompoundMatchCandidate] {
+        guard let wanted = charge.charge else { return candidates }
+        return candidates.filter { $0.charge == wanted }
+    }
+
+    /// Fetches the next page of a formula search.
+    func loadMore(store: CompoundStore) {
+        guard let cursor = formulaCursor, hasMoreCandidates, !isLoadingMore else { return }
+        isLoadingMore = true
+        task?.cancel()
+        task = Task { [weak self] in
+            guard let self else { return }
+            defer { self.isLoadingMore = false }
+            do {
+                let page = try await store.moreCandidates(after: cursor)
+                guard !Task.isCancelled else { return }
+                self.formulaCursor = page.cursor
+                self.hasMoreCandidates = page.hasMore
+                let more = self.filteredByCharge(page.candidates)
+                if !more.isEmpty {
+                    self.state = .choices(more)
+                } else {
+                    // Nothing new on this page. Whatever was already on
+                    // screen stays; an empty page is not a retraction.
+                    switch self.state {
+                    case .choices, .matched, .hypothetical: break
+                    default: self.state = .noMatch
+                    }
+                }
+            } catch let error as PubChemError {
+                guard !Task.isCancelled, error != .canceled else { return }
+                self.state = .failed(error.userMessage)
+            } catch {
+                guard !Task.isCancelled else { return }
+                self.state = .failed(PubChemError.malformed("").userMessage)
+            }
         }
     }
 

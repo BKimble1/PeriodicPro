@@ -16,7 +16,7 @@ struct CompoundBuilderScreen: View {
     @Environment(ProgressStore.self) private var progress: ProgressStore
 
     @State private var model = CompoundBuilderModel()
-    @State private var search = CompoundSearchModel()
+    @State private var search = CompoundSearchModel(interpretation: .compoundOnly)
     @State private var query = ""
     @State private var path = NavigationPath()
     @State private var showsPicker = false
@@ -45,6 +45,8 @@ struct CompoundBuilderScreen: View {
                             mastery: { progress.compoundMastery(for: $0) },
                             onSelect: { path.append($0) },
                             onRetry: { search.retry(store: store) },
+                            onLoadMore: { search.loadMore(store: store) },
+                            onPickSuggestion: { query = $0 },
                             horizontalPadding: 0
                         )
                     } else {

@@ -78,16 +78,22 @@ struct PubChemClientTests {
         #expect(transport.requestedPaths.first?.contains("compound/name/water/cids/JSON") == true)
     }
 
-    @Test("A formula search returns every neutral match, never just the first")
+    @Test("A formula search returns every match, never just the first")
     func formulaSearchReturnsAllMatches() async throws {
-        let (client, _) = client([
+        let (client, transport) = client([
             route("fastformula/C2H6O/cids", "pubchem-formula-C2H6O-cids"),
             route("cid/702,8254/property", "pubchem-cids-702-8254-properties"),
         ])
-        let hits = try await client.search(hillFormula: "C2H6O")
-        #expect(hits.count == 2)
-        #expect(Set(hits.map(\.name)) == ["Ethanol", "Dimethyl ether"])
-        #expect(hits.allSatisfy { $0.hillFormula == "C2H6O" && $0.charge == 0 })
+        let page = try await client.search(hillFormula: "C2H6O")
+        #expect(page.candidates.count == 2)
+        #expect(Set(page.candidates.map(\.name)) == ["Ethanol", "Dimethyl ether"])
+        #expect(page.candidates.allSatisfy { $0.hillFormula == "C2H6O" })
+        #expect(!page.hasMore)
+        // The index is asked for far more than a page, in one request, so a
+        // real compound cannot be hidden behind records nobody wanted.
+        let indexRequest = try #require(transport.requestedPaths.first)
+        #expect(indexRequest.contains("MaxRecords=\(PubChemClient.formulaCandidateLimit)"))
+        #expect(PubChemClient.formulaCandidateLimit >= 250)
     }
 
     @Test("A 3D record parses into atoms, bonds and coordinates")
@@ -275,6 +281,7 @@ struct PubChemClientTests {
         let (client, transport) = client([])
         await #expect(throws: PubChemError.invalidQuery) { _ = try await client.search(name: "8") }
         await #expect(throws: PubChemError.invalidQuery) { _ = try await client.search(hillFormula: "h2o") }
+        await #expect(throws: PubChemError.invalidQuery) { _ = try await client.search(hillFormula: "H2O; DROP") }
         #expect(transport.requestedPaths.isEmpty)
     }
 
@@ -295,7 +302,7 @@ struct PubChemClientTests {
         let water = try await client.search(name: "water")
         #expect(water.first?.name == "Water")
         let ethers = try await client.search(hillFormula: "C2H6O")
-        #expect(ethers.count == 2)
+        #expect(ethers.candidates.count == 2)
         let salt = try await client.compound(cid: 5234)
         #expect(salt.preferredName == "Sodium chloride")
         #expect(salt.structure?.is3D == true, "the lattice is 3D data")
