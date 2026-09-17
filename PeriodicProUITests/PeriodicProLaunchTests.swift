@@ -106,4 +106,42 @@ final class PeriodicProLaunchTests: XCTestCase {
         screenshot.lifetime = .keepAlways
         add(screenshot)
     }
+
+    /// The loading screen: Elemora's own icon and name while the app opens,
+    /// on the same field the system's launch image uses, then gone.
+    ///
+    /// Held up by a launch argument. It is meant to last about half a second,
+    /// which is right for a learner and unassertable for a test — without the
+    /// hold this would be racing it.
+    func testLoadingScreenShowsTheAppIconAndThenGivesWayToTheTable() throws {
+        let held = XCUIApplication()
+        held.launchArguments = ["-uiTesting", "-holdLaunchScreen"]
+        held.launch()
+
+        let launchScreen = held.descendants(matching: .any)
+            .matching(identifier: "launch.screen").firstMatch
+        XCTAssertTrue(launchScreen.waitForExistence(timeout: 10),
+                      "The app should open on its loading screen")
+        XCTAssertEqual(launchScreen.label, "Elemora",
+                       "The loading screen should name the app to VoiceOver")
+        XCTAssertFalse(held.navigationBars["Periodic Table"].exists,
+                       "The table should be behind the loading screen, not beside it")
+
+        let frame = XCTAttachment(screenshot: held.screenshot())
+        frame.name = "Loading screen"
+        frame.lifetime = .keepAlways
+        add(frame)
+        held.terminate()
+
+        // And a normal launch passes through it to the table without the
+        // learner having to do anything.
+        let app = XCUIApplication()
+        app.launchArguments = ["-uiTesting"]
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Periodic Table"].waitForExistence(timeout: 15),
+                      "The loading screen should give way to the table on its own")
+        XCTAssertFalse(app.descendants(matching: .any)
+            .matching(identifier: "launch.screen").firstMatch.exists,
+                       "The loading screen should be gone once the table is up")
+    }
 }

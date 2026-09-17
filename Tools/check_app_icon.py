@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import struct
 import sys
 import zlib
@@ -353,6 +354,95 @@ def inspect(path: str) -> list[str]:
     return problems
 
 
+# The launch screen draws the same mark in SwiftUI rather than shipping a
+# second copy of the raster. Two descriptions of one mark can drift, so both
+# are read here and required to agree.
+SWIFT_ICON = os.path.join(ROOT, "PeriodicPro", "App", "ElemoraAppIcon.swift")
+GENERATOR = os.path.join(ROOT, "Tools", "make_app_icon.py")
+
+
+def _number(source: str, pattern: str, name: str, errors: list) -> float | None:
+    match = re.search(pattern, source, re.M)
+    if not match:
+        errors.append(f"{name} could not be read")
+        return None
+    return float(match.group(1))
+
+
+def check_drawn_mark() -> list:
+    """The SwiftUI mark and the generated icon describe the same geometry."""
+    errors: list = []
+    if not os.path.exists(SWIFT_ICON):
+        return ["PeriodicPro/App/ElemoraAppIcon.swift is missing, so the launch "
+                "screen has no mark to draw"]
+    swift = open(SWIFT_ICON, encoding="utf-8").read()
+    generator = open(GENERATOR, encoding="utf-8").read()
+
+    pairs = [
+        ("canvas", r"static let canvas: CGFloat = ([0-9_]+)", r"^SIZE = (\d+)"),
+        ("tile", r"static let tile: CGFloat = ([0-9.]+)", r"^TILE = (\d+)"),
+        ("gap", r"static let gap: CGFloat = ([0-9.]+)", r"^GAP = (\d+)"),
+        ("columns", r"static let columns = (\d+)", r"^COLUMNS = (\d+)"),
+        ("rows", r"static let rows = (\d+)", r"^ROWS = (\d+)"),
+    ]
+    for name, swift_pattern, python_pattern in pairs:
+        drawn = _number(swift.replace("_", ""), swift_pattern.replace("[0-9_]", "[0-9]"),
+                        f"ElemoraAppIcon.{name}", errors)
+        rendered = _number(generator, python_pattern, f"make_app_icon.{name}", errors)
+        if drawn is not None and rendered is not None and drawn != rendered:
+            errors.append(
+                f"the launch screen draws {name} as {drawn:g} and the icon renders it "
+                f"as {rendered:g}"
+            )
+
+    # And the same nine tiles in the same nine places.
+    swift_tiles = re.search(r"tealTiles: \[\(column: Int, row: Int\)\] = \[(.*?)\]",
+                            swift, re.S)
+    python_tiles = re.search(r"TEAL_TILES = \[(.*?)\]", generator, re.S)
+    if not swift_tiles or not python_tiles:
+        errors.append("the mark's tile positions could not be read from both sides")
+    else:
+        drawn = re.findall(r"\((\d+),\s*(\d+)\)", swift_tiles.group(1))
+        rendered = re.findall(r"\((\d+),\s*(\d+)\)", python_tiles.group(1))
+        if sorted(drawn) != sorted(rendered):
+            errors.append(
+                f"the launch screen draws {len(drawn)} teal tiles at {sorted(drawn)} and "
+                f"the icon renders {len(rendered)} at {sorted(rendered)}")
+
+    swift_gold = re.search(r"goldTile = \(column: (\d+), row: (\d+)\)", swift)
+    python_gold = re.search(r"GOLD_TILE = \((\d+),\s*(\d+)\)", generator)
+    if not swift_gold or not python_gold:
+        errors.append("the gold tile's position could not be read from both sides")
+    elif swift_gold.groups() != python_gold.groups():
+        errors.append(
+            f"the gold tile is at {swift_gold.groups()} on the launch screen and "
+            f"{python_gold.groups()} in the icon")
+
+    # The palette, in both appearances.
+    for name, swift_pattern, python_pattern in [
+        ("field light", r"light: Color\(red: (\d+) / 255, green: (\d+) / 255, blue: (\d+) / 255\)\s*,\s*dark[^)]*\)\s*\n\s*static let teal",
+         r"^FIELD = \((\d+), (\d+), (\d+)\)"),
+    ]:
+        drawn = re.search(swift_pattern, swift, re.S)
+        rendered = re.search(python_pattern, generator, re.M)
+        if drawn and rendered and drawn.groups() != rendered.groups():
+            errors.append(
+                f"the {name} color is {drawn.groups()} drawn and {rendered.groups()} rendered")
+
+    # The launch screen's own background has to be the app's canvas, or the
+    # system launch image visibly hands over to a different color.
+    colorset = os.path.join(ROOT, "PeriodicPro", "Assets.xcassets",
+                            "LaunchBackground.colorset", "Contents.json")
+    if not os.path.exists(colorset):
+        errors.append("LaunchBackground.colorset is missing, so the system launch "
+                      "image would be plain white")
+    elif os.path.exists(PROJECT):
+        project = open(PROJECT, encoding="utf-8").read()
+        if "INFOPLIST_KEY_UILaunchScreen_BackgroundColor = LaunchBackground;" not in project:
+            errors.append("the project does not point UILaunchScreen at LaunchBackground")
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -388,6 +478,8 @@ def main() -> int:
         if filename not in EXPECTED_APPEARANCES:
             errors.append(f"Contents.json lists an unexpected image, {filename}")
 
+    errors.extend(check_drawn_mark())
+
     for filename in EXPECTED_APPEARANCES:
         path = os.path.join(ICON_SET, filename)
         if not os.path.exists(path):
@@ -415,7 +507,7 @@ def main() -> int:
         f"{REQUIRED_SIZE}x{REQUIRED_SIZE} truecolor with no alpha, hard-edged "
         f"(median edge {MAX_MEDIAN_EDGE_WIDTH}px, 90th percentile ≤{MAX_EDGE_WIDTH}px), "
         f"flat field, rendered from a "
-        f"≥{MIN_MASTER_SIZE} master"
+        f"≥{MIN_MASTER_SIZE} master; the launch screen draws the same mark"
     )
     return 0
 

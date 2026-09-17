@@ -64,6 +64,14 @@ enum RuntimeFlags {
     /// screenshot tour are deterministic and offline. Without it a UI-test run
     /// makes no network requests at all.
     static let stubsCompoundNetwork = ProcessInfo.processInfo.arguments.contains("-compoundNetworkStub")
+
+    /// Set alongside `-uiTesting` to leave the loading screen up.
+    ///
+    /// It is meant to be gone in well under a second, which is right for a
+    /// learner and useless for a test or a screenshot: both would be racing
+    /// it. With this the launch screen stays, so it can be photographed and
+    /// asserted on deterministically.
+    static let holdsLaunchScreen = ProcessInfo.processInfo.arguments.contains("-holdLaunchScreen")
 }
 
 /// Environment storage for the bundled dataset.

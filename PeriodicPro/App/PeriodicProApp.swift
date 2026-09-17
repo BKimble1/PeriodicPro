@@ -9,7 +9,18 @@ import SwiftUI
 @MainActor
 struct PeriodicProApp: App {
     @State private var services = AppServices()
+    @State private var hasLaunched = false
     @Environment(\.scenePhase) private var scenePhase
+
+    /// Whether there is an app worth showing yet: a dataset resolved one way
+    /// or the other, and — outside the UI tests, which never contact StoreKit
+    /// — an answer about the learner's subscription, so nothing opens showing
+    /// a Pro lock it is about to take away.
+    private var isReady: Bool {
+        guard !services.catalog.isEmpty || services.catalogError != nil else { return false }
+        if RuntimeFlags.isUITesting { return true }
+        return services.store.entitlement != .unknown
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -35,6 +46,17 @@ struct PeriodicProApp: App {
                 .onChange(of: scenePhase) { _, phase in
                     guard phase == .active else { return }
                     services.progress.refreshCompletedRoundsToday()
+                }
+                // The loading screen sits over the whole window, above the
+                // tabs and above onboarding, so the first thing a learner
+                // sees is Elemora rather than a half-built tab bar.
+                .overlay {
+                    if !hasLaunched {
+                        LaunchScreenView(isReady: isReady && !RuntimeFlags.holdsLaunchScreen) {
+                            withAnimation(Theme.Motion.soft) { hasLaunched = true }
+                        }
+                        .transition(.opacity)
+                    }
                 }
         }
     }
