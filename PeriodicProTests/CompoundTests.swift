@@ -347,8 +347,25 @@ struct BuilderIdentificationTests {
         #expect(model.origin == .remote)
         #expect(model.remoteRequestCount == 0, "nothing is sent while the tray is still changing")
 
-        try await Task.sleep(for: .milliseconds(1_400))
+        // Waited for rather than slept through. The debounce is 650 ms, but a
+        // loaded runner can take several times that to schedule the work, and
+        // a fixed sleep then reads the counter before the request has gone —
+        // which is how this passed at 3.257 seconds and failed on the next
+        // run with nothing changed between them.
+        let deadline = ContinuousClock.now + .seconds(20)
+        while model.remoteRequestCount == 0, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(25))
+        }
         #expect(model.remoteRequestCount == 1, "nine changes, one request")
+
+        // And it stays one: a debounce that merely delayed the nine requests
+        // rather than coalescing them would show the rest arriving now.
+        try await Task.sleep(for: .milliseconds(400))
+        #expect(model.remoteRequestCount == 1, "the other eight changes must never be sent")
+
+        while model.state == .searching, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(25))
+        }
         // The stub answers like an offline device, which is a failure to ask
         // rather than a miss — and never a discovery.
         guard case .failed = model.state else {
