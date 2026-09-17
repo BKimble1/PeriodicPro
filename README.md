@@ -16,7 +16,8 @@ under two fingers. Tap any element and its tile expands into a full detail page
 with its real 3D structure. Fifty bundled compounds, a compound search backed
 by PubChem, and a Compound Builder (beta) that looks up what you assemble. When
 you are ready to remember rather than browse, five practice modes — including
-quizzes you shape yourself and share as files — turn what you read into recall.
+quizzes you shape yourself and share as an Elemora link — turn what you read
+into recall.
 
 Built entirely in Swift and SwiftUI. No backend, no account, no third-party
 dependencies. Everything about the elements works on a plane; the only network
@@ -55,16 +56,20 @@ color-coded with restrained washes, and each family also carries a distinct
 glyph so the table is readable without relying on color.
 
 Search sits in the navigation bar and matches names, symbols and atomic numbers
-instantly — `oxygen`, `O` and `8` all land on the same element. Filter chips cut
-the table to metals, nonmetals or metalloids; a compact filter sheet exposes all
-ten families. A compact key beneath the table names every family and its glyph.
+instantly — `oxygen`, `O` and `8` all land on the same element. Four filters sit
+across the width of the screen — All, Metals, Nonmetals, Metalloids — with no
+sideways scrolling and no filter button beside them. The Families card beneath
+the table is the detailed filter: every family is a row you can tap, several can
+be on at once, and the card shows which.
 
 The table is pinch-to-zoom: fitted, with every column on screen, up to about
 3.5× with the content under your fingers held still. Tiles gain the atomic
-number and then the name as they grow, double tap toggles 2×, and a Fit chip
-and a Zoom menu do the same job for anyone who cannot pinch. Zoom and position
-survive a search and a detail push. Accessibility text sizes open already
-zoomed.
+number and then the name as they grow, and a double tap toggles 2× and back to
+fitted. There is deliberately no zoom control on screen at all — no Fit chip and
+no toolbar menu; VoiceOver and Switch Control drive an invisible adjustable
+element instead, so the accessible route costs nobody any chrome. Zoom and
+position survive a search and a detail push, and accessibility text sizes open
+already zoomed.
 
 Search also finds compounds: the bundled catalog at once, PubChem after a
 pause in typing, never for a bare atomic number.
@@ -102,12 +107,18 @@ structure with a Ball & Stick / Space Fill switch and the same RealityKit
 explorer the elements use, the facts, the elements in it, and "Data source:
 PubChem". Sources: [`COMPOUND_SOURCES.md`](COMPOUND_SOURCES.md).
 
-The **Build** tab is the Compound Builder, in beta and free for everyone.
-Add elements, watch the formula and molar mass update, read the clearly
-labeled heuristic hints, then look the composition up — in the catalog first,
-then PubChem. One match is shown; several are offered to choose between
-("Multiple known compounds share this formula."); none is reported as a miss
-and never as a discovery, and can be kept only as a hypothetical composition.
+The **Build** tab is the Compound Builder, in beta and free for everyone. A
+search field at the top finds a compound by name or formula without any
+chemistry at all. Underneath it, add elements and the formula updates as you
+go — and so does the identification: the bundled catalog and the on-device
+cache are consulted immediately, and PubChem only once you have stopped
+editing, with the previous request canceled. One match is named; several are
+offered to choose between ("2 known compounds share this formula"); none is
+reported as a miss and never as a discovery, and can be kept only as a
+hypothetical composition. A known compound gets a real 2D structure drawn from
+its own connectivity — a skeletal formula for an organic molecule, a labeled
+2D structure for a small one, and a formula unit for a lattice, each labeled
+for what it is.
 
 ### Study
 
@@ -126,9 +137,13 @@ round, and five practice tiles:
 - **Smart Review** — ten cards drawn from the elements you keep getting wrong
 
 **My Quizzes** keeps the quizzes you save: start, edit, duplicate, rename,
-delete, and share as a `.elemoraquiz` file that another copy of Elemora can
-import — after checking its format, version, size and every element and
-compound it names.
+delete, and share as an ordinary link —
+`https://elemora.idlery.com/quiz/…` — that opens Elemora on the recipient's
+device and saves the quiz for them. The quiz travels inside the link itself:
+nothing is uploaded, there is no server, and only the name and the settings
+are encoded. An incoming link is checked for its domain, path, size, format
+version, name, and every element and compound it names before anything is
+saved. There is no file, no JSON and no importer anywhere in the interface.
 
 Identify draws its model in neutral gray until you answer. The app teaches the
 family palette during onboarding, so a lavender model would narrow 118
@@ -486,7 +501,9 @@ or no structure, and a color pairing that would miss WCAG AA.
 
 **UI tests** (XCUITest) cover launch, tapping an element into its detail page,
 favoriting and seeing it appear in Study, searching by name, symbol and atomic
-number, the empty search state, family filters, the filter sheet, a full
+number, the empty search state, the four primary filters and the Families
+card, Settings and its exact legal links, the practice tiles sharing one
+baseline, a full
 flashcard round through to its summary, answering a quiz question, an identify
 round, the Progress screen, the redesigned Study layout, the free daily
 allowance counting down (and not counting an abandoned round), the Pro badge,

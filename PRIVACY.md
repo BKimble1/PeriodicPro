@@ -29,8 +29,9 @@ shared with third parties, and not readable by other apps.
 | Favorite compounds, compounds added to Study, and a familiarity score per compound | SwiftData store | Compound favorites, the Study shelf and compound questions |
 | Compounds you looked up (the record PubChem returned, at most 200) | SwiftData store | So a compound you fetched once keeps working offline |
 | Hypothetical compositions you chose to keep (formula and molar mass only) | SwiftData store | So the builder can show them again |
-| Quizzes you saved (a name and the quiz settings) | SwiftData store | My Quizzes |
+| Quizzes you saved, and quizzes opened from a shared link (a name and the quiz settings) | SwiftData store | My Quizzes |
 | Whether you have seen the three onboarding pages | `UserDefaults` | So onboarding only appears once |
+| Your appearance choice: System, Light or Dark | `UserDefaults` | So the app opens in the appearance you picked |
 
 Nothing else is recorded. In particular the app does not store your name, email
 address, contacts, location, photos, identifiers for advertising, or any device
@@ -45,8 +46,9 @@ have bundled. When that happens:
 
 - **What is sent:** the compound name you typed in search (after a pause in
   typing, and never for a bare number or a one- or two-letter element symbol),
-  or the formula you assembled in the builder when you tap *Look up*, or a
-  PubChem compound identifier when a page needs the full record. Nothing else:
+  or the formula you assembled in the builder, once you have stopped changing
+  it and only if nothing already on the device matches, or a PubChem compound
+  identifier when a page needs the full record. Nothing else:
   no identifier for you or your device, no progress, no favorites, no history.
 - **When:** only when you search for a compound or look one up. Browsing the
   table, studying, and everything about the elements make no request at all.
@@ -91,7 +93,7 @@ or shared.
 
 ## Your control over the data
 
-- **Progress → ⋯ → Reset progress** clears familiarity scores, answer counts and
+- **Progress → ⚙︎ → Reset Progress** clears familiarity scores, answer counts and
   your streak. Favorites are kept, because they are a choice you made rather
   than progress.
 - **Search → Clear** removes stored recent searches.
@@ -109,9 +111,10 @@ receives it.
 The app is suitable for all ages and collects no personal information from
 anyone, including children. It contains no chat and no advertising. Its only
 outbound requests are the compound lookups above, which send a chemical name or
-formula and nothing personal. A saved quiz can be shared as a file, and a
-shared quiz file carries only a name and the quiz settings; the app refuses any
-file that is not exactly that.
+formula and nothing personal. A saved quiz can be shared as a link, and that
+link carries only a name and the quiz settings, encoded into the link itself —
+there is no server holding the quiz and nothing is uploaded to share one. The
+app refuses any link that is not exactly that.
 
 ## App Store privacy declaration
 
@@ -130,9 +133,13 @@ this project (it has no server), and PubChem is not a partner of the developer
 Search history stays on the device and is never uploaded.
 
 This is checkable rather than asserted. The app links no third-party package
-at all, contains no analytics, advertising or attribution SDK, and the only
-two URLs anywhere in its source are PubChem's public REST endpoint and
-Apple's standard license page, which is a link rather than a request.
+at all, and contains no analytics, advertising or attribution SDK. The only
+URL it ever *requests* is PubChem's public REST endpoint. The Elemora
+addresses in `PeriodicPro/Utilities/ElemoraLinks.swift` — the website, the
+privacy policy, the terms, the support page and the base a shared quiz link is
+built on — are links the app hands to Safari or to Messages when somebody taps
+one, never requests the app makes. Nothing is fetched from them in the
+background and nothing is sent to them.
 
 The bundled `PeriodicPro/PrivacyInfo.xcprivacy` privacy manifest matches the
 "No" answer: `NSPrivacyTracking` is `false`, `NSPrivacyTrackingDomains` and
@@ -148,8 +155,39 @@ and local storage — so it qualifies for the standard exemption.
 `Config/Info.plist` sets `ITSAppUsesNonExemptEncryption` to `false`, which
 means TestFlight distributes builds without stopping to ask.
 
+## Shared quiz links
+
+A quiz shared from **My Quizzes → Share** becomes an ordinary https link under
+`https://elemora.idlery.com/quiz/`. The quiz travels *inside* the link: its name
+and its settings are compressed and encoded into the address itself, so there is
+no upload, no server storing it and nothing to delete afterwards. No progress,
+no favorites, no history and no identifier of the person who made it is
+included, and `PeriodicProTests/SavedQuizTests.swift` asserts exactly that by
+decoding a link and checking which keys it carries.
+
+Opening someone else's link validates it — the domain, the path, the size, the
+format version, the quiz name, that every element exists and that every compound
+reference is a PubChem identifier — and then saves the quiz on the device.
+Nothing else on the device is read, changed or deleted, and a link that is not
+one of ours is ignored rather than opened.
+
+If the recipient does not have Elemora, the link opens
+`https://elemora.idlery.com/quiz/…` in a browser, which shows a branded page
+saying a quiz was shared and where to get the app. The page is a static file: it
+sets no cookies, runs no scripts, loads nothing from a third party, and never
+displays the encoded quiz.
+
+## The website
+
+The pages at `https://elemora.idlery.com` are plain static files with no
+cookies, no analytics and no third-party embeds of any kind. The hosted privacy
+policy at `/privacy` is the same statement as this document, and `Website/` in
+this repository is its source; the two are kept in step deliberately, because
+the App Store listing points at the hosted one and the app's Settings links to
+it.
+
 ## Contact
 
-Questions about this document belong in the repository's issue tracker.
+<support@idlery.com>, or the repository's issue tracker.
 
-_Last updated for the compound release (version 3.0.0)._
+_Last updated for the UX polish release (version 4.0.0)._

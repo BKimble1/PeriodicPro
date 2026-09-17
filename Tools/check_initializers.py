@@ -26,6 +26,11 @@ STORED_PROPERTY = re.compile(
     r"(?:static )?(let|var) (\w+)\s*(?::|=)"
 )
 INIT_DECL = re.compile(r"^\s+(?:public |internal |private |fileprivate )?init\??\(")
+# `enum Name: String, Codable, ...` — the first conformance is the raw type.
+RAW_VALUE_ENUM = re.compile(
+    r"^(?:@\w+(?:\([^)]*\))?\s*)*(?:public |internal |private |fileprivate )?"
+    r"enum \w+\s*:\s*(String|Int|UInt|Int8|Int16|Int32|Int64|Double|Float|Character)\b"
+)
 PARAM_LABEL = re.compile(r"(?:^|[(,]\s*)(?:_\s+)?([a-z_]\w*)\s*:")
 
 
@@ -57,6 +62,12 @@ def collect_types() -> dict[str, set[str]]:
             if match and not line.startswith(" ") and not line.startswith("\t"):
                 current = match.group(2)
                 accepted.setdefault(current, set())
+                # A raw-valued enum gets `init?(rawValue:)` for free. Without
+                # this, an enum that also declares a `static let` looked like a
+                # struct with one stored property, and every
+                # `Appearance(rawValue:)` in the app read as a mismatch.
+                if match.group(1) == "enum" and RAW_VALUE_ENUM.match(line):
+                    accepted[current].add("rawValue")
                 depth = line.count("{") - line.count("}")
                 continue
             if current is None:

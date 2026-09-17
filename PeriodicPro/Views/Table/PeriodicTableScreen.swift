@@ -1,13 +1,16 @@
 import SwiftUI
 
 /// The app's primary screen: search, filters, the full periodic table and the
-/// color key — and the source side of the signature zoom transition.
+/// families card — and the source side of the signature zoom transition.
 ///
 /// The table is pinch-to-zoom (`ZoomableTableView`). Its zoom, scroll position
 /// and last offset are owned here rather than by the table view, so that
 /// searching (which replaces the table with a results list) and opening an
 /// element (which pushes a page over it) both return the learner to the same
 /// place at the same size.
+///
+/// There is no zoom control in the toolbar and no filter button: the table is
+/// pinched, and the only detailed filter is the Families card beneath it.
 struct PeriodicTableScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(ProgressStore.self) private var progress: ProgressStore
@@ -19,7 +22,6 @@ struct PeriodicTableScreen: View {
     @State private var compoundSearch = CompoundSearchModel()
     @State private var filter: ElementFilter = .all
     @State private var path = NavigationPath()
-    @State private var showsFilterSheet = false
     @State private var screenWidth: CGFloat = 0
     @State private var screenHeight: CGFloat = 0
 
@@ -28,14 +30,16 @@ struct PeriodicTableScreen: View {
     @State private var tablePosition = ScrollPosition(edge: .top)
     @State private var savedTableOffset: CGPoint = .zero
     @State private var isPinching = false
-    @State private var zoomCommand: ZoomCommand?
     /// Whether the accessibility-size default zoom has been applied. Once
     /// only: a learner who then pinches back out has made a choice.
     @State private var hasAppliedAccessibilityZoom = false
 
     @Namespace private var tableNamespace
 
-    private static let horizontalInset = Theme.Spacing.l
+    /// The anchor the page scrolls to when the table first becomes zoomed, so
+    /// the taller window is entirely on screen rather than half of it under
+    /// the tab bar.
+    private static let tableAnchor = "periodicTable.section"
 
     /// Width to lay the table out in. Until the first layout pass reports the
     /// real width, a modern iPhone's width is assumed so the table never paints
@@ -49,8 +53,8 @@ struct PeriodicTableScreen: View {
     }
 
     /// At accessibility text sizes the fitted tiles are too small to read,
-    /// so the table opens already zoomed to standard density. It is still a
-    /// pinch, a double tap or the Fit button away from fitted.
+    /// so the table opens already zoomed to standard density. A pinch, a
+    /// double tap or the VoiceOver Fit action still returns it to fitted.
     private var accessibilityStartZoom: CGFloat {
         TableZoomLayout.clampZoom(
             TableZoomLayout.standardDensityTile / max(fittedTileSize, 1) * 1.05,
@@ -64,38 +68,49 @@ struct PeriodicTableScreen: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            ScrollView {
-                TableScreenContent(
-                    catalog: catalog,
-                    filter: $filter,
-                    query: query,
-                    results: searchResults,
-                    compoundSearch: compoundSearch,
-                    recentSearches: progress.recentSearches,
-                    namespace: tableNamespace,
-                    viewportWidth: usableWidth,
-                    screenHeight: screenHeight > 0 ? screenHeight : 700,
-                    zoom: $zoom,
-                    tablePosition: $tablePosition,
-                    savedTableOffset: $savedTableOffset,
-                    isPinching: $isPinching,
-                    zoomCommand: $zoomCommand,
-                    isFavorite: { progress.isFavorite($0) },
-                    mastery: { progress.mastery(for: $0) },
-                    isCompoundFavorite: { progress.isCompoundFavorite($0) },
-                    compoundMastery: { progress.compoundMastery(for: $0) },
-                    onSelect: open,
-                    onSelectCompound: openCompound,
-                    onRetryCompounds: { compoundSearch.retry(store: compounds) },
-                    onSelectRecent: { query = $0 },
-                    onClearRecents: { progress.clearRecentSearches() },
-                    onOpenFilters: { showsFilterSheet = true }
-                )
+            ScrollViewReader { proxy in
+                ScrollView {
+                    TableScreenContent(
+                        catalog: catalog,
+                        filter: $filter,
+                        query: query,
+                        results: searchResults,
+                        compoundSearch: compoundSearch,
+                        recentSearches: progress.recentSearches,
+                        namespace: tableNamespace,
+                        viewportWidth: usableWidth,
+                        screenHeight: screenHeight > 0 ? screenHeight : 700,
+                        tableAnchor: Self.tableAnchor,
+                        zoom: $zoom,
+                        tablePosition: $tablePosition,
+                        savedTableOffset: $savedTableOffset,
+                        isPinching: $isPinching,
+                        isFavorite: { progress.isFavorite($0) },
+                        mastery: { progress.mastery(for: $0) },
+                        isCompoundFavorite: { progress.isCompoundFavorite($0) },
+                        compoundMastery: { progress.compoundMastery(for: $0) },
+                        onSelect: open,
+                        onSelectCompound: openCompound,
+                        onRetryCompounds: { compoundSearch.retry(store: compounds) },
+                        onSelectRecent: { query = $0 },
+                        onClearRecents: { progress.clearRecentSearches() }
+                    )
+                }
+                .scrollIndicators(.hidden)
+                // The page must not scroll while two fingers are zooming the table.
+                .scrollDisabled(isPinching)
+                .scrollDismissesKeyboard(.immediately)
+                // The zoomed window is taller than the fitted one. Left where
+                // it was, its lower half ends up under the tab bar — visible,
+                // apparently tappable, and not. Bringing the table's top to
+                // the top of the page keeps every tile reachable.
+                .onChange(of: zoom >= TableZoomLayout.zoomedThreshold) { wasZoomed, isZoomed in
+                    guard isZoomed, !wasZoomed else { return }
+                    withAnimation(Theme.Motion.reveal) {
+                        proxy.scrollTo(Self.tableAnchor, anchor: .top)
+                    }
+                }
             }
-            .scrollIndicators(.hidden)
-            // The page must not scroll while two fingers are zooming the table.
-            .scrollDisabled(isPinching)
-            .scrollDismissesKeyboard(.immediately)
             .background(AppColor.canvas)
             .navigationTitle("Periodic Table")
             .navigationBarTitleDisplayMode(.large)
@@ -110,16 +125,12 @@ struct PeriodicTableScreen: View {
             .onChange(of: query) { _, newValue in
                 compoundSearch.update(query: newValue, store: compounds)
             }
-            .toolbar { toolbarContent }
             .navigationDestination(for: ChemicalElement.self) { element in
                 ElementDetailScreen(element: element)
                     .zoomTransition(id: element.atomicNumber, namespace: tableNamespace)
             }
             .navigationDestination(for: CompoundMatchCandidate.self) { candidate in
                 CompoundDetailScreen(candidate: candidate)
-            }
-            .sheet(isPresented: $showsFilterSheet) {
-                CategoryFilterSheet(filter: $filter, catalog: catalog)
             }
             // The safe width, not the raw frame width: in landscape the sensor
             // housing eats 60-odd points on one side, and a vertical ScrollView
@@ -137,41 +148,6 @@ struct PeriodicTableScreen: View {
             .onChange(of: dynamicTypeSize) { _, _ in applyAccessibilityZoomIfNeeded() }
         }
         .tint(AppColor.accent)
-    }
-
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            // The pinch's accessible twin: three plain commands that reach
-            // every zoom level two fingers can, for VoiceOver, Switch Control
-            // and anyone using one hand.
-            Menu {
-                Button {
-                    zoomCommand = .zoomIn
-                } label: {
-                    Label("Zoom in", systemImage: "plus.magnifyingglass")
-                }
-                .accessibilityIdentifier("table.zoomIn")
-                Button {
-                    zoomCommand = .zoomOut
-                } label: {
-                    Label("Zoom out", systemImage: "minus.magnifyingglass")
-                }
-                .disabled(zoom <= 1)
-                .accessibilityIdentifier("table.zoomOut")
-                Button {
-                    zoomCommand = .fit
-                } label: {
-                    Label("Fit table", systemImage: "arrow.down.right.and.arrow.up.left")
-                }
-                .disabled(zoom <= 1)
-                .accessibilityIdentifier("table.fitTable")
-            } label: {
-                Image(systemName: "arrow.up.left.and.arrow.down.right")
-            }
-            .accessibilityLabel("Zoom")
-            .accessibilityIdentifier("table.zoomMenu")
-        }
     }
 
     private func applyAccessibilityZoomIfNeeded() {
@@ -207,11 +183,11 @@ private struct TableScreenContent: View {
     let namespace: Namespace.ID
     let viewportWidth: CGFloat
     let screenHeight: CGFloat
+    let tableAnchor: String
     @Binding var zoom: CGFloat
     @Binding var tablePosition: ScrollPosition
     @Binding var savedTableOffset: CGPoint
     @Binding var isPinching: Bool
-    @Binding var zoomCommand: ZoomCommand?
     let isFavorite: (Int) -> Bool
     let mastery: (Int) -> MasteryLevel
     let isCompoundFavorite: (String) -> Bool
@@ -221,7 +197,6 @@ private struct TableScreenContent: View {
     let onRetryCompounds: () -> Void
     let onSelectRecent: (String) -> Void
     let onClearRecents: () -> Void
-    let onOpenFilters: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.l) {
@@ -271,7 +246,7 @@ private struct TableScreenContent: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, Theme.Spacing.screenMargin)
 
-            CategoryFilterBar(filter: $filter, onOpenDetailedFilters: onOpenFilters)
+            CategoryFilterBar(filter: $filter)
 
             // No accessibility identifier on the grid itself, deliberately.
             // SwiftUI propagates an accessibility identifier down to every
@@ -289,15 +264,15 @@ private struct TableScreenContent: View {
                 position: $tablePosition,
                 savedOffset: $savedTableOffset,
                 isPinching: $isPinching,
-                command: $zoomCommand,
                 isFavorite: isFavorite,
                 mastery: mastery,
                 onSelect: onSelect
             )
             .padding(.top, Theme.Spacing.xs)
+            .id(tableAnchor)
 
             CardContainer {
-                TableLegend(catalog: catalog)
+                TableLegend(catalog: catalog, filter: $filter)
             }
             .padding(.horizontal, Theme.Spacing.screenMargin)
             .padding(.top, Theme.Spacing.s)

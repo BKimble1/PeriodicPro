@@ -156,17 +156,29 @@ struct StudyHeroCard: View {
     }
 }
 
-/// One of the four pastel practice tiles.
+/// One of the five pastel practice tiles.
 ///
 /// The icon is drawn in the family's ink color on the family's pastel fill —
 /// the one pairing the contrast gate already proves for this palette. A tinted
 /// icon on a tinted background would look like the reference concept but would
 /// measure around 2:1, which is not a trade this app makes.
+///
+/// Every tile is exactly the same height, whatever its label says. Two things
+/// used to break that. "Smart Review" wraps to two lines where "Quiz" does
+/// not, so its tile was taller and the grid centered it — which is why its
+/// colored square sat higher than its neighbors'. And the PRO badge was a
+/// sibling in the stack rather than an overlay. The label area is now a
+/// reserved two-line region that scales with Dynamic Type, and the badge is
+/// drawn over the square, so one square is never a point above another.
 struct PracticeModeTile: View {
     let mode: StudyMode
     let tint: ElementCategory
     let showsProBadge: Bool
     let action: () -> Void
+
+    /// Two lines of the caption style, so a one-line label reserves the same
+    /// space as a two-line one at every text size.
+    @ScaledMetric(relativeTo: .caption) private var labelHeight: CGFloat = 32
 
     var body: some View {
         Button {
@@ -174,26 +186,30 @@ struct PracticeModeTile: View {
             action()
         } label: {
             VStack(spacing: Theme.Spacing.s) {
-                ZStack(alignment: .topTrailing) {
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .fill(tint.tileFill)
-                        .aspectRatio(1, contentMode: .fit)
-                        .overlay {
-                            Image(systemName: mode.symbolName)
-                                .font(.system(size: 22, weight: .medium))
-                                .foregroundStyle(tint.onTileColor)
-                        }
-                    if showsProBadge {
-                        ProBadge(isCompact: true)
-                            .padding(5)
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(tint.tileFill)
+                    .aspectRatio(1, contentMode: .fit)
+                    .overlay {
+                        Image(systemName: mode.symbolName)
+                            .font(.system(size: 22, weight: .medium))
+                            .foregroundStyle(tint.onTileColor)
                     }
-                }
+                    // An overlay, so the badge can never add a point of height
+                    // to the tile it is marking.
+                    .overlay(alignment: .topTrailing) {
+                        if showsProBadge {
+                            ProBadge(isCompact: true)
+                                .padding(5)
+                        }
+                    }
                 Text(mode.title)
                     .font(.system(.caption, weight: .medium))
                     .foregroundStyle(AppColor.primaryText)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .minimumScaleFactor(0.75)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: labelHeight, alignment: .top)
             }
             .contentShape(Rectangle())
         }

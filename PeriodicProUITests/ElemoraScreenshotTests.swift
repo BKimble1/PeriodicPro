@@ -326,17 +326,42 @@ final class ElemoraScreenshotTests: XCTestCase {
         settle()
         capture("07-progress")
 
-        // 9. The table, pinched to about 2.5×
+        // 9. The table, pinched to about 2.5×. There is no Fit control to wait
+        // for any more — the pinch is the whole interface — so the tiles
+        // themselves are what says the zoom landed.
         openTab("Table")
         waitFor(app.buttons["element.H"])
         let table = el("table.zoomView")
         waitFor(table)
+        let fittedWidth = app.buttons["element.H"].frame.width
         table.pinch(withScale: 2.5, velocity: 1.0)
-        waitFor(el("table.fit"))
+        let application: XCUIApplication = app
+        let grew = NSPredicate { _, _ in
+            let widest = application.buttons.allElementsBoundByAccessibilityElement
+                .filter { $0.identifier.hasPrefix("element.") }
+                .map(\.frame.width)
+                .max() ?? 0
+            return widest > fittedWidth * 1.5
+        }
+        XCTAssertEqual(
+            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: grew, object: nil)], timeout: 10),
+            .completed,
+            "The pinch should enlarge the tiles" + onScreen()
+        )
         settle(0.8)
         capture("09-table-zoomed")
-        el("table.fit").tap()
-        settle(0.6)
+        // Back to fitted with a double tap, which is the gesture that replaced
+        // the Fit chip.
+        table.doubleTap()
+        settle(0.8)
+
+        // 9b. The Families card as the detailed filter, with two selected.
+        tap(app.buttons["legend.nobleGas"])
+        tap(app.buttons["legend.transitionMetal"])
+        settle(0.8)
+        capture("20-table-family-filter")
+        tap(app.buttons["legend.clear"])
+        settle(0.5)
 
         // 10. Compound search: the bundled catalog answers at once
         let field = app.searchFields.firstMatch
@@ -409,7 +434,7 @@ final class ElemoraScreenshotTests: XCTestCase {
         addElement("H")
         tap(app.buttons["build.increment.H"])
         addElement("O")
-        tap(app.buttons["build.lookUp"])
+        // No lookup button: the identification arrives by itself.
         waitFor(el("build.result"))
         settle()
         capture("17-build-water")
@@ -419,12 +444,44 @@ final class ElemoraScreenshotTests: XCTestCase {
         addElement("H")
         for _ in 0..<5 { tap(app.buttons["build.increment.H"]) }
         addElement("O")
-        tap(app.buttons["build.lookUp"])
         waitFor(el("build.candidates"))
-        XCTAssertTrue(labelContaining("Multiple known compounds share this formula.").exists,
+        XCTAssertTrue(labelContaining("known compounds share this formula").exists,
                       "C₂H₆O must be offered as a choice, never assumed to be ethanol" + onScreen())
         settle(0.8)
         capture("18-build-ambiguous")
+
+        // 21. The Build tab's own compound search.
+        clearTray()
+        let buildSearch = el("build.search")
+        waitFor(buildSearch)
+        buildSearch.tap()
+        buildSearch.typeText("caffeine")
+        waitFor(app.buttons["compoundResult.2519"])
+        settle(0.8)
+        capture("21-build-search")
+        tap(app.buttons["build.searchClear"])
+
+        // 22. Settings, which is where appearance, the subscription and every
+        // legal link live. Captured in whichever appearance this run is using.
+        openTab("Progress")
+        waitFor(app.navigationBars["Progress"])
+        tap(app.buttons["progress.settings"])
+        waitFor(app.navigationBars["Settings"])
+        settle(0.8)
+        capture("22-settings")
+        goBack()
+
+        // 23. Quiz setup with Customize opened, which is where every advanced
+        // filter went.
+        openTab("Study")
+        waitFor(app.navigationBars["Study"])
+        tap(app.buttons["study.mode.quiz"])
+        waitFor(el("quizSetup.sheet"))
+        tap(el("quizSetup.customize"))
+        settle(0.8)
+        capture("23-quiz-setup-advanced")
+        app.buttons["quizSetup.cancel"].tap()
+        waitFor(app.navigationBars["Study"])
 
         // 8. The Elemora Pro paywall, with real prices.
         //

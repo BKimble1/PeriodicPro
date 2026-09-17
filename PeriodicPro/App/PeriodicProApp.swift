@@ -64,6 +64,13 @@ final class AppServices {
             ? PersistenceController.makeTestingOutcome()
             : PersistenceController.makeOutcome()
 
+        // The appearance is the one preference stored in the simulator's real
+        // defaults rather than in the in-memory container, so a UI-test launch
+        // starts from System unless it explicitly asked to keep what is there.
+        if RuntimeFlags.isUITesting, !RuntimeFlags.keepsAppearance {
+            UserDefaults.standard.removeObject(forKey: AppAppearance.storageKey)
+        }
+
         switch ElementCatalog.loadFromApplicationBundle() {
         case .success(let catalog):
             self.catalog = catalog

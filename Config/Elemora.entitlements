@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Universal Links. A shared quiz is an ordinary https URL under
+	     https://elemora.idlery.com/quiz/…, so it opens Elemora when the app is
+	     installed and the branded landing page in a browser when it is not.
+	     The matching apple-app-site-association file is served from
+	     https://elemora.idlery.com/.well-known/apple-app-site-association and
+	     names only the /quiz/* path.
+
+	     The Team ID is not written here on purpose: the association file
+	     carries <TeamID>.com.idlery.periodicpro, which is supplied to CI as a
+	     secret, and no signing identifier belongs in the source tree. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:elemora.idlery.com</string>
+	</array>
+</dict>
+</plist>

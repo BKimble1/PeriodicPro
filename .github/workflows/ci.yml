@@ -74,6 +74,11 @@ jobs:
       - name: Check artwork and structure routing
         run: python3 Tools/check_visual_routing.py
 
+      # The website and the app are two halves of one thing: a legal link the
+      # app ships and the site does not serve is a review rejection.
+      - name: Check the website and the universal-link plumbing
+        run: python3 Tools/check_website.py
+
       - name: Check spelling is normalized
         run: |
           set -euo pipefail

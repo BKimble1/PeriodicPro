@@ -48,3 +48,6 @@ fastlane/test_output
 # Per-element detail previews are regenerated on demand by
 # Tools/preview_detail.py; only the combined sheets are tracked.
 Design/detail-[A-Z]*.png
+
+# Generated at deploy time from the template, with the Apple Team ID injected.
+Website/site/.well-known/apple-app-site-association

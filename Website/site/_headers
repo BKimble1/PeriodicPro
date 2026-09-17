@@ -1,0 +1,15 @@
+# Apple fetches the association file over HTTPS with no redirects and reads it
+# as JSON. Netlify serves an extensionless file as application/octet-stream by
+# default, which iOS rejects.
+/.well-known/apple-app-site-association
+  Content-Type: application/json
+  Cache-Control: public, max-age=3600
+
+/assets/*
+  Cache-Control: public, max-age=604800
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()

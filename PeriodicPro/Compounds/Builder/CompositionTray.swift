@@ -1,7 +1,13 @@
 import SwiftUI
 
-/// The elements in the builder and how many of each, with plus, minus and
-/// remove on every row.
+/// The elements in the builder and how many of each.
+///
+/// One compact row per element: the symbol tile, the name on a single line,
+/// and a stepper. The old row carried the tile, the name *and* the family on
+/// two lines, then three 44-point buttons — which on an iPhone SE left the
+/// name about sixty points and wrapped "Post-Transition Metal" into a
+/// three-line card. The family is not what the learner is editing here; the
+/// count is.
 struct CompositionTray: View {
     let entries: [CompoundBuilderModel.Entry]
     let canAddElement: Bool
@@ -15,21 +21,22 @@ struct CompositionTray: View {
         CardContainer {
             VStack(alignment: .leading, spacing: Theme.Spacing.m) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text("Composition")
+                    Text("Build a composition")
                         .font(AppFont.cardTitle)
                         .foregroundStyle(AppColor.primaryText)
-                    Spacer()
+                    Spacer(minLength: Theme.Spacing.s)
                     if !entries.isEmpty {
                         Button("Clear", action: onClear)
                             .font(.system(.footnote, weight: .medium))
+                            .foregroundStyle(AppColor.secondaryText)
                             .frame(minHeight: Theme.minimumTouchTarget)
                             .accessibilityIdentifier("build.clear")
                     }
                 }
 
                 if entries.isEmpty {
-                    Text("Add elements to build a composition. Elemora then looks it up in its own catalog "
-                         + "and in PubChem.")
+                    Text("Add elements and Elemora identifies the composition as you go — "
+                         + "its own catalog first, then PubChem.")
                         .font(AppFont.footnote)
                         .foregroundStyle(AppColor.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -50,10 +57,10 @@ struct CompositionTray: View {
                         Image(systemName: "plus.circle.fill")
                         Text(entries.isEmpty ? "Add an element" : "Add another element")
                     }
-                    .font(.system(.body, weight: .semibold))
+                    .font(.system(.subheadline, weight: .semibold))
                     .foregroundStyle(canAddElement ? AppColor.accent : AppColor.tertiaryText)
                     .frame(maxWidth: .infinity)
-                    .frame(minHeight: 48)
+                    .frame(minHeight: 46)
                     .background {
                         RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
                             .fill(AppColor.accent.opacity(canAddElement ? 0.10 : 0.04))
@@ -77,48 +84,63 @@ struct CompositionTray: View {
     }
 
     private func row(_ entry: CompoundBuilderModel.Entry) -> some View {
-        HStack(spacing: Theme.Spacing.m) {
-            ElementTile(element: entry.element, size: 44, density: .standard)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(entry.element.name)
-                    .font(.system(.body, weight: .medium))
-                    .foregroundStyle(AppColor.primaryText)
-                Text(entry.element.category.displayName)
-                    .font(AppFont.caption)
-                    .foregroundStyle(AppColor.secondaryText)
-            }
-            .accessibilityElement(children: .combine)
-            Spacer(minLength: Theme.Spacing.s)
+        HStack(spacing: Theme.Spacing.s) {
+            ElementTile(element: entry.element, size: 38, density: .minimal)
+                .accessibilityHidden(true)
 
-            stepButton("minus", label: "Remove one \(entry.element.name.lowercased())",
-                       identifier: "build.decrement.\(entry.element.symbol)") {
-                onDecrement(entry.element.atomicNumber)
-            }
-            Text("\(entry.count)")
-                .font(.system(.title3, weight: .semibold).monospacedDigit())
+            // One line, always. A long name shrinks a little and then
+            // truncates; it never turns the row into a paragraph.
+            Text(entry.element.name)
+                .font(.system(.subheadline, weight: .medium))
                 .foregroundStyle(AppColor.primaryText)
-                .frame(minWidth: 28)
-                .accessibilityLabel("\(entry.count) \(entry.element.name)")
-                .accessibilityIdentifier("build.count.\(entry.element.symbol)")
-            stepButton("plus", label: "Add one more \(entry.element.name.lowercased())",
-                       identifier: "build.increment.\(entry.element.symbol)") {
-                onIncrement(entry.element.atomicNumber)
-            }
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .truncationMode(.tail)
+
+            Spacer(minLength: Theme.Spacing.xs)
+
+            stepper(entry)
+
             Button {
                 Haptics.tap()
                 onRemove(entry.element.atomicNumber)
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 18))
+                    .font(.system(size: 17))
                     .foregroundStyle(AppColor.tertiaryText)
-                    .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
+                    .frame(width: 30, height: Theme.minimumTouchTarget)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Remove \(entry.element.name.lowercased())")
             .accessibilityIdentifier("build.remove.\(entry.element.symbol)")
         }
-        .padding(.vertical, Theme.Spacing.s)
+        .padding(.vertical, Theme.Spacing.xs)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(entry.count) \(entry.element.name)")
+    }
+
+    /// Minus, the count, plus — one capsule, so the controls read as a single
+    /// thing that changes one number rather than three loose buttons.
+    private func stepper(_ entry: CompoundBuilderModel.Entry) -> some View {
+        HStack(spacing: 0) {
+            stepButton("minus", label: "Remove one \(entry.element.name.lowercased())",
+                       identifier: "build.decrement.\(entry.element.symbol)") {
+                onDecrement(entry.element.atomicNumber)
+            }
+            Text("\(entry.count)")
+                .font(.system(.subheadline, weight: .semibold).monospacedDigit())
+                .foregroundStyle(AppColor.primaryText)
+                .frame(minWidth: 26)
+                .accessibilityLabel("\(entry.count) \(entry.element.name)")
+                .accessibilityIdentifier("build.count.\(entry.element.symbol)")
+            stepButton("plus", label: "Add one more \(entry.element.name.lowercased())",
+                       identifier: "build.increment.\(entry.element.symbol)") {
+                onIncrement(entry.element.atomicNumber)
+            }
+        }
+        .frame(height: 38)
+        .background { Capsule().fill(AppColor.accent.opacity(0.10)) }
     }
 
     private func stepButton(_ symbol: String, label: String, identifier: String,
@@ -128,11 +150,9 @@ struct CompositionTray: View {
             action()
         } label: {
             Image(systemName: symbol)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(AppColor.accent)
-                .frame(width: 36, height: 36)
-                .background { Circle().fill(AppColor.accent.opacity(0.12)) }
-                .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
+                .frame(width: 38, height: Theme.minimumTouchTarget)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

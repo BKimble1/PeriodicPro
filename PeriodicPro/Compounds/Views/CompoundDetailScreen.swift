@@ -86,6 +86,15 @@ struct CompoundDetailScreen: View {
     private func content(_ compound: ChemicalCompound) -> some View {
         CompoundHero(compound: compound, tint: tint)
             .padding(.bottom, Theme.Spacing.xs)
+        CardContainer {
+            VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+                Text("Structure diagram")
+                    .font(AppFont.cardTitle)
+                    .foregroundStyle(AppColor.primaryText)
+                Compound2DStructureCard(compound: compound, height: 220)
+            }
+        }
+        .softRise(enabled: !reduceMotion)
         CompoundStructureCard(
             compound: compound, style: $style, tint: tint, catalog: catalog,
             onExplore: { showsExplorer = true }
@@ -116,6 +125,9 @@ struct CompoundDetailScreen: View {
                 compound: compound,
                 snapshot: progress.compoundSnapshot(for: compound.id),
                 onToggleStudy: { isOn in
+                    // Cached first, then the state: a PubChem record the
+                    // learner adds to Study has to still resolve next launch.
+                    store.retain(compound)
                     progress.setCompoundSaved(compound.id, isOn)
                     Haptics.tap()
                 }
@@ -164,6 +176,7 @@ struct CompoundDetailScreen: View {
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Button {
+                if let compound { store.retain(compound) }
                 let nowFavorite = progress.toggleCompoundFavorite(compoundID)
                 Haptics.favorited(nowFavorite)
             } label: {

@@ -3,6 +3,22 @@ import Observation
 import OSLog
 import SwiftData
 
+/// What happened when a shared quiz link was opened.
+enum QuizImportOutcome: Hashable, Sendable {
+    /// Saved as a new quiz.
+    case saved(SavedQuiz)
+    /// The identical quiz was already in My Quizzes; nothing was created.
+    case alreadySaved(SavedQuiz)
+    case failed(String)
+
+    var quiz: SavedQuiz? {
+        switch self {
+        case .saved(let quiz), .alreadySaved(let quiz): return quiz
+        case .failed: return nil
+        }
+    }
+}
+
 /// A quiz the learner built and kept.
 struct SavedQuiz: Identifiable, Hashable, Codable, Sendable {
     static let maximumNameLength = 60
@@ -60,8 +76,9 @@ final class SavedQuizStore {
     /// Newest first.
     private(set) var quizzes: [SavedQuiz] = []
     private(set) var writeFailureMessage: String?
-    /// The outcome of the last import, for the screen to show.
-    var lastImportMessage: String?
+    /// What happened the last time a shared quiz link was opened, for the
+    /// screen to show. Cleared by the screen once it has been seen.
+    var lastImportOutcome: QuizImportOutcome?
 
     init(container: ModelContainer?) {
         context = container.map { ModelContext($0) }
@@ -155,32 +172,49 @@ final class SavedQuizStore {
 
     // MARK: - Sharing
 
-    /// The package for a quiz: its name and configuration, nothing else.
-    func package(for quiz: SavedQuiz) -> ElemoraQuizPackage {
-        ElemoraQuizPackage(quiz: quiz)
+    /// The https link that carries this quiz. Throws when the configuration is
+    /// too large to fit in a sensible URL, which the caller shows as an error
+    /// rather than handing somebody a link that will not open.
+    func shareURL(for quiz: SavedQuiz) throws -> URL {
+        try QuizShareLink.url(name: quiz.name, configuration: quiz.configuration)
     }
 
-    /// Validates and imports a package, returning the new quiz.
+    /// Saves a validated shared quiz, returning what happened.
+    ///
+    /// Opening the same link twice is common — somebody forwards a message,
+    /// or taps it again later — and it must not fill My Quizzes with copies.
+    /// An identical name *and* configuration resolves to the quiz already
+    /// there. A quiz with the same name but a different configuration is a
+    /// different quiz and is saved as a copy, because overwriting something
+    /// the learner may have edited is not a decision a link gets to make.
     @discardableResult
-    func importPackage(_ data: Data, catalog: ElementCatalog, date: Date = Date()) throws -> SavedQuiz {
-        let package = try ElemoraQuizPackage.decode(data, catalog: catalog)
-        return create(name: package.name, configuration: package.configuration, date: date)
+    func save(shared payload: QuizSharePayload, date: Date = Date()) -> QuizImportOutcome {
+        if let existing = quizzes.first(where: {
+            $0.name == payload.name && $0.configuration == payload.configuration.sanitized()
+        }) {
+            return .alreadySaved(existing)
+        }
+        let name = quizzes.contains { $0.name == payload.name }
+            ? SavedQuiz.cleanName(payload.name + " copy")
+            : payload.name
+        return .saved(create(name: name, configuration: payload.configuration, date: date))
     }
 
-    /// Reads a file the learner picked or opened, and records the outcome in
-    /// `lastImportMessage` for the interface.
-    func importFile(at url: URL, catalog: ElementCatalog) {
-        let accessed = url.startAccessingSecurityScopedResource()
-        defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+    /// Handles a URL the system handed the app. Returns false when the URL is
+    /// not an Elemora quiz link at all, so the caller can leave it alone.
+    @discardableResult
+    func open(shareURL url: URL, catalog: ElementCatalog, date: Date = Date()) -> Bool {
         do {
-            let data = try Data(contentsOf: url)
-            let quiz = try importPackage(data, catalog: catalog)
-            lastImportMessage = "Imported \u{201C}\(quiz.name)\u{201D}."
-        } catch let error as QuizPackageError {
-            lastImportMessage = error.userMessage
+            guard let payload = try QuizShareLink.payload(from: url, catalog: catalog) else {
+                return false
+            }
+            lastImportOutcome = save(shared: payload, date: date)
+        } catch let error as QuizLinkError {
+            lastImportOutcome = .failed(error.userMessage)
         } catch {
-            lastImportMessage = "That file could not be read."
+            lastImportOutcome = .failed(QuizLinkError.notAQuiz.userMessage)
         }
+        return true
     }
 
     // MARK: - Private

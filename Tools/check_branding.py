@@ -71,6 +71,8 @@ RETAINED_IDENTIFIERS = {
         "sample override for the same bundle identifier",
     "Config/PeriodicPro.storekit":
         "StoreKit product identifiers periodicpro.pro.monthly and .yearly",
+    "Config/Elemora.entitlements":
+        "documents the signed app ID com.idlery.periodicpro the association file names",
     "PeriodicPro/Store/SubscriptionProduct.swift":
         "those product identifiers and the periodicpro.pro group identifier",
     "PeriodicProTests/ProGateTests.swift":
@@ -108,6 +110,8 @@ RETAINED_IDENTIFIERS = {
     "PeriodicProTests/PubChemClientTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/QuizConfigurationTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/SavedQuizTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/Compound2DTests.swift": "@testable import PeriodicPro",
+    "PeriodicProTests/SettingsTests.swift": "@testable import PeriodicPro",
 
     # --- Source naming the log subsystem or the test target ---
     "PeriodicPro/Store/SubscriptionManager.swift":
@@ -140,6 +144,7 @@ RETAINED_IDENTIFIERS = {
     "Tools/check_initializers.py": "walks the PeriodicPro source tree",
     "Tools/check_storekit.py": "reads Config/PeriodicPro.storekit and the scheme",
     "Tools/check_visual_routing.py": "walks the PeriodicPro source tree",
+    "Tools/check_website.py": "reads PeriodicPro/Utilities/ElemoraLinks.swift and the app ID",
     "Tools/lint_sources.py": "walks the PeriodicPro source tree",
     "Tools/make_app_icon.py": "writes into PeriodicPro/Assets.xcassets",
     "Tools/normalize_spelling.py": "walks the PeriodicPro source tree",
@@ -156,6 +161,14 @@ RETAINED_IDENTIFIERS = {
     "Tools/build_compounds.py": "writes PeriodicPro/Data/compounds.json",
     "Tools/validate_compounds.py": "reads PeriodicPro/Data/compounds.json",
     "Tools/build_pubchem_fixtures.py": "writes PeriodicProTests/Fixtures",
+
+    # --- The website, which has to name the signed app ID Apple matches ---
+    "Website/site/.well-known/apple-app-site-association.template":
+        "the app ID <TeamID>.com.idlery.periodicpro that iOS matches for Universal Links",
+    "Website/scripts/build.sh":
+        "prints the app ID shape it wrote, without the Team ID",
+    "Website/README.md":
+        "documents the app ID and the repository paths the site is kept in step with",
 
     # --- Documentation, which has to explain the split to a human ---
     "README.md": "documents which identifiers are retained and why",

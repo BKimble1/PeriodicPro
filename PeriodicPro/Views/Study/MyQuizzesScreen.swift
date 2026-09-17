@@ -1,8 +1,10 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
-/// The learner's saved quizzes: start, edit, duplicate, rename, share,
-/// import and delete.
+/// The learner's saved quizzes: start, edit, duplicate, rename, share and
+/// delete.
+///
+/// There is no importer. A quiz arrives as an Elemora link that opens the app
+/// and saves itself; nobody picks a file, and nothing here understands one.
 struct MyQuizzesScreen: View {
     let onStart: (QuizRoundDealer) -> Void
 
@@ -15,8 +17,9 @@ struct MyQuizzesScreen: View {
     @State private var isCreating = false
     @State private var renaming: SavedQuiz?
     @State private var renameText = ""
-    @State private var isImporting = false
     @State private var pendingDelete: SavedQuiz?
+    @State private var sharing: QuizShareTarget?
+    @State private var shareError: String?
 
     var body: some View {
         Group {
@@ -25,8 +28,8 @@ struct MyQuizzesScreen: View {
                     EmptyStateView(
                         symbolName: "list.bullet.rectangle",
                         title: "No saved quizzes yet",
-                        message: "Build a quiz from the Quiz tile and tap Save as Quiz, or import one someone "
-                            + "shared with you.",
+                        message: "Build a quiz from the Quiz tile and tap Save Quiz. Anyone you send it "
+                            + "to opens it straight in Elemora.",
                         actionTitle: "New quiz",
                         action: { isCreating = true }
                     )
@@ -50,24 +53,13 @@ struct MyQuizzesScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button {
-                        isCreating = true
-                    } label: {
-                        Label("New quiz", systemImage: "plus")
-                    }
-                    .accessibilityIdentifier("myQuizzes.new")
-                    Button {
-                        isImporting = true
-                    } label: {
-                        Label("Import a quiz file", systemImage: "square.and.arrow.down")
-                    }
-                    .accessibilityIdentifier("myQuizzes.import")
+                Button {
+                    isCreating = true
                 } label: {
                     Image(systemName: "plus")
                 }
-                .accessibilityLabel("Add a quiz")
-                .accessibilityIdentifier("myQuizzes.menu")
+                .accessibilityLabel("New quiz")
+                .accessibilityIdentifier("myQuizzes.new")
             }
         }
         .sheet(isPresented: $isCreating) {
@@ -76,10 +68,16 @@ struct MyQuizzesScreen: View {
         .sheet(item: $editing) { quiz in
             QuizSetupView(mode: .quiz, existing: quiz, onStart: onStart)
         }
-        .fileImporter(isPresented: $isImporting, allowedContentTypes: [.elemoraQuiz, .json]) { result in
-            if case .success(let url) = result {
-                savedQuizzes.importFile(at: url, catalog: catalog)
-            }
+        .sheet(item: $sharing) { target in
+            QuizShareSheet(url: target.url, title: target.title, subtitle: target.subtitle)
+        }
+        .alert(
+            "Cannot share this quiz",
+            isPresented: Binding(get: { shareError != nil }, set: { if !$0 { shareError = nil } })
+        ) {
+            Button("OK", role: .cancel) { shareError = nil }
+        } message: {
+            Text(shareError ?? "")
         }
         .alert("Rename quiz", isPresented: Binding(
             get: { renaming != nil },
@@ -155,10 +153,12 @@ struct MyQuizzesScreen: View {
                 } label: {
                     Label("Duplicate", systemImage: "doc.on.doc")
                 }
-                ShareLink(item: savedQuizzes.package(for: quiz),
-                          preview: SharePreview(quiz.name, image: Image(systemName: "questionmark.circle.fill"))) {
+                Button {
+                    share(quiz)
+                } label: {
                     Label("Share", systemImage: "square.and.arrow.up")
                 }
+                .accessibilityIdentifier("myQuizzes.share.\(quiz.id.uuidString)")
                 Button(role: .destructive) {
                     pendingDelete = quiz
                 } label: {
@@ -177,6 +177,21 @@ struct MyQuizzesScreen: View {
         .padding(.vertical, Theme.Spacing.xs)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("myQuizzes.row.\(quiz.id.uuidString)")
+    }
+
+    /// Builds the link and opens the share sheet, or says why it could not.
+    private func share(_ quiz: SavedQuiz) {
+        do {
+            sharing = QuizShareTarget(
+                url: try savedQuizzes.shareURL(for: quiz),
+                title: quiz.name,
+                subtitle: quiz.configuration.summary
+            )
+        } catch let error as QuizLinkError {
+            shareError = error.userMessage
+        } catch {
+            shareError = QuizLinkError.tooLarge.userMessage
+        }
     }
 
     private func start(_ quiz: SavedQuiz) {
@@ -200,4 +215,13 @@ struct MyQuizzesScreen: View {
             compoundDistractors: compounds.allKnownCompounds.filter { !$0.isHypothetical }
         ))
     }
+}
+
+/// The quiz the share sheet is currently presenting.
+struct QuizShareTarget: Identifiable, Hashable {
+    let url: URL
+    let title: String
+    let subtitle: String
+
+    var id: URL { url }
 }

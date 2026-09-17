@@ -21,18 +21,11 @@ struct PaywallView: View {
 
     @State private var selectedProductID: String?
     @State private var showsManageSubscriptions = false
-    @State private var showsPrivacy = false
     /// False until `loadProducts` has returned once. Without it the plan
     /// section renders its "not available" state for the frame between the view
     /// appearing and `.task` starting, which reads as a failure that has not
     /// happened yet.
     @State private var hasAttemptedLoad = false
-
-    /// Apple's standard license for apps that do not supply their own. Linking
-    /// it is the documented option and avoids inventing a terms page.
-    private static let termsURL = URL(
-        string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
-    )
 
     private var selectedProduct: Product? {
         store.products.first { $0.id == selectedProductID } ?? store.products.first
@@ -99,7 +92,6 @@ struct PaywallView: View {
         }
         .onDisappear { store.clearTransientState() }
         .manageSubscriptionsSheet(isPresented: $showsManageSubscriptions)
-        .sheet(isPresented: $showsPrivacy) { PrivacySummarySheet() }
         // A container element, not a relabelling of everything inside it.
         // SwiftUI applies an accessibility identifier to every descendant
         // element when the view it is attached to is not an element itself,
@@ -411,12 +403,20 @@ struct PaywallView: View {
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
 
+            // Elemora's own policies, on Elemora's own domain. Apple's
+            // standard EULA used to stand in for the terms page; now that one
+            // exists, linking Apple's would be pointing at somebody else's
+            // agreement for a product that has its own.
             HStack(spacing: Theme.Spacing.l) {
-                Button("Privacy") { showsPrivacy = true }
-                    .accessibilityIdentifier("paywall.privacy")
-                Button("Terms") {
-                    if let url = Self.termsURL { openURL(url) }
+                Button("Privacy") {
+                    if let url = ElemoraLinks.privacy { openURL(url) }
                 }
+                .accessibilityValue(ElemoraLinks.privacyString)
+                .accessibilityIdentifier("paywall.privacy")
+                Button("Terms") {
+                    if let url = ElemoraLinks.terms { openURL(url) }
+                }
+                .accessibilityValue(ElemoraLinks.termsString)
                 .accessibilityIdentifier("paywall.terms")
             }
             .font(AppFont.caption)
@@ -443,60 +443,5 @@ struct PaywallView: View {
             )
         }
         .ignoresSafeArea()
-    }
-}
-
-/// What the app stores, shown without needing a network connection.
-///
-/// A hosted privacy policy is still required by App Store Connect; this sheet
-/// is the in-app copy of the same statement, so the paywall's Privacy link is
-/// never a dead link and works offline like the rest of the app.
-struct PrivacySummarySheet: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: Theme.Spacing.l) {
-                    Text("Elemora collects nothing.")
-                        .font(.system(.title3, weight: .semibold))
-                        .foregroundStyle(AppColor.primaryText)
-
-                    paragraph("There are no accounts, no sign-in and no analytics or "
-                              + "tracking software of any kind in this app.")
-                    paragraph("Your favorites, familiarity scores, streak and recent searches "
-                              + "are stored only on this device. They are never uploaded, and "
-                              + "deleting the app deletes them.")
-                    paragraph("Subscriptions are handled entirely by Apple. The app is told "
-                              + "whether a subscription is active; it never sees your payment "
-                              + "details, your Apple Account or your name.")
-                    paragraph("The element data and a starter set of compounds ship inside the app. "
-                              + "Online compound searches are sent to PubChem to retrieve requested "
-                              + "chemical information: only the name or formula you look up, only when "
-                              + "you search for a compound, and nothing about you.")
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, Theme.Spacing.screenMargin)
-                .padding(.vertical, Theme.Spacing.l)
-            }
-            .scrollIndicators(.hidden)
-            .scrollBounceBehavior(.basedOnSize)
-            .background(AppColor.canvas)
-            .navigationTitle("Privacy")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-        .tint(AppColor.accent)
-    }
-
-    private func paragraph(_ text: String) -> some View {
-        Text(text)
-            .font(AppFont.callout)
-            .foregroundStyle(AppColor.secondaryText)
-            .fixedSize(horizontal: false, vertical: true)
     }
 }

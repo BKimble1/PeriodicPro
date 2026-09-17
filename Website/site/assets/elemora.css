@@ -1,0 +1,132 @@
+/* Elemora — one stylesheet for every page on elemora.idlery.com.
+   Plain CSS, no build step, no framework, no third-party request of any kind:
+   the pages a privacy policy is served from should not themselves load
+   anything from somebody else's domain. */
+
+:root {
+  --field: #f7f5f0;
+  --field-edge: #eaf0f2;
+  --surface: #ffffff;
+  --ink: #111c21;
+  --muted: #5d7078;
+  --hairline: #dde4e7;
+  --teal: #1b808d;
+  --teal-dark: #146470;
+  --gold: #d5a854;
+  --radius: 16px;
+  --measure: 42rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --field: #0d1113;
+    --field-edge: #121719;
+    --surface: #161c1f;
+    --ink: #eef3f4;
+    --muted: #9fb0b6;
+    --hairline: #263035;
+    --teal: #43a9b6;
+    --teal-dark: #5cc0cc;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: linear-gradient(160deg, var(--field), var(--field-edge));
+  background-attachment: fixed;
+  color: var(--ink);
+  font: 400 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+  padding: 0 20px;
+}
+
+.wrap { max-width: var(--measure); margin: 0 auto; padding: 48px 0 72px; }
+.wrap--narrow { max-width: 34rem; }
+
+/* --- The mark ---------------------------------------------------------- */
+
+.brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+.brand__mark {
+  display: grid;
+  grid-template-columns: repeat(4, 10px);
+  grid-auto-rows: 10px;
+  gap: 2px;
+}
+.brand__tile { background: var(--teal); border-radius: 2.4px; }
+.brand__tile--gold { background: var(--gold); }
+.brand__tile--empty { background: transparent; }
+.brand__word {
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  font-size: 15px;
+  color: var(--teal);
+  text-transform: uppercase;
+}
+
+/* --- Type -------------------------------------------------------------- */
+
+h1 { font-size: clamp(28px, 6vw, 40px); line-height: 1.15; margin: 32px 0 8px; letter-spacing: -0.02em; }
+h2 { font-size: clamp(20px, 4vw, 24px); line-height: 1.25; margin: 40px 0 8px; letter-spacing: -0.01em; }
+h3 { font-size: 18px; margin: 28px 0 6px; }
+p, li { color: var(--ink); }
+p { margin: 0 0 16px; }
+ul { margin: 0 0 16px; padding-left: 22px; }
+li { margin: 0 0 8px; }
+.lede { font-size: clamp(18px, 3.4vw, 20px); color: var(--muted); margin-bottom: 28px; }
+.meta { color: var(--muted); font-size: 15px; }
+a { color: var(--teal); }
+a:hover { color: var(--teal-dark); }
+
+/* --- Cards and buttons ------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 0 0 20px;
+}
+
+.button {
+  display: inline-block;
+  background: var(--teal);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 14px 26px;
+  border-radius: 999px;
+  min-height: 44px;
+  line-height: 1.2;
+}
+.button:hover { background: var(--teal-dark); color: #fff; }
+.button--quiet {
+  background: transparent;
+  color: var(--teal);
+  border: 1px solid var(--hairline);
+}
+.button--quiet:hover { background: var(--surface); color: var(--teal-dark); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 0; }
+
+/* --- Footer ------------------------------------------------------------ */
+
+.footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hairline);
+  color: var(--muted);
+  font-size: 15px;
+}
+.footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 12px; }
+
+/* --- The shared-quiz page --------------------------------------------- */
+
+.quiz { text-align: center; padding-top: 12vh; }
+.quiz .brand { justify-content: center; }
+.quiz h1 { margin-top: 28px; }
+.quiz .actions { justify-content: center; }
+.quiz__note { color: var(--muted); font-size: 15px; margin-top: 28px; }

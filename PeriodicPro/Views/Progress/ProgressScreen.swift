@@ -8,8 +8,6 @@ struct ProgressScreen: View {
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    @State private var showsResetConfirmation = false
-    @State private var showsAbout = false
 
     private var total: Int { max(catalog.count, 1) }
     private var mastered: Int { progress.masteredCount }
@@ -34,44 +32,19 @@ struct ProgressScreen: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Button {
-                            showsAbout = true
-                        } label: {
-                            Label("About this app", systemImage: "info.circle")
-                        }
-                        Button(role: .destructive) {
-                            showsResetConfirmation = true
-                        } label: {
-                            Label("Reset progress", systemImage: "arrow.counterclockwise")
-                        }
-                        // resetAllProgress() deliberately keeps favorites, so
-                        // having favorites is never a reason for this command to
-                        // have work to do — it would only ever raise a
-                        // destructive confirmation that then changed nothing.
-                        .disabled(progress.totalAnswered == 0)
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                    // A gear, not an ellipsis. About and Reset moved into
+                    // Settings, where somebody looking for them would look.
+                    NavigationLink(value: ProgressRoute.settings) {
+                        Image(systemName: "gearshape")
                     }
-                    .accessibilityLabel("More options")
-                    .accessibilityIdentifier("progress.menu")
+                    .accessibilityLabel("Settings")
+                    .accessibilityIdentifier("progress.settings")
                 }
             }
-            .confirmationDialog(
-                "Reset all progress?",
-                isPresented: $showsResetConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Reset progress", role: .destructive) {
-                    progress.resetAllProgress()
-                    Haptics.tap()
+            .navigationDestination(for: ProgressRoute.self) { route in
+                switch route {
+                case .settings: SettingsScreen()
                 }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("Familiarity scores and your streak will be cleared. Favorites are kept.")
-            }
-            .sheet(isPresented: $showsAbout) {
-                AboutSheet()
             }
         }
         .tint(AppColor.accent)
@@ -246,8 +219,13 @@ struct ProgressScreen: View {
     }
 }
 
-/// Short, factual credits and data provenance. Deliberately not a settings
-/// screen — there is nothing here to configure.
+/// Where the Progress tab's stack can go.
+enum ProgressRoute: Hashable {
+    case settings
+}
+
+/// Short, factual credits and data provenance. The things that *are*
+/// configurable live in `SettingsScreen`; this is the provenance it links to.
 struct AboutSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.elementCatalog) private var catalog

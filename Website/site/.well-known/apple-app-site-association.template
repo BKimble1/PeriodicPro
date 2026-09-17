@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["__APPLE_TEAM_ID__.com.idlery.periodicpro"],
+        "components": [
+          {
+            "/": "/quiz/*",
+            "comment": "A shared Elemora quiz opens the app."
+          }
+        ]
+      }
+    ]
+  }
+}

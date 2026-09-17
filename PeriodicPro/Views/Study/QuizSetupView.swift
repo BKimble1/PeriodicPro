@@ -3,9 +3,15 @@ import SwiftUI
 /// Where a quiz or a Match round is shaped before it starts, and where a
 /// saved quiz is edited.
 ///
-/// Everything here writes one `QuizConfiguration`. The pool is recomputed as
-/// the learner changes it, so the footer always says how many items the
-/// selection holds — and why a round cannot start, when it cannot.
+/// Four questions, in the order somebody actually asks them: what to study,
+/// how hard, how many, and where from. Everything else is behind Customize,
+/// which is closed until it is wanted. A beginner reaches Start in about three
+/// taps; nothing an advanced learner had before has been taken away.
+///
+/// The engine underneath is untouched. Every control still writes one
+/// `QuizConfiguration`, the pool is recomputed as it changes, and the footer
+/// says how many items the selection holds and why a round cannot start when
+/// it cannot.
 struct QuizSetupView: View {
     let mode: StudyMode
     /// The saved quiz being edited, if any.
@@ -15,6 +21,7 @@ struct QuizSetupView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.elementCatalog) private var catalog
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(CompoundStore.self) private var compounds: CompoundStore
     @Environment(ProgressStore.self) private var progress: ProgressStore
     @Environment(SavedQuizStore.self) private var savedQuizzes: SavedQuizStore
@@ -23,6 +30,8 @@ struct QuizSetupView: View {
     @State private var name: String
     @State private var isNamingQuiz = false
     @State private var customCount: Int
+    @State private var showsCustomize = false
+    @State private var path = NavigationPath()
 
     init(mode: StudyMode, existing: SavedQuiz? = nil, onStart: ((QuizRoundDealer) -> Void)? = nil) {
         self.mode = mode
@@ -68,19 +77,38 @@ struct QuizSetupView: View {
         mode == .match ? QuizConfiguration.matchPairPresets : QuizConfiguration.lengthPresets
     }
 
+    /// Four across normally, two once a quarter of the width can no longer
+    /// hold a word.
+    private var choiceColumns: [GridItem] {
+        let item = GridItem(.flexible(), spacing: Theme.Spacing.s)
+        return dynamicTypeSize.isAccessibilitySize ? [item, item] : [item, item, item, item]
+    }
+
+    private var contentColumns: [GridItem] {
+        let item = GridItem(.flexible(), spacing: Theme.Spacing.s)
+        return dynamicTypeSize.isAccessibilitySize ? [item] : [item, item, item]
+    }
+
     var body: some View {
-        NavigationStack {
-            Form {
-                contentSection
-                scopeSection
-                if configuration.content.includesElements { elementFilterSection }
-                if configuration.content.includesCompounds { compoundFilterSection }
-                if mode == .match { pairsSection } else { questionsSection }
-                footerSection
+        NavigationStack(path: $path) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Theme.Spacing.section) {
+                    contentSection
+                    difficultySection
+                    lengthSection
+                    scopeSection
+                    customizeSection
+                    footerSection
+                }
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+                .padding(.top, Theme.Spacing.m)
+                .padding(.bottom, Theme.Spacing.xl)
             }
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.immediately)
-            .navigationTitle(existing == nil ? mode.fullTitle : "Edit quiz")
+            .background(AppColor.canvas)
+            .navigationTitle(existing == nil ? (mode == .match ? "Create a Match" : "Create a Quiz")
+                             : "Edit quiz")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -112,133 +140,286 @@ struct QuizSetupView: View {
         .accessibilityIdentifier("quizSetup.sheet")
     }
 
-    // MARK: - Sections
+    // MARK: - What to study
 
     private var contentSection: some View {
-        Section("Ask about") {
-            Picker("Content", selection: $configuration.content) {
+        QuizSetupSection(title: "What do you want to study?") {
+            LazyVGrid(columns: contentColumns, spacing: Theme.Spacing.s) {
                 ForEach(QuizContent.allCases) { content in
-                    Text(content.title).tag(content)
+                    QuizOptionCard(
+                        title: content.title,
+                        symbolName: symbol(for: content),
+                        isSelected: configuration.content == content,
+                        identifier: "quizSetup.content.\(content.rawValue)"
+                    ) {
+                        configuration.content = content
+                    }
                 }
             }
-            .pickerStyle(.segmented)
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("quizSetup.content")
         }
     }
 
-    private var scopeSection: some View {
-        Section("From") {
-            Picker("Scope", selection: $configuration.scope) {
-                ForEach(QuizScope.allCases) { scope in
-                    Text(scope.title).tag(scope)
-                }
-            }
-            .pickerStyle(.menu)
-            .accessibilityIdentifier("quizSetup.scope")
-            Text(configuration.scope.detail)
-                .font(AppFont.caption)
-                .foregroundStyle(AppColor.secondaryText)
-            if configuration.scope == .custom {
-                if configuration.content.includesElements {
-                    NavigationLink(value: "elements") {
-                        LabeledContent("Elements", value: "\(configuration.customElementIDs.count) chosen")
-                    }
-                    .accessibilityIdentifier("quizSetup.chooseElements")
-                }
-                if configuration.content.includesCompounds {
-                    NavigationLink(value: "compounds") {
-                        LabeledContent("Compounds", value: "\(configuration.customCompoundIDs.count) chosen")
-                    }
-                    .accessibilityIdentifier("quizSetup.chooseCompounds")
-                }
-            }
+    private func symbol(for content: QuizContent) -> String {
+        switch content {
+        case .elements: return "atom"
+        case .compounds: return "circle.hexagongrid.fill"
+        case .both: return "square.grid.2x2"
         }
     }
 
-    private var elementFilterSection: some View {
-        Section {
-            DisclosureGroup {
-                VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-                    Group {
-                        filterLabel("Families")
-                        ChipGrid(items: ElementCategory.displayOrder,
-                                 selection: $configuration.elementFilters.categories,
-                                 title: \.shortName, identifierPrefix: "quizSetup.family")
-                        filterLabel("State at room temperature")
-                        ChipGrid(items: [MatterPhase.solid, .liquid, .gas],
-                                 selection: $configuration.elementFilters.phases,
-                                 title: \.displayName, identifierPrefix: "quizSetup.phase")
-                    }
-                    Group {
-                        filterLabel("Periods")
-                        ChipGrid(items: Array(1...7), selection: $configuration.elementFilters.periods,
-                                 title: { "\($0)" }, identifierPrefix: "quizSetup.period")
-                        filterLabel("Groups")
-                        ChipGrid(items: Array(1...18), selection: $configuration.elementFilters.groups,
-                                 title: { "\($0)" }, identifierPrefix: "quizSetup.group")
-                    }
-                    filterLabel("Atomic number range")
-                    Stepper(value: Binding(
-                        get: { configuration.elementFilters.minimumAtomicNumber ?? 1 },
-                        set: { configuration.elementFilters.minimumAtomicNumber = $0 == 1 ? nil : $0 }
-                    ), in: 1...118) {
-                        Text("From \(configuration.elementFilters.minimumAtomicNumber ?? 1)")
-                            .font(AppFont.footnote)
-                    }
-                    .accessibilityIdentifier("quizSetup.minimumZ")
-                    Stepper(value: Binding(
-                        get: { configuration.elementFilters.maximumAtomicNumber ?? 118 },
-                        set: { configuration.elementFilters.maximumAtomicNumber = $0 == 118 ? nil : $0 }
-                    ), in: 1...118) {
-                        Text("To \(configuration.elementFilters.maximumAtomicNumber ?? 118)")
-                            .font(AppFont.footnote)
-                    }
-                    .accessibilityIdentifier("quizSetup.maximumZ")
-                }
-                .padding(.vertical, Theme.Spacing.s)
-            } label: {
-                LabeledContent("Element filters", value: configuration.elementFilters.summary ?? "Any")
-            }
-            .accessibilityIdentifier("quizSetup.elementFilters")
-        }
-    }
+    // MARK: - Difficulty
 
-    private var compoundFilterSection: some View {
-        Section {
-            DisclosureGroup {
-                VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-                    filterLabel("Bonding")
-                    ChipGrid(items: CompoundBondingClass.allCases.filter { $0 != .unknown },
-                             selection: $configuration.compoundFilters.bondingClasses,
-                             title: \.displayName, identifierPrefix: "quizSetup.bonding")
-                    filterLabel("Type")
-                    ChipGrid(items: CompoundTag.allCases, selection: $configuration.compoundFilters.tags,
-                             title: \.displayName, identifierPrefix: "quizSetup.tag")
-                    Toggle("Only compounds I saved or favorited", isOn: $configuration.compoundFilters.onlySaved)
-                        .font(AppFont.footnote)
-                        .accessibilityIdentifier("quizSetup.onlySaved")
-                }
-                .padding(.vertical, Theme.Spacing.s)
-            } label: {
-                LabeledContent("Compound filters", value: configuration.compoundFilters.summary ?? "Any")
-            }
-            .accessibilityIdentifier("quizSetup.compoundFilters")
-        }
-    }
-
-    private var questionsSection: some View {
-        Section("Questions") {
-            Picker("Difficulty", selection: $configuration.difficulty) {
+    private var difficultySection: some View {
+        QuizSetupSection(title: "Choose difficulty", detail: difficultyNote) {
+            LazyVGrid(columns: choiceColumns, spacing: Theme.Spacing.s) {
                 ForEach(QuizDifficulty.allCases) { difficulty in
-                    Text(difficulty.title).tag(difficulty)
+                    QuizOptionCard(
+                        title: difficulty.title,
+                        isSelected: configuration.difficulty == difficulty,
+                        identifier: "quizSetup.difficulty.\(difficulty.rawValue)"
+                    ) {
+                        configuration.difficulty = difficulty
+                    }
                 }
             }
-            .pickerStyle(.segmented)
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("quizSetup.difficulty")
-            Text(difficultyNote)
-                .font(AppFont.caption)
+        }
+    }
+
+    // MARK: - How many
+
+    private var lengthSection: some View {
+        QuizSetupSection(title: mode == .match ? "Number of pairs" : "Number of questions") {
+            VStack(spacing: Theme.Spacing.s) {
+                LazyVGrid(columns: choiceColumns, spacing: Theme.Spacing.s) {
+                    ForEach(lengthPresets, id: \.self) { count in
+                        QuizOptionCard(
+                            title: "\(count)",
+                            isSelected: configuration.questionCount == count,
+                            identifier: "quizSetup.length.\(count)"
+                        ) {
+                            configuration.questionCount = count
+                        }
+                    }
+                    QuizOptionCard(
+                        title: "Custom",
+                        isSelected: !lengthPresets.contains(configuration.questionCount),
+                        identifier: "quizSetup.length.custom"
+                    ) {
+                        configuration.questionCount = customCount
+                    }
+                }
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("quizSetup.length")
+
+                if !lengthPresets.contains(configuration.questionCount) {
+                    Stepper(value: Binding(
+                        get: { configuration.questionCount },
+                        set: { configuration.questionCount = $0; customCount = $0 }
+                    ), in: QuizConfiguration.minimumQuestions...QuizConfiguration.maximumQuestions) {
+                        Text(mode == .match ? "\(configuration.questionCount) pairs"
+                                            : "\(configuration.questionCount) questions")
+                            .font(AppFont.subheadline)
+                            .foregroundStyle(AppColor.primaryText)
+                    }
+                    .padding(.horizontal, Theme.Spacing.m)
+                    .frame(minHeight: Theme.minimumTouchTarget)
+                    .background {
+                        RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                            .fill(AppColor.surface)
+                    }
+                    .accessibilityIdentifier("quizSetup.customLength")
+                }
+            }
+        }
+    }
+
+    // MARK: - Where from
+
+    private var scopeSection: some View {
+        QuizSetupSection(title: "Study from") {
+            VStack(spacing: Theme.Spacing.s) {
+                ForEach(QuizScope.allCases) { scope in
+                    QuizOptionRow(
+                        title: scope == .custom ? "Choose items" : scope.title,
+                        detail: scope.detail,
+                        symbolName: symbol(for: scope),
+                        isSelected: configuration.scope == scope,
+                        identifier: "quizSetup.scope.\(scope.rawValue)"
+                    ) {
+                        configuration.scope = scope
+                    }
+                }
+                if configuration.scope == .custom {
+                    customPickers
+                }
+            }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("quizSetup.scope")
+        }
+    }
+
+    private func symbol(for scope: QuizScope) -> String {
+        switch scope {
+        case .all: return "square.grid.2x2"
+        case .favorites: return "heart.fill"
+        case .recentlyMissed: return "arrow.counterclockwise"
+        case .notMastered: return "circle.lefthalf.filled"
+        case .custom: return "list.bullet.rectangle"
+        }
+    }
+
+    @ViewBuilder
+    private var customPickers: some View {
+        if configuration.content.includesElements {
+            NavigationLink(value: "elements") {
+                pickerRow("Elements", value: "\(configuration.customElementIDs.count) chosen")
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("quizSetup.chooseElements")
+        }
+        if configuration.content.includesCompounds {
+            NavigationLink(value: "compounds") {
+                pickerRow("Compounds", value: "\(configuration.customCompoundIDs.count) chosen")
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("quizSetup.chooseCompounds")
+        }
+    }
+
+    private func pickerRow(_ title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+                .font(AppFont.subheadline)
+                .foregroundStyle(AppColor.primaryText)
+            Spacer(minLength: Theme.Spacing.s)
+            Text(value)
+                .font(AppFont.footnote)
                 .foregroundStyle(AppColor.secondaryText)
-            lengthPicker
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(AppColor.tertiaryText)
+        }
+        .padding(.horizontal, Theme.Spacing.m)
+        .frame(minHeight: Theme.minimumTouchTarget)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background {
+            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                .fill(AppColor.surface)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                .strokeBorder(AppColor.hairline, lineWidth: 0.8)
+        }
+        .contentShape(Rectangle())
+    }
+
+    // MARK: - Customize
+
+    /// Everything the old screen showed at once. Closed by default, and it
+    /// says what is set inside it without being opened.
+    private var customizeSection: some View {
+        CardContainer(padding: Theme.Spacing.m) {
+            DisclosureGroup(isExpanded: $showsCustomize) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.l) {
+                    if configuration.content.includesElements { elementFilters }
+                    if configuration.content.includesCompounds { compoundFilters }
+                    if mode != .match { roundOptions }
+                }
+                .padding(.top, Theme.Spacing.m)
+            } label: {
+                HStack(spacing: Theme.Spacing.s) {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(AppColor.accent)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Customize")
+                            .font(.system(.subheadline, weight: .semibold))
+                            .foregroundStyle(AppColor.primaryText)
+                        Text(customizeSummary)
+                            .font(AppFont.caption)
+                            .foregroundStyle(AppColor.secondaryText)
+                            .lineLimit(1)
+                    }
+                }
+                .frame(minHeight: Theme.minimumTouchTarget)
+            }
+            .tint(AppColor.accent)
+        }
+        .accessibilityIdentifier("quizSetup.customize")
+    }
+
+    private var customizeSummary: String {
+        var parts: [String] = []
+        if let elements = configuration.elementFilters.summary { parts.append(elements) }
+        if let compoundSummary = configuration.compoundFilters.summary { parts.append(compoundSummary) }
+        if configuration.isTimed, let seconds = configuration.timerSeconds {
+            parts.append("\(seconds)s timer")
+        }
+        if !configuration.shuffles { parts.append("in order") }
+        return parts.isEmpty ? "Optional" : parts.joined(separator: " · ")
+    }
+
+    private var elementFilters: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            filterLabel("Element families")
+            ChipGrid(items: ElementCategory.displayOrder,
+                     selection: $configuration.elementFilters.categories,
+                     title: \.shortName, identifierPrefix: "quizSetup.family")
+            filterLabel("State at room temperature")
+            ChipGrid(items: [MatterPhase.solid, .liquid, .gas],
+                     selection: $configuration.elementFilters.phases,
+                     title: \.displayName, identifierPrefix: "quizSetup.phase")
+            filterLabel("Periods")
+            ChipGrid(items: Array(1...7), selection: $configuration.elementFilters.periods,
+                     title: { "\($0)" }, identifierPrefix: "quizSetup.period")
+            filterLabel("Groups")
+            ChipGrid(items: Array(1...18), selection: $configuration.elementFilters.groups,
+                     title: { "\($0)" }, identifierPrefix: "quizSetup.group")
+            filterLabel("Atomic number range")
+            Stepper(value: Binding(
+                get: { configuration.elementFilters.minimumAtomicNumber ?? 1 },
+                set: { configuration.elementFilters.minimumAtomicNumber = $0 == 1 ? nil : $0 }
+            ), in: 1...118) {
+                Text("From \(configuration.elementFilters.minimumAtomicNumber ?? 1)")
+                    .font(AppFont.footnote)
+            }
+            .accessibilityIdentifier("quizSetup.minimumZ")
+            Stepper(value: Binding(
+                get: { configuration.elementFilters.maximumAtomicNumber ?? 118 },
+                set: { configuration.elementFilters.maximumAtomicNumber = $0 == 118 ? nil : $0 }
+            ), in: 1...118) {
+                Text("To \(configuration.elementFilters.maximumAtomicNumber ?? 118)")
+                    .font(AppFont.footnote)
+            }
+            .accessibilityIdentifier("quizSetup.maximumZ")
+        }
+        .accessibilityIdentifier("quizSetup.elementFilters")
+    }
+
+    private var compoundFilters: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            filterLabel("Compound bonding")
+            ChipGrid(items: CompoundBondingClass.allCases.filter { $0 != .unknown },
+                     selection: $configuration.compoundFilters.bondingClasses,
+                     title: \.displayName, identifierPrefix: "quizSetup.bonding")
+            filterLabel("Compound type")
+            ChipGrid(items: CompoundTag.allCases, selection: $configuration.compoundFilters.tags,
+                     title: \.displayName, identifierPrefix: "quizSetup.tag")
+            Toggle("Only compounds I saved or favorited", isOn: $configuration.compoundFilters.onlySaved)
+                .font(AppFont.footnote)
+                .accessibilityIdentifier("quizSetup.onlySaved")
+        }
+        .accessibilityIdentifier("quizSetup.compoundFilters")
+    }
+
+    private var roundOptions: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+            filterLabel("Timer")
             Picker("Timer", selection: Binding(
                 get: { configuration.timerSeconds ?? 0 },
                 set: { configuration.timerSeconds = $0 == 0 ? nil : $0 }
@@ -248,53 +429,18 @@ struct QuizSetupView: View {
                     Text("\(seconds) s").tag(seconds)
                 }
             }
+            .pickerStyle(.segmented)
             .accessibilityIdentifier("quizSetup.timer")
             Toggle("Shuffle questions", isOn: $configuration.shuffles)
+                .font(AppFont.footnote)
                 .accessibilityIdentifier("quizSetup.shuffle")
         }
     }
 
-    private var pairsSection: some View {
-        Section("Pairs") {
-            lengthPicker
-        }
-    }
-
-    private var lengthPicker: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-            Picker(mode == .match ? "Pairs" : "Length", selection: Binding(
-                get: { lengthPresets.contains(configuration.questionCount) ? configuration.questionCount : 0 },
-                set: { newValue in
-                    if newValue == 0 {
-                        configuration.questionCount = customCount
-                    } else {
-                        configuration.questionCount = newValue
-                    }
-                }
-            )) {
-                ForEach(lengthPresets, id: \.self) { count in
-                    Text("\(count)").tag(count)
-                }
-                Text("Custom").tag(0)
-            }
-            .pickerStyle(.segmented)
-            .accessibilityIdentifier("quizSetup.length")
-            if !lengthPresets.contains(configuration.questionCount) {
-                Stepper(value: Binding(
-                    get: { configuration.questionCount },
-                    set: { configuration.questionCount = $0; customCount = $0 }
-                ), in: QuizConfiguration.minimumQuestions...QuizConfiguration.maximumQuestions) {
-                    Text(mode == .match ? "\(configuration.questionCount) pairs"
-                                        : "\(configuration.questionCount) questions")
-                        .font(AppFont.footnote)
-                }
-                .accessibilityIdentifier("quizSetup.customLength")
-            }
-        }
-    }
+    // MARK: - Footer and actions
 
     private var footerSection: some View {
-        Section {
+        Group {
             if let unavailableReason {
                 Label(unavailableReason, systemImage: "exclamationmark.triangle")
                     .font(AppFont.footnote)
@@ -307,6 +453,8 @@ struct QuizSetupView: View {
                     .accessibilityIdentifier("quizSetup.poolCount")
             }
         }
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var actions: some View {
@@ -323,18 +471,18 @@ struct QuizSetupView: View {
                 Haptics.tap()
                 if existing == nil { isNamingQuiz = true } else { save() }
             } label: {
-                Text(existing == nil ? "Save as Quiz" : "Save Changes")
-                    .font(.system(.body, weight: .medium))
+                Text(existing == nil ? "Save Quiz" : "Save Changes")
+                    .font(.system(.subheadline, weight: .medium))
                     .foregroundStyle(AppColor.accent)
                     .frame(maxWidth: .infinity)
-                    .frame(minHeight: 46)
+                    .frame(minHeight: Theme.minimumTouchTarget)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("quizSetup.save")
         }
         .padding(.horizontal, Theme.Spacing.screenMargin)
-        .padding(.vertical, Theme.Spacing.m)
+        .padding(.vertical, Theme.Spacing.s)
         .background(.bar)
     }
 

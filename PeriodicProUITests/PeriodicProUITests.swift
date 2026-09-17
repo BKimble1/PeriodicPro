@@ -292,8 +292,15 @@ final class PeriodicProUITests: XCTestCase {
 
     /// The table is pinch-to-zoom. XCUITest's pinch is a real two-finger
     /// gesture on the simulator, so this is the interaction itself, not a
-    /// stand-in: the tiles must grow, the tile that was under the pinch must
-    /// still be on screen, and a tap on it must still open its page.
+    /// stand-in: the tiles must grow, and a tile that is actually on screen
+    /// afterwards must still open its page.
+    ///
+    /// What it deliberately does *not* claim is that one named element stays
+    /// put. Zooming in on the middle of the table moves most of it off screen
+    /// — that is the feature — so asserting on a particular symbol was
+    /// asserting on the focal-point arithmetic and the phone's aspect ratio,
+    /// which is how this test failed on a table that worked. The claim is that
+    /// the tiles grew and that whatever is on screen is still live.
     func testPinchZoomsTheTableAndTilesStayTappable() {
         waitFor(app.buttons["element.H"])
         let table = el("table.zoomView")
@@ -303,73 +310,92 @@ final class PeriodicProUITests: XCTestCase {
         let before = hydrogen.frame.width
         XCTAssertGreaterThan(before, 12, "the fitted table should have real tiles\(onScreen())")
 
-        // The pinch is centered on the table, so after it the middle of the
-        // d-block is what fills the window. Exactly which tile sits under the
-        // center depends on the focal-point arithmetic and the phone, and
-        // the claim here is not about that: it is that the tiles grew and
-        // that one of them still opens its page. So: the first of the tiles
-        // around the middle that is on screen.
-        let middle = ["Fe", "Co", "Mn", "Ni", "Cr", "Ru", "Rh", "Tc", "Mo", "Cu", "V", "Ti",
-                      "Zn", "Pd", "Nb", "Os", "Ir", "Re", "W", "Zr"]
-        let candidates = middle.map { app.buttons["element.\($0)"] }
-
         table.pinch(withScale: 2.5, velocity: 1.0)
 
-        // Wait for the layout to settle at the new size rather than
-        // asserting mid-animation. Every tile grows, so any of the middle
-        // ones that is on screen will do for the measurement.
-        let grew = NSPredicate { _, _ in
-            candidates.contains { $0.exists && $0.frame.width > before * 1.5 }
-        }
+        // Wait for the layout to settle at the new size rather than asserting
+        // mid-animation. Every tile grows, so any tile still vended will do.
+        let application: XCUIApplication = app
+        let grew = NSPredicate { _, _ in Self.largestTileWidth(in: application) > before * 1.5 }
         let expectation = XCTNSPredicateExpectation(predicate: grew, object: nil)
-        XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: 6), .completed,
+        XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: 8), .completed,
                        "Pinching out should make the tiles larger; they were \(before) wide"
                        + onScreen())
 
-        XCTAssertTrue(el("table.fit").waitForExistence(timeout: 4),
-                      "A zoomed table should offer a Fit control\(onScreen())")
-
         // A tile in the zoomed window must still open its page: the pinch
         // guard swallows only the pinch's own lift, not a tap that follows.
-        let tappable = candidates.first(where: canTap)
-        XCTAssertNotNil(tappable,
-                        "a tile near the middle of the table should be tappable while zoomed\(onScreen())")
-        guard let tappable else { return }
+        settle(0.6)
+        guard let tappable = Self.tappableTile(in: app, canTap: canTap) else {
+            XCTFail("no element tile was tappable while zoomed\(onScreen())")
+            return
+        }
         tappable.tap()
         waitFor(app.buttons["detail.favoriteButton"])
         goBack()
 
-        // Coming back, the table is still zoomed — the position survived the
-        // push — and Fit takes it home.
-        let stillZoomed = el("table.fit")
-        waitFor(stillZoomed)
-        stillZoomed.tap()
-        let fitted = NSPredicate { _, _ in hydrogen.exists && hydrogen.frame.width < before * 1.2 }
-        let fittedExpectation = XCTNSPredicateExpectation(predicate: fitted, object: nil)
-        XCTAssertEqual(XCTWaiter().wait(for: [fittedExpectation], timeout: 6), .completed,
-                       "Fit should return the tiles to their fitted size\(onScreen())")
-        XCTAssertTrue(app.buttons["element.Og"].exists, "every column should be back on screen")
+        // Coming back, the table is still zoomed: the position survived the
+        // push. Measured on whatever tile is on screen, not a named one.
+        let stillZoomed = NSPredicate { _, _ in Self.largestTileWidth(in: application) > before * 1.5 }
+        XCTAssertEqual(
+            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: stillZoomed, object: nil)],
+                             timeout: 8),
+            .completed,
+            "Returning from a detail page should keep the table's zoom\(onScreen())"
+        )
+
+        // And a double tap on the zoomed table brings it back to fitted, with
+        // every column on screen again.
+        table.doubleTap()
+        let fitted = NSPredicate { _, _ in
+            hydrogen.exists && hydrogen.frame.width > 0 && hydrogen.frame.width < before * 1.2
+        }
+        XCTAssertEqual(
+            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: fitted, object: nil)],
+                             timeout: 8),
+            .completed,
+            "A double tap should return the table to its fitted size\(onScreen())"
+        )
+        XCTAssertTrue(app.buttons["element.Og"].waitForExistence(timeout: 5),
+                      "every column should be back on screen\(onScreen())")
     }
 
-    /// The pinch's accessible twin: the zoom menu reaches the same levels.
-    func testZoomMenuZoomsInAndFits() {
+    /// The widest element tile currently vended, or zero. Used instead of a
+    /// named symbol so the measurement survives panning.
+    private static func largestTileWidth(in app: XCUIApplication) -> CGFloat {
+        app.buttons.allElementsBoundByAccessibilityElement
+            .filter { $0.identifier.hasPrefix("element.") }
+            .map(\.frame.width)
+            .max() ?? 0
+    }
+
+    private static func tappableTile(in app: XCUIApplication,
+                                     canTap: (XCUIElement) -> Bool) -> XCUIElement? {
+        app.buttons.allElementsBoundByAccessibilityElement
+            .filter { $0.identifier.hasPrefix("element.") }
+            .first(where: canTap)
+    }
+
+    /// There is no zoom control on the table, and there must not be one.
+    ///
+    /// The pinch is the interface. A Fit chip, a plus/minus zoom menu and a
+    /// filter button were three pieces of chrome that existed because the
+    /// gestures were not trusted; all three are gone, and this fails if any of
+    /// them comes back.
+    func testTheTableHasNoVisibleZoomOrFilterControls() {
         waitFor(app.buttons["element.H"])
-        let hydrogen = app.buttons["element.H"]
-        let before = hydrogen.frame.width
+        for identifier in ["table.fit", "table.zoomMenu", "table.zoomIn", "table.zoomOut",
+                           "table.fitTable", "table.filterButton"] {
+            XCTAssertFalse(el(identifier).exists,
+                           "\(identifier) should no longer exist\(onScreen())")
+        }
+        for label in ["Fit", "Fit table", "Zoom in", "Zoom out"] {
+            XCTAssertFalse(app.buttons[label].exists,
+                           "a \u{201C}\(label)\u{201D} button should not be on the table")
+        }
 
-        tap(app.buttons["table.zoomMenu"])
-        tap(app.buttons["table.zoomIn"])
-        let grew = NSPredicate { _, _ in hydrogen.exists && hydrogen.frame.width > before * 1.3 }
-        XCTAssertEqual(XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: grew, object: nil)],
-                                        timeout: 6), .completed,
-                       "Zoom in should enlarge the tiles\(onScreen())")
-
-        tap(app.buttons["table.zoomMenu"])
-        tap(app.buttons["table.fitTable"])
-        let fitted = NSPredicate { _, _ in hydrogen.exists && hydrogen.frame.width < before * 1.2 }
-        XCTAssertEqual(XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: fitted, object: nil)],
-                                        timeout: 6), .completed,
-                       "Fit table should return to the fitted size\(onScreen())")
+        // Still zoomable without two fingers: the adjustable element is what
+        // VoiceOver and Switch Control drive, and it draws nothing.
+        XCTAssertTrue(el("table.zoomAdjustable").exists,
+                      "the table must stay adjustable for assistive technology\(onScreen())")
     }
 
     // MARK: - Detail
@@ -449,29 +475,57 @@ final class PeriodicProUITests: XCTestCase {
     // MARK: - Filters
 
     func testFilteringByFamily() {
-        let chip = app.buttons["filter.Nonmetals"]
-        waitFor(chip)
-        chip.tap()
-        // Iron is a metal, so its tile is dimmed out of the accessibility tree.
+        waitFor(app.buttons["element.H"])
+        // All four primary controls are on screen at once, with no sideways
+        // scrolling and no filter button beside them.
+        for title in ["All", "Metals", "Nonmetals", "Metalloids"] {
+            let chip = app.buttons["filter.\(title)"]
+            XCTAssertTrue(chip.waitForExistence(timeout: 6),
+                          "the \(title) filter should be on screen\(onScreen())")
+            XCTAssertTrue(canTap(chip),
+                          "the \(title) filter should be tappable without scrolling\(onScreen())")
+        }
+
+        tap(app.buttons["filter.Nonmetals"])
+        // Oxygen is a nonmetal and stays; iron is a metal and is dimmed out of
+        // the accessibility tree entirely.
         XCTAssertTrue(app.buttons["element.O"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["element.Fe"].exists,
-                       "A filtered-out element should leave the accessibility tree")
+                       "a filtered-out element should leave the accessibility tree")
 
-        app.buttons["filter.All"].tap()
-        XCTAssertTrue(app.buttons["element.Fe"].waitForExistence(timeout: 5))
+        tap(app.buttons["filter.All"])
+        XCTAssertTrue(app.buttons["element.Fe"].waitForExistence(timeout: 5),
+                      "clearing the filter should bring every element back")
     }
 
-    func testDetailedFilterSheet() {
-        let filterButton = app.buttons["table.filterButton"]
-        waitFor(filterButton)
-        filterButton.tap()
+    /// The Families card under the table is the only detailed filter, and it
+    /// is a real one: rows are buttons, several can be on at once, and the
+    /// table follows.
+    func testFamiliesCardFiltersTheTable() {
+        waitFor(app.buttons["element.H"])
+        tap(app.buttons["legend.nobleGas"])
 
-        // Scrolled to, not just waited for: the sheet lists every family and
-        // noble gas sits below the fold on a phone-sized sheet.
-        tap(app.buttons["filterSheet.nobleGas"])
-        app.buttons["filterSheet.done"].tap()
+        XCTAssertTrue(app.buttons["element.Ne"].waitForExistence(timeout: 5),
+                      "neon should survive a noble-gas filter\(onScreen())")
+        XCTAssertFalse(app.buttons["element.Fe"].exists,
+                       "iron is not a noble gas and should be filtered out")
 
-        XCTAssertTrue(app.buttons["element.He"].waitForExistence(timeout: 5))
+        // A second family joins the first rather than replacing it.
+        tap(app.buttons["legend.transitionMetal"])
+        XCTAssertTrue(app.buttons["element.Fe"].waitForExistence(timeout: 5),
+                      "adding transition metals should bring iron back\(onScreen())")
+        XCTAssertTrue(app.buttons["element.Ne"].exists, "and neon should still be there")
+        XCTAssertFalse(app.buttons["element.Na"].exists,
+                       "sodium is in neither selected family")
+
+        // Tapping a selected family removes it.
+        tap(app.buttons["legend.transitionMetal"])
+        XCTAssertFalse(app.buttons["element.Fe"].waitForExistence(timeout: 3),
+                       "removing transition metals should filter iron out again")
+
+        tap(app.buttons["legend.clear"])
+        XCTAssertTrue(app.buttons["element.Na"].waitForExistence(timeout: 5),
+                      "clearing should restore every element\(onScreen())")
     }
 
     // MARK: - Study
@@ -762,15 +816,97 @@ final class PeriodicProUITests: XCTestCase {
                        "Clear should empty the recent searches list")
     }
 
-    func testProgressMenuOffersAboutAndReset() {
+    // MARK: - Settings
+
+    /// Progress opens Settings from a gear, and Settings holds everything
+    /// there is to set or to read.
+    func testSettingsOpensFromProgressAndHoldsEverything() {
         openTab("Progress")
-        let menu = app.buttons["progress.menu"]
-        waitFor(menu)
-        menu.tap()
-        XCTAssertTrue(app.buttons["About this app"].waitForExistence(timeout: 5))
-        app.buttons["About this app"].tap()
-        XCTAssertTrue(app.navigationBars["About"].waitForExistence(timeout: 5))
+        waitFor(app.navigationBars["Progress"])
+        XCTAssertFalse(el("progress.menu").exists,
+                       "the ellipsis menu has been replaced by a gear\(onScreen())")
+        tap(app.buttons["progress.settings"])
+        waitFor(app.navigationBars["Settings"])
+
+        // Elemora Pro: status, Apple's own management flow, and Restore.
+        assertReachable(el("settings.plan"), "the current plan")
+        assertReachable(app.buttons["settings.manageSubscription"], "Manage Subscription")
+        assertReachable(app.buttons["settings.restore"], "Restore Purchases")
+
+        // The links, with their exact destinations. The value is asserted
+        // rather than the tap: tapping opens Safari, which is not this app.
+        let destinations = [
+            "settings.privacy": "https://elemora.idlery.com/privacy",
+            "settings.terms": "https://elemora.idlery.com/terms",
+            "settings.support": "https://elemora.idlery.com/support",
+            "settings.website": "https://elemora.idlery.com",
+        ]
+        for (identifier, expected) in destinations {
+            let row = app.buttons[identifier]
+            assertReachable(row, identifier)
+            XCTAssertEqual(row.value as? String, expected,
+                           "\(identifier) points at the wrong page")
+        }
+        assertReachable(app.buttons["settings.contactSupport"], "Contact Support")
+        XCTAssertTrue(labelContaining("support@idlery.com").exists,
+                      "the support address should be readable in Settings\(onScreen())")
+
+        // About moved here from the ellipsis menu, and still opens.
+        tap(app.buttons["settings.about"])
+        XCTAssertTrue(app.navigationBars["About"].waitForExistence(timeout: 6))
         app.navigationBars["About"].buttons["Done"].tap()
+        waitFor(app.navigationBars["Settings"])
+    }
+
+    /// The appearance choice applies at once and survives leaving the screen.
+    func testAppearanceSelectionPersists() {
+        openTab("Progress")
+        tap(app.buttons["progress.settings"])
+        waitFor(app.navigationBars["Settings"])
+
+        let system = app.buttons["settings.appearance.system"]
+        assertReachable(system, "the System appearance row")
+        XCTAssertTrue(system.isSelected, "System is the default")
+
+        tap(app.buttons["settings.appearance.dark"])
+        XCTAssertTrue(app.buttons["settings.appearance.dark"].isSelected,
+                      "Dark should become the selection\(onScreen())")
+        XCTAssertFalse(app.buttons["settings.appearance.system"].isSelected)
+
+        // Leave and come back: the choice is stored, not held in the view.
+        goBack()
+        waitFor(app.navigationBars["Progress"])
+        tap(app.buttons["progress.settings"])
+        waitFor(app.navigationBars["Settings"])
+        assertReachable(app.buttons["settings.appearance.dark"], "the Dark appearance row")
+        XCTAssertTrue(app.buttons["settings.appearance.dark"].isSelected,
+                      "the appearance should survive leaving Settings\(onScreen())")
+
+        tap(app.buttons["settings.appearance.light"])
+        XCTAssertTrue(app.buttons["settings.appearance.light"].isSelected)
+        tap(app.buttons["settings.appearance.system"])
+        XCTAssertTrue(app.buttons["settings.appearance.system"].isSelected,
+                      "System should restore the device's own appearance")
+    }
+
+    /// Reset Progress moved into Settings and kept its confirmation.
+    func testResetProgressKeepsItsConfirmation() {
+        openTab("Study")
+        tap(app.buttons["study.mode.flashcards"])
+        waitFor(app.buttons["session.reveal"])
+        app.buttons["session.reveal"].tap()
+        app.buttons["session.knewThis"].tap()
+        app.buttons["session.exit"].tap()
+
+        openTab("Progress")
+        tap(app.buttons["progress.settings"])
+        waitFor(app.navigationBars["Settings"])
+        tap(app.buttons["settings.resetProgress"])
+        XCTAssertTrue(app.buttons["Cancel"].waitForExistence(timeout: 6),
+                      "Reset must ask before it does anything\(onScreen())")
+        XCTAssertTrue(labelContaining("Favorites are kept").exists,
+                      "the confirmation should say what survives a reset")
+        app.buttons["Cancel"].tap()
     }
 
     // MARK: - Compounds
@@ -863,23 +999,83 @@ final class PeriodicProUITests: XCTestCase {
         XCTAssertTrue(el("build.beta").exists, "The builder must be marked as a beta\(onScreen())")
         XCTAssertTrue(app.buttons["build.addElement"].exists)
         XCTAssertTrue(el("build.empty").exists)
+        XCTAssertTrue(el("build.search").exists, "Build opens with a search field\(onScreen())")
+        XCTAssertFalse(app.buttons["build.lookUp"].exists,
+                       "the giant lookup button is gone; identification is automatic")
     }
 
-    func testBuildingWaterFindsTheKnownCompound() {
+    /// The search field at the top of Build finds a bundled compound and opens
+    /// its page, with no chemistry required.
+    func testBuildSearchFindsWaterAndOpensIt() {
+        openTab("Build")
+        let field = el("build.search")
+        waitFor(field)
+        field.tap()
+        field.typeText("water")
+
+        let result = app.buttons["compoundResult.962"]
+        waitFor(result)
+        result.tap()
+        waitFor(el("compound.hero"))
+        XCTAssertTrue(labelContaining("Water").exists)
+        goBack()
+        // Clearing the field puts the builder back.
+        tap(app.buttons["build.searchClear"])
+        waitFor(el("build.tray"))
+    }
+
+    /// H₂O names itself: no button, no wait, and the name is a record's name.
+    func testBuildingWaterIdentifiesItAutomatically() {
         openTab("Build")
         addElement("H")
         tap(app.buttons["build.increment.H"])
         addElement("O")
         XCTAssertTrue(el("build.formula").waitForExistence(timeout: 5))
-        XCTAssertTrue(el("build.hints").exists, "Hints are shown, labeled as heuristics")
-        tap(app.buttons["build.lookUp"])
+        XCTAssertTrue(el("build.hints").exists, "Hints are still available, labeled as heuristics")
+
+        // No lookup was tapped, and no lookup button exists to tap.
+        XCTAssertFalse(app.buttons["build.lookUp"].exists)
         waitFor(el("build.result"))
         XCTAssertTrue(labelContaining("Water").exists, "H2O should resolve to water\(onScreen())")
-        XCTAssertTrue(el("build.result.preview").exists, "A known compound shows its structure")
-        tap(app.buttons["build.result.addToStudy"])
+
+        // The result carries a real 2D structure, labeled honestly.
+        assertReachable(el("compound2D.view"), "the 2D structure")
+        XCTAssertTrue(labelContaining("2D structure for Water").exists,
+                      "the drawing should describe itself\(onScreen())")
+
+        // Saving and favoriting are separate, and both stick.
+        tap(app.buttons["build.result.save"])
+        XCTAssertTrue(app.buttons["build.result.save"].isSelected,
+                      "Save should read as on once it is\(onScreen())")
+        tap(app.buttons["build.result.favorite"])
+        XCTAssertTrue(app.buttons["build.result.favorite"].isSelected)
+
         tap(app.buttons["build.result.details"])
         waitFor(el("compound.hero"))
         goBack()
+
+        // And the favorite is on Study, under Favorites rather than buried.
+        openTab("Study")
+        let shelf = el("study.favoriteCompound.962")
+        assertReachable(shelf, "the favorited compound on the Study tab")
+    }
+
+    /// The formula is live: it changes with the tray, before anything is
+    /// looked up.
+    func testFormulaUpdatesAsTheCompositionChanges() {
+        openTab("Build")
+        addElement("O")
+        let formula = el("build.formula")
+        waitFor(formula)
+        let single = formula.label
+        tap(app.buttons["build.increment.O"])
+        let changed = NSPredicate { _, _ in formula.exists && formula.label != single }
+        XCTAssertEqual(
+            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: changed, object: nil)],
+                             timeout: 5),
+            .completed,
+            "adding an atom should change the formula at once\(onScreen())"
+        )
     }
 
     func testBuildingC2H6OOffersAChoiceRatherThanAssumingEthanol() {
@@ -889,42 +1085,110 @@ final class PeriodicProUITests: XCTestCase {
         addElement("H")
         for _ in 0..<5 { tap(app.buttons["build.increment.H"]) }
         addElement("O")
-        tap(app.buttons["build.lookUp"])
         waitFor(el("build.candidates"))
-        XCTAssertTrue(labelContaining("Multiple known compounds share this formula.").exists)
+        XCTAssertTrue(labelContaining("2 known compounds share this formula").exists,
+                      "an ambiguous formula must say so rather than pick one\(onScreen())")
+        XCTAssertFalse(labelContaining("build.identity.match").exists,
+                       "C2H6O must not be auto-named")
         XCTAssertTrue(app.buttons["build.candidate.702"].exists, "Ethanol is offered")
         XCTAssertTrue(app.buttons["build.candidate.8254"].exists, "Dimethyl ether is offered")
         tap(app.buttons["build.candidate.8254"])
         waitFor(el("build.result"))
         XCTAssertTrue(labelContaining("Dimethyl ether").exists)
+        // An organic molecule is drawn in line-angle notation and called that.
+        assertReachable(el("compound2D.label"), "the representation label")
+        XCTAssertTrue(labelContaining("Skeletal formula for Dimethyl ether").exists,
+                      "an organic molecule gets a skeletal formula\(onScreen())")
     }
 
     func testUnknownCompositionIsAMissNotADiscovery() {
         openTab("Build")
         addElement("Au", searching: "gold")
         addElement("He")
-        tap(app.buttons["build.lookUp"])
         waitFor(el("build.noMatch"))
-        XCTAssertTrue(labelContaining("No known PubChem match found.").exists)
+        XCTAssertTrue(labelContaining("No known match found").exists)
         XCTAssertTrue(labelContaining("not evidence of a new chemical discovery").exists)
         tap(app.buttons["build.saveHypothetical"])
         waitFor(el("build.result"))
         XCTAssertTrue(labelContaining("Hypothetical").exists)
-        XCTAssertFalse(el("build.result.preview").exists, "Nothing is drawn for a composition nobody has seen")
+        // Nothing is drawn for a composition nobody has recorded, and it is
+        // never called a skeletal formula or a formula unit.
+        assertReachable(el("compound2D.label"), "the representation label")
+        XCTAssertTrue(labelContaining("Composition for").exists,
+                      "an unmatched composition gets no structural claim\(onScreen())")
     }
 
     // MARK: - Quiz setup, Match and My Quizzes
 
-    func testQuizSetupOffersContentScopeAndDifficulty() {
+    /// The redesigned setup: four plain questions, large answers, and nothing
+    /// advanced on screen until it is asked for.
+    func testQuizSetupIsUnderstandableWithoutOpeningAnything() {
         openTab("Study")
         tap(app.buttons["study.mode.quiz"])
         waitFor(el("quizSetup.sheet"))
-        XCTAssertTrue(el("quizSetup.content").exists)
-        assertReachable(el("quizSetup.difficulty"), "the difficulty picker")
-        assertReachable(el("quizSetup.length"), "the length picker")
+
+        // What to study, as three large choices rather than a segmented row.
+        for content in ["elements", "compounds", "both"] {
+            let card = app.buttons["quizSetup.content.\(content)"]
+            XCTAssertTrue(card.waitForExistence(timeout: 6),
+                          "the \(content) choice should be on screen\(onScreen())")
+            XCTAssertTrue(canTap(card), "the \(content) choice should be tappable\(onScreen())")
+        }
+        XCTAssertTrue(app.buttons["quizSetup.content.elements"].isSelected,
+                      "Elements is the default\(onScreen())")
+        tap(app.buttons["quizSetup.content.both"])
+        XCTAssertTrue(app.buttons["quizSetup.content.both"].isSelected)
+
+        // Difficulty, count and scope are each a row of real controls.
+        for difficulty in ["easy", "medium", "hard", "mixed"] {
+            assertReachable(app.buttons["quizSetup.difficulty.\(difficulty)"], difficulty)
+        }
+        assertReachable(app.buttons["quizSetup.length.10"], "the ten-question choice")
+        assertReachable(app.buttons["quizSetup.length.custom"], "the custom length choice")
+        for scope in ["all", "favorites", "recentlyMissed", "notMastered", "custom"] {
+            assertReachable(app.buttons["quizSetup.scope.\(scope)"], scope)
+        }
+
+        // Everything advanced is behind Customize, and stays there until it is
+        // opened. The families chips are the tell: eighteen group chips and
+        // seven period chips used to be the first thing on this screen.
+        XCTAssertFalse(app.buttons["quizSetup.family.Alkali"].exists,
+                       "advanced filters must start collapsed\(onScreen())")
+        XCTAssertFalse(app.buttons["quizSetup.group.5"].exists)
+        assertReachable(el("quizSetup.customize"), "the Customize section")
         assertReachable(el("quizSetup.poolCount"), "the footer that says how big the selection is")
+
         app.buttons["quizSetup.cancel"].tap()
         XCTAssertTrue(app.navigationBars["Study"].waitForExistence(timeout: 5))
+    }
+
+    /// Customize keeps every advanced control the old form had.
+    func testQuizSetupCustomizeStillHoldsEveryAdvancedFilter() {
+        openTab("Study")
+        tap(app.buttons["study.mode.quiz"])
+        waitFor(el("quizSetup.sheet"))
+        tap(app.buttons["quizSetup.content.both"])
+        tap(el("quizSetup.customize"))
+
+        for identifier in ["quizSetup.family.Alkali", "quizSetup.phase.Gas", "quizSetup.period.3",
+                           "quizSetup.group.17", "quizSetup.minimumZ", "quizSetup.maximumZ",
+                           "quizSetup.bonding.Ionic", "quizSetup.onlySaved",
+                           "quizSetup.timer", "quizSetup.shuffle"] {
+            assertReachable(el(identifier), identifier)
+        }
+    }
+
+    /// Match uses the same screen and the same visual language.
+    func testMatchSetupUsesTheSameDesign() {
+        openTab("Study")
+        tap(app.buttons["study.mode.match"])
+        waitFor(el("quizSetup.sheet"))
+        XCTAssertTrue(app.navigationBars["Create a Match"].exists,
+                      "Match should open its own titled setup\(onScreen())")
+        assertReachable(app.buttons["quizSetup.content.elements"], "the content choice")
+        assertReachable(app.buttons["quizSetup.length.8"], "the eight-pair choice")
+        assertReachable(app.buttons["quizSetup.start"], "Start Match")
+        app.buttons["quizSetup.cancel"].tap()
     }
 
     func testMatchRoundPairsUpAndFinishes() {
@@ -967,5 +1231,46 @@ final class PeriodicProUITests: XCTestCase {
         waitFor(app.navigationBars["My Quizzes"])
         XCTAssertTrue(el("myQuizzes.list").exists)
         XCTAssertTrue(labelContaining("Halogens").exists)
+
+        // There is no importer, no file picker and no JSON anywhere in here.
+        XCTAssertFalse(app.buttons["myQuizzes.import"].exists,
+                       "the quiz-file importer has been removed\(onScreen())")
+        XCTAssertFalse(labelContaining("Import a quiz file").exists)
+        XCTAssertFalse(labelContaining(".elemoraquiz").exists)
+        XCTAssertFalse(labelContaining(".json").exists)
+        XCTAssertTrue(app.buttons["myQuizzes.new"].exists,
+                      "New quiz is now a plain button rather than a menu")
+    }
+
+    // MARK: - Study layout details
+
+    /// Every practice tile is the same size and sits on the same baseline.
+    ///
+    /// Smart Review wraps to two lines and carries a PRO badge; both used to
+    /// change its height, and the grid then centered it a few points above its
+    /// neighbors. This is the assertion that was missing.
+    func testPracticeTilesShareOneBaselineAndOneHeight() {
+        openTab("Study")
+        let modes = ["flashcards", "quiz", "match", "identify", "smartReview"]
+        // Bring the whole row on screen first, then measure it in one go.
+        assertReachable(app.buttons["study.mode.smartReview"], "the Smart Review tile")
+        settle(0.5)
+
+        let frames = modes.map { app.buttons["study.mode.\($0)"].frame }
+        for (index, frame) in frames.enumerated() {
+            XCTAssertFalse(frame.isNull || frame.isEmpty,
+                           "the \(modes[index]) tile has no frame\(onScreen())")
+        }
+        guard let first = frames.first else { return }
+        for (index, frame) in frames.enumerated() {
+            XCTAssertEqual(frame.minY, first.minY, accuracy: 1.0,
+                           "the \(modes[index]) tile does not start on the same line")
+            XCTAssertEqual(frame.height, first.height, accuracy: 1.0,
+                           "the \(modes[index]) tile is a different height")
+            XCTAssertEqual(frame.width, first.width, accuracy: 1.0,
+                           "the \(modes[index]) tile is a different width")
+        }
+        XCTAssertTrue(app.buttons["study.mode.smartReview"].label.contains("Elemora Pro"),
+                      "Smart Review is still marked as a Pro feature")
     }
 }

@@ -172,4 +172,17 @@ enum TableZoomLayout {
         let expanded = max(expandedHeight, fittedHeight)
         return fittedHeight + (expanded - fittedHeight) * progress
     }
+
+    /// How tall the zoomed window may grow on a screen of this height.
+    ///
+    /// Bounded by what is actually on screen, not by a bare fraction. A
+    /// navigation bar, a tab bar and two safe areas take a little over two
+    /// hundred points between them, and a window taller than what is left
+    /// puts its own bottom rows under the tab bar — where they are visible,
+    /// look tappable, and are not.
+    static let screenChromeAllowance: CGFloat = 240
+
+    static func expandedViewportHeight(screenHeight: CGFloat) -> CGFloat {
+        max(280, min(screenHeight * 0.62, screenHeight - screenChromeAllowance))
+    }
 }

@@ -14,51 +14,12 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 
-	<!-- The `.elemoraquiz` document: a saved quiz's name and configuration as
-	     JSON, so a quiz can be shared through Files, Messages or AirDrop and
-	     opened by Elemora on another device. Nothing else is in the file. -->
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeIdentifier</key>
-			<string>com.idlery.elemora.quiz</string>
-			<key>UTTypeDescription</key>
-			<string>Elemora Quiz</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.json</string>
-			</array>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>elemoraquiz</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>application/json</string>
-				</array>
-			</dict>
-		</dict>
-	</array>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>Elemora Quiz</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>com.idlery.elemora.quiz</string>
-			</array>
-		</dict>
-	</array>
-	<!-- Opened files are copied into the app's Inbox by iOS; the app reads
-	     one and imports it, and never needs the file in place. -->
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<false/>
+	<!-- There is deliberately no document type and no exported UTI. A quiz used
+	     to travel as a `.elemoraquiz` JSON file, which meant a generic white
+	     document tile in Messages and a trip through the Files app to open one.
+	     Quizzes are now shared as ordinary https links under
+	     https://elemora.idlery.com/quiz/…, handled as Universal Links through
+	     the associated-domains entitlement in Config/Elemora.entitlements —
+	     so there is no file for anyone to see, pick or import. -->
 </dict>
 </plist>

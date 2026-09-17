@@ -25,7 +25,7 @@ no account and no server. Entitlement comes from StoreKit 2 and nothing else.
 | Flashcards, Quiz (with setup), Match, Identify | ✅ | ✅ |
 | Compound search, compound pages, the Compound Builder (beta) | ✅ | ✅ |
 | Basic compound study: compounds in quizzes and Match | ✅ | ✅ |
-| My Quizzes: save, edit, share and import | ✅ | ✅ |
+| My Quizzes: save, edit and share as a link | ✅ | ✅ |
 | Study rounds per day | 3 | Unlimited |
 | Interactive 3D structure explorer | 6 elements | All 118 |
 | Smart Review | — | ✅ |

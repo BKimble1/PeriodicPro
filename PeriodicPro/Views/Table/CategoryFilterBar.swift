@@ -1,66 +1,51 @@
 import SwiftUI
 
-/// Primary filter chips plus the entry point to the full family list.
+/// The four primary filters, across the width of the screen.
+///
+/// All, Metals, Nonmetals and Metalloids — no more, and no horizontal scroll.
+/// Detailed family filtering is the Families card under the table
+/// (`TableLegend`), which is the only place that state is set or shown, so a
+/// detailed selection never adds a fifth control here.
+///
+/// Four columns at normal text sizes; two rows of two once a quarter of the
+/// width can no longer hold "Metalloids" without shrinking it to nothing.
 struct CategoryFilterBar: View {
     @Binding var filter: ElementFilter
-    var onOpenDetailedFilters: () -> Void
 
-    private var summaryChipIsShown: Bool { !filter.categories.isEmpty }
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    var body: some View {
-        HStack(spacing: Theme.Spacing.s) {
-            ScrollView(.horizontal) {
-                HStack(spacing: Theme.Spacing.s) {
-                    chip(title: "All", isSelected: !filter.isActive) {
-                        filter = .all
-                    }
-                    // A single selected family can produce a summary identical
-                    // to one of these ("Metalloids"), so that chip steps aside
-                    // rather than appearing twice.
-                    ForEach(ElementFamily.allCases) { family in
-                        if !(summaryChipIsShown && family.displayName == filter.summary) {
-                            chip(
-                                title: family.displayName,
-                                isSelected: filter.family == family && filter.categories.isEmpty
-                            ) {
-                                if filter.family == family && filter.categories.isEmpty {
-                                    filter = .all
-                                } else {
-                                    filter = ElementFilter(family: family, categories: [])
-                                }
-                            }
-                        }
-                    }
-                    if summaryChipIsShown {
-                        chip(title: filter.summary, isSelected: true, identifier: "filter.selection") {
-                            filter = .all
-                        }
-                    }
-                }
-                .padding(.horizontal, Theme.Spacing.screenMargin)
-                .padding(.vertical, 2)
-            }
-            .scrollIndicators(.hidden)
-
-            Button(action: onOpenDetailedFilters) {
-                Image(systemName: filter.categories.isEmpty
-                      ? "line.3.horizontal.decrease.circle"
-                      : "line.3.horizontal.decrease.circle.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(filter.categories.isEmpty ? AppColor.secondaryText : AppColor.accent)
-                    .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
-                    .contentShape(Rectangle())
-            }
-            .accessibilityLabel("Filter by element family")
-            .accessibilityIdentifier("table.filterButton")
-            .padding(.trailing, Theme.Spacing.screenMargin - 12)
-        }
+    /// One row of four, or a 2×2 block at accessibility text sizes.
+    private var columns: [GridItem] {
+        let item = GridItem(.flexible(), spacing: Theme.Spacing.s)
+        return dynamicTypeSize.isAccessibilitySize ? [item, item] : [item, item, item, item]
     }
 
-    private func chip(
+    /// True when the broad family chip for `family` is the active filter. A
+    /// detailed selection from the Families card leaves all four unselected —
+    /// that state belongs to the card, which shows it.
+    private func isSelected(_ family: ElementFamily) -> Bool {
+        filter.family == family && filter.categories.isEmpty
+    }
+
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: Theme.Spacing.s) {
+            control(title: "All", isSelected: !filter.isActive) {
+                filter = .all
+            }
+            ForEach(ElementFamily.allCases) { family in
+                control(title: family.displayName, isSelected: isSelected(family)) {
+                    filter = isSelected(family) ? .all : ElementFilter(family: family, categories: [])
+                }
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.screenMargin)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("table.primaryFilters")
+    }
+
+    private func control(
         title: String,
         isSelected: Bool,
-        identifier: String? = nil,
         action: @escaping () -> Void
     ) -> some View {
         Button {
@@ -70,7 +55,13 @@ struct CategoryFilterBar: View {
             Text(title)
                 .font(.system(.subheadline, weight: .medium))
                 .foregroundStyle(isSelected ? Color.white : AppColor.primaryText)
-                .padding(.horizontal, Theme.Spacing.l)
+                // One line at normal sizes: the four titles are short, and the
+                // smallest of the three phone widths still gives each of them
+                // about eighty points. It shrinks a little before it truncates.
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+                .padding(.horizontal, Theme.Spacing.s)
+                .frame(maxWidth: .infinity)
                 .frame(minHeight: Theme.minimumTouchTarget)
                 .background {
                     Capsule(style: .continuous)
@@ -84,82 +75,6 @@ struct CategoryFilterBar: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-        .accessibilityIdentifier(
-            identifier ?? "filter.\(title.replacingOccurrences(of: " ", with: ""))"
-        )
-    }
-}
-
-/// Full family picker presented as a sheet so the chip row stays short.
-struct CategoryFilterSheet: View {
-    @Binding var filter: ElementFilter
-    let catalog: ElementCatalog
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    ForEach(ElementCategory.displayOrder) { category in
-                        Button {
-                            Haptics.tap()
-                            toggle(category)
-                        } label: {
-                            HStack(spacing: Theme.Spacing.m) {
-                                Image(systemName: category.glyph)
-                                    .font(.system(size: 10))
-                                    .foregroundStyle(category.accentColor)
-                                    .frame(width: 18)
-                                Text(category.pluralName)
-                                    .foregroundStyle(AppColor.primaryText)
-                                Spacer()
-                                Text("\(catalog.count(of: category))")
-                                    .font(AppFont.footnote.monospacedDigit())
-                                    .foregroundStyle(AppColor.tertiaryText)
-                                if filter.categories.contains(category) {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(AppColor.accent)
-                                        .font(.system(size: 13, weight: .semibold))
-                                }
-                            }
-                        }
-                        .accessibilityIdentifier("filterSheet.\(category.rawValue)")
-                    }
-                } header: {
-                    Text("Element Families")
-                } footer: {
-                    Text("Choosing one or more families replaces the Metals / Nonmetals / Metalloids chip.")
-                }
-            }
-            .scrollIndicators(.hidden)
-            .navigationTitle("Filter")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Clear") {
-                        filter = .all
-                    }
-                    .disabled(!filter.isActive)
-                    .accessibilityIdentifier("filterSheet.clear")
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                        .fontWeight(.semibold)
-                        .accessibilityIdentifier("filterSheet.done")
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
-    }
-
-    private func toggle(_ category: ElementCategory) {
-        var categories = filter.categories
-        if categories.contains(category) {
-            categories.remove(category)
-        } else {
-            categories.insert(category)
-        }
-        filter = ElementFilter(family: nil, categories: categories)
+        .accessibilityIdentifier("filter.\(title.replacingOccurrences(of: " ", with: ""))")
     }
 }

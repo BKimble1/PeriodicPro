@@ -34,12 +34,20 @@ final class CompoundStore {
 
     // MARK: - Local reads
 
+    /// The compound behind an identifier, from the bundle or the cache.
+    ///
+    /// `cacheVersion` is read deliberately. Study resolves its favorites and
+    /// saved compounds through here, and the cache is not itself observable —
+    /// so without this read, favoriting a compound that had just been fetched
+    /// left the shelf empty until something else happened to redraw it.
     func compound(id: String) -> ChemicalCompound? {
-        catalog.compound(id: id) ?? cache.compound(id: id)
+        _ = cacheVersion
+        return catalog.compound(id: id) ?? cache.compound(id: id)
     }
 
     func compound(cid: Int) -> ChemicalCompound? {
-        catalog.compound(cid: cid) ?? cache.compound(cid: cid)
+        _ = cacheVersion
+        return catalog.compound(cid: cid) ?? cache.compound(cid: cid)
     }
 
     /// Compounds the learner has fetched or saved, newest name-sorted.
@@ -116,6 +124,19 @@ final class CompoundStore {
     func remember(_ compound: ChemicalCompound) {
         cache.store(compound)
         cacheVersion += 1
+    }
+
+    /// Makes sure a compound will still resolve by identifier afterwards.
+    ///
+    /// Anything the learner attaches state to — a favorite, a saved study
+    /// item — has to be findable by `compound(id:)` later, and a record that
+    /// came from PubChem lives only in the cache. Progress and the compound
+    /// itself are stored separately on purpose, so this is what keeps the two
+    /// halves resolvable: call it before writing the state, never after.
+    /// A bundled record is already permanent, so this does nothing for one.
+    func retain(_ compound: ChemicalCompound) {
+        guard catalog.compound(id: compound.id) == nil else { return }
+        remember(compound)
     }
 
     func forget(id: String) {

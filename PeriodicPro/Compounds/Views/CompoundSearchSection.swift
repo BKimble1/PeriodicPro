@@ -12,6 +12,9 @@ struct CompoundSearchSection: View {
     let mastery: (String) -> MasteryLevel
     let onSelect: (CompoundMatchCandidate) -> Void
     let onRetry: () -> Void
+    /// The table lays this out inside a full-bleed scroll view and needs the
+    /// page margin; the Build tab has already applied it.
+    var horizontalPadding: CGFloat = Theme.Spacing.screenMargin
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.s) {
@@ -54,7 +57,7 @@ struct CompoundSearchSection: View {
                     .padding(.horizontal, Theme.Spacing.xs)
             }
         }
-        .padding(.horizontal, Theme.Spacing.screenMargin)
+        .padding(.horizontal, horizontalPadding)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("search.compounds")
     }
@@ -97,6 +100,64 @@ struct CompoundSearchSection: View {
                 .accessibilityIdentifier("search.compounds.none")
         case .searching, .idle, .done:
             EmptyView()
+        }
+    }
+}
+
+/// A search field that looks like the one iOS draws, inside ordinary content.
+///
+/// `.searchable` puts its field in the navigation bar, which is right for the
+/// periodic table — search *replaces* that screen. On Build the field is one
+/// of two ways in and belongs under the title, next to the thing it is an
+/// alternative to.
+struct CompoundSearchField: View {
+    @Binding var query: String
+
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.s) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(AppColor.secondaryText)
+                .accessibilityHidden(true)
+
+            TextField("Search compounds", text: $query)
+                .font(AppFont.body)
+                .foregroundStyle(AppColor.primaryText)
+                .textFieldStyle(.plain)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .submitLabel(.search)
+                .focused($isFocused)
+                .accessibilityLabel("Search compounds")
+                .accessibilityIdentifier("build.search")
+
+            if !query.isEmpty {
+                Button {
+                    query = ""
+                    isFocused = false
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(AppColor.tertiaryText)
+                        .frame(width: 30, height: 30)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Clear the search")
+                .accessibilityIdentifier("build.searchClear")
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.m)
+        .frame(minHeight: 46)
+        .background {
+            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                .fill(AppColor.surfaceMuted)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                .strokeBorder(AppColor.hairline, lineWidth: 0.7)
         }
     }
 }

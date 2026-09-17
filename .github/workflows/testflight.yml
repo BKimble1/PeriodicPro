@@ -221,6 +221,7 @@ jobs:
           set -euo pipefail
           set -o pipefail
 
+          mkdir -p build
           ARGS=(
             -project "$PROJECT"
             -scheme "$SCHEME"
@@ -246,7 +247,27 @@ jobs:
             ARGS+=(CODE_SIGN_STYLE=Manual)
           fi
 
-          xcodebuild archive "${ARGS[@]}" | xcbeautify --renderer github-actions
+          # Captured as well as streamed, so the one signing failure that is
+          # not about certificates can be named precisely. Adding the
+          # Associated Domains entitlement (Universal Links for shared quiz
+          # links) needs that capability enabled on the App ID; automatic
+          # signing can usually add it through the API key, and when it cannot
+          # the error is buried in a wall of provisioning output.
+          set +e
+          xcodebuild archive "${ARGS[@]}" 2>&1 | tee build/archive.log \
+            | xcbeautify --renderer github-actions
+          STATUS=${PIPESTATUS[0]}
+          set -e
+          if [ "$STATUS" -ne 0 ]; then
+            if grep -qi "associated domains\|com.apple.developer.associated-domains" build/archive.log; then
+              echo "::error::The archive failed on the Associated Domains entitlement. \
+          Enable Associated Domains for com.idlery.periodicpro in the Apple Developer \
+          portal (Certificates, Identifiers & Profiles -> Identifiers -> the App ID -> \
+          Capabilities), then re-run. Do not remove the entitlement: shared quiz links \
+          stop opening the app without it."
+            fi
+            exit "$STATUS"
+          fi
 
       # What Apple will actually receive, read back out of the archive rather
       # than assumed from the build settings that were meant to produce it.

@@ -10,7 +10,14 @@ struct RootView: View {
     @Environment(SavedQuizStore.self) private var savedQuizzes: SavedQuizStore
 
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage(AppAppearance.storageKey) private var appearanceRaw = AppAppearance.system.rawValue
     @State private var selection: AppTab = .table
+
+    /// System, light or dark — applied once, here, so a change in Settings
+    /// reaches every tab, sheet and full-screen cover at the same moment.
+    private var appearance: AppAppearance {
+        AppAppearance(rawValue: appearanceRaw) ?? .system
+    }
 
     var body: some View {
         Group {
@@ -43,24 +50,15 @@ struct RootView: View {
         .fullScreenCover(isPresented: shouldShowOnboarding) {
             OnboardingView { hasCompletedOnboarding = true }
         }
-        // A `.elemoraquiz` file opened from Files, Messages or AirDrop lands
-        // here, is validated, and becomes one of the learner's quizzes.
+        // A quiz link — https://elemora.idlery.com/quiz/… — opened from
+        // Messages, Notes or anywhere else. It is validated and saved before
+        // anything is shown, and the Study tab presents the result. A URL
+        // that is not one of ours is left alone.
         .onOpenURL { url in
-            guard url.pathExtension.lowercased() == ElemoraQuizPackage.fileExtension else { return }
-            savedQuizzes.importFile(at: url, catalog: catalog)
+            guard savedQuizzes.open(shareURL: url, catalog: catalog) else { return }
             selection = .study
         }
-        .alert(
-            "Quiz import",
-            isPresented: Binding(
-                get: { savedQuizzes.lastImportMessage != nil },
-                set: { if !$0 { savedQuizzes.lastImportMessage = nil } }
-            )
-        ) {
-            Button("OK", role: .cancel) { savedQuizzes.lastImportMessage = nil }
-        } message: {
-            Text(savedQuizzes.lastImportMessage ?? "")
-        }
+        .preferredColorScheme(appearance.colorScheme)
     }
 
     private var shouldShowOnboarding: Binding<Bool> {

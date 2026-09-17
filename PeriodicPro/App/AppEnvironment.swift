@@ -50,6 +50,15 @@ enum RuntimeFlags {
     /// at `Config/PeriodicPro.storekit`, so no request leaves the device.
     static let usesLocalStoreKit = ProcessInfo.processInfo.arguments.contains("-storeKitLocal")
 
+    /// Set alongside `-uiTesting` to keep whatever appearance a previous
+    /// launch stored.
+    ///
+    /// Without it a UI-test launch resets the appearance to System, because
+    /// `@AppStorage` writes to the simulator's real defaults and a test that
+    /// left Dark behind would silently darken the next test's screenshots.
+    /// The one test that checks the choice survives a relaunch passes it.
+    static let keepsAppearance = ProcessInfo.processInfo.arguments.contains("-keepAppearance")
+
     /// Set alongside `-uiTesting` to answer PubChem requests from the bundled
     /// catalog instead of the network, so compound search, the builder and the
     /// screenshot tour are deterministic and offline. Without it a UI-test run

@@ -1,0 +1,8 @@
+# Every shared quiz URL renders the same branded landing page, with the URL
+# left intact so the app-association lookup still sees /quiz/<payload>.
+# 200 rather than 301: this is a rewrite, not a redirect.
+/quiz/*    /quiz/index.html    200
+
+# The association file is served from its real path; this is here only so a
+# request with a trailing slash does not fall through to the 404 page.
+/.well-known/apple-app-site-association/    /.well-known/apple-app-site-association    301

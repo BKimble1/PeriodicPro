@@ -3,8 +3,8 @@ import SwiftData
 import Testing
 @testable import PeriodicPro
 
-/// Saved quizzes and the `.elemoraquiz` package: persistence, every edit,
-/// and every reason an import is refused.
+/// Saved quizzes and the links that share them: persistence, every edit, and
+/// every reason an incoming link is refused.
 @MainActor
 @Suite("Saved quizzes")
 struct SavedQuizStoreTests {
@@ -77,133 +77,216 @@ struct SavedQuizStoreTests {
     }
 }
 
-@Suite("Quiz packages")
-struct QuizPackageTests {
+@Suite("Quiz share links")
+struct QuizShareLinkTests {
     private let catalog = TestCatalog.shared
 
-    private func sampleQuiz() -> SavedQuiz {
+    private func sampleConfiguration() -> QuizConfiguration {
         var configuration = QuizConfiguration.standard
         configuration.content = .both
         configuration.scope = .custom
         configuration.customElementIDs = [1, 8, 79]
         configuration.customCompoundIDs = ["pubchem-962", "pubchem-5234"]
         configuration.difficulty = .medium
-        return SavedQuiz(id: UUID(), name: "Water and salt", configuration: configuration,
-                         createdAt: Date(), updatedAt: Date())
+        return configuration
     }
 
-    @Test("Export and import round-trip the name and configuration, and nothing else")
+    private func sampleQuiz() -> SavedQuiz {
+        SavedQuiz(id: UUID(), name: "Water and salt", configuration: sampleConfiguration(),
+                  createdAt: Date(), updatedAt: Date())
+    }
+
+    @Test("A quiz round-trips through a link, and nothing else travels with it")
     func roundTrip() throws {
-        let package = ElemoraQuizPackage(quiz: sampleQuiz())
-        let data = try package.encoded()
-        let decoded = try ElemoraQuizPackage.decode(data, catalog: catalog)
-        #expect(decoded.name == "Water and salt")
-        #expect(decoded.configuration == package.configuration)
-        #expect(decoded.schemaVersion == 1)
+        let quiz = sampleQuiz()
+        let url = try QuizShareLink.url(name: quiz.name, configuration: quiz.configuration)
+        #expect(url.absoluteString.hasPrefix(ElemoraLinks.quizBaseString))
 
-        // No private information: the file holds exactly these keys.
-        let object = try #require(try JSONSerialization.jsonObject(with: data) as? [String: Any])
-        #expect(Set(object.keys) == ["format", "schemaVersion", "name", "exportedAt", "configuration"])
-        let text = try #require(String(data: data, encoding: .utf8))
-        for forbidden in ["mastery", "correct", "favorite", "streak", "email", "device", "uuid"] {
-            #expect(!text.lowercased().contains(forbidden), "the package must not carry \(forbidden)")
+        let payload = try #require(try QuizShareLink.payload(from: url, catalog: catalog))
+        #expect(payload.name == "Water and salt")
+        #expect(payload.configuration == quiz.configuration.sanitized())
+        #expect(payload.schemaVersion == QuizShareLink.schemaVersion)
+
+        // The visible URL is opaque: no quiz name, no element list, no JSON.
+        let text = url.absoluteString
+        #expect(!text.contains("Water"))
+        #expect(!text.contains("customElementIDs"))
+        #expect(!text.contains("{"))
+
+        // And the payload itself carries exactly three fields.
+        let encoded = try QuizShareLink.encode(name: quiz.name, configuration: quiz.configuration)
+        let compressed = try #require(QuizShareLink.base64URLDecoded(String(encoded.dropFirst())))
+        let json = try (compressed as NSData).decompressed(using: .zlib) as Data
+        let object = try #require(try JSONSerialization.jsonObject(with: json) as? [String: Any])
+        #expect(Set(object.keys) == ["v", "n", "c"])
+        let text2 = String(decoding: json, as: UTF8.self)
+        for forbidden in ["favorite", "streak", "mastery", "device", "progress", "answered"] {
+            #expect(!text2.lowercased().contains(forbidden), "\(forbidden) must never travel")
         }
-        #expect(package.suggestedFileName == "Water and salt.elemoraquiz")
     }
 
-    @Test("The package refuses what it should")
-    func rejections() throws {
-        let good = try ElemoraQuizPackage(quiz: sampleQuiz()).encoded()
+    @Test("Only this app's quiz links are recognized")
+    func routing() {
+        let valid = URL(string: ElemoraLinks.quizBaseString + "1abc")
+        #expect(ElemoraLinks.quizPayload(from: valid ?? URL(fileURLWithPath: "/")) == "1abc")
 
-        #expect(throws: QuizPackageError.tooLarge) {
-            _ = try ElemoraQuizPackage.decode(Data(count: ElemoraQuizPackage.maximumBytes + 1), catalog: catalog)
+        let cases = [
+            "https://elemora.idlery.com/",
+            "https://elemora.idlery.com/privacy",
+            "https://elemora.idlery.com/quiz/",
+            "https://elemora.idlery.com/quiz/a/b",
+            "https://example.com/quiz/1abc",
+            "https://evil.elemora.idlery.com.attacker.test/quiz/1abc",
+            "http://elemora.idlery.com/quiz/1abc",
+            "elemora://quiz/1abc",
+        ]
+        for text in cases {
+            guard let url = URL(string: text) else { continue }
+            #expect(ElemoraLinks.quizPayload(from: url) == nil, "\(text) must not route")
         }
-        #expect(throws: QuizPackageError.notAQuiz) {
-            _ = try ElemoraQuizPackage.decode(Data("not json".utf8), catalog: catalog)
+    }
+
+    @Test("The decoder refuses what it should")
+    func refusals() throws {
+        let good = try QuizShareLink.encode(name: "Water and salt", configuration: sampleConfiguration())
+
+        #expect(throws: QuizLinkError.tooLarge) {
+            _ = try QuizShareLink.decode(
+                String(repeating: "A", count: QuizShareLink.maximumEncodedLength + 1), catalog: catalog
+            )
         }
-        #expect(throws: QuizPackageError.notAQuiz) {
-            _ = try ElemoraQuizPackage.decode(Data("{\"format\":\"something-else\"}".utf8), catalog: catalog)
+        #expect(throws: QuizLinkError.notAQuiz) {
+            _ = try QuizShareLink.decode("", catalog: catalog)
+        }
+        #expect(throws: QuizLinkError.notAQuiz) {
+            _ = try QuizShareLink.decode("not-a-payload", catalog: catalog)
+        }
+        // A payload that is base64 but not compressed JSON.
+        #expect(throws: QuizLinkError.notAQuiz) {
+            _ = try QuizShareLink.decode("1" + QuizShareLink.base64URLEncoded(Data("hello".utf8)),
+                                         catalog: catalog)
+        }
+        #expect(throws: QuizLinkError.unsupportedVersion(9)) {
+            _ = try QuizShareLink.decode("9" + String(good.dropFirst()), catalog: catalog)
+        }
+        #expect(throws: QuizLinkError.unknownElement(200)) {
+            var configuration = sampleConfiguration()
+            configuration.customElementIDs = [200]
+            _ = try QuizShareLink.decode(try encodeUnsanitized(configuration), catalog: catalog)
+        }
+        #expect(throws: QuizLinkError.invalidCompoundReference("hypothetical-abc")) {
+            var configuration = sampleConfiguration()
+            configuration.customCompoundIDs = ["hypothetical-abc"]
+            _ = try QuizShareLink.decode(try encodeUnsanitized(configuration), catalog: catalog)
+        }
+        #expect(throws: QuizLinkError.invalidName) {
+            _ = try QuizShareLink.decode(try encodeUnsanitized(sampleConfiguration(), name: "   "),
+                                         catalog: catalog)
         }
 
-        func mutated(_ edit: (inout [String: Any]) -> Void) throws -> Data {
-            var object = try #require(try JSONSerialization.jsonObject(with: good) as? [String: Any])
-            edit(&object)
-            return try JSONSerialization.data(withJSONObject: object)
+        // An oversized configuration is refused rather than turned into a
+        // link nothing can open.
+        var huge = QuizConfiguration.standard
+        huge.scope = .custom
+        huge.customCompoundIDs = (0..<QuizConfiguration.maximumCustomItems).map { "pubchem-\(100_000 + $0)" }
+        #expect(throws: QuizLinkError.tooLarge) {
+            _ = try QuizShareLink.encode(name: "Everything", configuration: huge)
         }
+    }
 
-        #expect(throws: QuizPackageError.unsupportedVersion(2)) {
-            _ = try ElemoraQuizPackage.decode(try mutated { $0["schemaVersion"] = 2 }, catalog: catalog)
-        }
-        #expect(throws: QuizPackageError.notAQuiz) {
-            _ = try ElemoraQuizPackage.decode(try mutated { $0["format"] = "elemora-deck" }, catalog: catalog)
-        }
-        #expect(throws: QuizPackageError.invalidName) {
-            _ = try ElemoraQuizPackage.decode(try mutated { $0["name"] = "   " }, catalog: catalog)
-        }
-        #expect(throws: QuizPackageError.unknownElement(200)) {
-            _ = try ElemoraQuizPackage.decode(try mutated {
-                var configuration = $0["configuration"] as? [String: Any] ?? [:]
-                configuration["customElementIDs"] = [1, 200]
-                $0["configuration"] = configuration
-            }, catalog: catalog)
-        }
-        #expect(throws: QuizPackageError.invalidCompoundReference("hypothetical-abc")) {
-            _ = try ElemoraQuizPackage.decode(try mutated {
-                var configuration = $0["configuration"] as? [String: Any] ?? [:]
-                configuration["customCompoundIDs"] = ["pubchem-962", "hypothetical-abc"]
-                $0["configuration"] = configuration
-            }, catalog: catalog)
-        }
-        #expect(throws: QuizPackageError.tooManyItems) {
-            _ = try ElemoraQuizPackage.decode(try mutated {
-                var configuration = $0["configuration"] as? [String: Any] ?? [:]
-                configuration["customElementIDs"] = Array(repeating: 1, count: 201)
-                $0["configuration"] = configuration
-            }, catalog: catalog)
-        }
-        // Out-of-range numbers are clamped rather than refused.
-        let clamped = try ElemoraQuizPackage.decode(try mutated {
-            var configuration = $0["configuration"] as? [String: Any] ?? [:]
-            configuration["questionCount"] = 9_999
-            configuration["timerSeconds"] = 1
-            $0["configuration"] = configuration
-        }, catalog: catalog)
-        #expect(clamped.configuration.questionCount == QuizConfiguration.maximumQuestions)
-        #expect(clamped.configuration.timerSeconds == nil)
+    /// Builds a payload without going through `encode`, which sanitizes — the
+    /// point of these cases is what `decode` does with a hostile one.
+    private func encodeUnsanitized(_ configuration: QuizConfiguration,
+                                   name: String = "Sample") throws -> String {
+        let payload = QuizSharePayload(name: name, configuration: configuration)
+        let json = try JSONEncoder().encode(payload)
+        let compressed = try (json as NSData).compressed(using: .zlib) as Data
+        return "1" + QuizShareLink.base64URLEncoded(compressed)
     }
 
     @Test("Every refusal has a message a learner can act on")
     func messages() {
-        let errors: [QuizPackageError] = [
-            .tooLarge, .notAQuiz, .unsupportedVersion(3), .invalidName, .unknownElement(200),
-            .invalidCompoundReference("x"), .tooManyItems,
+        let errors: [QuizLinkError] = [
+            .tooLarge, .notAQuiz, .unsupportedVersion(7), .invalidName,
+            .unknownElement(300), .invalidCompoundReference("x"), .tooManyItems,
         ]
         for error in errors {
-            #expect(error.userMessage.count > 10)
+            #expect(!error.userMessage.isEmpty)
+            #expect(error.userMessage.first?.isUppercase == true)
         }
-        #expect(ElemoraQuizPackage.isShareableCompoundID("pubchem-962"))
-        #expect(!ElemoraQuizPackage.isShareableCompoundID("hypothetical-1234"))
-        #expect(!ElemoraQuizPackage.isShareableCompoundID("pubchem-"))
     }
 
-    @Test("Importing through the store creates a quiz and reports the outcome")
-    @MainActor
-    func importThroughStore() throws {
+    @Test("Shareable identifiers are PubChem identifiers, and nothing else")
+    func shareableIdentifiers() {
+        #expect(QuizShareLink.isShareableCompoundID("pubchem-962"))
+        #expect(!QuizShareLink.isShareableCompoundID("hypothetical-1234"))
+        #expect(!QuizShareLink.isShareableCompoundID("pubchem-"))
+        #expect(!QuizShareLink.isShareableCompoundID("pubchem-12345678901"))
+    }
+}
+
+@MainActor
+@Suite("Receiving a shared quiz")
+struct QuizImportTests {
+    private let catalog = TestCatalog.shared
+
+    private func link(name: String, configuration: QuizConfiguration = .standard) throws -> URL {
+        try QuizShareLink.url(name: name, configuration: configuration)
+    }
+
+    @Test("A valid link saves the quiz and reports it")
+    func saves() throws {
         let store = SavedQuizStore(container: nil)
-        let data = try ElemoraQuizPackage(quiz: sampleQuiz()).encoded()
-        let imported = try store.importPackage(data, catalog: catalog)
-        #expect(imported.name == "Water and salt")
+        #expect(store.open(shareURL: try link(name: "Halogens"), catalog: catalog))
+        guard case .saved(let quiz) = store.lastImportOutcome else {
+            Issue.record("a valid link should save, got \(String(describing: store.lastImportOutcome))")
+            return
+        }
+        #expect(quiz.name == "Halogens")
+        #expect(store.quizzes.count == 1)
+    }
+
+    @Test("Opening the same link twice does not pile up copies")
+    func duplicates() throws {
+        let store = SavedQuizStore(container: nil)
+        let url = try link(name: "Halogens")
+        store.open(shareURL: url, catalog: catalog)
+        store.lastImportOutcome = nil
+        store.open(shareURL: url, catalog: catalog)
+        guard case .alreadySaved = store.lastImportOutcome else {
+            Issue.record("the second open should resolve to the quiz already there")
+            return
+        }
         #expect(store.quizzes.count == 1)
 
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("import-test.elemoraquiz")
-        try data.write(to: url)
-        store.importFile(at: url, catalog: catalog)
-        #expect(store.lastImportMessage?.contains("Imported") == true)
+        // A different quiz that happens to share a name is a copy, never an
+        // overwrite of something the learner may have edited.
+        var other = QuizConfiguration.standard
+        other.difficulty = .hard
+        store.open(shareURL: try link(name: "Halogens", configuration: other), catalog: catalog)
         #expect(store.quizzes.count == 2)
+        #expect(store.quizzes.contains { $0.name == "Halogens copy" })
+        #expect(store.quizzes.contains { $0.configuration.difficulty == .mixed })
+    }
 
-        try Data("garbage".utf8).write(to: url)
-        store.importFile(at: url, catalog: catalog)
-        #expect(store.lastImportMessage == QuizPackageError.notAQuiz.userMessage)
-        #expect(store.quizzes.count == 2)
+    @Test("A URL that is not a quiz link is left alone; a broken one is reported")
+    func routing() throws {
+        let store = SavedQuizStore(container: nil)
+        let existing = store.create(name: "Mine", configuration: .standard)
+
+        for text in ["https://elemora.idlery.com/privacy", "https://example.com/quiz/1abc"] {
+            guard let url = URL(string: text) else { continue }
+            #expect(!store.open(shareURL: url, catalog: catalog))
+            #expect(store.lastImportOutcome == nil)
+        }
+
+        let broken = try #require(URL(string: ElemoraLinks.quizBaseString + "1zzzz"))
+        #expect(store.open(shareURL: broken, catalog: catalog))
+        guard case .failed = store.lastImportOutcome else {
+            Issue.record("a malformed payload should be reported, not saved")
+            return
+        }
+        // Nothing the learner already had was touched.
+        #expect(store.quizzes.map(\.id) == [existing.id])
     }
 }

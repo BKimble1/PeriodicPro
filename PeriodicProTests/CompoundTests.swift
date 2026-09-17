@@ -278,3 +278,187 @@ struct CompoundProgressTests {
         #expect(second.compoundSnapshot(for: "pubchem-962").incorrectCount == 1)
     }
 }
+
+@MainActor
+@Suite("Automatic identification")
+struct BuilderIdentificationTests {
+    private let elements = TestCatalog.shared
+
+    private func makeStore(_ transport: StubTransport) -> CompoundStore {
+        CompoundStore(
+            container: nil,
+            catalog: TestCompounds.catalog,
+            client: PubChemClient(transport: transport, maximumRetries: 0, minimumGap: .zero)
+        )
+    }
+
+    @Test("A formula the device knows is named without touching the network")
+    func localMatchesAreInstant() {
+        let transport = StubTransport()
+        let model = CompoundBuilderModel()
+        model.configure(store: makeStore(transport), catalog: elements)
+
+        model.add(TestCatalog.element("H"))
+        model.increment(1)
+        model.add(TestCatalog.element("O"))
+
+        guard case .matched(let water) = model.state else {
+            Issue.record("H2O should name itself from the catalog, got \(model.state)")
+            return
+        }
+        #expect(water.preferredName == "Water")
+        #expect(model.origin == .local)
+        #expect(transport.requestedPaths.isEmpty, "a local match must never reach PubChem")
+    }
+
+    @Test("An ambiguous formula is never resolved to one of its candidates")
+    func ambiguityIsNotGuessed() {
+        let transport = StubTransport()
+        let model = CompoundBuilderModel()
+        model.configure(store: makeStore(transport), catalog: elements)
+
+        model.add(TestCatalog.element("C"))
+        model.increment(6)
+        model.add(TestCatalog.element("H"))
+        for _ in 0..<5 { model.increment(1) }
+        model.add(TestCatalog.element("O"))
+
+        guard case .choices(let candidates) = model.state else {
+            Issue.record("C2H6O must stay a choice, got \(model.state)")
+            return
+        }
+        #expect(candidates.count == 2)
+        let names = Set(candidates.map(\.name))
+        #expect(names.contains("Ethanol"))
+        #expect(names.contains("Dimethyl ether"))
+        #expect(model.statusMessage?.contains("2 known compounds") == true)
+        #expect(transport.requestedPaths.isEmpty)
+    }
+
+    @Test("PubChem is asked once the learner stops, not once per tap")
+    func debouncesTheNetwork() async throws {
+        let transport = StubTransport()
+        let model = CompoundBuilderModel()
+        model.configure(store: makeStore(transport), catalog: elements)
+
+        model.add(TestCatalog.element("Au"))
+        for _ in 0..<8 { model.increment(79) }
+        #expect(model.state == .searching)
+        #expect(model.origin == .remote)
+        #expect(model.remoteRequestCount == 0, "nothing is sent while the tray is still changing")
+
+        try await Task.sleep(for: .milliseconds(1_400))
+        #expect(model.remoteRequestCount == 1, "nine changes, one request")
+        // The stub answers like an offline device, which is a failure to ask
+        // rather than a miss — and never a discovery.
+        guard case .failed = model.state else {
+            Issue.record("an unreachable PubChem is not a miss, got \(model.state)")
+            return
+        }
+    }
+
+    @Test("Clearing the tray cancels whatever was in flight")
+    func clearingCancels() async throws {
+        let transport = StubTransport()
+        let model = CompoundBuilderModel()
+        model.configure(store: makeStore(transport), catalog: elements)
+
+        model.add(TestCatalog.element("Au"))
+        model.add(TestCatalog.element("He"))
+        #expect(model.state == .searching)
+        model.clear()
+        #expect(model.state == .idle)
+        try await Task.sleep(for: .milliseconds(1_000))
+        #expect(model.remoteRequestCount == 0, "a canceled lookup never reaches the network")
+        #expect(model.state == .idle)
+    }
+}
+
+@MainActor
+@Suite("Study shelves and compound persistence")
+struct StudyShelfTests {
+    private let elements = TestCatalog.shared
+
+    @Test("The recent shelf shows at most six, and filters before it caps")
+    func recentShelfIsCapped() {
+        let history = Array(1...20)
+        #expect(StudyShelf.recentLimit == 6)
+        #expect(StudyShelf.recent(from: history) { _ in false } == [1, 2, 3, 4, 5, 6])
+        #expect(StudyShelf.recent(from: [], isFavorite: { _ in false }).isEmpty)
+        #expect(StudyShelf.recent(from: [1, 2, 3], isFavorite: { _ in false }) == [1, 2, 3])
+
+        // Favoriting the six most recent must not empty the shelf: the filter
+        // runs over the whole window, and the cap comes afterwards.
+        let favorites: Set<Int> = [1, 2, 3, 4, 5, 6]
+        let shelf = StudyShelf.recent(from: history) { favorites.contains($0) }
+        #expect(shelf == [7, 8, 9, 10, 11, 12])
+        #expect(shelf.count == StudyShelf.recentLimit)
+    }
+
+    /// The hole this closes: a compound fetched from PubChem lives only in the
+    /// cache, and progress stores an identifier. Favoriting one without
+    /// caching it first left an identifier that resolved to nothing after a
+    /// relaunch — a favorite that had quietly disappeared.
+    @Test("A remote compound is cached before its favorite is, and both survive a relaunch")
+    func remoteFavoritesSurvive() throws {
+        let container = try #require(PersistenceController.makeInMemoryContainer())
+        let remote = ChemicalCompound(
+            id: "pubchem-999999", pubChemCID: 999_999, preferredName: "Test remote compound",
+            formula: "XeF4", hillFormula: "F4Xe", iupacName: nil, molarMass: 207.28,
+            canonicalSMILES: nil, charge: 0, bondingClass: .molecular, tags: [],
+            alternateNames: [], summary: nil, classificationSource: nil, dataSource: .pubChem,
+            isLocalCurated: false, lastUpdated: nil, structure: nil
+        )
+
+        let store = CompoundStore(container: container, catalog: TestCompounds.catalog,
+                                  isOnlineLookupEnabled: false)
+        let progress = ProgressStore(container: container, storage: .memoryOnlyForTesting)
+        #expect(store.compound(id: remote.id) == nil, "nothing knows it yet")
+
+        store.retain(remote)
+        #expect(progress.toggleCompoundFavorite(remote.id))
+        progress.setCompoundSaved(remote.id, true)
+
+        // A fresh pair of stores over the same container is what a relaunch is.
+        let reopened = CompoundStore(container: container, catalog: TestCompounds.catalog,
+                                     isOnlineLookupEnabled: false)
+        let reopenedProgress = ProgressStore(container: container, storage: .memoryOnlyForTesting)
+        #expect(reopenedProgress.isCompoundFavorite(remote.id))
+        #expect(reopenedProgress.isCompoundSaved(remote.id))
+        let resolved = reopened.compound(id: remote.id)
+        #expect(resolved?.preferredName == "Test remote compound",
+                "a favorited compound has to still resolve by identifier")
+        #expect(reopenedProgress.studyCompoundIDs.contains(remote.id),
+                "a saved compound joins the study pool")
+    }
+
+    @Test("Retaining a bundled compound does not duplicate it into the cache")
+    func bundledCompoundsAreNotCached() throws {
+        let container = try #require(PersistenceController.makeInMemoryContainer())
+        let store = CompoundStore(container: container, catalog: TestCompounds.catalog,
+                                  isOnlineLookupEnabled: false)
+        let water = TestCompounds.compound("Water")
+        store.retain(water)
+        #expect(store.cachedCompounds.isEmpty, "the bundle is already permanent")
+        #expect(store.compound(id: water.id)?.preferredName == "Water")
+    }
+
+    @Test("A quiz built from a saved compound can be dealt")
+    func savedCompoundsReachTheQuizPool() {
+        let progress = makeTestStore()
+        let water = TestCompounds.compound("Water")
+        progress.setCompoundSaved(water.id, true)
+
+        var configuration = QuizConfiguration.standard
+        configuration.content = .compounds
+        configuration.compoundFilters.onlySaved = true
+        let pool = QuizPoolBuilder.subjects(
+            for: configuration,
+            catalog: elements,
+            compounds: TestCompounds.catalog.compounds,
+            elementSnapshots: progress.snapshots,
+            compoundSnapshots: progress.compoundSnapshots
+        )
+        #expect(pool.contains { $0.compound?.id == water.id })
+    }
+}

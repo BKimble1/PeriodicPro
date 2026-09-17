@@ -3,7 +3,7 @@ import SwiftUI
 /// The learning hub.
 ///
 /// Laid out to the reference concept: a greeting, two compact status cards, one
-/// strong card into a round, four pastel practice tiles, then recent searches
+/// strong card into a round, five pastel practice tiles, then recent searches
 /// and the element shelves. Every number on it is read from `ProgressStore` —
 /// a new learner sees a 0-day streak and 0% mastered, not a demo value.
 struct StudyScreen: View {
@@ -47,13 +47,11 @@ struct StudyScreen: View {
     /// detail page can grow out of whichever tile happens to be scrolled
     /// off-screen. Showing the same tile twice was a wart in its own right.
     private var recentlyStudied: [ChemicalElement] {
-        // Ask for a wider window and filter before truncating. Filtering an
-        // already-capped eight meant that favoriting the eight most recent
-        // elements emptied the shelf, even with others studied today.
-        Array(
-            progress.recentlyStudied(limit: 32)
-                .filter { !progress.isFavorite($0) }
-                .prefix(8)
+        // A wider window than the shelf shows, filtered and then capped by
+        // `StudyShelf`, which is where that rule is tested.
+        StudyShelf.recent(
+            from: progress.recentlyStudied(limit: 32),
+            isFavorite: { progress.isFavorite($0) }
         )
         .compactMap { catalog.element(atomicNumber: $0) }
     }
@@ -67,13 +65,29 @@ struct StudyScreen: View {
         catalog.count == 0 ? 0 : Double(progress.masteredCount) / Double(catalog.count)
     }
 
-    /// Compounds the learner saved or favorited, for the shelf.
+    /// Compounds the learner favorited, for the Favorites shelf.
+    ///
+    /// Favorites means favorites: a favorited compound belongs beside the
+    /// favorited elements, not buried in a separate study-material section
+    /// where nobody looks for it.
+    private var favoriteCompounds: [ChemicalCompound] {
+        progress.favoriteCompoundIDs
+            .compactMap { compounds.compound(id: $0) }
+            .sorted { $0.preferredName < $1.preferredName }
+    }
+
+    /// Compounds the learner added to their study material, minus the ones
+    /// already shown under Favorites.
     private var studyCompounds: [ChemicalCompound] {
-        let ids = Set(progress.savedCompoundIDs).union(progress.favoriteCompoundIDs)
-        return ids.compactMap { compounds.compound(id: $0) }
+        let favorites = Set(progress.favoriteCompoundIDs)
+        return progress.savedCompoundIDs
+            .filter { !favorites.contains($0) }
+            .compactMap { compounds.compound(id: $0) }
             .filter { !$0.isHypothetical }
             .sorted { $0.preferredName < $1.preferredName }
     }
+
+    private var hasFavorites: Bool { !favorites.isEmpty || !favoriteCompounds.isEmpty }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -132,6 +146,23 @@ struct StudyScreen: View {
             }
             .sheet(item: $paywall) { context in
                 PaywallView(context: context)
+            }
+            // A quiz that arrived through a shared link. It is already saved
+            // by the time this appears; this says so and offers to play it.
+            .sheet(
+                isPresented: Binding(
+                    get: { savedQuizzes.lastImportOutcome != nil },
+                    set: { if !$0 { savedQuizzes.lastImportOutcome = nil } }
+                ),
+                onDismiss: { savedQuizzes.lastImportOutcome = nil }
+            ) {
+                if let outcome = savedQuizzes.lastImportOutcome {
+                    SharedQuizResultView(
+                        outcome: outcome,
+                        onStart: { startSaved($0) },
+                        onViewAll: { path.append(StudyRoute.myQuizzes) }
+                    )
+                }
             }
             .alert(
                 "Not enough history yet",
@@ -320,36 +351,45 @@ struct StudyScreen: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
             SectionHeader(title: "Compounds", subtitle: "\(studyCompounds.count) in your study material")
                 .padding(.horizontal, Theme.Spacing.screenMargin)
-            ScrollView(.horizontal) {
-                HStack(spacing: Theme.Spacing.m) {
-                    ForEach(studyCompounds) { compound in
-                        Button {
-                            Haptics.tap()
-                            path.append(CompoundMatchCandidate(local: compound))
-                        } label: {
-                            VStack(spacing: 6) {
-                                CompoundTile(formula: compound.formula, size: 68)
-                                Text(compound.preferredName)
-                                    .font(AppFont.caption)
-                                    .foregroundStyle(AppColor.secondaryText)
-                                    .multilineTextAlignment(.center)
-                                    .lineLimit(2)
-                                    .minimumScaleFactor(0.7)
-                                    .frame(maxWidth: 74)
-                            }
-                        }
-                        .buttonStyle(ElementTileButtonStyle())
-                        .accessibilityLabel(compound.accessibilityDescription)
-                        .accessibilityIdentifier("study.compound.\(compound.pubChemCID ?? 0)")
-                    }
-                }
-                .padding(.horizontal, Theme.Spacing.screenMargin)
-                .padding(.vertical, 2)
-            }
-            .scrollIndicators(.hidden)
+            compoundCarousel(studyCompounds, identifierPrefix: "study.compound")
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("study.compounds")
+    }
+
+    /// One horizontal shelf of compounds. Used by Favorites and by the study
+    /// material section, so the two can never drift apart visually.
+    private func compoundCarousel(
+        _ items: [ChemicalCompound],
+        identifierPrefix: String
+    ) -> some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: Theme.Spacing.m) {
+                ForEach(items) { compound in
+                    Button {
+                        Haptics.tap()
+                        path.append(CompoundMatchCandidate(local: compound))
+                    } label: {
+                        VStack(spacing: 6) {
+                            CompoundTile(formula: compound.formula, size: 68)
+                            Text(compound.preferredName)
+                                .font(AppFont.caption)
+                                .foregroundStyle(AppColor.secondaryText)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.7)
+                                .frame(maxWidth: 74)
+                        }
+                    }
+                    .buttonStyle(ElementTileButtonStyle())
+                    .accessibilityLabel(compound.accessibilityDescription)
+                    .accessibilityIdentifier("\(identifierPrefix).\(compound.pubChemCID ?? 0)")
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.screenMargin)
+            .padding(.vertical, 2)
+        }
+        .scrollIndicators(.hidden)
     }
 
     // MARK: - Recent searches
@@ -407,24 +447,58 @@ struct StudyScreen: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
             SectionHeader(
                 title: "Favorites",
-                subtitle: favorites.isEmpty ? nil : "\(favorites.count) saved"
+                subtitle: hasFavorites ? favoritesSubtitle : nil
             )
             .padding(.horizontal, Theme.Spacing.screenMargin)
 
-            if favorites.isEmpty {
+            if !hasFavorites {
                 CardContainer {
                     EmptyStateView(
                         symbolName: "heart",
                         title: "No favorites yet",
-                        message: "Tap the heart on any element to keep it here."
+                        message: "Tap the heart on any element or compound to keep it here."
                     )
                 }
                 .padding(.horizontal, Theme.Spacing.screenMargin)
                 .accessibilityIdentifier("study.favoritesEmpty")
             } else {
-                elementCarousel(favorites, identifierPrefix: "study.favorite")
+                // Two shelves under one heading rather than one mixed row:
+                // an element tile and a compound tile are different things and
+                // a learner scanning for water should not have to read past
+                // eleven elements to find it.
+                if !favorites.isEmpty {
+                    shelfLabel("Elements")
+                    elementCarousel(favorites, identifierPrefix: "study.favorite")
+                }
+                if !favoriteCompounds.isEmpty {
+                    shelfLabel("Compounds")
+                    compoundCarousel(favoriteCompounds, identifierPrefix: "study.favoriteCompound")
+                }
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("study.favorites")
+    }
+
+    private var favoritesSubtitle: String {
+        var parts: [String] = []
+        if !favorites.isEmpty {
+            parts.append(favorites.count == 1 ? "1 element" : "\(favorites.count) elements")
+        }
+        if !favoriteCompounds.isEmpty {
+            parts.append(favoriteCompounds.count == 1 ? "1 compound" : "\(favoriteCompounds.count) compounds")
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    private func shelfLabel(_ text: String) -> some View {
+        Text(text)
+            .font(AppFont.caption.weight(.semibold))
+            .foregroundStyle(AppColor.secondaryText)
+            .textCase(.uppercase)
+            .kerning(0.5)
+            .padding(.horizontal, Theme.Spacing.screenMargin)
+            .accessibilityAddTraits(.isHeader)
     }
 
     private var recentSection: some View {

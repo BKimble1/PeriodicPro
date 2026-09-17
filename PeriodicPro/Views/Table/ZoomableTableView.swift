@@ -1,5 +1,25 @@
 import SwiftUI
 
+/// The scroll geometry the pinch needs, rounded to whole points.
+///
+/// `onScrollGeometryChange` compares the value the closure returns and fires
+/// whenever it differs. Returning the whole `ScrollGeometry` meant any
+/// sub-pixel change — and several arrive while a layout settles — counted as a
+/// new value, which is what produced "OnScrollGeometryChange Modifier tried to
+/// update multiple times per frame" in the logs. Rounding collapses that churn
+/// to the changes a finger can actually cause.
+struct TableScrollSnapshot: Equatable, Sendable {
+    let offset: CGPoint
+    let contentSize: CGSize
+    let viewportSize: CGSize
+
+    init(offset: CGPoint, contentSize: CGSize, viewportSize: CGSize) {
+        self.offset = CGPoint(x: offset.x.rounded(), y: offset.y.rounded())
+        self.contentSize = CGSize(width: contentSize.width.rounded(), height: contentSize.height.rounded())
+        self.viewportSize = CGSize(width: viewportSize.width.rounded(), height: viewportSize.height.rounded())
+    }
+}
+
 /// Scroll geometry kept outside SwiftUI's state.
 ///
 /// The scroll callback fires on every frame of a pan. Writing that into
@@ -12,6 +32,12 @@ final class TableScrollTracker {
     var offset: CGPoint = .zero
     var contentSize: CGSize = .zero
     var viewportSize: CGSize = .zero
+
+    func apply(_ snapshot: TableScrollSnapshot) {
+        offset = snapshot.offset
+        contentSize = snapshot.contentSize
+        viewportSize = snapshot.viewportSize
+    }
 }
 
 /// The periodic table as something to pinch, like a photo.
@@ -25,6 +51,12 @@ final class TableScrollTracker {
 /// each new zoom is computed by `TableZoomLayout.offsetPreservingFocus` and
 /// applied through `ScrollPosition`, so zooming in on oxygen leaves oxygen
 /// under the thumb rather than sliding the table to its top-left corner.
+///
+/// There is no visible zoom control of any kind — no Fit button, no toolbar
+/// menu. Pinch, drag and double tap are the whole interface, and the accessible
+/// twin of the pinch is an invisible adjustable element plus named VoiceOver
+/// actions, so a learner using VoiceOver reaches every zoom level without
+/// anything appearing on screen for everybody else.
 ///
 /// Zoom and scroll position are owned by the screen, not by this view, so
 /// they survive a search (which replaces this view with the results list) and
@@ -44,9 +76,6 @@ struct ZoomableTableView: View {
     /// True while two fingers are down. The screen disables its own vertical
     /// scrolling for the duration, so a pinch never also scrolls the page.
     @Binding var isPinching: Bool
-    /// Set by the screen's zoom menu; performed here, where the scroll
-    /// geometry is known, and cleared once done.
-    @Binding var command: ZoomCommand?
     let isFavorite: (Int) -> Bool
     let mastery: (Int) -> MasteryLevel
     let onSelect: (ChemicalElement) -> Void
@@ -87,7 +116,7 @@ struct ZoomableTableView: View {
     private func viewportHeight(at zoom: CGFloat) -> CGFloat {
         TableZoomLayout.viewportHeight(
             fittedHeight: fittedContentHeight ?? estimatedFittedHeight,
-            expandedHeight: screenHeight * 0.62,
+            expandedHeight: TableZoomLayout.expandedViewportHeight(screenHeight: screenHeight),
             zoom: zoom
         )
     }
@@ -114,33 +143,67 @@ struct ZoomableTableView: View {
             .frame(minWidth: viewportWidth)
             .coordinateSpace(.named(Self.contentSpace))
             .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.size.height
+                proxy.size.height.rounded()
             } action: { height in
-                if abs(zoom - 1) < 0.001 { fittedContentHeight = height }
+                if abs(zoom - 1) < 0.001, fittedContentHeight != height {
+                    fittedContentHeight = height
+                }
             }
         }
         .scrollIndicators(.hidden)
         .scrollPosition($position)
         .scrollBounceBehavior(.basedOnSize, axes: [.horizontal, .vertical])
-        .onScrollGeometryChange(for: ScrollGeometry.self) { geometry in
-            geometry
-        } action: { _, geometry in
-            tracker.offset = geometry.contentOffset
-            tracker.contentSize = geometry.contentSize
-            tracker.viewportSize = geometry.containerSize
+        .onScrollGeometryChange(for: TableScrollSnapshot.self) { geometry in
+            TableScrollSnapshot(
+                offset: geometry.contentOffset,
+                contentSize: geometry.contentSize,
+                viewportSize: geometry.containerSize
+            )
+        } action: { _, snapshot in
+            tracker.apply(snapshot)
         }
         .frame(height: viewportHeight(at: zoom))
         .simultaneousGesture(magnifyGesture)
-        .overlay(alignment: .topTrailing) { fitChip }
         .task { restore() }
-        .onChange(of: command) { _, command in
-            guard let command else { return }
-            perform(command)
-            self.command = nil
-        }
         .onDisappear { savedOffset = tracker.offset }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("table.zoomView")
+        .overlay(alignment: .topLeading) { zoomAccessibilityControl }
+    }
+
+    // MARK: - Accessibility
+
+    /// The pinch's accessible twin, and nothing on screen.
+    ///
+    /// A clear, non-hit-testing element that VoiceOver and Switch Control can
+    /// focus and adjust: swipe up and down to zoom, or pick one of the named
+    /// actions from the rotor. Sighted learners see nothing at all, which is
+    /// the point — the old toolbar menu and Fit chip were visual clutter that
+    /// existed only for this.
+    private var zoomAccessibilityControl: some View {
+        Color.clear
+            .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
+            .allowsHitTesting(false)
+            .accessibilityElement()
+            .accessibilityLabel("Table zoom")
+            .accessibilityValue(zoomValueDescription)
+            .accessibilityHint("Swipe up or down to zoom the periodic table")
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment: step(zoomingIn: true)
+                case .decrement: step(zoomingIn: false)
+                @unknown default: break
+                }
+            }
+            .accessibilityAction(named: Text("Zoom in")) { step(zoomingIn: true) }
+            .accessibilityAction(named: Text("Zoom out")) { step(zoomingIn: false) }
+            .accessibilityAction(named: Text("Fit table")) { fit(animated: true) }
+            .accessibilitySortPriority(1)
+            .accessibilityIdentifier("table.zoomAdjustable")
+    }
+
+    private var zoomValueDescription: String {
+        "\((zoom * 10).rounded() / 10)×"
     }
 
     // MARK: - Pinch
@@ -198,6 +261,11 @@ struct ZoomableTableView: View {
     /// content. The new content size is estimated from the size at the start
     /// of the gesture so the offset can be clamped before the layout catches
     /// up.
+    ///
+    /// A change smaller than a tenth of a percent is dropped: the magnify
+    /// gesture reports a value every frame whether or not the fingers moved,
+    /// and writing `zoom` and the scroll position for a change nothing can see
+    /// is what made the scroll geometry update several times in one frame.
     private func move(
         to target: CGFloat,
         from startZoom: CGFloat,
@@ -206,6 +274,7 @@ struct ZoomableTableView: View {
         focus: CGPoint,
         animated: Bool
     ) {
+        guard abs(target - zoom) > 0.001 else { return }
         let content = TableZoomLayout.scaledContentSize(startContent, from: startZoom, to: target)
         let viewport = CGSize(width: tracker.viewportSize.width, height: viewportHeight(at: target))
         let raw = TableZoomLayout.offsetPreservingFocus(
@@ -245,14 +314,6 @@ struct ZoomableTableView: View {
         }
     }
 
-    private func perform(_ command: ZoomCommand) {
-        switch command {
-        case .fit: fit(animated: true)
-        case .zoomIn: step(in: .zoomIn)
-        case .zoomOut: step(in: .zoomOut)
-        }
-    }
-
     /// Back to every column on screen.
     private func fit(animated: Bool) {
         let change = {
@@ -266,9 +327,9 @@ struct ZoomableTableView: View {
         }
     }
 
-    /// Zoom In / Zoom Out from the menu: one step about the window's middle.
-    private func step(in direction: ZoomStep) {
-        let factor = direction == .zoomIn ? TableZoomLayout.stepFactor : 1 / TableZoomLayout.stepFactor
+    /// One VoiceOver step, about the middle of the window.
+    private func step(zoomingIn: Bool) {
+        let factor = zoomingIn ? TableZoomLayout.stepFactor : 1 / TableZoomLayout.stepFactor
         let target = TableZoomLayout.clampZoom(zoom * factor, fittedTileSize: fittedTile)
         if target <= 1 {
             fit(animated: true)
@@ -298,48 +359,4 @@ struct ZoomableTableView: View {
             position.scrollTo(point: target)
         }
     }
-
-    @ViewBuilder
-    private var fitChip: some View {
-        if isZoomed {
-            Button {
-                Haptics.tap()
-                fit(animated: true)
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "arrow.down.right.and.arrow.up.left")
-                        .font(.system(size: 11, weight: .semibold))
-                    Text("Fit")
-                        .font(.system(.footnote, weight: .semibold))
-                }
-                .foregroundStyle(AppColor.primaryText)
-                .padding(.horizontal, Theme.Spacing.m)
-                .frame(minHeight: 34)
-                .background { Capsule().fill(.regularMaterial) }
-                .overlay { Capsule().strokeBorder(AppColor.hairline, lineWidth: 0.7) }
-                .contentShape(Capsule())
-                // Padded inside the label so the whole 44-point target taps.
-                .padding(Theme.Spacing.s)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Fit the whole table on screen")
-            .accessibilityIdentifier("table.fit")
-            .transition(.opacity)
-        }
-    }
-}
-
-/// The two directions of the accessibility zoom menu.
-enum ZoomStep: Hashable, Sendable {
-    case zoomIn
-    case zoomOut
-}
-
-/// What the screen's zoom menu asks the table to do. The menu exists for
-/// anyone who cannot pinch — VoiceOver, Switch Control, a single finger — and
-/// it reaches every zoom level the pinch can.
-enum ZoomCommand: Hashable, Sendable {
-    case fit
-    case zoomIn
-    case zoomOut
 }

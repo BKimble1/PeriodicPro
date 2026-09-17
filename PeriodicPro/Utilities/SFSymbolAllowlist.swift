@@ -38,10 +38,7 @@ enum SFSymbolAllowlist {
         // Navigation and controls
         "chevron.right", "chevron.down", "arrow.right", "arrow.up.left", "checkmark",
         "checkmark.circle.fill", "xmark.circle.fill", "ellipsis.circle", "info.circle",
-        "arrow.counterclockwise", "line.3.horizontal.decrease.circle",
-        "line.3.horizontal.decrease.circle.fill", "magnifyingglass", "clock",
-        "arrow.up.left.and.arrow.down.right", "arrow.down.right.and.arrow.up.left",
-        "plus.magnifyingglass", "minus.magnifyingglass",
+        "arrow.counterclockwise", "magnifyingglass", "clock", "gearshape",
         // States and empty states
         "heart", "heart.fill", "exclamationmark.triangle", "exclamationmark.triangle.fill",
         "tray", "questionmark.circle", "lightbulb.fill",
@@ -61,7 +58,13 @@ enum SFSymbolAllowlist {
         "circle.hexagongrid.fill", "plus.circle.fill", "plus", "minus",
         // Match, quiz setup and My Quizzes
         "arrow.left.arrow.right", "list.bullet.rectangle", "square.and.arrow.up",
-        "square.and.arrow.down", "doc.on.doc", "pencil", "textformat", "trash",
+        "doc.on.doc", "pencil", "textformat", "trash",
+        "slider.horizontal.3", "square.grid.2x2", "atom",
+        // Settings
+        "creditcard", "envelope", "hand.raised", "doc.text", "globe",
+        "sun.max.fill", "moon.stars.fill",
+        // Saving and favoriting a compound
+        "bookmark", "bookmark.fill",
     ]
 
     /// Everything the app can ask UIKit to draw.

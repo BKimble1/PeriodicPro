@@ -1,25 +1,35 @@
 import SwiftUI
 
-/// The Build tab: Compound Builder, in beta.
+/// The Build tab: find a compound, or build one.
 ///
-/// Combine elements, watch the formula and molar mass update, read the
-/// heuristic hints, then look the composition up — in the bundled catalog
-/// first, then PubChem. Nothing is invented: a formula either matches a known
-/// compound, matches several, or matches none, and the screen says which.
+/// Two ways in, in the order people want them. The search field at the top
+/// answers "what is caffeine" without any chemistry at all; the composition
+/// editor under it answers "what is two hydrogens and an oxygen" and names it
+/// the moment the formula is recognizable.
+///
+/// Nothing is invented at any point. A formula either matches a record, matches
+/// several, or matches none, and the screen says which — the giant "Look up
+/// this composition" button is gone because the answer now arrives by itself.
 struct CompoundBuilderScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(CompoundStore.self) private var store: CompoundStore
     @Environment(ProgressStore.self) private var progress: ProgressStore
 
     @State private var model = CompoundBuilderModel()
+    @State private var search = CompoundSearchModel()
+    @State private var query = ""
     @State private var path = NavigationPath()
     @State private var showsPicker = false
-    @State private var style: CompoundRenderStyle = .ballAndStick
     @State private var explored: ChemicalCompound?
+    @State private var showsHints = false
 
     /// The family whose colors dress the result: the heaviest element added.
     private var tint: ElementCategory {
         model.entries.map(\.element).max { $0.atomicNumber < $1.atomicNumber }?.category ?? .reactiveNonmetal
+    }
+
+    private var isSearching: Bool {
+        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
@@ -27,42 +37,19 @@ struct CompoundBuilderScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.l) {
                     header
-                    CompositionTray(
-                        entries: model.entries,
-                        canAddElement: model.canAddElement,
-                        onIncrement: model.increment,
-                        onDecrement: model.decrement,
-                        onRemove: model.remove,
-                        onAdd: { showsPicker = true },
-                        onClear: model.clear
-                    )
-                    if !model.isEmpty {
-                        formulaCard
-                        hintsCard
-                        lookUpButton
+                    CompoundSearchField(query: $query)
+                    if isSearching {
+                        CompoundSearchSection(
+                            model: search,
+                            isFavorite: { progress.isCompoundFavorite($0) },
+                            mastery: { progress.compoundMastery(for: $0) },
+                            onSelect: { path.append($0) },
+                            onRetry: { search.retry(store: store) },
+                            horizontalPadding: 0
+                        )
+                    } else {
+                        builder
                     }
-                    BuilderResultView(
-                        state: model.state,
-                        tint: tint,
-                        catalog: catalog,
-                        isFavorite: { progress.isCompoundFavorite($0) },
-                        isSaved: { progress.isCompoundSaved($0) },
-                        style: $style,
-                        onChoose: { model.choose($0, store: store) },
-                        onSaveHypothetical: {
-                            model.saveHypothetical(store: store, progress: progress, catalog: catalog)
-                        },
-                        onRetry: { model.lookUp(store: store, catalog: catalog) },
-                        onOpenDetails: { path.append(CompoundMatchCandidate(local: $0)) },
-                        onExplore: { explored = $0 },
-                        onToggleFavorite: { compound in
-                            Haptics.favorited(progress.toggleCompoundFavorite(compound.id))
-                        },
-                        onToggleSaved: { compound in
-                            progress.setCompoundSaved(compound.id, !progress.isCompoundSaved(compound.id))
-                        }
-                    )
-                    footer
                 }
                 .padding(.horizontal, Theme.Spacing.screenMargin)
                 .padding(.top, Theme.Spacing.s)
@@ -86,25 +73,31 @@ struct CompoundBuilderScreen: View {
                 }
             }
             .fullScreenCover(item: $explored) { compound in
-                CompoundExplorerView(compound: compound, tint: tint, initialStyle: style)
+                CompoundExplorerView(compound: compound, tint: tint, initialStyle: .ballAndStick)
             }
+            .task { model.configure(store: store, catalog: catalog) }
+            .onChange(of: query) { _, newValue in
+                search.update(query: newValue, store: store)
+            }
+            .onDisappear { search.cancel() }
         }
         .tint(AppColor.accent)
         .accessibilityIdentifier("build.screen")
     }
 
+    // MARK: - Header
+
     private var header: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
             HStack(spacing: Theme.Spacing.s) {
                 Text("Compound Builder")
-                    .font(.system(.title2, weight: .bold))
+                    .font(.system(.title3, weight: .bold))
                     .foregroundStyle(AppColor.primaryText)
                 BetaBadge()
                     .accessibilityIdentifier("build.beta")
             }
-            Text("Combine elements and look the composition up in the Elemora catalog and PubChem. "
-                 + "The builder is in beta and is free for everyone.")
-                .font(AppFont.subheadline)
+            Text("Search a compound, or build a composition and Elemora names it.")
+                .font(AppFont.footnote)
                 .foregroundStyle(AppColor.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -112,58 +105,109 @@ struct CompoundBuilderScreen: View {
         .accessibilityIdentifier("build.header")
     }
 
-    private var formulaCard: some View {
-        CardContainer {
-            VStack(alignment: .leading, spacing: Theme.Spacing.s) {
-                Text("Formula")
-                    .font(AppFont.caption)
-                    .foregroundStyle(AppColor.secondaryText)
-                Text(model.displayFormula(catalog: catalog))
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
-                    .foregroundStyle(AppColor.primaryText)
-                    .minimumScaleFactor(0.4)
-                    .lineLimit(2)
-                    .accessibilityLabel("Formula " + CompoundFormula.spoken(model.hillFormula(catalog: catalog)))
-                    .accessibilityIdentifier("build.formula")
-                HStack(spacing: Theme.Spacing.l) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Hill formula")
-                            .font(AppFont.caption2)
-                            .foregroundStyle(AppColor.tertiaryText)
-                        Text(model.hillFormula(catalog: catalog))
-                            .font(.system(.footnote, design: .monospaced, weight: .medium))
-                            .foregroundStyle(AppColor.secondaryText)
-                    }
-                    if let mass = model.molarMass(catalog: catalog) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Molar mass")
-                                .font(AppFont.caption2)
-                                .foregroundStyle(AppColor.tertiaryText)
-                            Text("\((mass * 100).rounded() / 100) g/mol")
-                                .font(.system(.footnote, weight: .medium).monospacedDigit())
-                                .foregroundStyle(AppColor.secondaryText)
-                                .accessibilityIdentifier("build.molarMass")
-                        }
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Atoms")
-                            .font(AppFont.caption2)
-                            .foregroundStyle(AppColor.tertiaryText)
-                        Text("\(model.totalAtoms)")
-                            .font(.system(.footnote, weight: .medium).monospacedDigit())
-                            .foregroundStyle(AppColor.secondaryText)
-                    }
-                }
-                .accessibilityElement(children: .combine)
-            }
+    // MARK: - Builder
+
+    @ViewBuilder
+    private var builder: some View {
+        CompositionTray(
+            entries: model.entries,
+            canAddElement: model.canAddElement,
+            onIncrement: model.increment,
+            onDecrement: model.decrement,
+            onRemove: model.remove,
+            onAdd: { showsPicker = true },
+            onClear: model.clear
+        )
+
+        if !model.isEmpty {
+            BuilderIdentityCard(
+                formula: model.displayFormula(catalog: catalog),
+                hillFormula: model.hillFormula(catalog: catalog),
+                molarMass: model.molarMass(catalog: catalog),
+                atomCount: model.totalAtoms,
+                state: model.state,
+                statusMessage: model.statusMessage,
+                onChoose: { model.choose($0, store: store) },
+                onOpenDetails: { path.append(CompoundMatchCandidate(local: $0)) },
+                onSaveHypothetical: {
+                    model.saveHypothetical(store: store, progress: progress, catalog: catalog)
+                },
+                onRetry: { model.lookUp(store: store, catalog: catalog) }
+            )
+
+            result
+
+            hints
+        }
+
+        footer
+    }
+
+    @ViewBuilder
+    private var result: some View {
+        switch model.state {
+        case .matched(let compound):
+            resultCard(compound, isHypothetical: false)
+        case .hypothetical(let compound):
+            resultCard(compound, isHypothetical: true)
+        case .idle, .searching, .choices, .noMatch, .failed:
+            EmptyView()
         }
     }
 
-    private var hintsCard: some View {
+    private func resultCard(_ compound: ChemicalCompound, isHypothetical: Bool) -> some View {
+        BuilderResultView(
+            compound: compound,
+            isHypothetical: isHypothetical,
+            isFavorite: progress.isCompoundFavorite(compound.id),
+            isSaved: progress.isCompoundSaved(compound.id),
+            onToggleFavorite: {
+                // Cached before the state is written: progress stores an
+                // identifier, and an identifier that resolves to nothing is
+                // how a favorite disappears from Study on the next launch.
+                store.retain(compound)
+                Haptics.favorited(progress.toggleCompoundFavorite(compound.id))
+            },
+            onToggleSaved: {
+                store.retain(compound)
+                progress.setCompoundSaved(compound.id, !progress.isCompoundSaved(compound.id))
+            },
+            onOpenDetails: { path.append(CompoundMatchCandidate(local: compound)) },
+            onExplore: { explored = compound }
+        )
+    }
+
+    /// The oxidation-state hints, behind a disclosure. Useful, and never the
+    /// first thing on the screen: they are a heuristic, and the identification
+    /// above them is a record.
+    private var hints: some View {
         CardContainer {
-            VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+            DisclosureGroup(isExpanded: $showsHints) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+                    ForEach(ValenceHints.hints(for: model.composition, catalog: catalog)) { hint in
+                        HStack(alignment: .top, spacing: Theme.Spacing.s) {
+                            Image(systemName: symbol(for: hint.kind))
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(hint.kind == .balanced
+                                                 ? AppColor.positive : AppColor.secondaryText)
+                                .frame(width: 18)
+                                .accessibilityHidden(true)
+                            Text(hint.text)
+                                .font(AppFont.footnote)
+                                .foregroundStyle(AppColor.primaryText)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    Text("Hints use a short table of common oxidation states. They never decide whether "
+                         + "a compound exists; the lookup does.")
+                        .font(AppFont.caption2)
+                        .foregroundStyle(AppColor.tertiaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.top, Theme.Spacing.s)
+            } label: {
                 HStack(spacing: Theme.Spacing.s) {
-                    Text("Heuristic hints")
+                    Text("Bonding hints")
                         .font(AppFont.cardTitle)
                         .foregroundStyle(AppColor.primaryText)
                     Text("NOT A VERIFICATION")
@@ -174,27 +218,9 @@ struct CompoundBuilderScreen: View {
                         .padding(.vertical, 3)
                         .background { Capsule().fill(AppColor.surfaceMuted) }
                 }
-                ForEach(ValenceHints.hints(for: model.composition, catalog: catalog)) { hint in
-                    HStack(alignment: .top, spacing: Theme.Spacing.s) {
-                        Image(systemName: symbol(for: hint.kind))
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(hint.kind == .balanced ? AppColor.positive : AppColor.secondaryText)
-                            .frame(width: 18)
-                            .accessibilityHidden(true)
-                        Text(hint.text)
-                            .font(AppFont.footnote)
-                            .foregroundStyle(AppColor.primaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                Text("Hints use a short table of common oxidation states. They never decide whether a "
-                     + "compound exists; the lookup does.")
-                    .font(AppFont.caption2)
-                    .foregroundStyle(AppColor.tertiaryText)
-                    .fixedSize(horizontal: false, vertical: true)
             }
+            .tint(AppColor.accent)
         }
-        .accessibilityElement(children: .combine)
         .accessibilityIdentifier("build.hints")
     }
 
@@ -206,30 +232,9 @@ struct CompoundBuilderScreen: View {
         }
     }
 
-    private var lookUpButton: some View {
-        Button {
-            Haptics.tap()
-            model.lookUp(store: store, catalog: catalog)
-        } label: {
-            Label("Look up this composition", systemImage: "magnifyingglass")
-                .font(.system(.body, weight: .semibold))
-                .foregroundStyle(.white)
-                .padding(.vertical, Theme.Spacing.s)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 52)
-                .background {
-                    RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
-                        .fill(AppColor.accent)
-                }
-        }
-        .buttonStyle(.plain)
-        .disabled(model.state == .searching)
-        .accessibilityIdentifier("build.lookUp")
-    }
-
     private var footer: some View {
-        Text("Elemora looks a composition up in its bundled catalog first. If nothing matches, the Hill "
-             + "formula is sent to PubChem. That is the only thing sent, and only when you tap Look up.")
+        Text("Elemora checks its own catalog first. A formula it does not know is sent to PubChem "
+             + "once you stop editing — nothing else is sent, and nothing about you travels with it.")
             .font(AppFont.caption2)
             .foregroundStyle(AppColor.tertiaryText)
             .fixedSize(horizontal: false, vertical: true)

@@ -132,6 +132,24 @@ struct TableZoomLayoutTests {
         #expect(TableZoomLayout.viewportHeight(fittedHeight: 400, expandedHeight: 200, zoom: 3) == 400)
     }
 
+    @Test("The zoomed window never grows past what is actually on screen")
+    func expandedViewportIsBoundedByTheScreen() {
+        // A window taller than the screen minus its chrome would put its own
+        // bottom rows under the tab bar, where they look tappable and are not.
+        for height in [667.0, 812.0, 852.0, 932.0, 1_180.0, 1_366.0] {
+            let expanded = TableZoomLayout.expandedViewportHeight(screenHeight: height)
+            #expect(expanded <= height - TableZoomLayout.screenChromeAllowance + 0.001,
+                    "the zoomed window overflows a \(height)-point screen")
+            #expect(expanded >= 280, "a zoomed table needs a window worth panning")
+        }
+        // On anything phone-sized and up the fraction is what binds; the
+        // chrome allowance only takes over on a very short window, and the
+        // floor keeps even that usable.
+        #expect(TableZoomLayout.expandedViewportHeight(screenHeight: 852) == 852 * 0.62)
+        #expect(TableZoomLayout.expandedViewportHeight(screenHeight: 600) == 360)
+        #expect(TableZoomLayout.expandedViewportHeight(screenHeight: 480) == 280)
+    }
+
     @Test("Content size scales linearly with zoom")
     func contentScaling() {
         let scaled = TableZoomLayout.scaledContentSize(CGSize(width: 393, height: 240), from: 1, to: 2)
