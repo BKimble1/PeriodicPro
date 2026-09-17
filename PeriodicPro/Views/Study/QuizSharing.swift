@@ -84,7 +84,8 @@ struct QuizShareCard: View {
         let pitch = tile + gap
         return ZStack(alignment: .topLeading) {
             Color.clear.frame(width: pitch * 4 - gap, height: pitch * 3 - gap)
-            ForEach(Array(Self.tealTiles.enumerated()), id: \.offset) { _, position in
+            ForEach(Self.tealTiles.indices, id: \.self) { index in
+                let position = Self.tealTiles[index]
                 square(tile: tile, color: Self.teal)
                     .offset(x: CGFloat(position.0) * pitch, y: CGFloat(position.1) * pitch)
             }
@@ -107,8 +108,9 @@ enum QuizShareImage {
     @MainActor
     static func render(title: String, subtitle: String) -> UIImage? {
         let renderer = ImageRenderer(content: QuizShareCard(title: title, subtitle: subtitle))
-        // Two points per pixel is plenty for a preview and keeps the item a
-        // couple of hundred kilobytes rather than a couple of megabytes.
+        // One point per pixel: the card is already 1200 x 630, which is what a
+        // link preview wants, and rendering it at the device scale would make
+        // a three-megabyte item for a thumbnail.
         renderer.scale = 1
         renderer.isOpaque = true
         return renderer.uiImage
@@ -124,13 +126,11 @@ enum QuizShareImage {
 final class QuizShareItemSource: NSObject, UIActivityItemSource {
     private let url: URL
     private let title: String
-    private let subtitle: String
     private let image: UIImage?
 
-    init(url: URL, title: String, subtitle: String, image: UIImage?) {
+    init(url: URL, title: String, image: UIImage?) {
         self.url = url
         self.title = title
-        self.subtitle = subtitle
         self.image = image
     }
 
@@ -180,7 +180,6 @@ struct QuizShareSheet: UIViewControllerRepresentable {
         let source = QuizShareItemSource(
             url: url,
             title: title,
-            subtitle: subtitle,
             image: QuizShareImage.render(title: title, subtitle: subtitle)
         )
         return UIActivityViewController(activityItems: [source], applicationActivities: nil)
@@ -235,6 +234,7 @@ struct SharedQuizResultView: View {
         }
         .tint(AppColor.accent)
         .presentationDetents([.medium, .large])
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("sharedQuiz.screen")
     }
 

@@ -78,6 +78,7 @@ struct SettingsScreen: View {
         } message: {
             Text(restoreMessage ?? "")
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("settings.screen")
     }
 

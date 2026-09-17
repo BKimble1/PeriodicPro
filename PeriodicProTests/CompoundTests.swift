@@ -383,14 +383,14 @@ struct StudyShelfTests {
     func recentShelfIsCapped() {
         let history = Array(1...20)
         #expect(StudyShelf.recentLimit == 6)
-        #expect(StudyShelf.recent(from: history) { _ in false } == [1, 2, 3, 4, 5, 6])
+        #expect(StudyShelf.recent(from: history, isFavorite: { _ in false }) == [1, 2, 3, 4, 5, 6])
         #expect(StudyShelf.recent(from: [], isFavorite: { _ in false }).isEmpty)
         #expect(StudyShelf.recent(from: [1, 2, 3], isFavorite: { _ in false }) == [1, 2, 3])
 
         // Favoriting the six most recent must not empty the shelf: the filter
         // runs over the whole window, and the cap comes afterwards.
         let favorites: Set<Int> = [1, 2, 3, 4, 5, 6]
-        let shelf = StudyShelf.recent(from: history) { favorites.contains($0) }
+        let shelf = StudyShelf.recent(from: history, isFavorite: { favorites.contains($0) })
         #expect(shelf == [7, 8, 9, 10, 11, 12])
         #expect(shelf.count == StudyShelf.recentLimit)
     }

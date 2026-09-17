@@ -34,7 +34,7 @@ struct BuilderResultView: View {
                         .accessibilityIdentifier("build.result.name")
                     HStack(spacing: Theme.Spacing.s) {
                         Text(compound.displayFormula)
-                            .font(.system(.body, weight: .medium, design: .rounded))
+                            .font(.system(.body, design: .rounded, weight: .medium))
                             .foregroundStyle(AppColor.secondaryText)
                         if let mass = compound.molarMassDisplay {
                             Text(mass)

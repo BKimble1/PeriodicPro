@@ -28,6 +28,12 @@ BANNED = [
     (re.compile(r"\w\)?!\s*$"), "trailing force-unwrap"),
     (re.compile(r"\bas!\s"), "force cast"),
     (re.compile(r"\btry!\s"), "force try"),
+    # `Font.system(_:design:weight:)` takes the design first. Written the other
+    # way round the compiler tries `system(size:weight:design:)` instead and
+    # reports "type 'CGFloat' has no member 'body'", which is a forty-minute
+    # round trip to a Mac for a transposition.
+    (re.compile(r"\.system\(\s*\.\w+\s*,\s*weight:[^)]*design:"),
+     "Font.system text style with weight before design"),
 ]
 
 # Files where a given check is legitimately allowed, with the reason.

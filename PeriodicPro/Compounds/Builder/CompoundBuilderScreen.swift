@@ -221,6 +221,7 @@ struct CompoundBuilderScreen: View {
             }
             .tint(AppColor.accent)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("build.hints")
     }
 

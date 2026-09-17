@@ -350,6 +350,7 @@ struct QuizSetupView: View {
             }
             .tint(AppColor.accent)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("quizSetup.customize")
     }
 
@@ -398,6 +399,7 @@ struct QuizSetupView: View {
             }
             .accessibilityIdentifier("quizSetup.maximumZ")
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("quizSetup.elementFilters")
     }
 
@@ -414,6 +416,7 @@ struct QuizSetupView: View {
                 .font(AppFont.footnote)
                 .accessibilityIdentifier("quizSetup.onlySaved")
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("quizSetup.compoundFilters")
     }
 
