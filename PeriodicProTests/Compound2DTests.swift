@@ -147,6 +147,36 @@ struct Compound2DLayoutTests {
         #expect(points == [CGPoint(x: 0.5, y: 0.5)])
     }
 
+    @Test("Implicit hydrogens are written into the heteroatom's own label")
+    func heteroatomLabels() {
+        func oxygen(_ hydrogens: Int) -> String? {
+            Compound2DLayout.label(
+                for: CompoundAtom(id: 1, atomicNumber: 8, x: 0, y: 0, z: 0, formalCharge: 0),
+                representation: .skeletal,
+                implicitHydrogens: hydrogens,
+                catalog: catalog
+            )
+        }
+        #expect(oxygen(0) == "O")
+        #expect(oxygen(1) == "OH")
+
+        let nitrogen = Compound2DLayout.label(
+            for: CompoundAtom(id: 1, atomicNumber: 7, x: 0, y: 0, z: 0, formalCharge: 0),
+            representation: .skeletal,
+            implicitHydrogens: 2,
+            catalog: catalog
+        )
+        #expect(nitrogen == "NH\u{2082}", "a count of two is a real subscript, not a plain 2")
+
+        // A carbon is the vertex; a charged one is spelled out so the charge
+        // has something to sit beside.
+        let carbon = CompoundAtom(id: 1, atomicNumber: 6, x: 0, y: 0, z: 0, formalCharge: 0)
+        #expect(Compound2DLayout.label(for: carbon, representation: .skeletal,
+                                       implicitHydrogens: 3, catalog: catalog) == nil)
+        #expect(Compound2DLayout.label(for: carbon, representation: .structural,
+                                       implicitHydrogens: 0, catalog: catalog) == "C")
+    }
+
     @Test("A charge on an atom is carried into the drawing")
     func charges() {
         let structure = CompoundStructure(

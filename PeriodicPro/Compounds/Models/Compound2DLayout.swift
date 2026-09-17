@@ -255,9 +255,10 @@ enum Compound2DLayout {
         // carrying a charge is labeled, because the charge has to be readable.
         if atom.atomicNumber == 6, atom.formalCharge == 0 { return nil }
         guard implicitHydrogens > 0 else { return symbol }
-        return implicitHydrogens == 1
-            ? symbol + "H"
-            : symbol + "H" + CompoundFormula.subscripted("\(implicitHydrogens)")
+        // Subscripted as one string: `subscripted` only lowers a digit that
+        // follows a letter, so subscripting "2" on its own gives back "2".
+        let count = implicitHydrogens > 1 ? String(implicitHydrogens) : ""
+        return CompoundFormula.subscripted(symbol + "H" + count)
     }
 
     // MARK: - Projection
