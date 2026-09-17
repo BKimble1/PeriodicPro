@@ -129,20 +129,20 @@ final class PeriodicProUITests: XCTestCase {
             // A swipe has momentum; checking and tapping before the list has
             // stopped puts the tap where the row was a moment ago.
             settle(0.6)
-            if element.exists, element.isHittable { return element }
+            if canTap(element) { return element }
         }
 
         // It may have been above the starting position rather than below it.
         for _ in 0..<attempts {
             app.swipeDown()
             settle(0.6)
-            if element.exists, element.isHittable { return element }
+            if canTap(element) { return element }
         }
 
         XCTAssertTrue(element.exists,
                       "\(element) never appeared, scrolling in both directions\(onScreen())",
                       file: file, line: line)
-        XCTAssertTrue(element.isHittable,
+        XCTAssertTrue(canTap(element),
                       "\(element) exists but never became tappable\(onScreen())",
                       file: file, line: line)
         return element
@@ -154,10 +154,27 @@ final class PeriodicProUITests: XCTestCase {
         scrollTo(element, file: file, line: line).tap()
     }
 
+    /// Whether the element can take a tap right now.
+    ///
+    /// `isHittable` is asked only once the frame is a real rectangle with a
+    /// visible part inside the window. On iOS 26 an element that is off
+    /// screen or mid-transition has no usable hit point, and asking then does
+    /// not answer no — it records "Failed to determine hittability" as a test
+    /// failure, which is what stopped the builder and explorer tests.
+    private func canTap(_ element: XCUIElement) -> Bool {
+        guard element.exists else { return false }
+        let frame = element.frame
+        guard !frame.isNull, !frame.isEmpty, frame.origin.x.isFinite, frame.origin.y.isFinite
+        else { return false }
+        let visible = frame.intersection(app.windows.firstMatch.frame)
+        guard visible.width >= 8, visible.height >= 8 else { return false }
+        return element.isHittable
+    }
+
     /// Whether the element is somewhere a finger could land, waiting up to
     /// `timeout` for it to get there.
     private func becomesHittable(_ element: XCUIElement, within timeout: TimeInterval) -> Bool {
-        let hittable = NSPredicate { _, _ in element.exists && element.isHittable }
+        let hittable = NSPredicate { [self] _, _ in canTap(element) }
         let expectation = XCTNSPredicateExpectation(predicate: hittable, object: nil)
         return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
     }
@@ -266,29 +283,33 @@ final class PeriodicProUITests: XCTestCase {
         let table = el("table.zoomView")
         waitFor(table)
 
-        let oxygen = app.buttons["element.O"]
-        let before = oxygen.frame.width
+        // Iron: a free demo element a column and a half from the middle of
+        // the table, which is where the pinch is centered, so it is still in
+        // the window after a 2.5× zoom about that point. Oxygen, out at group
+        // 16, is not on a phone — a 2.5× zoom puts it past the right edge.
+        let iron = app.buttons["element.Fe"]
+        let before = iron.frame.width
         XCTAssertGreaterThan(before, 12, "the fitted table should have real tiles\(onScreen())")
 
         table.pinch(withScale: 2.5, velocity: 1.0)
 
         // Wait for the layout to settle at the new size rather than
         // asserting mid-animation.
-        let grew = NSPredicate { _, _ in oxygen.exists && oxygen.frame.width > before * 1.5 }
+        let grew = NSPredicate { _, _ in iron.exists && iron.frame.width > before * 1.5 }
         let expectation = XCTNSPredicateExpectation(predicate: grew, object: nil)
         XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: 6), .completed,
-                       "Pinching out should make the tiles larger; oxygen was \(before) and is "
-                       + "\(oxygen.frame.width)\(onScreen())")
+                       "Pinching out should make the tiles larger; iron was \(before) and is "
+                       + "\(iron.frame.width)\(onScreen())")
 
         XCTAssertTrue(el("table.fit").waitForExistence(timeout: 4),
                       "A zoomed table should offer a Fit control\(onScreen())")
 
-        // Oxygen is in the top rows near the middle, so it stays in the window
-        // after a pinch about the middle. Tapping it must still open its page.
-        XCTAssertTrue(oxygen.isHittable, "oxygen should still be tappable while zoomed\(onScreen())")
-        oxygen.tap()
+        // The tile under the pinch is still there, and a tap on it must still
+        // open its page: the pinch guard only swallows the pinch's own lift.
+        XCTAssertTrue(canTap(iron), "iron should still be tappable while zoomed\(onScreen())")
+        iron.tap()
         waitFor(app.buttons["detail.favoriteButton"])
-        XCTAssertTrue(labelContaining("Oxygen").exists)
+        XCTAssertTrue(labelContaining("Iron").exists)
         goBack()
 
         // Coming back, the table is still zoomed — the position survived the
@@ -296,7 +317,7 @@ final class PeriodicProUITests: XCTestCase {
         let stillZoomed = el("table.fit")
         waitFor(stillZoomed)
         stillZoomed.tap()
-        let fitted = NSPredicate { _, _ in oxygen.exists && oxygen.frame.width < before * 1.2 }
+        let fitted = NSPredicate { _, _ in iron.exists && iron.frame.width < before * 1.2 }
         let fittedExpectation = XCTNSPredicateExpectation(predicate: fitted, object: nil)
         XCTAssertEqual(XCTWaiter().wait(for: [fittedExpectation], timeout: 6), .completed,
                        "Fit should return the tiles to their fitted size\(onScreen())")
@@ -795,12 +816,18 @@ final class PeriodicProUITests: XCTestCase {
         let row = app.buttons["build.pick.\(symbol)"]
         tap(row)
         let counted = el("build.count.\(symbol)")
-        if !counted.waitForExistence(timeout: 4), row.exists, row.isHittable {
+        if !counted.waitForExistence(timeout: 4), canTap(row) {
             // The first tap landed while the sheet was still settling and hit
             // nothing. One more, now that it is still.
             row.tap()
         }
         waitFor(counted)
+        // And the sheet is gone before the next control is asked anything:
+        // a query mid-dismissal is exactly the moment iOS 26 answers with a
+        // failure rather than a no.
+        let gone = NSPredicate { [self] _, _ in !app.navigationBars["Add an element"].exists }
+        _ = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: gone, object: nil)], timeout: 5)
+        settle(0.4)
     }
 
     func testBuildTabShowsTheCompoundBuilderBeta() {
@@ -905,7 +932,8 @@ final class PeriodicProUITests: XCTestCase {
         waitFor(nameField)
         nameField.tap()
         nameField.typeText("Halogens")
-        alert.buttons["Save"].tap()
+        // iOS 26 vends the alert's button twice, so the query is not unique.
+        alert.buttons["Save"].firstMatch.tap()
         XCTAssertTrue(labelContaining("Halogens").waitForExistence(timeout: 6),
                       "The saved quiz should appear on the Study tab\(onScreen())")
         tap(app.buttons["study.myQuizzes.seeAll"])

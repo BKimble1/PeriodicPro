@@ -75,12 +75,29 @@ final class ElemoraScreenshotTests: XCTestCase {
                       file: file, line: line)
     }
 
+    /// Whether the element can take a tap right now.
+    ///
+    /// `isHittable` is asked only once the frame is a real rectangle with a
+    /// visible part inside the window. On iOS 26 an element that is off
+    /// screen or mid-transition has no usable hit point, and asking then does
+    /// not answer no — it records "Failed to determine hittability" as a test
+    /// failure, which is what stopped the tour on the compound page.
+    private func canTap(_ element: XCUIElement) -> Bool {
+        guard element.exists else { return false }
+        let frame = element.frame
+        guard !frame.isNull, !frame.isEmpty, frame.origin.x.isFinite, frame.origin.y.isFinite
+        else { return false }
+        let visible = frame.intersection(app.windows.firstMatch.frame)
+        guard visible.width >= 8, visible.height >= 8 else { return false }
+        return element.isHittable
+    }
+
     /// Whether the element is somewhere a finger could land, waiting up to
     /// `timeout` for it to get there. Existence alone is not enough: a sheet
     /// still sliding in vends its rows before they are on screen, and a tap
     /// aimed at one of them then lands on whatever is underneath.
     private func becomesHittable(_ element: XCUIElement, within timeout: TimeInterval) -> Bool {
-        let hittable = NSPredicate { _, _ in element.exists && element.isHittable }
+        let hittable = NSPredicate { [self] _, _ in canTap(element) }
         let expectation = XCTNSPredicateExpectation(predicate: hittable, object: nil)
         return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
     }
@@ -107,15 +124,15 @@ final class ElemoraScreenshotTests: XCTestCase {
             // A swipe has momentum. Checking, and then tapping, before the
             // list has stopped puts the tap where the row was a moment ago.
             settle(0.6)
-            if element.exists, element.isHittable { return element }
+            if canTap(element) { return element }
         }
         for _ in 0..<attempts {
             app.swipeDown()
             settle(0.6)
-            if element.exists, element.isHittable { return element }
+            if canTap(element) { return element }
         }
 
-        XCTAssertTrue(element.exists && element.isHittable,
+        XCTAssertTrue(canTap(element),
                       "\(element) never became tappable, scrolling both ways"
                       + onScreen(),
                       file: file, line: line)
@@ -210,12 +227,18 @@ final class ElemoraScreenshotTests: XCTestCase {
         let row = app.buttons["build.pick.\(symbol)"]
         tap(row)
         let counted = el("build.count.\(symbol)")
-        if !counted.waitForExistence(timeout: 4), row.exists, row.isHittable {
+        if !counted.waitForExistence(timeout: 4), canTap(row) {
             // The first tap landed while the sheet was still settling and hit
             // nothing. One more, now that it is still.
             row.tap()
         }
         waitFor(counted)
+        // And the sheet is gone before the next control is asked anything:
+        // a query mid-dismissal is exactly the moment iOS 26 answers with a
+        // failure rather than a no.
+        let gone = NSPredicate { [self] _, _ in !app.navigationBars["Add an element"].exists }
+        _ = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: gone, object: nil)], timeout: 5)
+        settle(0.4)
     }
 
     // MARK: - The tour
@@ -339,7 +362,8 @@ final class ElemoraScreenshotTests: XCTestCase {
         waitFor(nameField)
         nameField.tap()
         nameField.typeText("Halogens and noble gases")
-        alert.buttons["Save"].tap()
+        // iOS 26 vends the alert's button twice, so the query is not unique.
+        alert.buttons["Save"].firstMatch.tap()
         tap(app.buttons["study.myQuizzes.seeAll"])
         waitFor(app.navigationBars["My Quizzes"])
         settle(0.8)
@@ -400,12 +424,21 @@ final class ElemoraScreenshotTests: XCTestCase {
         // Scrolling alone is no better: the rows do not exist at all until
         // StoreKit answers, and running to the bottom of the loading state
         // before then finds nothing either.
-        let deadline = Date().addingTimeInterval(45)
+        let deadline = Date().addingTimeInterval(80)
+        var retried = false
         while !yearly.exists, Date() < deadline {
-            // A terminal state — `hasAttemptedLoad` is set and the product
-            // list came back empty — so there is nothing to wait for, and
-            // saying so beats timing out with a message about scrolling.
             if unavailable.exists {
+                // The first StoreKit answer on a cold simulator can miss the
+                // paywall's own deadline, which is what the smaller phone
+                // did. A learner would see Try again, so the tour presses it
+                // once. Unavailable a second time is the bug — `hasAttemptedLoad`
+                // is set and the product list came back empty — and saying
+                // so beats timing out with a message about scrolling.
+                if !retried {
+                    retried = true
+                    tap(app.buttons["paywall.retry"])
+                    continue
+                }
                 XCTFail("The paywall rendered its \"options unavailable\" state: "
                         + "StoreKit returned no products for the local "
                         + "Config/PeriodicPro.storekit configuration"

@@ -320,6 +320,7 @@ struct PaywallView: View {
                 }
                 .font(.system(.subheadline, weight: .semibold))
                 .frame(minHeight: Theme.minimumTouchTarget)
+                .accessibilityIdentifier("paywall.retry")
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, Theme.Spacing.l)

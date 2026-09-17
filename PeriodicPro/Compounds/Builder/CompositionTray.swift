@@ -172,6 +172,10 @@ struct ElementPickerSheet: View {
                                 .font(AppFont.caption)
                                 .foregroundStyle(AppColor.secondaryText)
                         }
+                        // Stretches the label across the row. Without it the
+                        // tap area ended with the text, and on an iPad's wide
+                        // form sheet a tap in the middle of the row hit nothing.
+                        Spacer(minLength: 0)
                     }
                     .contentShape(Rectangle())
                 }
