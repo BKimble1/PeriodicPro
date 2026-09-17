@@ -166,41 +166,40 @@ struct ZoomableTableView: View {
         .simultaneousGesture(magnifyGesture)
         .task { restore() }
         .onDisappear { savedOffset = tracker.offset }
+        // The pinch's accessible twin lives on the table's own container, not
+        // on a view stacked over it.
+        //
+        // It began as a clear, non-hit-testing 44-point square overlaid at the
+        // top leading corner — which is where hydrogen is. `allowsHitTesting`
+        // keeps a finger going through to the tile, but it does not take the
+        // square out of the accessibility tree, and a hit test for hydrogen's
+        // own center then resolved to the square instead. Hydrogen existed,
+        // had a real frame inside the window, and was never hittable, at any
+        // scroll position, because the square moved with it.
+        //
+        // `children: .contain` keeps all hundred and eighteen tiles as
+        // separate elements, so the value and the actions here belong to the
+        // group without taking anything away from what is inside it.
+        // `testElementTilesAreIndividuallyAddressable` is what holds that
+        // claim down.
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("table.zoomView")
-        .overlay(alignment: .topLeading) { zoomAccessibilityControl }
+        .accessibilityLabel("Periodic table")
+        .accessibilityValue(zoomValueDescription)
+        .accessibilityHint("Swipe up or down to zoom the periodic table")
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: step(zoomingIn: true)
+            case .decrement: step(zoomingIn: false)
+            @unknown default: break
+            }
+        }
+        .accessibilityAction(named: Text("Zoom in")) { step(zoomingIn: true) }
+        .accessibilityAction(named: Text("Zoom out")) { step(zoomingIn: false) }
+        .accessibilityAction(named: Text("Fit table")) { fit(animated: true) }
     }
 
     // MARK: - Accessibility
-
-    /// The pinch's accessible twin, and nothing on screen.
-    ///
-    /// A clear, non-hit-testing element that VoiceOver and Switch Control can
-    /// focus and adjust: swipe up and down to zoom, or pick one of the named
-    /// actions from the rotor. Sighted learners see nothing at all, which is
-    /// the point — the old toolbar menu and Fit chip were visual clutter that
-    /// existed only for this.
-    private var zoomAccessibilityControl: some View {
-        Color.clear
-            .frame(width: Theme.minimumTouchTarget, height: Theme.minimumTouchTarget)
-            .allowsHitTesting(false)
-            .accessibilityElement()
-            .accessibilityLabel("Table zoom")
-            .accessibilityValue(zoomValueDescription)
-            .accessibilityHint("Swipe up or down to zoom the periodic table")
-            .accessibilityAdjustableAction { direction in
-                switch direction {
-                case .increment: step(zoomingIn: true)
-                case .decrement: step(zoomingIn: false)
-                @unknown default: break
-                }
-            }
-            .accessibilityAction(named: Text("Zoom in")) { step(zoomingIn: true) }
-            .accessibilityAction(named: Text("Zoom out")) { step(zoomingIn: false) }
-            .accessibilityAction(named: Text("Fit table")) { fit(animated: true) }
-            .accessibilitySortPriority(1)
-            .accessibilityIdentifier("table.zoomAdjustable")
-    }
 
     private var zoomValueDescription: String {
         "\((zoom * 10).rounded() / 10)×"

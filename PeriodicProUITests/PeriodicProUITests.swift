@@ -314,12 +314,9 @@ final class PeriodicProUITests: XCTestCase {
 
         // Wait for the layout to settle at the new size rather than asserting
         // mid-animation. Every tile grows, so any tile still vended will do.
-        let application: XCUIApplication = app
-        let grew = NSPredicate { _, _ in Self.largestTileWidth(in: application) > before * 1.5 }
-        let expectation = XCTNSPredicateExpectation(predicate: grew, object: nil)
-        XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: 8), .completed,
-                       "Pinching out should make the tiles larger; they were \(before) wide"
-                       + onScreen())
+        XCTAssertTrue(waitForWidestTile(atLeast: before * 1.5, within: 8),
+                      "Pinching out should make the tiles larger; they were \(before) wide "
+                      + "and are \(Self.largestTileWidth(in: app)) wide now" + onScreen())
 
         // A tile in the zoomed window must still open its page: the pinch
         // guard swallows only the pinch's own lift, not a tap that follows.
@@ -334,13 +331,10 @@ final class PeriodicProUITests: XCTestCase {
 
         // Coming back, the table is still zoomed: the position survived the
         // push. Measured on whatever tile is on screen, not a named one.
-        let stillZoomed = NSPredicate { _, _ in Self.largestTileWidth(in: application) > before * 1.5 }
-        XCTAssertEqual(
-            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: stillZoomed, object: nil)],
-                             timeout: 8),
-            .completed,
-            "Returning from a detail page should keep the table's zoom\(onScreen())"
-        )
+        XCTAssertTrue(waitForWidestTile(atLeast: before * 1.5, within: 8),
+                      "Returning from a detail page should keep the table's zoom; tiles are "
+                      + "\(Self.largestTileWidth(in: app)) wide against \(before) fitted"
+                      + onScreen())
 
         // And pinching back in returns the table to fitted, with every column
         // on screen again — the zoom does not go below the fitted state.
@@ -349,18 +343,42 @@ final class PeriodicProUITests: XCTestCase {
         // middle of the element, the middle of a zoomed table is a tile, and a
         // tile is a button — the double tap would open an element's page
         // rather than exercise the gesture.
+        //
+        // Measured on the widest tile rather than on hydrogen: a zoomed table
+        // that has been panned may have hydrogen off screen entirely, and a
+        // tile that is not on screen has no width to compare.
         table.pinch(withScale: 0.35, velocity: -2.0)
-        let fitted = NSPredicate { _, _ in
-            hydrogen.exists && hydrogen.frame.width > 0 && hydrogen.frame.width < before * 1.2
-        }
-        XCTAssertEqual(
-            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: fitted, object: nil)],
-                             timeout: 8),
-            .completed,
-            "A double tap should return the table to its fitted size\(onScreen())"
+        XCTAssertTrue(
+            waitForWidestTile(atMost: before * 1.2, within: 8),
+            "Pinching in should return the table to its fitted size; tiles were "
+            + "\(before) wide fitted and are \(Self.largestTileWidth(in: app)) wide now"
+            + onScreen()
         )
         XCTAssertTrue(app.buttons["element.Og"].waitForExistence(timeout: 5),
                       "every column should be back on screen\(onScreen())")
+    }
+
+    /// Waits for some tile to be at least `width` wide, which is what says a
+    /// pinch open landed — whichever tiles the zoom leaves on screen.
+    private func waitForWidestTile(atLeast width: CGFloat, within timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while true {
+            if Self.largestTileWidth(in: app) >= width { return true }
+            if Date() >= deadline { return false }
+            settle(0.25)
+        }
+    }
+
+    /// Waits for every tile to be no wider than `width`, which is what says a
+    /// pinch closed landed.
+    private func waitForWidestTile(atMost width: CGFloat, within timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while true {
+            let widest = Self.largestTileWidth(in: app)
+            if widest > 0, widest <= width { return true }
+            if Date() >= deadline { return false }
+            settle(0.25)
+        }
     }
 
     /// Every node under `element`, depth first, from one snapshot.
@@ -446,13 +464,26 @@ final class PeriodicProUITests: XCTestCase {
         let after = Self.visibleTileSymbols(in: app)
         XCTAssertFalse(after.isEmpty, "panning should not empty the table\(onScreen())")
         XCTAssertNotEqual(before, after,
-                          "dragging a zoomed table should show a different part of it"
+                          "dragging a zoomed table should show a different part of it; "
+                          + "\(before.count) tiles on screen before, \(after.count) after"
                           + onScreen())
     }
 
-    /// The symbols currently vended by the table, as a set.
+    /// The symbols on screen, as a set.
+    ///
+    /// On screen, not merely built: the table keeps all hundred and eighteen
+    /// tiles in the tree whatever the zoom, so comparing everything it vends
+    /// before and after a drag compares two identical sets and proves nothing.
+    /// What a pan changes is which of them the window actually contains.
     private static func visibleTileSymbols(in app: XCUIApplication) -> Set<String> {
-        Set(tileFrames(in: app).keys)
+        let window = app.windows.firstMatch.frame
+        var symbols: Set<String> = []
+        for (identifier, frame) in tileFrames(in: app) {
+            let visible: CGRect = frame.intersection(window)
+            guard visible.width >= 4, visible.height >= 4 else { continue }
+            symbols.insert(identifier)
+        }
+        return symbols
     }
 
     /// There is no zoom control on the table, and there must not be one.
@@ -473,10 +504,15 @@ final class PeriodicProUITests: XCTestCase {
                            "a \u{201C}\(label)\u{201D} button should not be on the table")
         }
 
-        // Still zoomable without two fingers: the adjustable element is what
-        // VoiceOver and Switch Control drive, and it draws nothing.
-        XCTAssertTrue(el("table.zoomAdjustable").exists,
-                      "the table must stay adjustable for assistive technology\(onScreen())")
+        // Still zoomable without two fingers. The table's own container is
+        // what VoiceOver and Switch Control adjust, and it draws nothing: the
+        // value it reports is the proof there is something there to drive.
+        let table = el("table.zoomView")
+        XCTAssertTrue(table.exists, "the table must stay adjustable for assistive technology")
+        let spoken = (table.value as? String) ?? ""
+        XCTAssertTrue(spoken.contains("\u{00D7}"),
+                      "the table should tell assistive technology what the zoom is, and reads "
+                      + "\u{201C}\(spoken)\u{201D}" + onScreen())
     }
 
     // MARK: - Detail
@@ -1005,11 +1041,35 @@ final class PeriodicProUITests: XCTestCase {
         tap(app.buttons["progress.settings"])
         waitFor(app.navigationBars["Settings"])
         tap(app.buttons["settings.resetProgress"])
-        XCTAssertTrue(app.buttons["Cancel"].waitForExistence(timeout: 6),
+
+        // The destructive button is the confirmation, and it is the one thing
+        // here the app names itself. Waiting on a button labeled "Cancel" was
+        // waiting on something iOS does not always draw: this sheet comes with
+        // a dismiss region instead, and backing out means tapping outside it.
+        let confirm = app.buttons["settings.confirmReset"].firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 6),
                       "Reset must ask before it does anything\(onScreen())")
         XCTAssertTrue(labelContaining("Favorites are kept").exists,
-                      "the confirmation should say what survives a reset")
-        app.buttons["Cancel"].tap()
+                      "the confirmation should say what survives a reset\(onScreen())")
+
+        let cancel = app.buttons["Cancel"].firstMatch
+        if cancel.exists {
+            cancel.tap()
+        } else {
+            app.otherElements["PopoverDismissRegion"].firstMatch.tap()
+        }
+
+        // Backed out, and nothing happened: Settings is still there and the
+        // day that was studied a moment ago is still counted.
+        waitFor(app.navigationBars["Settings"])
+        goBack()
+        waitFor(app.navigationBars["Progress"])
+        let answered = el("progress.answered")
+        scrollTo(answered)
+        XCTAssertTrue(answered.label.contains("1"),
+                      "backing out of the confirmation must not clear progress; "
+                      + "the answered tile reads \u{201C}\(answered.label)\u{201D}"
+                      + onScreen())
     }
 
     // MARK: - Compounds
@@ -1034,8 +1094,13 @@ final class PeriodicProUITests: XCTestCase {
         app.buttons["compound.favoriteButton"].tap()
         goBack()
         openTab("Study")
-        XCTAssertTrue(app.buttons["study.compound.962"].waitForExistence(timeout: 6),
-                      "A favorited compound should appear on the Study tab's compound shelf\(onScreen())")
+        XCTAssertTrue(app.buttons["study.favoriteCompound.962"].waitForExistence(timeout: 6),
+                      "A favorited compound should appear on the Study tab's Favorites shelf"
+                      + onScreen())
+        // And only once. The Compounds shelf is study material, and a favorite
+        // that also appeared there would be the same tile twice on one screen.
+        XCTAssertFalse(app.buttons["study.compound.962"].exists,
+                       "a favorite should not be repeated on the study-material shelf")
     }
 
     func testNumericSearchNeverAsksPubChem() {

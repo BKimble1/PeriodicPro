@@ -208,7 +208,15 @@ jobs:
     # Four full tours on four simulators, each booting a device and
     # driving twenty screens. The default hour was not enough once the
     # compound and quiz frames joined it: the job was cancelled mid-upload.
-    timeout-minutes: 90
+    #
+    # Ninety is no longer enough either. The tour gained four frames — the
+    # families filter, the builder's search, Settings and the opened Customize
+    # section — and every device got about a quarter slower for them: the
+    # smaller phone went from 12m57s to 16m07s and the iPad from 36m56s to
+    # past forty-five. Four captures at that length leave nothing spare before
+    # the upload, and a job killed mid-upload reports no screenshots at all
+    # rather than the one failure worth reading.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
