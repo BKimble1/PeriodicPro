@@ -479,3 +479,112 @@ struct StudyShelfTests {
         #expect(pool.contains { $0.compound?.id == water.id })
     }
 }
+
+/// Build 5 raised the builder's ceilings. Thirty atoms of one element was a
+/// chemistry assumption wearing a resource limit's clothes: it made cholesterol
+/// (C₂₇H₄₆O) and β-carotene (C₄₀H₅₆) unbuildable, and six distinct elements ruled
+/// out most of biochemistry.
+@Suite("The builder's limits are resource limits, not chemistry")
+@MainActor
+struct BuilderLimitTests {
+    private func builder(_ symbols: [String: Int]) -> CompoundBuilderModel {
+        let model = CompoundBuilderModel()
+        for (symbol, count) in symbols.sorted(by: { $0.key < $1.key }) {
+            let element = TestCatalog.element(symbol)
+            model.add(element)
+            model.setCount(count, for: element.atomicNumber)
+        }
+        return model
+    }
+
+    @Test("Counts well past thirty are ordinary")
+    func countsPastThirty() {
+        for count in [31, 46, 56, 72, 100, 500, 998, 999] {
+            let model = builder(["H": count])
+            #expect(model.totalAtoms == count, "a count of \(count) did not take")
+            #expect(model.entries.first?.count == count)
+        }
+    }
+
+    @Test("Molecules the old ceiling made unbuildable")
+    func realFormulasThatUsedToBeRefused() {
+        let catalog = TestCatalog.shared
+        // Cholesterol.
+        let cholesterol = builder(["C": 27, "H": 46, "O": 1])
+        #expect(cholesterol.hillFormula(catalog: catalog) == "C27H46O")
+        #expect(cholesterol.totalAtoms == 74)
+        // β-carotene: both counts past the old limit.
+        let carotene = builder(["C": 40, "H": 56])
+        #expect(carotene.hillFormula(catalog: catalog) == "C40H56")
+        // Sucrose, and a molar mass that still comes out of the real weights.
+        let sucrose = builder(["C": 12, "H": 22, "O": 11])
+        #expect(sucrose.hillFormula(catalog: catalog) == "C12H22O11")
+        let mass = try? #require(sucrose.molarMass(catalog: catalog))
+        #expect(abs((mass ?? 0) - 342.297) < 0.05)
+    }
+
+    @Test("The cap is a clamp, not a refusal")
+    func typingPastTheCapClampsToIt() {
+        let model = builder(["H": 1])
+        let hydrogen = TestCatalog.element("H").atomicNumber
+        model.setCount(5_000, for: hydrogen)
+        #expect(model.entries.first?.count == CompoundBuilderModel.maximumCountPerElement)
+        #expect(CompoundBuilderModel.maximumCountPerElement == 999)
+        // And the boundary itself is reachable rather than one short.
+        model.setCount(999, for: hydrogen)
+        #expect(model.entries.first?.count == 999)
+        model.increment(hydrogen)
+        #expect(model.entries.first?.count == 999, "999 is the ceiling, so incrementing stays there")
+    }
+
+    @Test("Zero and below remove the element, the same as stepping down from one")
+    func zeroRemoves() {
+        let model = builder(["O": 3])
+        let oxygen = TestCatalog.element("O").atomicNumber
+        model.setCount(0, for: oxygen)
+        #expect(model.entries.isEmpty)
+    }
+
+    @Test("Sixteen different elements fit in one composition")
+    func sixteenDistinctElements() {
+        let symbols = ["H", "C", "N", "O", "F", "Na", "Mg", "P", "S", "Cl", "K", "Ca", "Fe", "Cu", "Zn", "I"]
+        let model = CompoundBuilderModel()
+        for symbol in symbols { model.add(TestCatalog.element(symbol)) }
+        #expect(model.entries.count == 16)
+        #expect(!model.canAddElement, "sixteen is the ceiling")
+        #expect(CompoundBuilderModel.maximumDistinctElements >= 16)
+        // Chlorophyll a's five elements were already past the old limit of six
+        // once anything else joined them.
+        let chlorophyll = builder(["C": 55, "H": 72, "Mg": 1, "N": 4, "O": 5])
+        #expect(chlorophyll.hillFormula(catalog: TestCatalog.shared) == "C55H72MgN4O5")
+    }
+
+    @Test("A composition cannot be grown without bound")
+    func theTotalIsStillBounded() {
+        let model = CompoundBuilderModel()
+        let symbols = ["H", "C", "N", "O", "F", "Na"]
+        for symbol in symbols {
+            let element = TestCatalog.element(symbol)
+            model.add(element)
+            model.setCount(999, for: element.atomicNumber)
+        }
+        #expect(model.totalAtoms <= CompoundBuilderModel.maximumTotalAtoms)
+        // And the bound is high enough that nothing a learner would build hits
+        // it: every molecule above is three orders of magnitude clear.
+        #expect(CompoundBuilderModel.maximumTotalAtoms >= 1_000)
+    }
+
+    @Test("Typed counts are validated rather than coerced")
+    func parsingATypedCount() {
+        #expect(CompoundBuilderModel.parseCount("46") == 46)
+        #expect(CompoundBuilderModel.parseCount(" 7 ") == 7)
+        #expect(CompoundBuilderModel.parseCount("0") == 0)
+        #expect(CompoundBuilderModel.parseCount("") == nil)
+        #expect(CompoundBuilderModel.parseCount("twelve") == nil)
+        #expect(CompoundBuilderModel.parseCount("4.5") == nil)
+        #expect(CompoundBuilderModel.parseCount("-3") == nil)
+        #expect(CompoundBuilderModel.parseCount("1e9") == nil)
+        // Long enough to be a denial of service, short enough to be a count.
+        #expect(CompoundBuilderModel.parseCount(String(repeating: "9", count: 40)) == nil)
+    }
+}

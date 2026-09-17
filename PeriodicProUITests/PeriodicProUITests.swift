@@ -1298,6 +1298,53 @@ final class PeriodicProUITests: XCTestCase {
         assertReachable(shelf, "the favorited compound on the Study tab")
     }
 
+    /// Counts past thirty are ordinary, and they are typed rather than
+    /// tapped up to: cholesterol is C₂₇H₄₆O, and forty-six taps is not an
+    /// interface.
+    func testCountsPastThirtyAreTypedRatherThanTapped() {
+        openTab("Build")
+        addElement("C")
+        setCount("C", to: "27")
+        addElement("H")
+        setCount("H", to: "46")
+        addElement("O")
+
+        XCTAssertEqual(app.buttons["build.count.C"].label, "27 Carbon",
+                       "the typed carbon count did not take\(onScreen())")
+        XCTAssertEqual(app.buttons["build.count.H"].label, "46 Hydrogen",
+                       "the typed hydrogen count did not take\(onScreen())")
+
+        let formula = el("build.formula")
+        waitFor(formula)
+        // The subscripted formula, as it is written.
+        XCTAssertTrue(formula.label.contains("27") || formula.label.contains("₂₇")
+                      || formula.label.contains("2 7"),
+                      "the formula should carry the twenty-seven carbons; it reads "
+                      + "\(formula.label)\(onScreen())")
+
+        // And the cap is a clamp with a visible answer, not a silent refusal.
+        setCount("O", to: "100000")
+        XCTAssertEqual(app.buttons["build.count.O"].label, "999 Oxygen",
+                       "typing past the cap should land on the cap\(onScreen())")
+    }
+
+    /// Types a count into the tray's number field.
+    private func setCount(_ symbol: String, to value: String) {
+        let count = app.buttons["build.count.\(symbol)"]
+        tap(count)
+        let field = app.textFields["build.countField"].firstMatch
+        waitFor(field)
+        field.tap()
+        // The field opens with the current count selected for replacement on
+        // iOS; clearing it explicitly makes the test independent of that.
+        if let existing = field.value as? String, !existing.isEmpty {
+            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: existing.count))
+        }
+        field.typeText(value)
+        app.buttons["build.countConfirm"].firstMatch.tap()
+        settle(0.4)
+    }
+
     /// The formula is live: it changes with the tray, before anything is
     /// looked up.
     func testFormulaUpdatesAsTheCompositionChanges() {

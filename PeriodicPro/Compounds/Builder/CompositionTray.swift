@@ -13,9 +13,16 @@ struct CompositionTray: View {
     let canAddElement: Bool
     let onIncrement: (Int) -> Void
     let onDecrement: (Int) -> Void
+    /// Typing a count directly, which is the only way C₂₇H₄₆O is reasonable
+    /// to enter: forty-six taps is not an interface.
+    let onSetCount: (Int, Int) -> Void
     let onRemove: (Int) -> Void
     let onAdd: () -> Void
     let onClear: () -> Void
+
+    /// The entry whose count is being typed, and what has been typed so far.
+    @State private var editing: CompoundBuilderModel.Entry?
+    @State private var typed = ""
 
     var body: some View {
         CardContainer {
@@ -81,6 +88,24 @@ struct CompositionTray: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("build.tray")
+        .alert("How many \(editing?.element.name.lowercased() ?? "atoms")?",
+               isPresented: Binding(get: { editing != nil }, set: { if !$0 { editing = nil } })) {
+            TextField("Count", text: $typed)
+                .keyboardType(.numberPad)
+                .accessibilityIdentifier("build.countField")
+            Button("Cancel", role: .cancel) { editing = nil }
+            Button("Set") { commitTypedCount() }
+                .accessibilityIdentifier("build.countConfirm")
+        } message: {
+            Text("Between 1 and \(CompoundBuilderModel.maximumCountPerElement).")
+        }
+    }
+
+    private func commitTypedCount() {
+        defer { editing = nil }
+        guard let entry = editing, let count = CompoundBuilderModel.parseCount(typed) else { return }
+        Haptics.tap()
+        onSetCount(entry.element.atomicNumber, count)
     }
 
     private func row(_ entry: CompoundBuilderModel.Entry) -> some View {
@@ -122,42 +147,118 @@ struct CompositionTray: View {
 
     /// Minus, the count, plus — one capsule, so the controls read as a single
     /// thing that changes one number rather than three loose buttons.
+    ///
+    /// The count in the middle is a button. Tapping it types the number
+    /// instead of counting to it, and holding either end runs the count up or
+    /// down, so an alkane's worth of hydrogens is a moment's work either way.
     private func stepper(_ entry: CompoundBuilderModel.Entry) -> some View {
         HStack(spacing: 0) {
-            stepButton("minus", label: "Remove one \(entry.element.name.lowercased())",
-                       identifier: "build.decrement.\(entry.element.symbol)") {
+            RepeatingStepButton(
+                symbol: "minus",
+                label: "Remove one \(entry.element.name.lowercased())",
+                identifier: "build.decrement.\(entry.element.symbol)"
+            ) {
                 onDecrement(entry.element.atomicNumber)
             }
-            Text("\(entry.count)")
-                .font(.system(.subheadline, weight: .semibold).monospacedDigit())
-                .foregroundStyle(AppColor.primaryText)
-                .frame(minWidth: 26)
-                .accessibilityLabel("\(entry.count) \(entry.element.name)")
-                .accessibilityIdentifier("build.count.\(entry.element.symbol)")
-            stepButton("plus", label: "Add one more \(entry.element.name.lowercased())",
-                       identifier: "build.increment.\(entry.element.symbol)") {
+
+            Button {
+                Haptics.tap()
+                typed = "\(entry.count)"
+                editing = entry
+            } label: {
+                Text("\(entry.count)")
+                    .font(.system(.subheadline, weight: .semibold).monospacedDigit())
+                    .foregroundStyle(AppColor.primaryText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(minWidth: 34)
+                    .frame(height: Theme.minimumTouchTarget)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(entry.count) \(entry.element.name)")
+            .accessibilityHint("Type a different count")
+            .accessibilityIdentifier("build.count.\(entry.element.symbol)")
+
+            RepeatingStepButton(
+                symbol: "plus",
+                label: "Add one more \(entry.element.name.lowercased())",
+                identifier: "build.increment.\(entry.element.symbol)"
+            ) {
                 onIncrement(entry.element.atomicNumber)
             }
         }
         .frame(height: 38)
         .background { Capsule().fill(AppColor.accent.opacity(0.10)) }
     }
+}
 
-    private func stepButton(_ symbol: String, label: String, identifier: String,
-                            action: @escaping () -> Void) -> some View {
-        Button {
-            Haptics.tap()
-            action()
-        } label: {
-            Image(systemName: symbol)
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(AppColor.accent)
-                .frame(width: 38, height: Theme.minimumTouchTarget)
-                .contentShape(Rectangle())
+/// A stepper end that fires once on a tap and keeps firing while held.
+///
+/// Built from a drag gesture with no movement threshold rather than a
+/// `LongPressGesture`, so the press is known to have started and ended; a long
+/// press only reports that it succeeded, which cannot stop a repeat.
+private struct RepeatingStepButton: View {
+    let symbol: String
+    let label: String
+    let identifier: String
+    let action: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var repeater: Task<Void, Never>?
+    @State private var isPressed = false
+
+    /// How long a press has to be held before it starts repeating, and how
+    /// fast it repeats once it does — slow to begin with, then quicker, so a
+    /// short hold is precise and a long one covers ground.
+    private static let holdDelay = Duration.milliseconds(450)
+    private static let startingInterval = Duration.milliseconds(140)
+    private static let fastestInterval = Duration.milliseconds(35)
+
+    var body: some View {
+        Image(systemName: symbol)
+            .font(.system(size: 13, weight: .bold))
+            .foregroundStyle(AppColor.accent)
+            .frame(width: 38, height: Theme.minimumTouchTarget)
+            .contentShape(Rectangle())
+            .scaleEffect(isPressed && !reduceMotion ? 0.86 : 1)
+            .animation(Theme.Motion.tap, value: isPressed)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in start() }
+                    .onEnded { _ in stop() }
+            )
+            .onDisappear { stop() }
+            .accessibilityElement()
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(label)
+            .accessibilityIdentifier(identifier)
+            .accessibilityAction { action() }
+    }
+
+    private func start() {
+        guard repeater == nil else { return }
+        isPressed = true
+        Haptics.tap()
+        action()
+        repeater = Task { @MainActor in
+            try? await Task.sleep(for: Self.holdDelay)
+            var interval = Self.startingInterval
+            while !Task.isCancelled {
+                action()
+                try? await Task.sleep(for: interval)
+                if Task.isCancelled { return }
+                // Accelerate toward the floor: about a second of holding gets
+                // from one a tap to a hundred a second.
+                interval = max(Self.fastestInterval, interval * 0.82)
+            }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(label)
-        .accessibilityIdentifier(identifier)
+    }
+
+    private func stop() {
+        repeater?.cancel()
+        repeater = nil
+        isPressed = false
     }
 }
 

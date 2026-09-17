@@ -120,6 +120,7 @@ struct CompoundBuilderScreen: View {
             canAddElement: model.canAddElement,
             onIncrement: model.increment,
             onDecrement: model.decrement,
+            onSetCount: { atomicNumber, count in model.setCount(count, for: atomicNumber) },
             onRemove: model.remove,
             onAdd: { showsPicker = true },
             onClear: model.clear

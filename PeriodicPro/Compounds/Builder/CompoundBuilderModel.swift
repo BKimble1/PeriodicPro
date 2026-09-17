@@ -49,8 +49,32 @@ final class CompoundBuilderModel {
         case remote
     }
 
-    static let maximumDistinctElements = 6
-    static let maximumCountPerElement = 30
+    /// How many different elements one composition may name.
+    ///
+    /// Sixteen, not six. Six ruled out a great deal of real chemistry —
+    /// chlorophyll a is C₅₅H₇₂MgN₄O₅, and any organometallic with a couple of
+    /// halogens passes six without being exotic. This is a resource bound on
+    /// the tray, not a claim about what molecules can contain.
+    static let maximumDistinctElements = 16
+
+    /// How many atoms of one element a composition may name.
+    ///
+    /// Nine hundred and ninety-nine, which is a software safety limit rather
+    /// than a statement about chemistry. The thirty it replaces was the second
+    /// kind: it made cholesterol (C₂₇H₄₆O) unbuildable because of the
+    /// forty-six hydrogens, and β-carotene (C₄₀H₅₆) unbuildable twice over.
+    /// Real formulas run far past both.
+    static let maximumCountPerElement = 999
+
+    /// Every atom in the composition, bounded so a formula cannot be made
+    /// arbitrarily large by adding elements.
+    ///
+    /// Separate from what gets drawn. A composition may name thousands of
+    /// atoms; whether a molecule of that size is rendered atom by atom is a
+    /// question for the structure views, which have their own thresholds, and
+    /// never a reason to refuse the formula.
+    static let maximumTotalAtoms = 4_000
+
     /// How long the learner has to stop editing before PubChem is asked.
     static let lookupDebounce: Duration = .milliseconds(650)
 
@@ -66,6 +90,8 @@ final class CompoundBuilderModel {
 
     var isEmpty: Bool { entries.isEmpty }
     var canAddElement: Bool { entries.count < Self.maximumDistinctElements }
+    /// The range a count may be typed into.
+    static var countRange: ClosedRange<Int> { 1...maximumCountPerElement }
 
     /// Atomic number → count.
     var composition: [Int: Int] {
@@ -119,26 +145,51 @@ final class CompoundBuilderModel {
             increment(entries[index].element.atomicNumber)
             return
         }
-        guard canAddElement else { return }
+        guard canAddElement, totalAtoms < Self.maximumTotalAtoms else { return }
         entries.append(Entry(element: element, count: 1))
         compositionChanged()
     }
 
     func increment(_ atomicNumber: Int) {
-        guard let index = entries.firstIndex(where: { $0.element.atomicNumber == atomicNumber }),
-              entries[index].count < Self.maximumCountPerElement else { return }
-        entries[index].count += 1
+        guard let index = entries.firstIndex(where: { $0.element.atomicNumber == atomicNumber }) else { return }
+        setCount(entries[index].count + 1, for: atomicNumber)
+    }
+
+    /// Sets a count directly — what typing a number into the tray does.
+    ///
+    /// Clamped rather than rejected: a learner who types 1500 gets the cap,
+    /// which is a visible answer, instead of a field that silently refuses
+    /// them. Zero and below remove the element, which is what the minus button
+    /// at one already does.
+    func setCount(_ count: Int, for atomicNumber: Int) {
+        guard let index = entries.firstIndex(where: { $0.element.atomicNumber == atomicNumber }) else { return }
+        guard count >= 1 else {
+            remove(atomicNumber)
+            return
+        }
+        let headroom = Self.maximumTotalAtoms - (totalAtoms - entries[index].count)
+        let clamped = min(count, Self.maximumCountPerElement, max(1, headroom))
+        guard clamped != entries[index].count else { return }
+        entries[index].count = clamped
         compositionChanged()
+    }
+
+    /// Parses what was typed. `nil` for anything that is not a whole number,
+    /// so the field can say so rather than quietly becoming 1.
+    static func parseCount(_ text: String) -> Int? {
+        let digits = text.trimmingCharacters(in: .whitespaces)
+        guard !digits.isEmpty, digits.count <= 6, digits.allSatisfy(\.isWholeNumber) else { return nil }
+        return Int(digits)
     }
 
     func decrement(_ atomicNumber: Int) {
         guard let index = entries.firstIndex(where: { $0.element.atomicNumber == atomicNumber }) else { return }
         if entries[index].count > 1 {
             entries[index].count -= 1
+            compositionChanged()
         } else {
-            entries.remove(at: index)
+            remove(atomicNumber)
         }
-        compositionChanged()
     }
 
     func remove(_ atomicNumber: Int) {
