@@ -56,8 +56,17 @@ If you ever need to register it again:
 1. Go to <https://developer.apple.com/account/resources/identifiers/list>.
 2. **Identifiers → + → App IDs → App**.
 3. Description: `Elemora`. Bundle ID: **Explicit**, `com.idlery.periodicpro`.
-4. Capabilities: leave everything off. The app needs none.
+4. Capabilities: tick **Associated Domains**. Nothing else is needed.
 5. Register.
+
+**Associated Domains is required.** Elemora's shared quiz links are universal
+links to `elemora.idlery.com`, and `Config/Elemora.entitlements` claims
+`applinks:elemora.idlery.com`. If the capability is not enabled on the App ID,
+the archive step fails to sign with a provisioning-profile error naming the
+entitlement. The fix is the portal toggle above for `com.idlery.periodicpro`,
+not removing the entitlement — removing it would silently turn every shared
+quiz link into a web page that cannot open the app. The TestFlight workflow
+detects this specific failure and prints it as an actionable error.
 
 ---
 
@@ -248,11 +257,12 @@ to Submit* before a TestFlight sandbox purchase will work. See
 app reads every price from StoreKit, so nothing needs changing in code when you
 set them.
 
-**Privacy Policy URL and Terms of Use (EULA)** — both are required in App
-Information because the app sells a subscription. Host the text of
-`PRIVACY.md` and use its URL for the policy. For terms, Apple's standard EULA
-is sufficient and is what the paywall links to; leave the custom EULA field
-empty to use it.
+**Privacy Policy URL and Terms of Use (EULA)** are both required in App
+Information because the app sells a subscription. Elemora hosts its own pages
+and the paywall links to them, so use the same two URLs here:
+`https://elemora.idlery.com/privacy` and `https://elemora.idlery.com/terms`.
+`PRIVACY.md` is the source text for the privacy page, and `Website/site/` holds
+both pages ready to deploy.
 
 **Export compliance** — handled automatically. `Config/Info.plist` sets
 `ITSAppUsesNonExemptEncryption` to `false`, so TestFlight never stops to ask.

@@ -151,17 +151,6 @@ final class CompoundBuilderModel {
         compositionChanged()
     }
 
-    /// Loads a known compound's composition into the tray, for "edit this".
-    func load(_ compound: ChemicalCompound, catalog: ElementCatalog) {
-        entries = compound.composition.keys.sorted().compactMap { number in
-            guard let element = catalog.element(atomicNumber: number), let count = compound.composition[number] else {
-                return nil
-            }
-            return Entry(element: element, count: min(count, Self.maximumCountPerElement))
-        }
-        compositionChanged()
-    }
-
     func resetLookup() {
         task?.cancel()
         task = nil

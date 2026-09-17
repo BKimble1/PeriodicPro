@@ -88,9 +88,10 @@ change. `Tools/check_storekit.py` fails the build if the identifiers in
    app does not need it, because it has no server and reads entitlement directly
    from the device.
 8. Set the **Privacy Policy URL** and **Terms of Use (EULA)** in App Information.
-   The paywall links to Apple's standard EULA and shows the app's own privacy
-   statement in a sheet, but App Store Connect still requires a hosted privacy
-   policy URL. `PRIVACY.md` is the text to host.
+   The paywall links to Elemora's own pages — `https://elemora.idlery.com/privacy`
+   and `https://elemora.idlery.com/terms` — so use those two URLs here as well.
+   `PRIVACY.md` is the source text for the privacy page; `Website/site/` holds
+   both pages ready to deploy.
 
 Products can be submitted for review alongside the first build that contains
 them. They must be **Approved** before a TestFlight sandbox purchase will
