@@ -89,7 +89,17 @@ final class ElemoraScreenshotTests: XCTestCase {
         else { return false }
         let visible = frame.intersection(app.windows.firstMatch.frame)
         guard visible.width >= 8, visible.height >= 8 else { return false }
-        return element.isHittable
+        // Even inside the window, an element whose every hit point lands on
+        // something else — a button that has scrolled under the tab bar —
+        // makes iOS 26 record "Failed to determine hittability" instead of
+        // answering no. For a loop that is about to scroll and ask again,
+        // that is a no; anything else XCTest records still counts.
+        let options = XCTExpectedFailure.Options()
+        options.isStrict = false
+        options.issueMatcher = { $0.compactDescription.contains("Failed to determine hittability") }
+        return XCTExpectFailure("hittability undetermined mid-scroll", options: options) {
+            element.isHittable
+        }
     }
 
     /// Whether the element is somewhere a finger could land, waiting up to
@@ -97,9 +107,15 @@ final class ElemoraScreenshotTests: XCTestCase {
     /// still sliding in vends its rows before they are on screen, and a tap
     /// aimed at one of them then lands on whatever is underneath.
     private func becomesHittable(_ element: XCUIElement, within timeout: TimeInterval) -> Bool {
-        let hittable = NSPredicate { [self] _, _ in canTap(element) }
-        let expectation = XCTNSPredicateExpectation(predicate: hittable, object: nil)
-        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
+        // A plain loop on the test thread rather than a predicate expectation:
+        // `canTap` uses `XCTExpectFailure`, which belongs on the thread the
+        // test runs on, not on whatever thread evaluates a predicate.
+        let deadline = Date().addingTimeInterval(timeout)
+        while true {
+            if canTap(element) { return true }
+            if Date() >= deadline { return false }
+            settle(0.25)
+        }
     }
 
     /// Scrolls while looking, rather than waiting for the element to exist and
@@ -215,6 +231,21 @@ final class ElemoraScreenshotTests: XCTestCase {
         app.descendants(matching: .any)
             .matching(NSPredicate(format: "label CONTAINS[c] %@", fragment))
             .firstMatch
+    }
+
+    /// Empties the composition tray and proves it is empty.
+    ///
+    /// A tap that silently misses used to leave the previous compound in the
+    /// tray, and the next lookup then searched water plus ethanol — a formula
+    /// nobody has, so the tour waited for candidates that could not come.
+    private func clearTray() {
+        let empty = el("build.empty")
+        for _ in 0..<2 {
+            guard !empty.exists else { return }
+            tap(app.buttons["build.clear"])
+            if empty.waitForExistence(timeout: 4) { return }
+        }
+        XCTAssertTrue(empty.exists, "The tray should be empty after Clear" + onScreen())
     }
 
     /// Adds an element through the builder's picker and confirms it landed in
@@ -382,7 +413,7 @@ final class ElemoraScreenshotTests: XCTestCase {
         waitFor(el("build.result"))
         settle()
         capture("17-build-water")
-        tap(app.buttons["build.clear"])
+        clearTray()
         addElement("C")
         tap(app.buttons["build.increment.C"])
         addElement("H")
@@ -437,6 +468,13 @@ final class ElemoraScreenshotTests: XCTestCase {
                 if !retried {
                     retried = true
                     tap(app.buttons["paywall.retry"])
+                    // The retry clears `hasAttemptedLoad`, so this block is
+                    // replaced by the loading state — but not in the same
+                    // frame as the tap. Reading it again straight away would
+                    // see the state the tap was meant to change and call it a
+                    // second failure, so wait for the answer instead.
+                    settle(1.5)
+                    _ = yearly.waitForExistence(timeout: 30)
                     continue
                 }
                 XCTFail("The paywall rendered its \"options unavailable\" state: "

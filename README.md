@@ -549,7 +549,7 @@ Everything you might want to change is in `Config/Shared.xcconfig`:
 | --- | --- | --- |
 | `APP_DISPLAY_NAME` | `Elemora` | Name under the icon |
 | `PRODUCT_BUNDLE_IDENTIFIER_BASE` | `com.idlery.periodicpro` | Registered at Apple. **Do not change** — see below |
-| `MARKETING_VERSION` | `1.0.0` | Semantic version |
+| `MARKETING_VERSION` | `3.0.0` | Semantic version |
 | `CURRENT_PROJECT_VERSION` | `1` | Build number; CI overrides it |
 | `APP_DEVELOPMENT_TEAM` | *(empty)* | Your Team ID, via `Config/Local.xcconfig` or CI |
 | `IPHONEOS_DEPLOYMENT_TARGET` | `18.0` | Minimum iOS version |

@@ -18,7 +18,7 @@ APP_DISPLAY_NAME = Elemora
 PRODUCT_BUNDLE_IDENTIFIER_BASE = com.idlery.periodicpro
 
 // Semantic marketing version. Bump for every release you show to testers.
-MARKETING_VERSION = 1.0.0
+MARKETING_VERSION = 3.0.0
 
 // Build number. CI overrides this on the command line with a monotonic value.
 CURRENT_PROJECT_VERSION = 1

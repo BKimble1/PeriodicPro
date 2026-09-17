@@ -127,11 +127,12 @@ compound lookup sends a chemical name or formula to PubChem to answer that one
 request, on the spot; nothing identifies the person, nothing is retained by
 this project (it has no server), and PubChem is not a partner of the developer
 — it is a public reference service the app queries the way a browser would.
-Search history stays on the device and is never uploaded. Should Apple's
-reviewers read a compound search term as "Search History" collected by a third
-party, the honest fallback would be to declare **Search History — Not linked to
-you — App Functionality** for that one category; nothing in the app would need
-to change.
+Search history stays on the device and is never uploaded.
+
+This is checkable rather than asserted. The app links no third-party package
+at all, contains no analytics, advertising or attribution SDK, and the only
+two URLs anywhere in its source are PubChem's public REST endpoint and
+Apple's standard license page, which is a link rather than a request.
 
 The bundled `PeriodicPro/PrivacyInfo.xcprivacy` privacy manifest matches the
 "No" answer: `NSPrivacyTracking` is `false`, `NSPrivacyTrackingDomains` and
@@ -151,4 +152,4 @@ means TestFlight distributes builds without stopping to ask.
 
 Questions about this document belong in the repository's issue tracker.
 
-_Last updated for the compound beta (version 1.0.0)._
+_Last updated for the compound release (version 3.0.0)._

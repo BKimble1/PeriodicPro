@@ -324,6 +324,11 @@ struct PaywallView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, Theme.Spacing.l)
+            // Contained rather than merged: an identifier on a plain
+            // container propagates down and renames everything under it, so
+            // the Try again button was vended as "paywall.unavailable" too
+            // and nothing could find it — by identifier or by VoiceOver.
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("paywall.unavailable")
         }
     }

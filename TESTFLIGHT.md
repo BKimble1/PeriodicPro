@@ -313,7 +313,7 @@ The user-visible name lives in `Config/Shared.xcconfig`:
 | Setting | Effect | Current value |
 | --- | --- | --- |
 | `APP_DISPLAY_NAME` | The name under the icon | `Elemora` |
-| `MARKETING_VERSION` | The version testers see | `1.0.0` |
+| `MARKETING_VERSION` | The version testers see | `3.0.0` |
 | `CURRENT_PROJECT_VERSION` | Build number (CI overrides this) | `1` |
 | `APP_DEVELOPMENT_TEAM` | Signing team | supplied by CI |
 
