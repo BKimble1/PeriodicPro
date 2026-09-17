@@ -347,12 +347,25 @@ final class PeriodicProUITests: XCTestCase {
         // Measured on the widest tile rather than on hydrogen: a zoomed table
         // that has been panned may have hydrogen off screen entirely, and a
         // tile that is not on screen has no width to compare.
-        table.pinch(withScale: 0.35, velocity: -2.0)
+        //
+        // And pinched more than once. XCUITest cannot synthesize an arbitrary
+        // scale — the two fingers have to start and finish inside the element
+        // — so one pinch closed from 2.5x lands around 1.26x, which the app is
+        // right to leave alone: the snap-to-fitted floor is 1.04, and 1.26 is
+        // a zoom the learner chose. A person pinches again. Asserting the
+        // table was fitted after a single gesture was asserting on how far
+        // XCUITest can move two fingers, not on anything the app does.
+        var pinches = 0
+        while pinches < 4, Self.largestTileWidth(in: app) > before * 1.2 {
+            table.pinch(withScale: 0.35, velocity: -2.0)
+            pinches += 1
+            settle(0.8)
+        }
         XCTAssertTrue(
             waitForWidestTile(atMost: before * 1.2, within: 8),
             "Pinching in should return the table to its fitted size; tiles were "
-            + "\(before) wide fitted and are \(Self.largestTileWidth(in: app)) wide now"
-            + onScreen()
+            + "\(before) wide fitted and are \(Self.largestTileWidth(in: app)) wide "
+            + "after \(pinches) pinches" + onScreen()
         )
         XCTAssertTrue(app.buttons["element.Og"].waitForExistence(timeout: 5),
                       "every column should be back on screen\(onScreen())")

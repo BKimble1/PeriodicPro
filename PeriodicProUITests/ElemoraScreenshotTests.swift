@@ -393,7 +393,18 @@ final class ElemoraScreenshotTests: XCTestCase {
         // Back to fitted by pinching in. Not a double tap: XCUITest taps the
         // middle of the element, and the middle of a zoomed table is a tile,
         // which would open an element's page instead.
-        table.pinch(withScale: 0.35, velocity: -2.0)
+        //
+        // More than once, because XCUITest cannot synthesize an arbitrary
+        // scale — the fingers have to start and finish inside the element — so
+        // one pinch closed from 2.5x lands near 1.26x. Every frame from here
+        // on is of the fitted table, and a half-zoomed one scrolled sideways
+        // is not a screenshot anybody wants to submit.
+        var pinches = 0
+        while pinches < 4, Self.widestTile(in: app) > fittedWidth * 1.2 {
+            table.pinch(withScale: 0.35, velocity: -2.0)
+            pinches += 1
+            settle(0.8)
+        }
         settle(1.0)
 
         // 9b. The Families card as the detailed filter, with two selected.
