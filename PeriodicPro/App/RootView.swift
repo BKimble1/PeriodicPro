@@ -58,6 +58,13 @@ struct RootView: View {
             guard savedQuizzes.open(shareURL: url, catalog: catalog) else { return }
             selection = .study
         }
+        // A tapped notification lands where it said it would. Every
+        // destination is a tab this app already has; nothing here can open
+        // anything a learner could not reach themselves.
+        .onReceive(NotificationCenter.default.publisher(for: .elemoraNotificationTapped)) { note in
+            guard let destination = note.object as? NotificationDestination else { return }
+            selection = destination.tab
+        }
         .preferredColorScheme(appearance.colorScheme)
     }
 

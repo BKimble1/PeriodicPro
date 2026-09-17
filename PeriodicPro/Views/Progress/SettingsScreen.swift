@@ -1,5 +1,6 @@
 import StoreKit
 import SwiftUI
+import UIKit
 
 /// Everything there is to set, and every link there is to follow.
 ///
@@ -15,6 +16,7 @@ struct SettingsScreen: View {
     @Environment(ProgressStore.self) private var progress: ProgressStore
     @Environment(SubscriptionManager.self) private var store: SubscriptionManager
     @Environment(\.openURL) private var openURL
+    @Environment(StudyNotificationScheduler.self) private var notifications: StudyNotificationScheduler
 
     @AppStorage(AppAppearance.storageKey) private var appearanceRaw = AppAppearance.system.rawValue
 
@@ -43,6 +45,7 @@ struct SettingsScreen: View {
     var body: some View {
         List {
             proSection
+            notificationsSection
             appearanceSection
             supportSection
             legalSection
@@ -119,6 +122,113 @@ struct SettingsScreen: View {
                  + "happens in the App Store's own subscription settings, which Manage Subscription "
                  + "opens.")
         }
+    }
+
+    // MARK: - Notifications
+
+    /// Everything off until the learner turns it on, and the system is asked
+    /// only at that moment — never at launch, and never as a side effect of
+    /// something else.
+    private var notificationsSection: some View {
+        Section {
+            Toggle(isOn: Binding(
+                get: { notifications.preferences.isEnabled },
+                set: { wanted in
+                    Task { @MainActor in
+                        if wanted {
+                            await notifications.enable(state: notificationState)
+                        } else {
+                            await notifications.disable()
+                        }
+                    }
+                }
+            )) {
+                Text("Study Notifications")
+                    .foregroundStyle(AppColor.primaryText)
+            }
+            .accessibilityIdentifier("settings.notifications.master")
+
+            if notifications.isBlockedBySystem {
+                // Honest about who is saying no. A switch that is on and
+                // silently doing nothing is worse than no switch.
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    Label("Notifications Off", systemImage: "bell.slash")
+                        .font(AppFont.footnote.weight(.semibold))
+                        .foregroundStyle(AppColor.warning)
+                    Text("iOS is blocking notifications for Elemora, so nothing can be sent "
+                         + "until that is changed.")
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button("Open iOS Settings") {
+                        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                        openURL(url)
+                    }
+                    .font(AppFont.caption.weight(.semibold))
+                    .accessibilityIdentifier("settings.notifications.openSystem")
+                }
+                .padding(.vertical, 2)
+                .accessibilityIdentifier("settings.notifications.blocked")
+            }
+
+            if notifications.preferences.isEnabled, !notifications.isBlockedBySystem {
+                ForEach(StudyNotificationCategory.allCases) { category in
+                    Toggle(isOn: Binding(
+                        get: { notifications.preferences.enabledCategories.contains(category) },
+                        set: { wanted in
+                            Task { @MainActor in
+                                await notifications.setCategory(
+                                    category, enabled: wanted, state: notificationState
+                                )
+                            }
+                        }
+                    )) {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(category.title)
+                                .foregroundStyle(AppColor.primaryText)
+                            Text(category.explanation)
+                                .font(AppFont.caption)
+                                .foregroundStyle(AppColor.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .accessibilityIdentifier("settings.notifications.\(category.rawValue)")
+                }
+
+                DatePicker(
+                    "Preferred time",
+                    selection: Binding(
+                        get: { preferredTime },
+                        set: { newValue in
+                            let parts = Calendar.current.dateComponents([.hour, .minute], from: newValue)
+                            Task { @MainActor in
+                                await notifications.setPreferredTime(
+                                    hour: parts.hour ?? 18, minute: parts.minute ?? 30,
+                                    state: notificationState
+                                )
+                            }
+                        }
+                    ),
+                    displayedComponents: .hourAndMinute
+                )
+                .accessibilityIdentifier("settings.notifications.time")
+            }
+        } header: {
+            Text("Notifications")
+        } footer: {
+            Text("At most one a day, and only when something is actually waiting. Notifications "
+                 + "are created on this device — Elemora has no notification server and nothing "
+                 + "about what you study leaves the device to produce one.")
+        }
+        .task { await notifications.refreshAuthorization() }
+    }
+
+    private var preferredTime: Date {
+        notifications.preferences.time(on: Date(), calendar: .current) ?? Date()
+    }
+
+    private var notificationState: StudyNotificationState {
+        StudyNotificationState.current(progress: progress)
     }
 
     // MARK: - Appearance

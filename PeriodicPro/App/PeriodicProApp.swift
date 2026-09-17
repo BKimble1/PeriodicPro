@@ -2,6 +2,7 @@ import Observation
 import OSLog
 import SwiftData
 import SwiftUI
+import UserNotifications
 
 /// Entry point. Builds the two long-lived services and hands them to the
 /// view hierarchy through the environment.
@@ -10,6 +11,10 @@ import SwiftUI
 struct PeriodicProApp: App {
     @State private var services = AppServices()
     @State private var hasLaunched = false
+    /// Held for the life of the app: `UNUserNotificationCenter` keeps its
+    /// delegate weakly, and a delegate that is deallocated stops receiving
+    /// taps without saying so.
+    @State private var notificationDelegate = StudyNotificationDelegate()
     @Environment(\.scenePhase) private var scenePhase
 
     /// Whether there is an app worth showing yet: a dataset resolved one way
@@ -33,12 +38,17 @@ struct PeriodicProApp: App {
                 .environment(services.store)
                 .environment(services.compounds)
                 .environment(services.savedQuizzes)
+                .environment(services.notifications)
                 .tint(AppColor.accent)
                 // Starting the StoreKit listener here rather than in
                 // `AppServices.init` keeps the initializer synchronous and
                 // means a transaction that completed while the app was closed
                 // is picked up as soon as there is a scene to show it in.
                 .task { services.store.start() }
+                .task {
+                    UNUserNotificationCenter.current().delegate = notificationDelegate
+                    await services.notifications.refreshAuthorization()
+                }
                 // The free daily allowance is measured against the current
                 // calendar day. Backgrounding the app overnight is the normal
                 // case, so without this a learner who used their rounds last
@@ -46,6 +56,14 @@ struct PeriodicProApp: App {
                 .onChange(of: scenePhase) { _, phase in
                     guard phase == .active else { return }
                     services.progress.refreshCompletedRoundsToday()
+                    // Every foreground reconciles what is scheduled with what
+                    // the learner's progress now calls for, so nothing stale
+                    // is ever left pending.
+                    Task { @MainActor in
+                        await services.notifications.reconcile(
+                            state: .current(progress: services.progress)
+                        )
+                    }
                 }
                 // The loading screen sits over the whole window, above the
                 // tabs and above onboarding, so the first thing a learner
@@ -77,6 +95,9 @@ final class AppServices {
     let compounds: CompoundStore
     /// The learner's own quizzes.
     let savedQuizzes: SavedQuizStore
+    /// Local study reminders. Nothing is scheduled, and no permission is
+    /// asked for, until the learner turns a category on in Settings.
+    let notifications: StudyNotificationScheduler
     /// Non-nil when `elements.json` could not be read, which drives the
     /// data-unavailable screen instead of an empty, silent table.
     let catalogError: String?
@@ -108,6 +129,16 @@ final class AppServices {
         self.store = SubscriptionManager()
         self.compounds = Self.makeCompoundStore(container: outcome.container)
         self.savedQuizzes = SavedQuizStore(container: outcome.container)
+        // A UI-test launch gets a scheduler that talks to nothing, so no run
+        // can leave a notification pending on the simulator.
+        let isTesting = RuntimeFlags.isUITesting
+        let center: NotificationScheduling = isTesting
+            ? InertNotificationScheduler()
+            : SystemNotificationScheduler()
+        let store = isTesting
+            ? (UserDefaults(suiteName: "uiTesting.notifications") ?? .standard)
+            : .standard
+        self.notifications = StudyNotificationScheduler(center: center, defaults: store)
     }
 
     /// The compound store, with the network wired the way this launch needs.

@@ -75,6 +75,7 @@ RETAINED_IDENTIFIERS = {
         "documents the signed app ID com.idlery.periodicpro the association file names",
     "PeriodicPro/Store/SubscriptionProduct.swift":
         "those product identifiers and the periodicpro.pro group identifier",
+    "PeriodicProTests/NotificationTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ProGateTests.swift":
         "asserts the product identifiers have not drifted",
 
@@ -119,6 +120,8 @@ RETAINED_IDENTIFIERS = {
     "PeriodicProTests/SettingsTests.swift": "@testable import PeriodicPro",
 
     # --- Source naming the log subsystem or the test target ---
+    "PeriodicPro/Notifications/StudyNotificationScheduler.swift":
+        "os.log subsystem com.periodicpro.app",
     "PeriodicPro/Store/SubscriptionManager.swift":
         "os.log subsystem com.periodicpro.app",
     "PeriodicPro/Persistence/PersistenceController.swift":
