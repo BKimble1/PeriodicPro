@@ -78,6 +78,78 @@ def strip_literals(line: str) -> str:
     return STRING_OR_COMMENT.sub(lambda m: " " * len(m.group(0)), line)
 
 
+MUTATING_FUNC = re.compile(r"\bmutating\s+func\s+(\w+)")
+MACRO_CALL = re.compile(r"#(?:expect|require)\s*\(")
+# A value receiver (lowercase) calling a method, optionally negated. An
+# uppercase receiver is a type, and a static method is never mutating.
+BARE_CALL = re.compile(r"^!?\s*([a-z]\w*)\.(\w+)\(")
+
+
+def mutating_method_names() -> set[str]:
+    """Every method declared `mutating` anywhere in the project."""
+    names: set[str] = set()
+    for path in swift_files():
+        with open(os.path.join(ROOT, path), encoding="utf-8") as handle:
+            names.update(MUTATING_FUNC.findall(handle.read()))
+    return names
+
+
+def first_argument(arguments: str) -> str:
+    """The text up to the first top-level comma."""
+    depth = 0
+    in_string = False
+    for index, character in enumerate(arguments):
+        if character == '"':
+            in_string = not in_string
+        elif in_string:
+            continue
+        elif character in "([{":
+            depth += 1
+        elif character in ")]}":
+            depth -= 1
+        elif character == "," and depth == 0:
+            return arguments[:index]
+    return arguments
+
+
+def check_mutating_in_expectations(path: str, raw: str, mutating: set[str],
+                                   errors: list[str]) -> None:
+    """A bare mutating call cannot be the whole of an `#expect`.
+
+        #expect(ledger.markMerged(id))          // does not compile
+        #expect(stabilizer.observe(x) == nil)   // compiles
+
+    The difference is which path the macro takes. Given a comparison it
+    evaluates each side and captures the values. Given a single call it
+    rewrites the call itself, so it can name the receiver and the arguments
+    when the expectation fails — and the receiver in that rewrite is a `let`,
+    so a mutating method is rejected. The error it produces names `$0` and a
+    line nobody wrote, which is why this is worth catching here instead.
+
+    Bind the result first and assert on the binding.
+    """
+    if not mutating:
+        return
+    for match in MACRO_CALL.finditer(raw):
+        arguments = balanced_argument_text(raw, match.end() - 1)
+        argument = first_argument(arguments).strip()
+        call = BARE_CALL.match(argument)
+        if not call or call.group(2) not in mutating:
+            continue
+        # Only when the call *is* the whole expectation: anything after its
+        # closing parenthesis means a comparison, which compiles.
+        remainder = balanced_argument_text(argument, call.end() - 1)
+        if argument[call.end() - 1 + len(remainder) + 2:].strip():
+            continue
+        line = raw.count("\n", 0, match.start()) + 1
+        errors.append(
+            f"{path}:{line}: '{call.group(2)}' is a mutating method and is the "
+            "whole of an #expect/#require, where the macro rewrites the call "
+            "and makes its receiver immutable; bind the result first and "
+            "assert on the binding"
+        )
+
+
 def balanced_argument_text(source: str, open_index: int) -> str:
     """The text between `(` at `open_index` and its matching `)`."""
     depth = 0
@@ -117,10 +189,11 @@ def check_log_messages(path: str, raw: str, errors: list[str]) -> None:
         )
 
 
-def check(path: str, errors: list[str]) -> None:
+def check(path: str, errors: list[str], mutating: set[str] | None = None) -> None:
     with open(os.path.join(ROOT, path), encoding="utf-8") as handle:
         raw = handle.read()
     lines = raw.split("\n")
+    check_mutating_in_expectations(path, raw, mutating or set(), errors)
 
     if not raw.endswith("\n"):
         errors.append(f"{path}: file does not end with a newline")
@@ -268,8 +341,9 @@ def check_symbols(errors: list[str]) -> None:
 def main() -> int:
     errors: list[str] = []
     files = swift_files()
+    mutating = mutating_method_names()
     for path in files:
-        check(path, errors)
+        check(path, errors, mutating)
     check_symbols(errors)
 
     for error in errors:

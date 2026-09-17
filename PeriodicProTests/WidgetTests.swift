@@ -123,14 +123,20 @@ struct WidgetBridgeTests {
         defer { sandbox.tearDown() }
         var ledger = sandbox.ledger
         let identifiers = (0..<(WidgetMergeLedger.capacity + 10)).map { _ in UUID() }
-        for id in identifiers { #expect(ledger.markMerged(id)) }
+        // `#expect` captures its subexpressions in a closure, so a mutating
+        // call has to happen outside it and be asserted on afterwards.
+        for id in identifiers {
+            let wasNew = ledger.markMerged(id)
+            #expect(wasNew)
+        }
 
         #expect(ledger.count == WidgetMergeLedger.capacity)
         // The newest are kept; the oldest ten have aged out, which is the
         // trade the bound buys.
         #expect(ledger.contains(identifiers.last!))
         #expect(!ledger.contains(identifiers.first!))
-        #expect(!ledger.markMerged(identifiers.last!))
+        let repeated = ledger.markMerged(identifiers.last!)
+        #expect(!repeated)
     }
 
     // MARK: - What a merge does to progress

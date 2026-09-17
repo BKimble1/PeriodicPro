@@ -218,7 +218,11 @@ enum WidgetBridge {
 /// cleared after every merge, so the ledger only has to outlive the window
 /// between a merge and the clear that follows it. A few hundred entries is
 /// orders of magnitude more than that window can hold.
-struct WidgetMergeLedger: Sendable {
+///
+/// Not `Sendable`: it holds a `UserDefaults`, which is not, and it has no
+/// reason to cross an actor — every caller is on the main actor with the
+/// progress store it is merging into.
+struct WidgetMergeLedger {
     static let storageKey = "widget.mergedEventIDs"
     static let capacity = 500
 

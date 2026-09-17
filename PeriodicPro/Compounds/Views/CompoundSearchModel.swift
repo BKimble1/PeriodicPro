@@ -37,7 +37,10 @@ final class CompoundSearchModel {
 
     static let debounce: Duration = .milliseconds(400)
     static let suggestionDebounce: Duration = .milliseconds(320)
-    static let minimumRemoteLength = 3
+    /// `nonisolated` because `shouldQueryRemote` is, and reading a main
+    /// actor-isolated static from a nonisolated function is an error under
+    /// Swift 6. A constant has no isolation to lose.
+    nonisolated static let minimumRemoteLength = 3
     /// Short enough to feel instant on a prefix, long enough to be worth
     /// asking about.
     static let minimumSuggestionLength = 2

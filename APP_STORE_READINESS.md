@@ -85,6 +85,30 @@ submission where it 404s.
 | Deep links land where they say | **PASS** | `NotificationDestination` round-trips through `userInfo`; unit-tested |
 | Stale requests cannot accumulate | **PASS** | Stable identifiers, and every reconcile removes this app's own pending requests first; unit-tested |
 
+## 4a. The Home Screen widget
+
+| Item | Verdict | Evidence |
+| --- | --- | --- |
+| The widget reaches no network | **PASS** | `ElemoraWidgets/` contains no URL, no `URLSession` and no networking import; it reads one JSON file |
+| The widget never writes the learner's progress | **PASS** | It appends to a log; `WidgetBridge` in the app is the only thing that writes `ProgressStore` |
+| A repeated intent cannot double-count | **PASS** | A UUID per answer plus a bounded merge ledger; unit-tested, including a second merge of the same batch |
+| Existing progress is not migrated or erased | **PASS** | No schema change: `WidgetBridge` calls the same `recordAnswer` a study round does. A test asserts pre-existing progress is identical after a merge |
+| The App Group is the only new capability | **PASS** | `Config/Elemora.entitlements` and `Config/ElemoraWidgets.entitlements` declare `com.apple.security.application-groups` and nothing else; `Tools/check_widget_shared.py` fails if the app gains a third |
+| An unavailable App Group is handled | **PASS** | Every store takes an optional URL and no-ops on `nil`; the widget renders an explanatory state; unit-tested |
+| The extension declares its extension point | **PASS** | `Config/ElemoraWidgets-Info.plist`, checked by `Tools/check_widget_shared.py` — without it the widget builds and never appears |
+| The shared serialization cannot drift | **PASS** | Byte-for-byte comparison of the two copies, in `Tools/verify.sh` and CI |
+
+**MANUAL ACTION — Apple Developer portal:** the App Group
+`group.com.idlery.periodicpro` and the widget's App ID
+`com.idlery.periodicpro.widgets` must exist under the team. Archiving passes
+`-allowProvisioningUpdates` with the App Store Connect API key, which normally
+registers both on the first archive — but that depends on the key having the
+**App Manager** role. If the archive fails on provisioning, create the App
+Group under *Certificates, Identifiers & Profiles → Identifiers → App Groups*,
+enable it on both App IDs, and re-run. This is the one part of Build 5 that
+can fail at signing, which is why the widget is its own commit and can be
+reverted on its own.
+
 ## 5. Privacy manifest and required-reason APIs
 
 | Item | Verdict | Evidence |
@@ -95,7 +119,8 @@ submission where it 404s.
 | `NSPrivacyCollectedDataTypes` empty | **PASS** | Nothing is transmitted off the device in a form that outlives servicing the request. Reasoning in `PRIVACY.md` → *App Store privacy declaration* |
 | `UserDefaults` reason declared | **PASS** | `CA92.1` |
 | File timestamp reason declared | **PASS** | `C617.1` |
-| No newly used required-reason API | **PASS** | Build 5 adds AVFoundation authorization, VisionKit and UserNotifications. None is on Apple's required-reason list; no disk-space, boot-time or active-keyboard API is used |
+| No newly used required-reason API | **PASS** | Build 5 adds AVFoundation authorization, VisionKit, UserNotifications, WidgetKit and AppIntents. None is on Apple's required-reason list; no disk-space, boot-time or active-keyboard API is used |
+| The widget's file access is already declared | **PASS** | It reads and writes JSON in the app group container, covered by the existing `C617.1` file-timestamp reason; it uses no `UserDefaults` |
 
 **MANUAL ACTION — App Store Connect:** confirm the *App Privacy* answers still
 read **"Data Not Collected"**. Build 5 does not change what leaves the device,
@@ -113,6 +138,8 @@ to change with them.
 | Associated Domains | **PASS** (already enabled) | `Config/Elemora.entitlements`; shared quiz links depend on it |
 | Camera | **PASS** | Needs a purpose string only — no entitlement and no App ID capability |
 | Notifications | **PASS** | Local notifications need no entitlement |
+| App Groups | **NEEDS FIRST ARCHIVE** | New in Build 5, for the widget. See *4a*: automatic provisioning should register it, and the manual fallback is one page in the developer portal |
+| Widget extension bundle identifier | **PASS** | `com.idlery.periodicpro.widgets`, derived from the app's rather than a new identifier; the main app's is untouched |
 | Automatic signing via the API key | **PASS** | The archive step passes `-allowProvisioningUpdates` with the App Store Connect key |
 
 ## 7. Content and rights
@@ -154,7 +181,11 @@ Nothing in the repository. Everything below needs a person.
 5. **Upload screenshots** for every device size the listing requires. CI
    captures a tour on four simulators and attaches it to each run as
    `elemora-simulator-screenshots`.
-6. **Test the scanner on a physical device.** A simulator has no camera and
+6. **Confirm the widget appears** after installing the TestFlight build:
+   touch and hold the Home Screen → Edit → Add Widget → Elemora. A widget that
+   never appears means the App Group or the extension point did not make it
+   through signing — see *4a*.
+7. **Test the scanner on a physical device.** A simulator has no camera and
    cannot run live text recognition, so the recognition core is unit-tested
    against text fixtures and the camera path is not exercised by CI. The
    TestFlight notes list the exact cases to try.
