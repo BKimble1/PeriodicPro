@@ -228,3 +228,114 @@ struct StudyGreetingTests {
                 == "Keep the streak going.")
     }
 }
+
+/// Spaced review: when something is worth seeing again, derived entirely from
+/// the mastery data the app already keeps.
+@Suite("Review scheduling")
+struct ReviewScheduleTests {
+    private let now = Date(timeIntervalSince1970: 1_800_000_000)
+
+    private func snapshot(
+        _ number: Int, mastery: MasteryLevel, correct: Int, incorrect: Int, daysAgo: Double
+    ) -> ElementProgressSnapshot {
+        ElementProgressSnapshot(
+            atomicNumber: number,
+            isFavorite: false,
+            mastery: mastery,
+            correctCount: correct,
+            incorrectCount: incorrect,
+            lastReviewed: now.addingTimeInterval(-daysAgo * .day)
+        )
+    }
+
+    @Test("The interval grows with familiarity")
+    func intervalsGrow() {
+        let learning = ReviewSchedule.interval(mastery: .learning, correct: 1, incorrect: 1)
+        let familiar = ReviewSchedule.interval(mastery: .familiar, correct: 1, incorrect: 1)
+        let mastered = ReviewSchedule.interval(mastery: .mastered, correct: 1, incorrect: 1)
+        #expect(learning < familiar)
+        #expect(familiar < mastered)
+        #expect(ReviewSchedule.baseInterval(for: .mastered) == 21 * .day)
+    }
+
+    @Test("A good record stretches the interval and a poor one compresses it")
+    func accuracyAdjustsTheInterval() {
+        let perfect = ReviewSchedule.interval(mastery: .familiar, correct: 10, incorrect: 0)
+        let even = ReviewSchedule.interval(mastery: .familiar, correct: 5, incorrect: 5)
+        let poor = ReviewSchedule.interval(mastery: .familiar, correct: 1, incorrect: 9)
+        #expect(perfect > even)
+        #expect(even > poor)
+        // And never outside the bounds, whatever the record.
+        for correct in [0, 1, 50] {
+            for incorrect in [0, 1, 50] {
+                let span = ReviewSchedule.interval(mastery: .mastered, correct: correct, incorrect: incorrect)
+                #expect(span >= ReviewSchedule.shortestInterval)
+                #expect(span <= ReviewSchedule.longestInterval)
+            }
+        }
+    }
+
+    @Test("Something never answered is not on a schedule at all")
+    func neverAnsweredIsNotDue() {
+        #expect(ReviewSchedule.due(lastReviewed: nil, mastery: .notStarted,
+                                   correct: 0, incorrect: 0) == nil)
+        #expect(ReviewSchedule.due(lastReviewed: now, mastery: .notStarted,
+                                   correct: 0, incorrect: 0) == nil)
+        #expect(!ReviewSchedule.isDue(lastReviewed: nil, mastery: .learning,
+                                      correct: 3, incorrect: 0, now: now))
+    }
+
+    @Test("Due means due")
+    func dueness() {
+        // Learning, even record: about a day. Two days later it is due.
+        #expect(ReviewSchedule.isDue(lastReviewed: now.addingTimeInterval(-2 * .day),
+                                     mastery: .learning, correct: 1, incorrect: 1, now: now))
+        // Mastered with a perfect record: weeks away.
+        #expect(!ReviewSchedule.isDue(lastReviewed: now.addingTimeInterval(-2 * .day),
+                                      mastery: .mastered, correct: 10, incorrect: 0, now: now))
+        #expect(ReviewSchedule.overdueFactor(lastReviewed: now.addingTimeInterval(-2 * .day),
+                                             mastery: .mastered, correct: 10, incorrect: 0,
+                                             now: now) == 0)
+    }
+
+    @Test("Overdue is measured against the item's own interval")
+    func overdueIsRelative() {
+        // A mastered element a week late is less overdue, relatively, than a
+        // learning one a day late — which is the point of the measure.
+        let masteredLate = ReviewSchedule.overdueFactor(
+            lastReviewed: now.addingTimeInterval(-40 * .day),
+            mastery: .mastered, correct: 10, incorrect: 0, now: now
+        )
+        let learningLate = ReviewSchedule.overdueFactor(
+            lastReviewed: now.addingTimeInterval(-10 * .day),
+            mastery: .learning, correct: 1, incorrect: 3, now: now
+        )
+        #expect(masteredLate > 1)
+        #expect(learningLate > masteredLate)
+    }
+
+    @Test("Smart Review puts an overdue element ahead of a merely weak one")
+    func overdueOutranksWeak() {
+        // Missed often but seen an hour ago, against missed less but a month
+        // overdue. The overdue one comes first.
+        let seenJustNow = snapshot(8, mastery: .learning, correct: 1, incorrect: 5, daysAgo: 0.04)
+        let longOverdue = snapshot(26, mastery: .familiar, correct: 4, incorrect: 1, daysAgo: 40)
+        let ordered = SmartReviewBuilder.ranked([seenJustNow, longOverdue], now: now)
+        #expect(ordered.first?.atomicNumber == 26,
+                "an element a month overdue should outrank one answered a moment ago")
+    }
+
+    @Test("What is due can be listed, worst first")
+    func dueList() {
+        let snapshots: [Int: ElementProgressSnapshot] = [
+            1: snapshot(1, mastery: .learning, correct: 0, incorrect: 4, daysAgo: 30),
+            2: snapshot(2, mastery: .mastered, correct: 10, incorrect: 0, daysAgo: 1),
+            8: snapshot(8, mastery: .familiar, correct: 3, incorrect: 1, daysAgo: 20),
+        ]
+        let due = ReviewSchedule.dueElements(snapshots, now: now)
+        #expect(due.map(\.atomicNumber).contains(1))
+        #expect(due.map(\.atomicNumber).contains(8))
+        #expect(!due.map(\.atomicNumber).contains(2), "a mastered element seen yesterday is not due")
+        #expect(due.first?.atomicNumber == 1, "the worst should be first")
+    }
+}

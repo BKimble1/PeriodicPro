@@ -95,6 +95,7 @@ RETAINED_IDENTIFIERS = {
         "queries the paywall rows by their periodicpro.* product identifiers",
 
     # --- `@testable import PeriodicPro`: the module name is the target name ---
+    "PeriodicProTests/AdvancedChemistryTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ArtworkAndStructureTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/CatalogTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ChemicalQueryTests.swift": "@testable import PeriodicPro",

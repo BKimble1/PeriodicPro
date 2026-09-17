@@ -26,6 +26,7 @@ struct StudySessionContainer: View {
     /// it is on screen.
     @State private var questions: [QuizQuestion]
     @State private var matchRound: MatchRound?
+    @State private var advancedQuestions: [AdvancedQuestion]
 
     private var mode: StudyMode { plan.mode }
 
@@ -48,6 +49,7 @@ struct StudySessionContainer: View {
         case .cards: return pool.isEmpty
         case .quiz: return questions.isEmpty
         case .match: return matchRound?.pairs.isEmpty ?? true
+        case .advanced: return advancedQuestions.isEmpty
         }
     }
 
@@ -66,12 +68,19 @@ struct StudySessionContainer: View {
         case .quiz(let dealer):
             _questions = State(initialValue: dealer.questions(seed: initialSeed))
             _matchRound = State(initialValue: nil)
+            _advancedQuestions = State(initialValue: [])
         case .match(let dealer):
             _questions = State(initialValue: [])
             _matchRound = State(initialValue: dealer.matchRound(seed: initialSeed))
+            _advancedQuestions = State(initialValue: [])
+        case .advanced(let dealer):
+            _questions = State(initialValue: [])
+            _matchRound = State(initialValue: nil)
+            _advancedQuestions = State(initialValue: dealer.questions(seed: initialSeed))
         case .cards:
             _questions = State(initialValue: [])
             _matchRound = State(initialValue: nil)
+            _advancedQuestions = State(initialValue: [])
         }
     }
 
@@ -165,6 +174,13 @@ struct StudySessionContainer: View {
                 MatchSessionView(round: matchRound, onAnswer: record, onFinish: finish)
                     .id(round)
             }
+        case .advanced:
+            AdvancedSessionView(
+                questions: advancedQuestions,
+                onAnswer: record,
+                onFinish: finish
+            )
+            .id(round)
         }
     }
 
@@ -175,6 +191,7 @@ struct StudySessionContainer: View {
         switch plan {
         case .quiz(let dealer): questions = dealer.questions(seed: roundSeed)
         case .match(let dealer): matchRound = dealer.matchRound(seed: roundSeed)
+        case .advanced(let dealer): advancedQuestions = dealer.questions(seed: roundSeed)
         case .cards: break
         }
         result = nil

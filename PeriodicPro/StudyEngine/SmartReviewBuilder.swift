@@ -1,11 +1,16 @@
 import Foundation
 
-/// Builds a round from the elements the learner actually keeps getting wrong.
+/// Builds a round from the elements the learner actually keeps getting wrong,
+/// and from the ones that have come due.
 ///
-/// Deliberately not spaced repetition. There is no forgetting curve, no
-/// interval schedule and no extra stored state — it reads the mastery data the
-/// app already keeps and sorts it. That is enough to be genuinely useful, and
-/// it is small enough to be completely testable.
+/// `ReviewSchedule` supplies the second half: an item that is overdue outranks
+/// one that is merely weak, because something the learner has not seen for
+/// three weeks is the thing most at risk whatever their record on it. Below
+/// that the order is unchanged — most missed, least familiar, longest unseen.
+///
+/// Still no extra stored state. The schedule is a pure function of the
+/// mastery data the app already keeps, so nobody's progress had to be
+/// migrated to gain it.
 enum SmartReviewBuilder {
     /// Below this, there is not enough history for a review to mean anything,
     /// and the honest answer is to say so rather than to quietly serve a normal
@@ -15,17 +20,30 @@ enum SmartReviewBuilder {
     /// Weakest first.
     ///
     /// The order is, in turn:
-    /// 1. how many times the element has been answered incorrectly, most first;
-    /// 2. how familiar it is, least familiar first;
-    /// 3. how long ago it was last seen, longest first;
-    /// 4. atomic number, so the result is deterministic and testable.
+    /// 1. whether it is due for review at all — an overdue item comes first;
+    /// 2. how many times the element has been answered incorrectly, most first;
+    /// 3. how familiar it is, least familiar first;
+    /// 4. how long ago it was last seen, longest first;
+    /// 5. atomic number, so the result is deterministic and testable.
     ///
     /// Elements that have never been attempted are excluded: this is a review of
     /// what went wrong, not a first introduction.
-    static func ranked(_ snapshots: [ElementProgressSnapshot]) -> [ElementProgressSnapshot] {
+    static func ranked(
+        _ snapshots: [ElementProgressSnapshot], now: Date = Date()
+    ) -> [ElementProgressSnapshot] {
         snapshots
             .filter { $0.attempts > 0 }
             .sorted { lhs, rhs in
+                // Overdue first, by how overdue relative to its own interval.
+                let leftDue = ReviewSchedule.overdueFactor(
+                    lastReviewed: lhs.lastReviewed, mastery: lhs.mastery,
+                    correct: lhs.correctCount, incorrect: lhs.incorrectCount, now: now
+                )
+                let rightDue = ReviewSchedule.overdueFactor(
+                    lastReviewed: rhs.lastReviewed, mastery: rhs.mastery,
+                    correct: rhs.correctCount, incorrect: rhs.incorrectCount, now: now
+                )
+                if (leftDue > 0) != (rightDue > 0) { return leftDue > rightDue }
                 if lhs.incorrectCount != rhs.incorrectCount {
                     return lhs.incorrectCount > rhs.incorrectCount
                 }

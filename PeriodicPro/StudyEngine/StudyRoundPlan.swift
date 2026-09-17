@@ -29,6 +29,40 @@ struct QuizRoundDealer: Hashable, Sendable {
     }
 }
 
+/// Everything needed to deal a round of advanced chemistry.
+///
+/// Captured before the round is presented, the same way the quiz dealer is,
+/// so the questions are frozen for the session and "Study again" deals a
+/// fresh set from a fresh seed.
+struct AdvancedRoundDealer: Hashable, Sendable {
+    let count: Int
+    let kinds: [AdvancedQuestion.Kind]
+    /// The element catalog, as its elements: `ElementCatalog` is not itself
+    /// `Hashable`, and `StudyRoundPlan` has to be.
+    let elements: [ChemicalElement]
+    let compounds: [ChemicalCompound]
+
+    init(
+        count: Int = 8,
+        kinds: [AdvancedQuestion.Kind] = AdvancedQuestion.Kind.allCases,
+        catalog: ElementCatalog,
+        compounds: [ChemicalCompound]
+    ) {
+        self.count = count
+        self.kinds = kinds
+        self.elements = catalog.elements
+        self.compounds = compounds
+    }
+
+    func questions(seed: UInt64) -> [AdvancedQuestion] {
+        AdvancedQuestionBuilder.round(
+            count: count, seed: seed, kinds: kinds,
+            catalog: ElementCatalog(elements: elements),
+            compounds: CompoundCatalog(compounds: compounds)
+        )
+    }
+}
+
 /// What a study round is made of. The mode decides the screen; the payload
 /// is whatever that screen needs, captured before the round is presented.
 enum StudyRoundPlan: Identifiable, Hashable, Sendable {
@@ -38,12 +72,15 @@ enum StudyRoundPlan: Identifiable, Hashable, Sendable {
     case quiz(QuizRoundDealer)
     /// A configured Match round.
     case match(QuizRoundDealer)
+    /// A round of advanced chemistry: calculations, configurations and trends.
+    case advanced(AdvancedRoundDealer)
 
     var mode: StudyMode {
         switch self {
         case .cards(let mode, _): return mode
         case .quiz: return .quiz
         case .match: return .match
+        case .advanced: return .advanced
         }
     }
 

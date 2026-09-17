@@ -70,6 +70,8 @@ enum SFSymbolAllowlist {
         "exclamationmark.circle", "wifi.slash",
         // The chemistry scanner
         "camera.viewfinder", "viewfinder", "text.viewfinder",
+        // Advanced chemistry: calculations rather than recall
+        "function",
     ]
 
     /// Everything the app can ask UIKit to draw.

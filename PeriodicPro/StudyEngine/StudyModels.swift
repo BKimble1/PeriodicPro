@@ -12,6 +12,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     case quiz
     case match
     case identify
+    case advanced
     case smartReview
 
     var id: String { rawValue }
@@ -22,6 +23,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .quiz: return "Quiz"
         case .match: return "Match"
         case .identify: return "Identify"
+        case .advanced: return "Advanced"
         case .smartReview: return "Smart Review"
         }
     }
@@ -30,6 +32,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     var fullTitle: String {
         switch self {
         case .quiz: return "Custom Quiz"
+        case .advanced: return "Advanced Chemistry"
         default: return title
         }
     }
@@ -40,6 +43,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .quiz: return "Multiple choice, your way"
         case .match: return "Pair names with symbols and formulas"
         case .identify: return "Name it from its structure"
+        case .advanced: return "Molar mass, moles, configurations, trends"
         case .smartReview: return "The elements you keep missing"
         }
     }
@@ -50,6 +54,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .quiz: return "questionmark.circle.fill"
         case .match: return "arrow.left.arrow.right"
         case .identify: return "eye.fill"
+        case .advanced: return "function"
         // A crosshair: the right idea for a mode that aims at weak spots.
         // (The obvious name for that symbol does not exist in SF Symbols.)
         case .smartReview: return "scope"
@@ -62,6 +67,10 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     /// Quiz and Match open a setup screen before a round starts.
     var opensSetup: Bool { self == .quiz || self == .match }
 
+    /// Advanced questions are calculations and reasoning rather than recall,
+    /// so their answers are typed as often as they are picked.
+    var isAdvanced: Bool { self == .advanced }
+
     /// Mixed into the session seed so the modes do not draw the same ten
     /// elements, in the same order, on the same day.
     var seedSalt: UInt64 {
@@ -70,6 +79,7 @@ enum StudyMode: String, CaseIterable, Identifiable, Hashable, Sendable {
         case .quiz: return 0x85EB_CA6B_C2B2_AE35
         case .match: return 0x2545_F491_4F6C_DD1D
         case .identify: return 0x27D4_EB2F_1656_67C5
+        case .advanced: return 0x6A09_E667_F3BC_C908
         case .smartReview: return 0x1F83_D9AB_FB41_BD6B
         }
     }

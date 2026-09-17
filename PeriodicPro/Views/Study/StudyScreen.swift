@@ -262,6 +262,7 @@ struct StudyScreen: View {
         .quiz: .lanthanide,
         .match: .transitionMetal,
         .identify: .alkalineEarthMetal,
+        .advanced: .halogen,
         .smartReview: .alkaliMetal,
     ]
 
@@ -284,13 +285,14 @@ struct StudyScreen: View {
             }
             .padding(.horizontal, Theme.Spacing.screenMargin)
 
-            // Five across normally, two at accessibility sizes: a fifth of a
-            // 375-point screen is 57 points, and "Smart Review" at forty points
-            // does not go in it.
+            // Three across normally, two at accessibility sizes. Five fitted
+            // when there were five modes; a sixth would make each tile a
+            // sixth of a 375-point screen, which is 47 points, and no mode
+            // name goes in that.
             LazyVGrid(
                 columns: Array(
                     repeating: GridItem(.flexible(), spacing: Theme.Spacing.s),
-                    count: dynamicTypeSize.isAccessibilitySize ? 2 : 5
+                    count: dynamicTypeSize.isAccessibilitySize ? 2 : 3
                 ),
                 alignment: .leading,
                 spacing: Theme.Spacing.m
@@ -576,6 +578,13 @@ struct StudyScreen: View {
         if mode.opensSetup {
             guard activeRound == nil, paywall == nil else { return }
             setup = mode
+            return
+        }
+        if mode == .advanced {
+            start(.advanced(AdvancedRoundDealer(
+                catalog: catalog,
+                compounds: compounds.allKnownCompounds.filter { !$0.isHypothetical }
+            )))
             return
         }
         let queue = mode == .smartReview
