@@ -200,7 +200,10 @@ jobs:
   screenshots:
     name: Simulator screenshots
     runs-on: macos-15
-    timeout-minutes: 60
+    # Four full tours on four simulators, each booting a device and
+    # driving twenty screens. The default hour was not enough once the
+    # compound and quiz frames joined it: the job was cancelled mid-upload.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 

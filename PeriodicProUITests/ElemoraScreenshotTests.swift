@@ -233,6 +233,21 @@ final class ElemoraScreenshotTests: XCTestCase {
             .firstMatch
     }
 
+    /// Empties the composition tray and proves it is empty.
+    ///
+    /// A tap that silently misses used to leave the previous compound in the
+    /// tray, and the next lookup then searched water plus ethanol — a formula
+    /// nobody has, so the tour waited for candidates that could not come.
+    private func clearTray() {
+        let empty = el("build.empty")
+        for _ in 0..<2 {
+            guard !empty.exists else { return }
+            tap(app.buttons["build.clear"])
+            if empty.waitForExistence(timeout: 4) { return }
+        }
+        XCTAssertTrue(empty.exists, "The tray should be empty after Clear" + onScreen())
+    }
+
     /// Adds an element through the builder's picker and confirms it landed in
     /// the tray, rather than trusting that the tap on the row did anything.
     private func addElement(_ symbol: String) {
@@ -398,7 +413,7 @@ final class ElemoraScreenshotTests: XCTestCase {
         waitFor(el("build.result"))
         settle()
         capture("17-build-water")
-        tap(app.buttons["build.clear"])
+        clearTray()
         addElement("C")
         tap(app.buttons["build.increment.C"])
         addElement("H")
@@ -453,6 +468,13 @@ final class ElemoraScreenshotTests: XCTestCase {
                 if !retried {
                     retried = true
                     tap(app.buttons["paywall.retry"])
+                    // The retry clears `hasAttemptedLoad`, so this block is
+                    // replaced by the loading state — but not in the same
+                    // frame as the tap. Reading it again straight away would
+                    // see the state the tap was meant to change and call it a
+                    // second failure, so wait for the answer instead.
+                    settle(1.5)
+                    _ = yearly.waitForExistence(timeout: 30)
                     continue
                 }
                 XCTFail("The paywall rendered its \"options unavailable\" state: "
