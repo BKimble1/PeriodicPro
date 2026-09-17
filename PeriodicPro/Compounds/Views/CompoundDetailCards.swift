@@ -76,7 +76,8 @@ struct CompoundStructureCard: View {
     let onExplore: () -> Void
 
     private var scene: StructureScene? {
-        CompoundStructureScene.scene(for: compound, style: style)
+        guard compound.structure?.isRenderable ?? false else { return nil }
+        return CompoundStructureScene.scene(for: compound, style: style)
     }
 
     var body: some View {
@@ -120,6 +121,7 @@ struct CompoundStructureCard: View {
                             .font(AppFont.caption)
                             .foregroundStyle(AppColor.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
+                        provenanceNote
                     }
 
                     Button(action: onExplore) {
@@ -150,7 +152,47 @@ struct CompoundStructureCard: View {
         }
     }
 
+    /// Where the coordinates came from, and when.
+    ///
+    /// Said out loud rather than left to be inferred: a conformer is a
+    /// computed geometry, a depiction is a drawing, and a layout generated
+    /// from connectivity is the app's own arrangement of somebody else's
+    /// molecule. All three are honest; they are not the same claim.
+    @ViewBuilder
+    private var provenanceNote: some View {
+        if let structure = compound.structure {
+            let provenance = structure.resolvedProvenance
+            VStack(alignment: .leading, spacing: 1) {
+                if let source = provenance.threeDSource {
+                    Text("3D: \(source.displayName)")
+                } else {
+                    Text("3D conformer not available. The structure below is the published "
+                         + "connectivity, drawn flat.")
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if let source = provenance.twoDSource {
+                    Text("2D: \(source.displayName)")
+                }
+                if let cid = provenance.pubChemCID ?? compound.pubChemCID {
+                    Text("PubChem CID \(cid)\(provenance.retrieved.map { ", retrieved \($0)" } ?? "")")
+                }
+            }
+            .font(AppFont.caption2)
+            .foregroundStyle(AppColor.tertiaryText)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("compound.structureProvenance")
+        }
+    }
+
     private var missingStructureNote: String {
+        if let structure = compound.structure, !structure.isRenderable, !structure.atoms.isEmpty {
+            // A limit of the renderer, described as one. The molecule is
+            // known; drawing this many spheres at once is what is not
+            // practical.
+            return "This molecule has \(structure.atoms.count) atoms, which is more than Elemora "
+                + "draws one at a time. Its formula, composition and molar mass are all exact; only "
+                + "the atom-by-atom picture is left out."
+        }
         if compound.isHypothetical {
             return "No structure is drawn. This composition matched nothing in PubChem, and Elemora does not "
                 + "invent a structure for it."

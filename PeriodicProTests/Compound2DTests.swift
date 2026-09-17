@@ -228,3 +228,151 @@ struct Compound2DLayoutTests {
         )
     }
 }
+
+/// The claims the structure views are allowed to make, and the ones they are
+/// not. Every one of these is a way an app could quietly teach a learner
+/// something false.
+@Suite("What a structure may claim")
+struct StructureHonestyTests {
+    private let catalog = TestCompounds.catalog
+    private let elements = TestCatalog.shared
+
+    @Test("The 2D drawing and the 3D scene are the same molecule")
+    func oneGraphTwoViews() throws {
+        for compound in catalog.compounds where compound.hasStructure {
+            let structure = try #require(compound.structure)
+            let drawing = Compound2DLayout.drawing(for: compound, catalog: elements)
+            guard drawing.hasGeometry else { continue }
+            let scene = try #require(CompoundStructureScene.scene(for: compound, style: .ballAndStick))
+
+            // Same atoms, in the same order, with the same elements.
+            #expect(scene.nodes.count == structure.atoms.count)
+            #expect(scene.nodes.compactMap(\.atomicNumber) == structure.atoms.map(\.atomicNumber))
+
+            // And the same bonds, with the same orders. A 2D diagram showing
+            // a double bond where the 3D scene shows a single one would be
+            // two different molecules on one page.
+            let drawn = Set(drawing.bonds.map(\.order))
+            let modeled = Set(scene.bonds.map { $0.order.rawValue })
+            if !drawn.isEmpty, !modeled.isEmpty {
+                #expect(drawn == modeled,
+                        "\(compound.preferredName): the diagram draws bond orders \(drawn.sorted()) "
+                        + "and the scene models \(modeled.sorted())")
+            }
+        }
+    }
+
+    @Test("A flat record is never presented as a three-dimensional geometry")
+    func noFabricatedConformers() throws {
+        for compound in catalog.compounds {
+            guard let structure = compound.structure, !structure.atoms.isEmpty else { continue }
+            if structure.is3D {
+                // Claiming 3D means actually having depth somewhere.
+                #expect(structure.hasThreeDGeometry,
+                        "\(compound.preferredName) claims a 3D record with every z at zero")
+                #expect(structure.resolvedProvenance.hasThreeDCoordinates)
+            } else {
+                // And not claiming it means the provenance says so, so the
+                // interface can tell the learner rather than guessing.
+                #expect(!structure.resolvedProvenance.hasThreeDCoordinates,
+                        "\(compound.preferredName) has no 3D record but reports a 3D source")
+            }
+        }
+    }
+
+    @Test("Sodium chloride is a lattice, not a two-atom molecule")
+    func saltIsNotAMolecule() throws {
+        let salt = TestCompounds.compound("Sodium chloride")
+        #expect(salt.bondingClass == .ionic)
+        let structure = try #require(salt.structure)
+        #expect(structure.source == .curatedLattice)
+        // Every join in it is a nearest-neighbor contact, not a covalent bond.
+        #expect(structure.bonds.allSatisfy(\.isContact),
+                "an ionic lattice has no covalent bonds to draw")
+        // More than two ions, because a formula unit is not the structure.
+        #expect(structure.atoms.count > 2,
+                "NaCl drawn as one Na and one Cl would be a molecule, which it is not")
+        // And the flat depiction calls itself a formula unit rather than a
+        // skeletal formula.
+        let drawing = Compound2DLayout.drawing(for: salt, catalog: elements)
+        #expect(drawing.representation == .formulaUnit)
+        #expect(drawing.representation.caption.contains("no discrete molecule"))
+    }
+
+    @Test("A composition with no record gets no structure at all")
+    func nothingIsInventedForAMiss() {
+        let composition = ChemicalCompound.hypothetical(composition: [113: 2, 8: 3], catalog: elements)
+        #expect(composition.structure == nil)
+        let drawing = Compound2DLayout.drawing(for: composition, catalog: elements)
+        #expect(drawing.representation == .unknownStructure)
+        #expect(!drawing.hasGeometry)
+        #expect(drawing.bonds.isEmpty, "a formula alone never produces bonds")
+        // The two claims are kept apart: "there is no molecule" and "we have
+        // no record" are different sentences.
+        #expect(Compound2DRepresentation.unknownStructure.caption
+            != Compound2DRepresentation.formulaUnit.caption)
+        #expect(drawing.representation.caption.contains("none is known"))
+    }
+
+    @Test("Coordinates say where they came from, in each dimension")
+    func provenanceIsRecorded() throws {
+        for compound in catalog.compounds where compound.hasStructure {
+            let provenance = try #require(compound.structure).resolvedProvenance
+            #expect(provenance.twoDSource != nil,
+                    "\(compound.preferredName) draws a diagram from coordinates of unknown origin")
+            if compound.structure?.is3D == true {
+                #expect(provenance.threeDSource != nil)
+            }
+        }
+        // A generated layout says so rather than passing for a published one.
+        #expect(CompoundCoordinateSource.generatedFromConnectivity.displayName
+            .contains("generated"))
+        #expect(CompoundCoordinateSource.pubChemConformer3D.displayName.contains("conformer"))
+    }
+
+    @Test("A molecule too large to draw is a limit of the renderer, and is bounded")
+    func renderingIsBounded() {
+        #expect(CompoundStructure.renderableAtomLimit >= 100,
+                "the limit must be well past anything a learner will meet")
+        let tiny = CompoundStructure(
+            is3D: true, source: .pubChem3D, note: nil,
+            atoms: [CompoundAtom(id: 0, atomicNumber: 8, x: 0, y: 0, z: 0.1, formalCharge: 0)],
+            bonds: []
+        )
+        #expect(tiny.isRenderable)
+        let enormous = CompoundStructure(
+            is3D: true, source: .pubChem3D, note: nil,
+            atoms: (0..<(CompoundStructure.renderableAtomLimit + 1)).map {
+                CompoundAtom(id: $0, atomicNumber: 6, x: Double($0), y: 0, z: 0.1, formalCharge: 0)
+            },
+            bonds: []
+        )
+        #expect(!enormous.isRenderable)
+        // And every bundled compound is well inside it, so nothing ships in
+        // the state the message is for.
+        for compound in TestCompounds.catalog.compounds {
+            #expect(compound.structure?.isRenderable ?? true,
+                    "\(compound.preferredName) is too large for the viewer")
+        }
+    }
+
+    @Test("C2H6O is two compounds in the catalog, and stays two")
+    func ambiguityIsPreserved() {
+        let matches = catalog.compounds(hillFormula: "C2H6O")
+        #expect(matches.count >= 2)
+        let names = Set(matches.map(\.preferredName))
+        #expect(names.contains("Ethanol"))
+        #expect(names.contains("Dimethyl ether"))
+        // They are genuinely different molecules: same formula, different
+        // connectivity. Nothing may collapse them.
+        let structures = matches.compactMap(\.structure).filter { !$0.bonds.isEmpty }
+        if structures.count >= 2 {
+            let shapes = structures.map { structure in
+                Set(structure.bonds.map { [structure.atoms[$0.from].atomicNumber,
+                                           structure.atoms[$0.to].atomicNumber].sorted() })
+            }
+            #expect(shapes[0] != shapes[1],
+                    "ethanol and dimethyl ether must not have identical connectivity")
+        }
+    }
+}

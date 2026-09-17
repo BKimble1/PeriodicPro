@@ -226,6 +226,7 @@ extension PubChemRecordDTO {
             }
         }
 
+        let cid = self.id.id.cid
         return CompoundStructure(
             is3D: is3D,
             source: is3D ? .pubChem3D : .pubChem2D,
@@ -234,7 +235,16 @@ extension PubChemRecordDTO {
                     + "geometry, not a measured one."
                 : "PubChem 2D record: real connectivity and bond orders, drawn flat.",
             atoms: compoundAtoms,
-            bonds: compoundBonds
+            bonds: compoundBonds,
+            // Recorded rather than inferred later: which record was asked for,
+            // where each set of coordinates came from, and when.
+            provenance: CompoundStructureProvenance(
+                pubChemCID: cid,
+                recordType: is3D ? "3d" : "2d",
+                twoDSource: is3D ? .generatedFromConnectivity : .pubChemDepiction2D,
+                threeDSource: is3D ? .pubChemConformer3D : nil,
+                retrieved: CompoundFormula.today()
+            )
         )
     }
 }
