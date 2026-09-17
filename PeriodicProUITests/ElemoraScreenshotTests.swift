@@ -56,14 +56,45 @@ final class ElemoraScreenshotTests: XCTestCase {
     /// What is on screen, in one line — GitHub's error annotation keeps only
     /// the first line of a multi-line assertion message.
     private func onScreen() -> String {
-        let described = app.descendants(matching: .any)
-            .allElementsBoundByAccessibilityElement
-            .filter { !$0.identifier.isEmpty }
-            .map { "\($0.identifier)<\($0.elementType.rawValue)>" }
+        let described = Self.identified(in: app)
         let shown = described.prefix(40).joined(separator: " ")
         let more = described.count > 40 ? " …+\(described.count - 40)" : ""
         return " | window \(app.windows.firstMatch.frame) "
             + "| \(described.count) identified: \(shown)\(more)"
+    }
+
+    /// Everything identified in the tree, from a single snapshot.
+    ///
+    /// Reading `identifier`, `elementType` or `frame` from an `XCUIElement`
+    /// re-resolves that element's query against the app, so walking a few
+    /// hundred of them is a few hundred round trips. That is what turned this
+    /// diagnostic into minutes of runtime once the table's tiles and the
+    /// families card were both in the tree. A snapshot is one round trip and
+    /// every attribute comes back inside it.
+    private static func identified(in element: XCUIElement) -> [String] {
+        walk(element).compactMap { node in
+            node.identifier.isEmpty ? nil : "\(node.identifier)<\(node.elementType.rawValue)>"
+        }
+    }
+
+    /// Every node under `element`, depth first, from one snapshot.
+    private static func walk(_ element: XCUIElement) -> [XCUIElementSnapshot] {
+        guard let root = try? element.snapshot() else { return [] }
+        var found: [XCUIElementSnapshot] = []
+        var stack = [root]
+        while let node = stack.popLast() {
+            found.append(node)
+            stack.append(contentsOf: node.children)
+        }
+        return found
+    }
+
+    /// The widest element tile the table currently vends, or zero.
+    private static func widestTile(in element: XCUIElement) -> CGFloat {
+        walk(element)
+            .filter { $0.identifier.hasPrefix("element.") }
+            .map { $0.frame.width }
+            .max() ?? 0
     }
 
     private func waitFor(_ element: XCUIElement,
@@ -113,6 +144,18 @@ final class ElemoraScreenshotTests: XCTestCase {
         let deadline = Date().addingTimeInterval(timeout)
         while true {
             if canTap(element) { return true }
+            if Date() >= deadline { return false }
+            settle(0.25)
+        }
+    }
+
+    /// Waits for the table to vend a tile wider than `width`, which is what
+    /// says a pinch landed — whichever tiles the zoom happens to leave on
+    /// screen.
+    private func waitForATileWider(than width: CGFloat, within timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while true {
+            if Self.widestTile(in: app) > width { return true }
             if Date() >= deadline { return false }
             settle(0.25)
         }
@@ -335,19 +378,12 @@ final class ElemoraScreenshotTests: XCTestCase {
         waitFor(table)
         let fittedWidth = app.buttons["element.H"].frame.width
         table.pinch(withScale: 2.5, velocity: 1.0)
-        let application: XCUIApplication = app
-        let grew = NSPredicate { _, _ in
-            let widest = application.buttons.allElementsBoundByAccessibilityElement
-                .filter { $0.identifier.hasPrefix("element.") }
-                .map(\.frame.width)
-                .max() ?? 0
-            return widest > fittedWidth * 1.5
-        }
-        XCTAssertEqual(
-            XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: grew, object: nil)], timeout: 10),
-            .completed,
-            "The pinch should enlarge the tiles" + onScreen()
-        )
+        // Polled from snapshots on this thread rather than through an
+        // `XCTNSPredicateExpectation` that measures every tile: asking a
+        // hundred and eighteen buttons for a frame once a second is what made
+        // XCUITest abandon the whole tour with "Failed to resolve query".
+        XCTAssertTrue(waitForATileWider(than: fittedWidth * 1.5, within: 10),
+                      "The pinch should enlarge the tiles" + onScreen())
         settle(0.8)
         capture("09-table-zoomed")
         // Back to fitted by pinching in. Not a double tap: XCUITest taps the

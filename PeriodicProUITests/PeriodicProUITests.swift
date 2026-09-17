@@ -54,10 +54,9 @@ final class PeriodicProUITests: XCTestCase {
     /// those apart from a CI log was worth a whole round trip. This lists the
     /// identifiers the app is currently vending, which answers it directly.
     private func onScreen() -> String {
-        let described = app.descendants(matching: .any)
-            .allElementsBoundByAccessibilityElement
-            .filter { !$0.identifier.isEmpty }
-            .map { "\($0.identifier)<\($0.elementType.rawValue)>" }
+        let described = Self.walk(app).compactMap { node in
+            node.identifier.isEmpty ? nil : "\(node.identifier)<\(node.elementType.rawValue)>"
+        }
         let shown = described.prefix(40).joined(separator: " ")
         let more = described.count > 40 ? " …+\(described.count - 40)" : ""
         // One line, deliberately. A multi-line assertion message is collapsed
@@ -266,9 +265,8 @@ final class PeriodicProUITests: XCTestCase {
     /// the clobbered identifier still matches *something*. Distinctness is.
     func testElementTilesAreIndividuallyAddressable() {
         waitFor(app.buttons["element.H"])
-        let tiles = app.buttons
-            .allElementsBoundByAccessibilityElement
-            .map(\.identifier)
+        let tiles = Self.walk(app)
+            .map { $0.identifier }
             .filter { $0.hasPrefix("element.") }
 
         XCTAssertGreaterThan(tiles.count, 100,
@@ -363,20 +361,61 @@ final class PeriodicProUITests: XCTestCase {
                       "every column should be back on screen\(onScreen())")
     }
 
+    /// Every node under `element`, depth first, from one snapshot.
+    ///
+    /// Reading `identifier`, `elementType` or `frame` from an `XCUIElement`
+    /// re-resolves that element's query against the app, so measuring a
+    /// hundred and eighteen tiles is a hundred and eighteen round trips — and
+    /// inside a polling predicate, that many again on every tick. XCUITest
+    /// answers that with "Failed to resolve query: Timed out while evaluating
+    /// UI query" and the test never gets its answer at all. A snapshot is a
+    /// single round trip carrying every attribute.
+    private static func walk(_ element: XCUIElement) -> [XCUIElementSnapshot] {
+        guard let root = try? element.snapshot() else { return [] }
+        var found: [XCUIElementSnapshot] = []
+        var stack = [root]
+        while let node = stack.popLast() {
+            found.append(node)
+            stack.append(contentsOf: node.children)
+        }
+        return found
+    }
+
+    /// Every element tile the table currently vends, with its frame.
+    private static func tileFrames(in app: XCUIApplication) -> [String: CGRect] {
+        var frames: [String: CGRect] = [:]
+        for node in walk(app) where node.identifier.hasPrefix("element.") {
+            frames[node.identifier] = node.frame
+        }
+        return frames
+    }
+
     /// The widest element tile currently vended, or zero. Used instead of a
     /// named symbol so the measurement survives panning.
     private static func largestTileWidth(in app: XCUIApplication) -> CGFloat {
-        app.buttons.allElementsBoundByAccessibilityElement
-            .filter { $0.identifier.hasPrefix("element.") }
-            .map(\.frame.width)
-            .max() ?? 0
+        tileFrames(in: app).values.map(\.width).max() ?? 0
     }
 
+    /// A tile that is on screen and will take a tap.
+    ///
+    /// The snapshot narrows the field to tiles with a real share of the window
+    /// first, so `canTap` — which does cost a query each time — is asked about
+    /// a handful of candidates rather than all of them.
     private static func tappableTile(in app: XCUIApplication,
                                      canTap: (XCUIElement) -> Bool) -> XCUIElement? {
-        app.buttons.allElementsBoundByAccessibilityElement
-            .filter { $0.identifier.hasPrefix("element.") }
-            .first(where: canTap)
+        let window = app.windows.firstMatch.frame
+        let candidates = tileFrames(in: app)
+            .map { (identifier: $0.key, visible: $0.value.intersection(window)) }
+            .filter { $0.visible.width >= 8 && $0.visible.height >= 8 }
+            // Most fully on screen first, so the tile that is asked about is
+            // the one most likely to answer yes — a tile clipped by the tab
+            // bar is exactly the one that is not hittable.
+            .sorted { $0.visible.width * $0.visible.height > $1.visible.width * $1.visible.height }
+            .map { $0.identifier }
+        for identifier in candidates.prefix(8) where canTap(app.buttons[identifier]) {
+            return app.buttons[identifier]
+        }
+        return nil
     }
 
     /// Dragging a zoomed table moves it. Without this the pinch test alone
@@ -402,11 +441,7 @@ final class PeriodicProUITests: XCTestCase {
 
     /// The symbols currently vended by the table, as a set.
     private static func visibleTileSymbols(in app: XCUIApplication) -> Set<String> {
-        Set(
-            app.buttons.allElementsBoundByAccessibilityElement
-                .map(\.identifier)
-                .filter { $0.hasPrefix("element.") }
-        )
+        Set(tileFrames(in: app).keys)
     }
 
     /// There is no zoom control on the table, and there must not be one.
