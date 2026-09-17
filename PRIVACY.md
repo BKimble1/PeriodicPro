@@ -13,6 +13,13 @@ Two things leave the device, and only these:
   That is Apple talking to the App Store, not this app talking to a server of
   ours — see **Subscriptions** below.
 
+Two things that might be expected to leave the device do not:
+
+- **Camera frames are processed on your device and are never uploaded or
+  stored.** See **The chemistry scanner** below.
+- **Notifications are created on your device.** There is no notification
+  server and no push account. See **Notifications** below.
+
 ## What is stored, and where
 
 Everything below is written to the app's own on-device container and never
@@ -32,6 +39,9 @@ shared with third parties, and not readable by other apps.
 | Quizzes you saved, and quizzes opened from a shared link (a name and the quiz settings) | SwiftData store | My Quizzes |
 | Whether you have seen the three onboarding pages | `UserDefaults` | So onboarding only appears once |
 | Your appearance choice: System, Light or Dark | `UserDefaults` | So the app opens in the appearance you picked |
+| Which notification categories you turned on, and the time you chose | `UserDefaults` | So reminders arrive when and how you asked |
+| The day you last completed the Daily Challenge | `UserDefaults` | So today's challenge is not offered twice |
+| How many advanced-chemistry questions you answered each day, and how many were right | SwiftData store | The depth part of your learning rank |
 
 Nothing else is recorded. In particular the app does not store your name, email
 address, contacts, location, photos, identifiers for advertising, or any device
@@ -64,6 +74,48 @@ have bundled. When that happens:
 PubChem's own handling of the requests it receives is covered by the NIH
 privacy policy, not this one. The app shows "Data source: PubChem" and the
 compound identifier on every record that came from it.
+
+## The chemistry scanner
+
+Scan Chemistry uses the camera to read chemical names, molecular formulas and
+structure identifiers off a page.
+
+- **Camera frames are analyzed on your device and are never recorded, saved or
+  uploaded.** The recognition runs inside Apple's VisionKit on the device.
+  Elemora keeps no image, writes no image to disk, and sends no image
+  anywhere. There is no third-party recognition service in this app.
+- **The only thing that can leave the device is the recognized text** — a
+  chemical name, a formula, a SMILES string, an InChI or an InChIKey — and
+  only when Elemora's own catalog and your on-device cache do not already have
+  it, and only after you have held the camera steady on it long enough for the
+  scanner to settle. That text goes to PubChem exactly like a typed search,
+  described under **Compound lookups**.
+- **Camera access is requested only when you open Scan**, never at launch and
+  never as a side effect of anything else. Declining leaves everything else in
+  the app working, and the scanner offers a search field instead.
+- **No photo library access is requested at all.** Elemora does not ask for
+  your photos and cannot read them.
+- Elemora does not read skeletal structure diagrams. That would need a
+  different kind of model and, in every hosted form, would mean uploading a
+  picture of whatever you were pointing at. It is not implemented, and the
+  reasoning is written up in `OCSR.md`.
+
+## Notifications
+
+Study reminders are optional, off until you turn them on, and built entirely
+on your device.
+
+- **There is no notification server and no push account.** Elemora schedules
+  local notifications with iOS. Nothing about what you study is sent anywhere
+  to produce one, because the scheduling happens on the device from progress
+  that never leaves it.
+- **Permission is requested only when you turn a reminder on in Settings**,
+  after the app has told you what that category does — never at launch.
+- **Notification text contains no sensitive information**: a count of items due
+  for review, the length of a streak, or that today's challenge is ready.
+- At most one a day, and never at a critical or time-sensitive interruption
+  level, so a Focus silences them.
+- Turning the master switch off removes every reminder Elemora has pending.
 
 ## Subscriptions
 
@@ -131,6 +183,19 @@ request, on the spot; nothing identifies the person, nothing is retained by
 this project (it has no server), and PubChem is not a partner of the developer
 — it is a public reference service the app queries the way a browser would.
 Search history stays on the device and is never uploaded.
+
+The camera changes nothing in that answer, and it is worth being precise
+about why. Apple's questionnaire asks about data *collected* — transmitted off
+the device. Camera frames are not transmitted off the device: they are
+analyzed by VisionKit on the device and discarded. Nothing is written to disk
+and nothing is uploaded. The recognized text follows exactly the same path a
+typed search does, and is covered by the same reasoning above. If a future
+build ever sent an image anywhere, this section and the App Store answers
+would have to change together, and that change would be stated here rather
+than made quietly.
+
+Notifications change nothing either: they are local, they carry no personal
+information, and no notification token or account is involved.
 
 This is checkable rather than asserted. The app links no third-party package
 at all, and contains no analytics, advertising or attribution SDK. The only

@@ -78,6 +78,8 @@ RETAINED_IDENTIFIERS = {
     "PeriodicProTests/NotificationTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ProGateTests.swift":
         "asserts the product identifiers have not drifted",
+    "APP_STORE_READINESS.md":
+        "records the bundle and subscription identifiers the audit checked",
 
     # --- Xcode: project, scheme, target and test-bundle names ---
     "PeriodicPro.xcodeproj/project.pbxproj":

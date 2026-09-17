@@ -47,6 +47,7 @@
         <li>Your recent searches, and compounds looked up from PubChem, cached so they work
           offline.</li>
         <li>Your appearance preference (System, Light or Dark).</li>
+        <li>Which study reminders you have turned on and the time you chose for them.</li>
       </ul>
       <p>None of this is uploaded anywhere. There is no Elemora account, no login, no sign-in with
         anything, and no server that holds a copy. Deleting the app deletes all of it.</p>
@@ -59,6 +60,26 @@
         is made unless you search or build something. The result is cached on your device so it
         works offline afterwards. PubChem's own privacy practices are theirs; see
         <a href="https://www.nlm.nih.gov/web_policies.html" rel="noopener">nlm.nih.gov</a>.</p>
+
+      <h2>The chemistry scanner</h2>
+      <p>Scan Chemistry uses your camera to read chemical names, molecular formulas and structure
+        identifiers off a page. <strong>Camera frames are processed on your device and are never
+        recorded, saved or uploaded.</strong> Recognition runs inside Apple's on-device Vision
+        framework; Elemora keeps no image, writes none to disk and sends none anywhere. There is no
+        third-party image-recognition service in the app.</p>
+      <p>The only thing that can leave your device is the text it read — a name, a formula, a
+        SMILES string, an InChI or an InChIKey — and only when the app's own catalog and your cache
+        do not already have it. That text goes to PubChem exactly like a typed search. Camera access
+        is asked for only when you open Scan, never at launch, and declining leaves the rest of the
+        app working. Elemora never asks for access to your photos.</p>
+
+      <h2>Notifications</h2>
+      <p>Study reminders are optional and off until you turn them on. They are created on your
+        device: there is no notification server, no push account and no token. Nothing about what
+        you study is sent anywhere to produce one. Permission is asked for only when you turn a
+        reminder on in Settings, never at launch, and turning the master switch off removes every
+        reminder Elemora has pending. At most one arrives a day, and none of them is marked
+        time-sensitive or critical, so a Focus silences them.</p>
 
       <h2>Subscriptions</h2>
       <p>Elemora Pro is sold through Apple's In-App Purchase system. Apple handles the payment and
