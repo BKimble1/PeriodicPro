@@ -8,9 +8,13 @@ import UIKit
 /// place — which is the difference between a scanner and a camera with a
 /// chemistry filter over it.
 ///
-/// What it reads is names, molecular formulas, SMILES, InChI and InChIKey —
-/// chemistry written as letters and numbers. Only the band inside the reticle
-/// is read, so what the learner frames is what gets looked up.
+/// What it reads is elements, names, molecular formulas, SMILES, InChI and
+/// InChIKey — chemistry written as letters and numbers. Only the band inside
+/// the reticle is read, so what the learner frames is what gets looked up.
+///
+/// An element is answered from the bundle, with no request and no network: a
+/// periodic table, a bottle and a textbook margin all print `Na` or `Sodium`,
+/// and all 118 are already on the device.
 struct ChemistryScannerScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(CompoundStore.self) private var store: CompoundStore
@@ -47,6 +51,9 @@ struct ChemistryScannerScreen: View {
             .navigationDestination(for: CompoundMatchCandidate.self) { candidate in
                 CompoundDetailScreen(candidate: candidate)
             }
+            .navigationDestination(for: ChemicalElement.self) { element in
+                ElementDetailScreen(element: element)
+            }
         }
         .tint(AppColor.accent)
         .task { await model.start(isSupported: isSupported) }
@@ -68,7 +75,7 @@ struct ChemistryScannerScreen: View {
             )
         case .denied(let state):
             deniedView(state)
-        case .scanning, .resolving, .found, .notFound, .failed:
+        case .scanning, .resolving, .found, .foundElement, .notFound, .failed:
             camera
         }
     }
@@ -139,6 +146,10 @@ struct ChemistryScannerScreen: View {
                 resultCard(candidate) {
                     foundBody(match)
                 }
+            case .foundElement(let candidate, let element):
+                resultCard(candidate) {
+                    elementBody(element)
+                }
             case .notFound(let candidate):
                 resultCard(candidate) {
                     VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
@@ -186,7 +197,7 @@ struct ChemistryScannerScreen: View {
                 .accessibilityHidden(true)
 
             Text(model.visible.isEmpty
-                 ? "Point at a chemical name, formula or identifier."
+                 ? "Point at an element, a chemical name or a formula."
                  : "Hold steady on \(model.visible[0].displayText)")
                 .font(AppFont.footnote)
                 .foregroundStyle(.white)
@@ -196,7 +207,7 @@ struct ChemistryScannerScreen: View {
                 .background { Capsule().fill(.black.opacity(0.55)) }
                 .accessibilityIdentifier("scanner.guidance")
                 .accessibilityLabel(model.visible.isEmpty
-                                    ? "Point the camera at a chemical name, formula or identifier"
+                                    ? "Point the camera at an element, a chemical name or a formula"
                                     : "Reading \(model.visible[0].displayText). Hold steady.")
         }
     }
@@ -207,7 +218,7 @@ struct ChemistryScannerScreen: View {
             HStack(spacing: Theme.Spacing.s) {
                 ForEach(model.visible.prefix(6)) { candidate in
                     Button {
-                        model.select(candidate, store: store)
+                        model.select(candidate, store: store, catalog: catalog)
                     } label: {
                         VStack(spacing: 1) {
                             Text(candidate.displayText)
@@ -295,6 +306,59 @@ struct ChemistryScannerScreen: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("scanner.found")
+    }
+
+    /// One of the 118, answered from the bundle: no request, no waiting, and
+    /// no network needed for any of it.
+    private func elementBody(_ element: ChemicalElement) -> some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+            HStack(spacing: Theme.Spacing.m) {
+                Text(element.symbol)
+                    .font(.system(.title2, weight: .bold))
+                    .foregroundStyle(AppColor.primaryText)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .background {
+                        RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                            .fill(element.category.tileFill)
+                    }
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(element.name)
+                        .font(.system(.subheadline, weight: .medium))
+                        .foregroundStyle(AppColor.primaryText)
+                        .lineLimit(1)
+                    Text("Element \(element.atomicNumber) · \(element.category.displayName)")
+                        .font(AppFont.caption)
+                        .foregroundStyle(AppColor.secondaryText)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+                Spacer(minLength: 0)
+            }
+            HStack(spacing: Theme.Spacing.s) {
+                Button {
+                    Haptics.tap()
+                    path.append(element)
+                } label: {
+                    Text("Open")
+                        .font(.system(.subheadline, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: Theme.minimumTouchTarget)
+                        .background {
+                            RoundedRectangle(cornerRadius: Theme.Radius.control, style: .continuous)
+                                .fill(AppColor.accent)
+                        }
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("scanner.openElement")
+
+                resumeButton
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(element.name), element \(element.atomicNumber)")
+        .accessibilityIdentifier("scanner.foundElement")
     }
 
     private var resumeButton: some View {
@@ -411,9 +475,13 @@ struct ChemistryScannerScreen: View {
         let query = ChemicalQueryClassifier.classify(text, catalog: catalog)
         let candidate = ScanCandidate(
             text: text, raw: text, query: query, confidence: 1,
-            bounds: CGRect(x: 0, y: 0, width: 1, height: 1)
+            bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+            // What was typed is the whole of what was typed, so the
+            // whole-line rule for element names is satisfied by definition:
+            // typing "sodium" here reaches the same page as pointing at it.
+            element: ChemistryTextRecognizer.element(in: text, catalog: catalog)?.atomicNumber
         )
-        model.select(candidate, store: store)
+        model.select(candidate, store: store, catalog: catalog)
     }
 }
 

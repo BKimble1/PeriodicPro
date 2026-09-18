@@ -77,8 +77,8 @@ compound identifier on every record that came from it.
 
 ## The chemistry scanner
 
-Scan Chemistry uses the camera to read chemical names, molecular formulas and
-structure identifiers off a page.
+Scan Chemistry uses the camera to read element symbols and names, chemical
+names, molecular formulas and structure identifiers off a page.
 
 - **Camera frames are analyzed on your device and are never recorded, saved or
   uploaded.** The recognition runs inside Apple's VisionKit on the device.
@@ -90,6 +90,9 @@ structure identifiers off a page.
   it, and only after you have held the camera steady on it long enough for the
   scanner to settle. That text goes to PubChem exactly like a typed search,
   described under **Compound lookups**.
+- **An element never leaves the device at all.** All 118 are bundled, so
+  pointing the camera at `Na` or at the word Sodium is answered from the app
+  itself, with no request of any kind.
 - **Camera access is requested only when you open Scan**, never at launch and
   never as a side effect of anything else. Declining leaves everything else in
   the app working, and the scanner offers a search field instead.

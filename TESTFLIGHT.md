@@ -219,13 +219,11 @@ succeeds.
 5. **External Testing** needs a short Beta App Review (usually under 24 hours)
    the first time. Fill in the *Test Information* fields:
 
-   - **What to Test** (Build 6): "The whole periodic table is visible the
-     moment the app opens — check it fits your screen without scrolling. Point
-     the scanner at a printed formula or compound name — only the text inside
-     the frame is read. Tap a flashcard to flip it and swipe between cards.
-     Build a compound with more than thirty atoms. Try the Advanced
-     mode in Study, and look at your rank and learning path in Progress."
-     Section 7a lists the cases in full.
+   - **What to Test** (Build 7): "Point the scanner at a periodic table, at a
+     bottle or at a textbook — an element symbol like Na or Fe, or the word
+     Sodium, should identify that element straight away and open its page.
+     Formulas and compound names still work as before. Everything else in the
+     build is unchanged from Build 6." Section 7a lists the cases in full.
    - **Feedback Email:** yours.
    - **Beta App Description:** "A clean, offline reference and study app for the
      periodic table. Explore all 118 elements, then practice with flashcards,
@@ -234,11 +232,37 @@ succeeds.
 
 ---
 
-## 7a. Build 6 — what to test on a real device
+## 7a. Build 7 — what to test on a real device
 
-Build 6 changes several things a simulator cannot judge. These are the cases
-worth a person's time; everything else in the build is covered by the
-automated tests.
+Build 7 changes one thing: the scanner identifies elements. That is the only
+part of this build worth a person's time, and a simulator cannot judge any of
+it, because a simulator has no camera.
+
+**Pointing at an element** — Table tab → the scan button in the toolbar.
+
+- Point it at a **periodic table**, at one cell. The symbol, the name or both
+  should settle on that element within a beat, and the card should say
+  *Element* with the symbol, the name, the atomic number and its family.
+  **Open** goes to that element's page in the app.
+- It should be instant and work in airplane mode. All 118 are in the app, so
+  nothing is being looked up; if pointing at `Na` ever shows *Looking it up…*
+  or *No compound with this formula was found*, that is the bug this build
+  fixes coming back.
+- Point it at an element's **name** on its own — a bottle reading SODIUM, a
+  label reading Iron. That should identify it too, in whatever case it is
+  printed.
+- Now sweep across a **paragraph of prose** containing the words "lead",
+  "gold" or "iron". Nothing should be offered: an element's name counts only
+  when it is the whole of what is read, not a word inside a sentence.
+- Point it at `CO` and at `Co`. The first is carbon monoxide, the second is
+  cobalt, and the case is the whole difference. Likewise `C60` is
+  buckminsterfullerene rather than carbon, and `O2` is dioxygen rather than
+  oxygen.
+- Hold on one thing and watch the card. It should settle once and stay; the
+  reading underneath should not flicker between candidates while the phone is
+  still.
+
+**What Build 6 asked for, still worth a second look**
 
 **The table's size** — Table tab. Scroll the page up and down. The tiles must
 not change size at any point: the only thing that resizes the table is a
@@ -256,8 +280,9 @@ deck, and the line under the card says how many there are.
 answering: it must still be waiting. Finish it, and only then should it read
 as done.
 
-**The chemistry scanner** — Table tab → the scan button in the toolbar.
-A simulator has no camera, so none of this has been run against live video.
+**The chemistry scanner, the rest of it** — the cases that are not new in
+Build 7. A simulator has no camera, so none of this has been run against live
+video.
 
 - The camera permission prompt appears the *first time you open the scanner*
   and never at launch. Decline it: you should get a screen that explains and

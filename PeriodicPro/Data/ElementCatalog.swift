@@ -18,6 +18,7 @@ struct ElementCatalog: Sendable {
 
     private let byAtomicNumber: [Int: ChemicalElement]
     private let bySymbol: [String: ChemicalElement]
+    private let byName: [String: ChemicalElement]
     private let byCategory: [ElementCategory: [ChemicalElement]]
     private let searchEntries: [ElementSearch.Entry]
 
@@ -37,6 +38,8 @@ struct ElementCatalog: Sendable {
         self.byAtomicNumber = Dictionary(uniqueKeysWithValues: unique.map { ($0.atomicNumber, $0) })
         self.bySymbol = Dictionary(unique.map { ($0.symbol.lowercased(), $0) },
                                    uniquingKeysWith: { first, _ in first })
+        self.byName = Dictionary(unique.map { ($0.name.lowercased(), $0) },
+                                 uniquingKeysWith: { first, _ in first })
         self.byCategory = Dictionary(grouping: unique, by: \.category)
         self.searchEntries = ElementSearch.makeEntries(unique)
     }
@@ -46,6 +49,11 @@ struct ElementCatalog: Sendable {
 
     func element(atomicNumber: Int) -> ChemicalElement? { byAtomicNumber[atomicNumber] }
     func element(symbol: String) -> ChemicalElement? { bySymbol[symbol.lowercased()] }
+
+    /// The element with exactly this name, in any case. An index rather than
+    /// `search`, because the scanner asks this of every line it reads and
+    /// "is this word an element" has one right answer, not a ranked list.
+    func element(name: String) -> ChemicalElement? { byName[name.lowercased()] }
 
     func elements(in category: ElementCategory) -> [ChemicalElement] { byCategory[category] ?? [] }
 

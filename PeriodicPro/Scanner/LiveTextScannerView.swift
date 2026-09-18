@@ -82,11 +82,19 @@ struct LiveTextScannerView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ controller: DataScannerViewController, context: Context) {
         context.coordinator.onRecognize = onRecognize
-        // Re-applied on every update: the view has no size on the first pass,
-        // and the region has to be re-cut when the device is turned.
+        // Re-cut when the view finally has a size and when the device is
+        // turned — and only then. `updateUIViewController` runs on every
+        // SwiftUI update, and the scanner's own results drive those updates
+        // several times a second, so assigning this unconditionally meant
+        // writing the region of interest on almost every frame. Setting it
+        // reconfigures the live scan, which is the last thing a recognizer
+        // being asked to hold steady on one word needs.
         let bounds = controller.view.bounds
         if bounds.width > 0, bounds.height > 0 {
-            controller.regionOfInterest = Self.regionOfInterest(in: bounds)
+            let region = Self.regionOfInterest(in: bounds)
+            if controller.regionOfInterest != region {
+                controller.regionOfInterest = region
+            }
         }
         guard !controller.isScanning else { return }
         do {

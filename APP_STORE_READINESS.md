@@ -1,14 +1,25 @@
-# App Store readiness — Elemora Build 6
+# App Store readiness — Elemora Build 7
 
 Every release-critical item, with a verdict. **PASS** means it is done and
 checkable in this repository. **MANUAL ACTION** means it is outside what a
 build can do and needs a person in App Store Connect, the Apple Developer
 portal or the website host. There is no "looks good".
 
-Audited at Build 6. Version `6.0.0`, bundle identifier `com.idlery.periodicpro`.
+Audited at Build 7. Version `7.0.0`, bundle identifier `com.idlery.periodicpro`.
+
+**What Build 7 changes.** One thing: the scanner identifies elements. Pointing
+at `Na`, at `Fe` or at the word Sodium — on a periodic table, a bottle or a
+textbook margin — now opens that element, answered from the bundled catalog
+with no request and no network. Before this the scanner had no concept of an
+element at all: a symbol was a formula like any other and went to PubChem for
+a compound, and an element's name was rejected outright by the chemical-name
+filter, so pointing at one did nothing at all. Three smaller scanner fixes
+ride with it: the region of interest is no longer re-cut on every frame, the
+recognized list is published only when it changes, and a lookup that already
+missed is not made again.
 
 **What CI proved before this build was sent to TestFlight.** A full green run:
-every data and source gate on Ubuntu, the unit suite, the 62-test UI suite on
+every data and source gate on Ubuntu, the unit suite, the UI suite on
 an iPhone 17 Pro, the launch-and-layout suite on a small phone, a large phone
 and an iPad, an unsigned Release build, and four simulator screenshot captures.
 

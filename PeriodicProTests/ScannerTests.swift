@@ -108,6 +108,62 @@ struct ChemistryTextRecognizerTests {
         #expect(candidates("Chapter 4 — Reactions in aqueous solution").isEmpty)
     }
 
+    @Test("An element symbol is read as that element")
+    func elementSymbols() {
+        for (symbol, number) in [("Na", 11), ("Fe", 26), ("C", 6), ("Cl", 17), ("Co", 27)] {
+            let read = best(symbol)
+            #expect(read?.element == number,
+                    "\(symbol) should read as element \(number), got \(String(describing: read))")
+            #expect(read?.kindDescription == "Element")
+        }
+    }
+
+    @Test("A symbol has to be spelled the way the table spells it")
+    func symbolCaseMatters() {
+        // AT, IN, NO, BE, AS, AM and HE are English words in capitals. Reading
+        // them as astatine, indium, nobelium, beryllium, arsenic, americium
+        // and helium would make a page of prose a stream of wrong answers.
+        for shouting in ["NA", "IN", "NO", "BE", "AS", "HE", "AT", "na", "fe"] {
+            #expect(candidates(shouting).allSatisfy { $0.element == nil },
+                    "\(shouting) is not how the table spells an element symbol")
+        }
+    }
+
+    @Test("An element's name, on a line of its own, is that element")
+    func elementNames() {
+        #expect(best("Sodium")?.element == 11)
+        #expect(best("sodium")?.element == 11)
+        #expect(best("IRON")?.element == 26)
+        #expect(best("Chlorine")?.element == 17)
+        #expect(best("Carbon")?.element == 6)
+        // A periodic table cell is a line each: the number, the symbol, the
+        // name and the mass. Any of the three readable ones lands on sodium.
+        #expect(best("Na")?.element == best("Sodium")?.element)
+    }
+
+    @Test("An element's name inside a sentence is the word, not the element")
+    func elementNamesInProse() {
+        for sentence in [
+            "The lead pipe was replaced",
+            "a gold standard for this",
+            "iron out the differences",
+        ] {
+            #expect(candidates(sentence).allSatisfy { $0.element == nil },
+                    "\(sentence) is prose, and lead, gold and iron are words in it")
+        }
+    }
+
+    @Test("A formula that happens to start with a symbol is still a formula")
+    func formulasAreNotElements() {
+        // Every one of these would be a wrong answer as an element: C60 is
+        // buckminsterfullerene, O2 is dioxygen, CO is carbon monoxide and
+        // sodium chloride is a salt.
+        for formula in ["C60", "O2", "H2O", "CO", "Fe2O3"] {
+            #expect(best(formula)?.element == nil, "\(formula) is a formula, not an element")
+        }
+        #expect(best("Sodium chloride")?.element == nil)
+    }
+
     @Test("Structure identifiers read off a page")
     func structureIdentifiers() {
         #expect(best("BSYNRYMUTXBXSQ-UHFFFAOYSA-N")?.query == .inchiKey("BSYNRYMUTXBXSQ-UHFFFAOYSA-N"))
@@ -148,7 +204,8 @@ struct ScanStabilizerTests {
             text: text, raw: text,
             query: ChemicalQueryClassifier.classify(text, catalog: TestCatalog.shared),
             confidence: confidence,
-            bounds: CGRect(origin: origin, size: CGSize(width: 0.2, height: 0.05))
+            bounds: CGRect(origin: origin, size: CGSize(width: 0.2, height: 0.05)),
+            element: nil
         )
     }
 
@@ -260,19 +317,24 @@ struct ChemistryScannerModelTests {
         )
     }
 
+    /// Built the way the recognizer builds one, element tag and all, so a
+    /// test that hands the model a candidate hands it the same thing the
+    /// camera would.
     private func candidate(_ text: String) -> ScanCandidate {
-        ScanCandidate(
-            text: text, raw: text,
-            query: ChemicalQueryClassifier.classify(text, catalog: elements),
-            confidence: 1, bounds: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.05)
-        )
+        ChemistryTextRecognizer.candidates(in: text, catalog: elements).first
+            ?? ScanCandidate(
+                text: text, raw: text,
+                query: ChemicalQueryClassifier.classify(text, catalog: elements),
+                confidence: 1, bounds: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.05),
+                element: nil
+            )
     }
 
     @Test("A formula the device knows resolves with the phone offline")
     func localFirst() {
         let model = ChemistryScannerModel()
         let store = offlineStore()
-        model.select(candidate("H2O"), store: store)
+        model.select(candidate("H2O"), store: store, catalog: elements)
         guard case .found(_, let match) = model.phase else {
             Issue.record("H2O should resolve from the catalog, got \(model.phase)")
             return
@@ -284,7 +346,7 @@ struct ChemistryScannerModelTests {
     @Test("A formula nothing knows, with no network, is a clear not-found")
     func offlineMiss() {
         let model = ChemistryScannerModel()
-        model.select(candidate("Nh2O3"), store: offlineStore())
+        model.select(candidate("Nh2O3"), store: offlineStore(), catalog: elements)
         guard case .notFound = model.phase else {
             Issue.record("an unknown formula offline should be not-found, got \(model.phase)")
             return
@@ -294,7 +356,7 @@ struct ChemistryScannerModelTests {
     @Test("A name reaches PubChem only after it has settled")
     func remoteLookup() async {
         let model = ChemistryScannerModel()
-        model.select(candidate("caffeine"), store: stubbedStore())
+        model.select(candidate("caffeine"), store: stubbedStore(), catalog: elements)
         await model.waitForPendingLookup()
         guard case .found(_, let match) = model.phase else {
             Issue.record("caffeine should resolve, got \(model.phase)")
@@ -343,10 +405,88 @@ struct ChemistryScannerModelTests {
         #expect(texts.isSuperset(of: ["H2O", "NaCl", "C6H12O6"]))
     }
 
+    @Test("Pointing at an element identifies it, offline and with no request")
+    func elementResolvesFromTheBundle() {
+        let model = ChemistryScannerModel()
+        model.select(candidate("Na"), store: offlineStore(), catalog: elements)
+        guard case .foundElement(_, let element) = model.phase else {
+            Issue.record("Na should identify sodium, got \(model.phase)")
+            return
+        }
+        #expect(element.atomicNumber == 11)
+        #expect(element.name == "Sodium")
+    }
+
+    @Test("And by its name as well as its symbol")
+    func elementNameResolves() {
+        let model = ChemistryScannerModel()
+        model.select(candidate("Sodium"), store: offlineStore(), catalog: elements)
+        guard case .foundElement(_, let element) = model.phase else {
+            Issue.record("the word Sodium should identify sodium, got \(model.phase)")
+            return
+        }
+        #expect(element.atomicNumber == 11)
+    }
+
+    @Test("Three steady frames on a table cell open the element")
+    func elementSettlesFromFrames() {
+        let model = ChemistryScannerModel(phase: .scanning)
+        let store = offlineStore()
+        let start = ContinuousClock.now
+        let cell = CGRect(x: 0.45, y: 0.44, width: 0.1, height: 0.04)
+        for offset in [0, 200, 500] {
+            model.observe(lines: [("Fe", 1, cell)], catalog: elements, store: store,
+                          at: start.advanced(by: .milliseconds(offset)))
+        }
+        guard case .foundElement(_, let element) = model.phase else {
+            Issue.record("holding on Fe should identify iron, got \(model.phase)")
+            return
+        }
+        #expect(element.symbol == "Fe")
+    }
+
+    @Test("An element outranks everything else on the same cell")
+    func elementWinsTheFrame() {
+        let model = ChemistryScannerModel(phase: .scanning)
+        // A periodic table cell, as a recognizer hands it over: the atomic
+        // number, the symbol, the name and the mass, each its own line.
+        model.observe(
+            lines: [
+                ("11", 1, CGRect(x: 0.42, y: 0.40, width: 0.04, height: 0.03)),
+                ("Na", 1, CGRect(x: 0.46, y: 0.44, width: 0.08, height: 0.05)),
+                ("Sodium", 1, CGRect(x: 0.44, y: 0.50, width: 0.12, height: 0.03)),
+                ("22.990", 1, CGRect(x: 0.44, y: 0.54, width: 0.12, height: 0.03)),
+            ],
+            catalog: elements, store: offlineStore()
+        )
+        #expect(model.visible.first?.element == 11,
+                "the element is the most specific thing on the cell and should lead")
+        #expect(model.visible.allSatisfy { $0.element == nil || $0.element == 11 })
+    }
+
+    @Test("A lookup that already missed is not made a second time")
+    func missesAreRemembered() async {
+        let model = ChemistryScannerModel()
+        let store = stubbedStore()
+        model.select(candidate("Nh2O3"), store: store, catalog: elements)
+        await model.waitForPendingLookup()
+        guard case .notFound = model.phase else {
+            Issue.record("an unknown formula should be not-found, got \(model.phase)")
+            return
+        }
+        // Second time: the answer is known, so the phase is the answer rather
+        // than another spell in `.resolving` waiting on the same request.
+        model.select(candidate("Nh2O3"), store: store, catalog: elements)
+        guard case .notFound = model.phase else {
+            Issue.record("a remembered miss should answer at once, got \(model.phase)")
+            return
+        }
+    }
+
     @Test("Resuming clears the result and starts looking again")
     func resuming() {
         let model = ChemistryScannerModel()
-        model.select(candidate("H2O"), store: offlineStore())
+        model.select(candidate("H2O"), store: offlineStore(), catalog: elements)
         guard case .found = model.phase else {
             Issue.record("expected a result to resume from")
             return

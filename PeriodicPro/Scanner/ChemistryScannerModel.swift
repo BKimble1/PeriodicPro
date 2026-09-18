@@ -37,9 +37,10 @@ enum CameraAuthorization {
 ///
 /// The camera produces recognized text; `ChemistryTextRecognizer` decides what
 /// chemistry is in it; `ScanStabilizer` decides when the learner has actually
-/// settled on something; and this resolves that to a compound — Elemora's own
-/// catalog first, then the on-device cache, then PubChem, then a clear
-/// not-found.
+/// settled on something; and this resolves that — the elements first, because
+/// all 118 are bundled and pointing at `Na` on a table means sodium, then
+/// Elemora's own compound catalog, then the on-device cache, then PubChem,
+/// then a clear not-found.
 ///
 /// Camera frames never leave the device. What can reach PubChem is the
 /// recognized text alone — a name, a formula or a structure identifier — and
@@ -62,6 +63,8 @@ final class ChemistryScannerModel {
         case resolving(ScanCandidate)
         /// Settled and found.
         case found(ScanCandidate, CompoundMatchCandidate)
+        /// Settled on one of the 118, which is answered from the bundle.
+        case foundElement(ScanCandidate, ChemicalElement)
         /// Settled, looked up, and nothing has it.
         case notFound(ScanCandidate)
         /// Settled, but the lookup could not be made.
@@ -157,29 +160,52 @@ final class ChemistryScannerModel {
         for line in lines {
             for candidate in ChemistryTextRecognizer.candidates(
                 in: line.text, confidence: line.confidence, bounds: line.bounds, catalog: catalog
-            ) where seen.insert(candidate.id).inserted {
+            ) {
+                // One entry per thing, not per spelling of it. A periodic
+                // table cell arrives as several lines — the atomic number,
+                // the symbol, the name, the mass — and `Na` and `Sodium` are
+                // the same answer, so offering both is offering the same
+                // choice twice.
+                let key = candidate.element.map { "element:\($0)" } ?? candidate.text
+                guard seen.insert(key).inserted else { continue }
                 found.append(candidate)
             }
         }
-        visible = found.sorted { lhs, rhs in
+        let ranked = found.sorted { lhs, rhs in
             if lhs.kindRank != rhs.kindRank { return lhs.kindRank < rhs.kindRank }
             return lhs.confidence > rhs.confidence
         }
+        // Written only when it actually changed. VisionKit reports several
+        // times a second and mostly reports the same thing; assigning an
+        // identical list each time is an observation each time, which is a
+        // rebuild of the overlay each time — the chooser popping in and out
+        // and the guidance line flickering under a steady hand.
+        if ranked != visible { visible = ranked }
 
         let best = visible.first { !missed.contains($0.id) } ?? visible.first
         guard let settled = stabilizer.observe(best, at: now) else {
-            progress = stabilizer.progress
+            let reached = stabilizer.progress
+            if reached != progress { progress = reached }
             return
         }
         progress = 1
-        select(settled, store: store)
+        select(settled, store: store, catalog: catalog)
     }
 
     /// Looks up a candidate the learner picked from the ones on screen.
-    func select(_ candidate: ScanCandidate, store: CompoundStore) {
+    func select(_ candidate: ScanCandidate, store: CompoundStore, catalog: ElementCatalog) {
         resolution?.cancel()
         Haptics.tap()
 
+        // An element first, and without asking anybody. All 118 are in the
+        // bundle, so pointing at a periodic table, a bottle or a textbook
+        // margin is answered on the spot and offline. Before this, `Na` was
+        // a formula like any other: a PubChem round trip that came back with
+        // something that was not the sodium page, or with nothing at all.
+        if let identified = element(for: candidate, catalog: catalog) {
+            phase = .foundElement(candidate, identified)
+            return
+        }
         // Already known in this session: no request, no wait.
         if let known = resolved[candidate.id] {
             phase = .found(candidate, known)
@@ -190,6 +216,13 @@ final class ChemistryScannerModel {
         if let local = localMatch(candidate, store: store) {
             resolved[candidate.id] = local
             phase = .found(candidate, local)
+            return
+        }
+        // Already looked for and not there. Asking again gets the same
+        // answer a second later, which is how the not-found card came back
+        // every time the learner resumed on the same thing.
+        guard !missed.contains(candidate.id) else {
+            phase = .notFound(candidate)
             return
         }
         guard store.isOnlineLookupEnabled else {
@@ -223,6 +256,19 @@ final class ChemistryScannerModel {
                 self.phase = .failed(candidate, PubChemError.malformed("").userMessage)
             }
         }
+    }
+
+    /// The element a settled candidate names, if it names one.
+    ///
+    /// Decided once, by the recognizer, when the line was read — a symbol
+    /// spelled as the table spells it, or an element's name on a line of its
+    /// own. Carried as an atomic number rather than as an object because a
+    /// candidate travels through the stabilizer and back, and the number is
+    /// the whole of what has to survive that trip. Deliberately not
+    /// re-derived from the text here: that would apply the whole-line rule to
+    /// a token and quietly undo it.
+    func element(for candidate: ScanCandidate, catalog: ElementCatalog) -> ChemicalElement? {
+        candidate.element.flatMap { catalog.element(atomicNumber: $0) }
     }
 
     /// What the device already knows, without a network.

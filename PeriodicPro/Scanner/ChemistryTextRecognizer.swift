@@ -34,28 +34,46 @@ enum ChemistryTextRecognizer {
         var seen = Set<String>()
 
         @discardableResult
-        func offer(_ text: String, raw: String, allowsSpacedFormula: Bool = false) -> Bool {
+        func offer(
+            _ text: String,
+            raw: String,
+            allowsSpacedFormula: Bool = false,
+            allowsElementName: Bool = false
+        ) -> Bool {
             // A bare number on a page is a page number far more often than it
             // is a PubChem CID, so the camera does not read one as an
             // identifier. "CID 2244" is still recognized.
             let query = ChemicalQueryClassifier.classify(text, catalog: catalog, allowsBareNumber: false)
             guard !query.isEmpty else { return false }
-            if case .name = query, !looksLikeChemicalName(text, elements: catalog) { return false }
+            let named = namedElement(text, catalog: catalog, allowsName: allowsElementName)
+            // A name has to look like a chemical name before it is offered —
+            // unless it is an element's name, which is one by definition.
+            if case .name = query, named == nil,
+               !looksLikeChemicalName(text, elements: catalog) { return false }
             // A formula never contains a space. Without this, a line reading
             // "H2O NaCl" would be read as one compound, because the parser
             // strips whitespace before it does anything else.
             if case .formula = query, !allowsSpacedFormula,
                text.contains(where: { $0.isWhitespace }) { return false }
             let candidate = ScanCandidate(
-                text: text, raw: raw, query: query, confidence: confidence, bounds: bounds
+                text: text, raw: raw, query: query, confidence: confidence, bounds: bounds,
+                element: named?.atomicNumber
             )
-            guard seen.insert(candidate.id).inserted else { return false }
+            // Deduplicated by the text, not by the candidate's identity. The
+            // whole line and one of its tokens are often the same string, and
+            // "Chlorine" read as an element and read as a chemical name are
+            // two identities for one word — which would put the same thing on
+            // the chooser twice, once with the right answer and once with a
+            // PubChem round trip. The line is offered first, so the reading
+            // that wins is the more specific one.
+            guard seen.insert(candidate.text).inserted else { return false }
             found.append(candidate)
             return true
         }
 
-        // The whole line first: a name is usually the line, not a word in it.
-        offer(cleaned, raw: line)
+        // The whole line first: a name is usually the line, not a word in it,
+        // and an element's name is only its name when it is the whole line.
+        offer(cleaned, raw: line, allowsElementName: true)
 
         // Then each token, which is where a formula lives.
         var words: [String] = []
@@ -75,6 +93,44 @@ enum ChemistryTextRecognizer {
             if lhs.kindRank != rhs.kindRank { return lhs.kindRank < rhs.kindRank }
             return lhs.text.count > rhs.text.count
         }
+    }
+
+    // MARK: - Elements
+
+    /// The element a piece of read text names exactly, or nil.
+    ///
+    /// Two spellings count and nothing else: the symbol exactly as the table
+    /// prints it, and the element's full name in any case.
+    ///
+    /// **Case matters for a symbol.** `AT`, `IN`, `NO`, `BE`, `AS`, `AM` and
+    /// `HE` are ordinary English words in capitals, and reading them as
+    /// astatine, indium, nobelium, beryllium, arsenic, americium and helium
+    /// would turn a page of prose into a stream of confident wrong answers.
+    /// A periodic table, a bottle and a textbook all print `Na`, so requiring
+    /// `Na` costs nothing and rules all of that out.
+    static func element(in text: String, catalog: ElementCatalog = .bundledOrEmpty) -> ChemicalElement? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        if let bySymbol = catalog.element(symbol: trimmed), bySymbol.symbol == trimmed {
+            return bySymbol
+        }
+        return catalog.element(name: trimmed)
+    }
+
+    /// The element a candidate should be resolved as.
+    ///
+    /// A **symbol** counts wherever it is read: `Na` is already offered as a
+    /// formula, and saying it is sodium only decides which answer it
+    /// deserves. A **name** counts only when it is the whole line, because
+    /// lead, iron, gold, silver and tin are English words — inside a sentence
+    /// the word is what was meant far more often than the element, and the
+    /// line a camera hands over for a table cell is the cell.
+    static func namedElement(
+        _ text: String, catalog: ElementCatalog, allowsName: Bool
+    ) -> ChemicalElement? {
+        guard let found = element(in: text, catalog: catalog) else { return nil }
+        if found.symbol == text.trimmingCharacters(in: .whitespacesAndNewlines) { return found }
+        return allowsName ? found : nil
     }
 
     // MARK: - Normalizing

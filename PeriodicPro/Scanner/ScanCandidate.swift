@@ -19,6 +19,15 @@ struct ScanCandidate: Hashable, Identifiable, Sendable {
     let confidence: Double
     /// Where it sits in the frame, in normalized coordinates.
     let bounds: CGRect
+    /// The atomic number, when the text names one element exactly — the
+    /// symbol as the table spells it, or the element's name.
+    ///
+    /// This is what makes pointing at a periodic table work. `Na` is a
+    /// formula as far as the parser is concerned, and looking it up as a
+    /// compound means a PubChem round trip that answers with something that
+    /// is not the sodium page; the app has all 118 elements bundled and can
+    /// answer instantly and correctly instead.
+    var element: Int?
 
     /// Stable across frames, so the stabilizer can tell "the same thing
     /// again" from "something new".
@@ -26,25 +35,34 @@ struct ScanCandidate: Hashable, Identifiable, Sendable {
 
     /// How strong a claim this kind of match is.
     ///
-    /// An InChIKey identifies one structure exactly; a formula identifies a
-    /// composition; a name identifies whatever the index says it does. When
-    /// two candidates are in the same frame, the more specific one wins.
+    /// An element is the strongest: the app has all 118 of them bundled, so
+    /// there is nothing to look up and nothing to be wrong about. Then an
+    /// InChIKey, which identifies one structure exactly; a formula, which
+    /// identifies a composition; a name, which identifies whatever the index
+    /// says it does. When two candidates are in the same frame, the more
+    /// specific one wins.
     var kindRank: Int {
+        if element != nil { return 0 }
         switch query {
-        case .inchiKey: return 0
-        case .inchi: return 1
-        case .smiles: return 2
-        case .cid: return 3
-        case .formula: return 4
-        case .name: return 5
-        case .empty: return 6
+        case .inchiKey: return 1
+        case .inchi: return 2
+        case .smiles: return 3
+        case .cid: return 4
+        case .formula: return 5
+        case .name: return 6
+        case .empty: return 7
         }
     }
 
-    var kindDescription: String { query.kindDescription }
+    var kindDescription: String {
+        element != nil ? "Element" : query.kindDescription
+    }
 
-    /// For display: a formula reads better with its subscripts back.
+    /// For display: a formula reads better with its subscripts back. An
+    /// element symbol has no subscripts to put back, and a name would be
+    /// disfigured by the attempt.
     var displayText: String {
+        if element != nil { return text }
         if case .formula = query { return CompoundFormula.subscripted(text) }
         return text
     }
