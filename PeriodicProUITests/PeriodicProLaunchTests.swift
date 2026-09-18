@@ -128,7 +128,12 @@ final class PeriodicProLaunchTests: XCTestCase {
         let names = matches.allElementsBoundByAccessibilityElement.map(\.label)
         XCTAssertTrue(names.contains("Elemora"),
                       "The loading screen should name the app to VoiceOver; saw \(names)")
-        XCTAssertFalse(held.navigationBars["Periodic Table"].exists,
+        // The table's own content, not the navigation bar. SwiftUI renders a
+        // navigation bar as UIKit chrome outside the view the overlay covers,
+        // so it stays in the tree however thoroughly the content behind is
+        // hidden — and a bar nobody can see or reach is not what "beside"
+        // means. What matters is that none of the table is reachable.
+        XCTAssertFalse(held.buttons["element.H"].exists,
                        "The table should be behind the loading screen, not beside it")
 
         let frame = XCTAttachment(screenshot: held.screenshot())
@@ -144,6 +149,8 @@ final class PeriodicProLaunchTests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.navigationBars["Periodic Table"].waitForExistence(timeout: 15),
                       "The loading screen should give way to the table on its own")
+        XCTAssertTrue(app.buttons["element.H"].waitForExistence(timeout: 5),
+                      "and the table itself should be reachable once it has")
         XCTAssertFalse(app.descendants(matching: .any)
             .matching(identifier: "launch.screen").firstMatch.exists,
                        "The loading screen should be gone once the table is up")
