@@ -7,6 +7,19 @@ portal or the website host. There is no "looks good".
 
 Audited at Build 5. Version `5.0.0`, bundle identifier `com.idlery.periodicpro`.
 
+**What CI proved before this build was sent to TestFlight.** A full green run:
+every data and source gate on Ubuntu, the unit suite, the 62-test UI suite on
+an iPhone 17 Pro, the launch-and-layout suite on a small phone, a large phone
+and an iPad, an unsigned Release build, and four simulator screenshot captures.
+
+**What it did not prove, and cannot.** The camera path — a simulator has no
+camera, so live text recognition is exercised only against text fixtures. The
+live PubChem calls — `Tools/smoke_pubchem.py` is deliberately out of CI and has
+not been run from the environment that wrote this build, which cannot reach
+PubChem. The widget appearing on a Home Screen — that needs the App Group to
+survive signing, which only a real signed build installed on a device shows.
+Those three are items 6, 7 and 8 under *Remaining blockers*.
+
 ---
 
 ## 1. Subscriptions and StoreKit
