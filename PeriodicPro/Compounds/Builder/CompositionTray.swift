@@ -90,9 +90,13 @@ struct CompositionTray: View {
         .accessibilityIdentifier("build.tray")
         .alert("How many \(editing?.element.name.lowercased() ?? "atoms")?",
                isPresented: Binding(get: { editing != nil }, set: { if !$0 { editing = nil } })) {
+            // No identifier on the field. SwiftUI hands an alert's contents to
+            // a UIAlertController, which takes a button's accessibility
+            // identifier and drops a text field's — the identifier compiles,
+            // reads as if it works, and never reaches the accessibility tree.
+            // The alert has exactly one field, so that is how a test names it.
             TextField("Count", text: $typed)
                 .keyboardType(.numberPad)
-                .accessibilityIdentifier("build.countField")
             Button("Cancel", role: .cancel) { editing = nil }
             Button("Set") { commitTypedCount() }
                 .accessibilityIdentifier("build.countConfirm")

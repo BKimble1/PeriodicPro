@@ -563,7 +563,7 @@ still in the tree, so it is known to fire on the thing it is named for:
 | `check_initializers.py` | an initializer call that no longer matches its type |
 | `check_widget_shared.py` | a widget that builds and shows a placeholder forever |
 | `check_table_fit.py` | a table that does not fit, which only a screenshot shows |
-| `lint_sources.py` | `binary operator '+' cannot be applied to two 'OSLogMessage' operands`; `cannot use mutating member on immutable value: '$0' is immutable`; `Font.system` with its arguments transposed |
+| `lint_sources.py` | `binary operator '+' cannot be applied to two 'OSLogMessage' operands`; `cannot use mutating member on immutable value: '$0' is immutable`; `cannot convert value of type 'String' to expected argument type 'Comment?'`; `unexpected non-void return value in void function`; `Font.system` with its arguments transposed; an accessibility identifier that lands on the wrong element, or on an alert's text field where UIAlertController drops it |
 
 None of them is a compiler and none tries to be. Each answers one narrow
 question that has a cheap, accurate answer without types, and skips whatever it
@@ -579,14 +579,14 @@ failure, when the network cannot be reached at all.
 
 **UI tests** (XCUITest) cover launch, tapping an element into its detail page,
 favoriting and seeing it appear in Study, searching by name, symbol and atomic
-number, the empty search state, the four primary filters and the Families
-card, Settings and its exact legal links, the practice tiles sharing one
-baseline, a full
-flashcard round through to its summary, answering a quiz question, an identify
-round, the Progress screen, the redesigned Study layout, the free daily
-allowance counting down (and not counting an abandoned round), the Pro badge,
-the paywall opening and closing with its Restore and legal links, and the 3D
-explorer opening for a free element while a gated one shows the paywall. Every query goes through an accessibility
+number, the empty search state, the four primary filters and the Families card,
+Settings and its exact legal links, the practice tiles sharing one size and
+lining up in their rows, a full flashcard round through to its summary,
+answering a quiz question, an identify round, the Progress screen, the
+redesigned Study layout, the free daily allowance counting down (and not
+counting an abandoned round), the Pro badge, the paywall opening and closing
+with its Restore and legal links, and the 3D explorer opening for a free element
+while a gated one shows the paywall. Every query goes through an accessibility
 identifier — no pixel coordinates.
 
 ---

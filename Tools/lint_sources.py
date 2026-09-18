@@ -195,6 +195,74 @@ def check_accessibility_order(path: str, raw: str, errors: list[str]) -> None:
             back -= 1
 
 
+# `.alert("Title", isPresented: $flag) { ... }` and the fields inside it.
+ALERT_MODIFIER = re.compile(r"\.alert\s*\(")
+ALERT_FIELD = re.compile(r"\b(?:TextField|SecureField)\s*\(")
+
+
+def matching_delimiter(source: str, open_index: int, opener: str, closer: str) -> int:
+    """The index of the delimiter closing the one at `open_index`."""
+    depth = 0
+    for index in range(open_index, len(source)):
+        if source[index] == opener:
+            depth += 1
+        elif source[index] == closer:
+            depth -= 1
+            if depth == 0:
+                return index
+    return len(source) - 1
+
+
+def check_alert_field_identifiers(path: str, raw: str, errors: list[str]) -> None:
+    """An alert's text field cannot carry an accessibility identifier.
+
+        .alert("How many atoms?", isPresented: $editing) {
+            TextField("Count", text: $typed)
+                .accessibilityIdentifier("build.countField")
+            Button("Set") { commit() }
+                .accessibilityIdentifier("build.countConfirm")
+        }
+
+    SwiftUI hands an alert's contents to a UIAlertController, which builds its
+    own text field. The buttons' identifiers survive that — `build.countConfirm`
+    arrives — and a field's does not, so the modifier compiles, reads as if it
+    works, and the identifier never reaches the accessibility tree. A UI test
+    then waits ten seconds for a control that is on screen and typed into.
+
+    An alert holds one or two fields at most, so a test names one by being the
+    alert's: `app.alerts.textFields.firstMatch`.
+
+    Only the trailing-closure spelling is checked, which is the one that
+    occurs; a closure passed as `actions:` is left alone rather than guessed at.
+    """
+    blank = "\n".join(strip_literals(line) for line in raw.split("\n"))
+    blank_lines = blank.split("\n")
+    for match in ALERT_MODIFIER.finditer(blank):
+        open_paren = match.end() - 1
+        close_paren = matching_delimiter(blank, open_paren, "(", ")")
+        brace = blank.find("{", close_paren)
+        if brace == -1 or blank[close_paren + 1:brace].strip():
+            continue
+        end = matching_delimiter(blank, brace, "{", "}")
+        alert_line = blank.count("\n", 0, match.start()) + 1
+        first_line = blank.count("\n", 0, brace) + 1
+        last_line = blank.count("\n", 0, end) + 1
+        for number in range(first_line, last_line + 1):
+            if not ALERT_FIELD.search(blank_lines[number - 1]):
+                continue
+            ahead = number
+            while ahead < last_line and blank_lines[ahead].strip().startswith("."):
+                if ".accessibilityIdentifier(" in blank_lines[ahead]:
+                    errors.append(
+                        f"{path}:{ahead + 1}: an accessibility identifier on a text "
+                        f"field inside the alert on line {alert_line} is dropped by the "
+                        "UIAlertController underneath; find the field with "
+                        "app.alerts.textFields instead"
+                    )
+                    break
+                ahead += 1
+
+
 def check_expectation_comments(path: str, raw: str, errors: list[str]) -> None:
     """An expectation's message is a literal, not a String expression.
 
@@ -314,6 +382,7 @@ def check(path: str, errors: list[str], mutating: set[str] | None = None) -> Non
     check_mutating_in_expectations(path, raw, mutating or set(), errors)
     check_expectation_comments(path, raw, errors)
     check_accessibility_order(path, raw, errors)
+    check_alert_field_identifiers(path, raw, errors)
     check_key_path_expectations(path, raw, errors)
 
     if not raw.endswith("\n"):

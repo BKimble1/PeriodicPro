@@ -83,8 +83,10 @@ struct MyQuizzesScreen: View {
             get: { renaming != nil },
             set: { if !$0 { renaming = nil } }
         )) {
+            // An alert's text field cannot carry an identifier: the
+            // UIAlertController underneath keeps the buttons' and drops the
+            // field's. The alert has one field, which names it.
             TextField("Quiz name", text: $renameText)
-                .accessibilityIdentifier("myQuizzes.renameField")
             Button("Save") {
                 if let renaming { savedQuizzes.rename(id: renaming.id, to: renameText) }
                 renaming = nil

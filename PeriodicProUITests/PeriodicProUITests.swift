@@ -856,11 +856,24 @@ final class PeriodicProUITests: XCTestCase {
 
         openTab("Progress")
         waitFor(app.navigationBars["Progress"])
-        XCTAssertTrue(el("progress.ring").waitForExistence(timeout: 6))
-        XCTAssertTrue(el("progress.streak").exists)
-        XCTAssertTrue(el("progress.answered").exists)
-        XCTAssertTrue(labelContaining("Alkali Metals").exists,
-                      "The per-family breakdown should be on screen")
+        // `progress.hero` is the ring, the mastery line and the rank in one
+        // card. It replaced the bare `progress.ring` when the Progress tab was
+        // rebuilt this build: the ring is now hidden from VoiceOver because
+        // its two numbers are read out in the line under it, so the card is
+        // the element that exists to be found.
+        waitFor(el("progress.hero"), 6)
+        XCTAssertTrue(el("progress.streak").exists,
+                      "The day-streak tile should be on the Progress tab\(onScreen())")
+        XCTAssertTrue(el("progress.answered").exists,
+                      "The cards-answered tile should be on the Progress tab\(onScreen())")
+        // The breakdown by its row's own identifier rather than by hunting the
+        // screen for the words: a label search takes the first element whose
+        // label happens to contain them, and scrolling towards the wrong one
+        // is how a present feature reads as missing.
+        let family = app.buttons["progress.family.alkaliMetal"]
+        assertReachable(family, "the per-family breakdown")
+        XCTAssertTrue(family.label.contains("Alkali Metals"),
+                      "the family row should name its family; it reads \(family.label)")
     }
 
     // MARK: - Study layout
@@ -875,7 +888,7 @@ final class PeriodicProUITests: XCTestCase {
         XCTAssertTrue(el("study.masteryCard").exists)
         XCTAssertTrue(el("study.heroCard").exists, "Flashcards should be the hero card")
 
-        // Four practice tiles, Smart Review included. Scrolled to rather than
+        // Five practice tiles, Smart Review included. Scrolled to rather than
         // asserted on the first screenful: the Study tab is taller than the
         // display by design, which is why `scrollTo` exists at all.
         for mode in ["flashcards", "quiz", "match", "identify", "smartReview"] {
@@ -1367,7 +1380,13 @@ final class PeriodicProUITests: XCTestCase {
     private func setCount(_ symbol: String, to value: String) {
         let count = app.buttons["build.count.\(symbol)"]
         tap(count)
-        let field = app.textFields["build.countField"].firstMatch
+        // The alert's own field, found by being the only one rather than by an
+        // identifier. SwiftUI hands an alert's contents to a
+        // UIAlertController, which carries a button's accessibility identifier
+        // across and drops a text field's: `build.countConfirm` arrives,
+        // `build.countField` never did, and the modifier that set it has been
+        // removed from the app because it was doing nothing.
+        let field = app.alerts.textFields.firstMatch
         waitFor(field)
         field.tap()
         // The field opens with the current count selected for replacement on
@@ -1376,7 +1395,9 @@ final class PeriodicProUITests: XCTestCase {
             field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: existing.count))
         }
         field.typeText(value)
-        app.buttons["build.countConfirm"].firstMatch.tap()
+        let confirm = app.alerts.buttons["build.countConfirm"].firstMatch
+        waitFor(confirm)
+        confirm.tap()
         settle(0.4)
     }
 
@@ -1566,15 +1587,25 @@ final class PeriodicProUITests: XCTestCase {
 
     // MARK: - Study layout details
 
-    /// Every practice tile is the same size and sits on the same baseline.
+    /// Every practice tile is the same size, and the tiles sharing a row start
+    /// on the same line.
     ///
-    /// Smart Review wraps to two lines and carries a PRO badge; both used to
-    /// change its height, and the grid then centered it a few points above its
-    /// neighbors. This is the assertion that was missing.
-    func testPracticeTilesShareOneBaselineAndOneHeight() {
+    /// The test used to require one line for all five, which the Study tab has
+    /// never drawn and does not claim to: `StudyScreen` lays the modes out
+    /// three across at normal text sizes and two at accessibility sizes, so
+    /// five modes make a row of three and a row of two. Asserting one row read
+    /// as a layout bug and was a test bug.
+    ///
+    /// What the layout does promise is the thing `PracticeModeTile` was
+    /// rebuilt to keep: a two-line label like "Smart Review" never makes its
+    /// tile taller than "Quiz", and never lifts its colored square above its
+    /// neighbors'. That is one size for every tile, and one baseline within a
+    /// row — which is what this now measures, without assuming how many rows
+    /// there are.
+    func testPracticeTilesShareOneSizeAndLineUpInTheirRows() {
         openTab("Study")
         let modes = ["flashcards", "quiz", "match", "identify", "smartReview"]
-        // Bring the whole row on screen first, then measure it in one go.
+        // Bring the whole grid on screen first, then measure it in one go.
         assertReachable(app.buttons["study.mode.smartReview"], "the Smart Review tile")
         settle(0.5)
 
@@ -1585,13 +1616,41 @@ final class PeriodicProUITests: XCTestCase {
         }
         guard let first = frames.first else { return }
         for (index, frame) in frames.enumerated() {
-            XCTAssertEqual(frame.minY, first.minY, accuracy: 1.0,
-                           "the \(modes[index]) tile does not start on the same line")
             XCTAssertEqual(frame.height, first.height, accuracy: 1.0,
                            "the \(modes[index]) tile is a different height")
             XCTAssertEqual(frame.width, first.width, accuracy: 1.0,
                            "the \(modes[index]) tile is a different width")
         }
+
+        // Rows are found rather than assumed, because the column count moves
+        // with Dynamic Type. Two tiles belong to the same row when their tops
+        // are within half a tile of each other, which cannot merge two rows:
+        // a row sits a whole tile plus the grid's spacing below the one above
+        // it. The assertion inside a row is then the strict one, to the point.
+        var rows: [[(name: String, frame: CGRect)]] = []
+        for (index, frame) in frames.enumerated() {
+            let tile = (name: modes[index], frame: frame)
+            if let slot = rows.firstIndex(where: {
+                abs($0[0].frame.minY - frame.minY) < first.height / 2
+            }) {
+                rows[slot].append(tile)
+            } else {
+                rows.append([tile])
+            }
+        }
+        for row in rows {
+            guard let head = row.first else { continue }
+            for tile in row {
+                XCTAssertEqual(tile.frame.minY, head.frame.minY, accuracy: 1.0,
+                               "the \(tile.name) tile does not start on the same line "
+                               + "as the \(head.name) tile beside it")
+            }
+            let names = row.map { $0.name }.joined(separator: ", ")
+            XCTAssertLessThanOrEqual(row.count, 3,
+                                     "the practice grid is at most three across; this row "
+                                     + "holds \(names)")
+        }
+
         XCTAssertTrue(app.buttons["study.mode.smartReview"].label.contains("Elemora Pro"),
                       "Smart Review is still marked as a Pro feature")
     }

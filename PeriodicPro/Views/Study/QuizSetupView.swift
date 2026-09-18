@@ -126,8 +126,10 @@ struct QuizSetupView: View {
                 }
             }
             .alert("Name this quiz", isPresented: $isNamingQuiz) {
+                // An alert's text field cannot carry an identifier: the
+                // UIAlertController underneath keeps the buttons' and drops
+                // the field's. The alert has one field, which names it.
                 TextField("Quiz name", text: $name)
-                    .accessibilityIdentifier("quizSetup.name")
                 Button("Save") { save() }
                     .accessibilityIdentifier("quizSetup.confirmSave")
                 Button("Cancel", role: .cancel) {}
