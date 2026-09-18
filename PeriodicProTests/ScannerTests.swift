@@ -357,15 +357,21 @@ struct ChemistryScannerModelTests {
         #expect(model.progress == 0)
     }
 
-    @Test("Skeletal diagrams are not read, and the app says so")
-    func structureRecognitionIsHonest() {
-        let model = ChemistryScannerModel()
-        #expect(!model.readsStructureDiagrams)
-        #expect(!UnavailableStructureRecognizer().isAvailable)
-        let message = StructureRecognitionAvailability.unavailableMessage
-        #expect(message.contains("does not ship one yet"))
-        for claim in ["recognizes structures", "reads diagrams", "new compound"] {
-            #expect(!message.lowercased().contains(claim))
-        }
+    @Test("Only the middle of the frame is read")
+    func regionOfInterestIsTheMiddleBand() {
+        let region = LiveTextScannerView.regionOfInterest
+        // Inside the frame, and actually a band rather than the whole thing:
+        // a region that covered the frame would be the bug this replaced.
+        #expect(region.minX >= 0)
+        #expect(region.minY >= 0)
+        #expect(region.maxX <= 1)
+        #expect(region.maxY <= 1)
+        #expect(region.width < 1)
+        #expect(region.height < 0.5)
+        // Centered vertically, because that is where the reticle is drawn and
+        // where somebody aiming a phone puts the thing they mean.
+        let center = region.midY
+        #expect(center > 0.35)
+        #expect(center < 0.65)
     }
 }

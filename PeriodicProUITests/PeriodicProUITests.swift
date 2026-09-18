@@ -615,8 +615,6 @@ final class PeriodicProUITests: XCTestCase {
         XCTAssertTrue(unavailable.waitForExistence(timeout: 10),
                       "the scanner should explain itself when it cannot run\(onScreen())")
         assertReachable(el("scanner.manualSearch"), "the manual search fallback")
-        // And it is honest about what it does not read.
-        assertReachable(el("scanner.structureNote"), "the note about structure diagrams")
 
         tap(el("scanner.done"))
         waitFor(app.navigationBars["Periodic Table"])
@@ -788,6 +786,45 @@ final class PeriodicProUITests: XCTestCase {
 
         // The next card starts hidden again.
         XCTAssertTrue(app.buttons["session.reveal"].waitForExistence(timeout: 5))
+        app.buttons["session.exit"].tap()
+        XCTAssertTrue(app.navigationBars["Study"].waitForExistence(timeout: 5))
+    }
+
+    /// The card is flipped rather than revealed, and the next one arrives face
+    /// down.
+    ///
+    /// Driven through the button rather than by tapping the card: both do the
+    /// same thing, and a synthesized tap on a rotated view tests XCUITest's
+    /// hit-testing rather than the app. Flipping back is not covered here —
+    /// once the card is face up the rating buttons have the control's place,
+    /// so the only way back is tapping the card, which is the part this cannot
+    /// honestly drive.
+    func testAFlashcardIsFlippedAndTheNextArrivesFaceDown() {
+        openTab("Study")
+        tap(app.buttons["study.mode.flashcards"])
+
+        let flip = app.buttons["session.reveal"]
+        waitFor(flip)
+        XCTAssertEqual(flip.label, "Flip Card",
+                       "the control should say what it does to the card\(onScreen())")
+
+        flip.tap()
+        let answer = el("session.answer")
+        XCTAssertTrue(answer.waitForExistence(timeout: 5),
+                      "flipping should show the answer\(onScreen())")
+
+        // Face up, the rating buttons have the flip control's place.
+        XCTAssertTrue(app.buttons["session.knewThis"].exists)
+        XCTAssertFalse(app.buttons["session.reveal"].exists,
+                       "the flip button should give way to the rating\(onScreen())")
+        app.buttons["session.reviewAgain"].tap()
+
+        // Rating moves on to a card that has not been rated, face down.
+        XCTAssertTrue(app.buttons["session.reveal"].waitForExistence(timeout: 5),
+                      "the next card should start face down\(onScreen())")
+        XCTAssertFalse(el("session.answer").exists,
+                       "a new card should not arrive already flipped\(onScreen())")
+
         app.buttons["session.exit"].tap()
         XCTAssertTrue(app.navigationBars["Study"].waitForExistence(timeout: 5))
     }

@@ -104,16 +104,24 @@ of the available options, because a confidently wrong molecule teaches a
 learner something false.
 
 So the honest thing shipped instead: the scanner does very well the part it
-can do, and states plainly that it does not read diagrams.
+can do, and does not gesture at the part it cannot.
 
 ## What the app says to the learner
 
-From `StructureRecognition.swift`, shown on the scanner screen:
+Nothing, as of Build 6 — which is the point.
 
-> Elemora reads chemical names, molecular formulas, SMILES, InChI and InChIKey
-> from the page. Reading a skeletal diagram — working a molecule out from a
-> bond-line drawing — needs a different kind of model, and Elemora does not
-> ship one yet. It would rather say so than show you a molecule it guessed at.
+Build 5 shipped a `StructureRecognizer` protocol with one conforming type that
+answered "no", plus a paragraph on the scanner screen explaining that diagrams
+were not read. Both are gone. An interface with no implementation is a promise
+the code has not kept, and a note about a feature that does not exist spends a
+learner's attention on an absence; between them they made the scanner look like
+a diagram reader that was switched off rather than a text reader that works.
+
+The scanner now says what it does — "Point at a chemical name, formula or
+identifier" — and is framed by a reticle marking the band it actually reads.
+Nothing in the app mentions skeletal diagrams. If a recognizer is ever built,
+it arrives with a benchmark, and this file is the record of what that would
+take.
 
 ## The route in, when the three requirements are met
 

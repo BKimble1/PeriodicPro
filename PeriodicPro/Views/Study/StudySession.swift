@@ -240,6 +240,9 @@ struct StudySessionContainer: View {
 struct SessionProgressHeader: View {
     let current: Int
     let total: Int
+    /// What one of these is called, for VoiceOver. A deck has cards and a
+    /// round has questions, and "Question 3 of 12" is wrong about a flashcard.
+    var noun: String = "Question"
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -272,14 +275,26 @@ struct SessionProgressHeader: View {
         .padding(.horizontal, Theme.Spacing.screenMargin)
         .padding(.top, Theme.Spacing.s)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Question \(min(current + 1, total)) of \(total)")
+        .accessibilityLabel("\(noun) \(min(current + 1, total)) of \(total)")
     }
 }
 
 // MARK: - Flashcards & Identify
 
-/// Flashcards and Identify share one screen: a clue, a reveal, and an honest
-/// two-way self-rating.
+/// Flashcards and Identify share one screen: a card that flips, a deck you can
+/// move back and forth through, and an honest two-way self-rating.
+///
+/// The card turns over when it is tapped, the way a flashcard does everywhere
+/// else, and a swipe left or right moves through the deck. Browsing is free:
+/// you can go back to a card you have already seen, and forward past one you
+/// have not rated yet, without either costing anything.
+///
+/// Rating is what the study engine records, and it happens once per card.
+/// `ratings` is the deck's memory of that — first rating wins, so swiping back
+/// to a card you have already judged cannot report it a second time and move
+/// mastery twice for one recollection. The round is over when every card in
+/// the deck has been rated, not when the last index is reached, because with
+/// free movement those are no longer the same thing.
 struct CardSessionView: View {
     let mode: StudyMode
     let cards: [StudyCard]
@@ -290,15 +305,54 @@ struct CardSessionView: View {
 
     @State private var index = 0
     @State private var isRevealed = false
-    @State private var correctCount = 0
+    /// What the learner said about each card, keyed by its position in the
+    /// deck. The count is how far through the round they are; the values are
+    /// the score.
+    @State private var ratings: [Int: Bool] = [:]
+    /// How far the current swipe has traveled, for the card to follow the
+    /// finger before it settles.
+    @State private var dragOffset: CGFloat = 0
+
+    private var correctCount: Int { ratings.values.filter { $0 }.count }
 
     private var card: StudyCard? {
         index < cards.count ? cards[index] : nil
     }
 
+    /// A horizontal drag only. The card sits in a vertical `ScrollView` — a
+    /// long element name at an accessibility text size makes it taller than a
+    /// small phone — so a drag that is mostly vertical has to stay with the
+    /// scroll view rather than turning the page.
+    private var swipe: some Gesture {
+        DragGesture(minimumDistance: 24)
+            .onChanged { value in
+                guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                dragOffset = value.translation.width
+            }
+            .onEnded { value in
+                defer { withAnimation(reduceMotion ? nil : Theme.Motion.reveal) { dragOffset = 0 } }
+                guard abs(value.translation.width) > abs(value.translation.height),
+                      abs(value.translation.width) > 60 else { return }
+                move(by: value.translation.width < 0 ? 1 : -1)
+            }
+    }
+
+    /// Moves through the deck without judging anything.
+    private func move(by step: Int) {
+        let target = index + step
+        guard cards.indices.contains(target) else { return }
+        Haptics.tap()
+        withAnimation(reduceMotion ? nil : Theme.Motion.reveal) {
+            index = target
+            // Each card is turned over on its own. Carrying the flip across
+            // would give away the next answer before it had been asked.
+            isRevealed = false
+        }
+    }
+
     var body: some View {
         VStack(spacing: Theme.Spacing.l) {
-            SessionProgressHeader(current: index, total: cards.count)
+            SessionProgressHeader(current: index, total: cards.count, noun: "Card")
 
             if let card {
                 // Scrollable rather than a fixed VStack: a long element name at
@@ -307,6 +361,12 @@ struct CardSessionView: View {
                 ScrollView {
                     cardFace(card)
                         .id(card.id)
+                        .rotation3DEffect(
+                            .degrees(reduceMotion ? 0 : (isRevealed ? 180 : 0)),
+                            axis: (x: 0, y: 1, z: 0),
+                            perspective: 0.35
+                        )
+                        .offset(x: dragOffset)
                         .transition(reduceMotion
                                     ? .opacity
                                     : .asymmetric(
@@ -315,15 +375,41 @@ struct CardSessionView: View {
                                       ))
                         .padding(.horizontal, Theme.Spacing.screenMargin)
                         .padding(.vertical, 2)
+                        // The whole card turns it over, which is what a
+                        // flashcard does. The button underneath stays: it is
+                        // what VoiceOver and the UI tests reach for, and a
+                        // learner who has not guessed that the card is
+                        // tappable still has something that says so.
+                        .contentShape(Rectangle())
+                        .onTapGesture { flip() }
+                        .gesture(swipe)
                 }
                 .scrollIndicators(.hidden)
                 .scrollBounceBehavior(.basedOnSize)
 
-                controls(for: card)
-                    .padding(.horizontal, Theme.Spacing.screenMargin)
-                    .padding(.bottom, Theme.Spacing.l)
+                VStack(spacing: Theme.Spacing.s) {
+                    // The two gestures, said once, under the card. A flip and
+                    // a swipe are both invisible until somebody tries them.
+                    Text(cards.count > 1
+                         ? "Tap the card to flip it. Swipe to move through the \(cards.count)."
+                         : "Tap the card to flip it.")
+                        .font(AppFont.caption2)
+                        .foregroundStyle(AppColor.tertiaryText)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .accessibilityHidden(true)
+
+                    controls(for: card)
+                }
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+                .padding(.bottom, Theme.Spacing.l)
             }
         }
+        // A swipe is a gesture VoiceOver cannot pass through, so the two moves
+        // it stands for are offered by name instead. The flip is already a
+        // button, so it needs nothing here.
+        .accessibilityAction(named: Text("Next card")) { move(by: 1) }
+        .accessibilityAction(named: Text("Previous card")) { move(by: -1) }
         .animation(reduceMotion ? nil : Theme.Motion.reveal, value: index)
         .animation(reduceMotion ? nil : Theme.Motion.reveal, value: isRevealed)
         // A container, like the paywall and the summary. This view holds the
@@ -389,6 +475,14 @@ struct CardSessionView: View {
                 .strokeBorder(AppColor.hairline, lineWidth: 0.8)
         }
         .themeShadow(Theme.Shadow.card)
+        // The card is turned over by rotating it half a turn; this turns its
+        // contents back, so the answer reads the right way round instead of
+        // mirrored. Two rotations of 180°, not one of 360°: the outer one is
+        // what animates, and this one only has to cancel it.
+        .rotation3DEffect(
+            .degrees(reduceMotion ? 0 : (isRevealed ? 180 : 0)),
+            axis: (x: 0, y: 1, z: 0)
+        )
     }
 
     /// A shell diagram in Identify is the whole question, so it may not be drawn
@@ -460,10 +554,9 @@ struct CardSessionView: View {
             }
         } else {
             Button {
-                Haptics.reveal()
-                isRevealed = true
+                flip()
             } label: {
-                Text("Reveal Answer")
+                Text("Flip Card")
                     .font(.system(.body, weight: .semibold))
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
@@ -516,21 +609,37 @@ struct CardSessionView: View {
         .accessibilityIdentifier(identifier)
     }
 
-    private func advance(card: StudyCard, correct: Bool) {
-        if correct {
-            correctCount += 1
-            Haptics.correct()
-        } else {
-            Haptics.incorrect()
-        }
-        onAnswer(card.element.atomicNumber, correct)
+    /// Turns the card over. Flipping back is allowed — a learner who reveals
+    /// too early should be able to hide it again and think.
+    private func flip() {
+        Haptics.reveal()
+        withAnimation(reduceMotion ? nil : Theme.Motion.reveal) { isRevealed.toggle() }
+    }
 
-        if index + 1 >= cards.count {
+    /// Records what the learner said about this card, then moves on.
+    ///
+    /// Recorded once. Swiping back to a card already rated and rating it again
+    /// changes nothing: the first answer is the one the engine heard, and
+    /// counting a second would move mastery twice for one recollection.
+    private func advance(card: StudyCard, correct: Bool) {
+        if ratings[index] == nil {
+            ratings[index] = correct
+            onAnswer(card.element.atomicNumber, correct)
+        }
+        if correct { Haptics.correct() } else { Haptics.incorrect() }
+
+        guard ratings.count < cards.count else {
             Haptics.sessionComplete()
             onFinish(StudyResult(mode: mode, correct: correctCount, total: cards.count))
-        } else {
+            return
+        }
+        // On to the next card still waiting for an answer, wrapping past the
+        // end so a card skipped earlier is come back to rather than stranded.
+        let order = (1...cards.count).map { (index + $0) % cards.count }
+        guard let next = order.first(where: { ratings[$0] == nil }) else { return }
+        withAnimation(reduceMotion ? nil : Theme.Motion.reveal) {
             isRevealed = false
-            index += 1
+            index = next
         }
     }
 }

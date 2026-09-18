@@ -95,10 +95,11 @@ structure identifiers off a page.
   the app working, and the scanner offers a search field instead.
 - **No photo library access is requested at all.** Elemora does not ask for
   your photos and cannot read them.
-- Elemora does not read skeletal structure diagrams. That would need a
-  different kind of model and, in every hosted form, would mean uploading a
-  picture of whatever you were pointing at. It is not implemented, and the
-  reasoning is written up in `OCSR.md`.
+- **The scanner reads text only** — chemical names, formulas and structure
+  identifiers, from the band inside the frame on screen. It does not read
+  structure diagrams. Doing that would need a different kind of model and, in
+  every hosted form, would mean uploading a picture of whatever you were
+  pointing at; the reasoning is written up in `OCSR.md`.
 
 ## Notifications
 

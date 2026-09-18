@@ -8,9 +8,9 @@ import UIKit
 /// place — which is the difference between a scanner and a camera with a
 /// chemistry filter over it.
 ///
-/// What it reads is names, molecular formulas, SMILES, InChI and InChIKey.
-/// What it does not read is skeletal diagrams, and it says so rather than
-/// guessing at one; see `StructureRecognition.swift`.
+/// What it reads is names, molecular formulas, SMILES, InChI and InChIKey —
+/// chemistry written as letters and numbers. Only the band inside the reticle
+/// is read, so what the learner frames is what gets looked up.
 struct ChemistryScannerScreen: View {
     @Environment(\.elementCatalog) private var catalog
     @Environment(CompoundStore.self) private var store: CompoundStore
@@ -102,6 +102,14 @@ struct ChemistryScannerScreen: View {
                 )
                 .ignoresSafeArea()
                 .accessibilityIdentifier("scanner.camera")
+
+                // The same rectangle the recognizer is restricted to. Drawn
+                // from the one constant, so what is framed cannot drift from
+                // what is read.
+                ScannerReticle(region: LiveTextScannerView.regionOfInterest)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
             }
 
             overlay
@@ -393,15 +401,6 @@ struct ChemistryScannerScreen: View {
             .buttonStyle(.plain)
             .disabled(manualQuery.trimmingCharacters(in: .whitespaces).isEmpty)
             .accessibilityIdentifier("scanner.manualLookUp")
-
-            if !model.readsStructureDiagrams {
-                Text(StructureRecognitionAvailability.unavailableMessage)
-                    .font(AppFont.caption2)
-                    .foregroundStyle(.white.opacity(0.6))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, Theme.Spacing.s)
-                    .accessibilityIdentifier("scanner.structureNote")
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -415,5 +414,67 @@ struct ChemistryScannerScreen: View {
             bounds: CGRect(x: 0, y: 0, width: 1, height: 1)
         )
         model.select(candidate, store: store)
+    }
+}
+
+
+/// The frame drawn over the camera, marking the band that is actually read.
+///
+/// Corner brackets rather than a full rectangle: a closed box over a page
+/// reads as a thing to line text up inside, which is exactly right, while a
+/// solid border competes with the text for attention.
+struct ScannerReticle: View {
+    let region: CGRect
+
+    var body: some View {
+        GeometryReader { proxy in
+            let rect = CGRect(
+                x: proxy.size.width * region.minX,
+                y: proxy.size.height * region.minY,
+                width: proxy.size.width * region.width,
+                height: proxy.size.height * region.height
+            )
+            let corner: CGFloat = min(28, rect.height / 2)
+            ZStack {
+                // Everything outside the band, dimmed, so the eye goes to the
+                // part that counts.
+                Rectangle()
+                    .fill(.black.opacity(0.35))
+                    .mask {
+                        Rectangle()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .frame(width: rect.width, height: rect.height)
+                                    .position(x: rect.midX, y: rect.midY)
+                                    .blendMode(.destinationOut)
+                            }
+                            .compositingGroup()
+                    }
+
+                ReticleCorners(rect: rect, arm: corner)
+                    .stroke(.white.opacity(0.9), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+            }
+        }
+    }
+}
+
+/// Four corner brackets around a rectangle.
+struct ReticleCorners: Shape {
+    let rect: CGRect
+    let arm: CGFloat
+
+    func path(in _: CGRect) -> Path {
+        var path = Path()
+        for (corner, dx, dy) in [
+            (CGPoint(x: rect.minX, y: rect.minY), 1.0, 1.0),
+            (CGPoint(x: rect.maxX, y: rect.minY), -1.0, 1.0),
+            (CGPoint(x: rect.minX, y: rect.maxY), 1.0, -1.0),
+            (CGPoint(x: rect.maxX, y: rect.maxY), -1.0, -1.0),
+        ] {
+            path.move(to: CGPoint(x: corner.x + arm * dx, y: corner.y))
+            path.addLine(to: corner)
+            path.addLine(to: CGPoint(x: corner.x, y: corner.y + arm * dy))
+        }
+        return path
     }
 }

@@ -42,8 +42,10 @@ struct LiveTextScannerView: UIViewControllerRepresentable {
             // case-sensitive, and reading H2SO4 as H2S04 is the failure that
             // matters here.
             qualityLevel: .accurate,
-            // Off. A formula is not a barcode moving past the lens; the
-            // learner is holding the phone over a page.
+            // On, and then narrowed by `regionOfInterest` below. A page often
+            // prints the name and the formula on consecutive lines and the
+            // learner means whichever one they aimed at, so both are read and
+            // the region decides which count.
             recognizesMultipleItems: true,
             isHighFrameRateTrackingEnabled: false,
             isPinchToZoomEnabled: true,
@@ -54,8 +56,38 @@ struct LiveTextScannerView: UIViewControllerRepresentable {
         return controller
     }
 
+    /// The band of the frame that counts, as a fraction of the view.
+    ///
+    /// Everything outside it is not read at all. Without this the scanner
+    /// considers every word in shot — on a textbook page that is the running
+    /// head, the caption, the paragraph and the figure label, all competing
+    /// with the formula the learner is actually pointing at, and the one that
+    /// settles first wins. Narrowing to the middle is the difference between
+    /// reading a page and reading what somebody aimed at, and it is the single
+    /// biggest thing standing between this scanner and a right answer.
+    ///
+    /// Wide, because a chemical name can be long, and shallow, because a
+    /// formula is one line. `ScannerReticle` draws exactly this rectangle, so
+    /// what is framed on screen is what is being read.
+    static let regionOfInterest = CGRect(x: 0.06, y: 0.36, width: 0.88, height: 0.20)
+
+    private static func regionOfInterest(in bounds: CGRect) -> CGRect {
+        CGRect(
+            x: bounds.width * regionOfInterest.minX,
+            y: bounds.height * regionOfInterest.minY,
+            width: bounds.width * regionOfInterest.width,
+            height: bounds.height * regionOfInterest.height
+        )
+    }
+
     func updateUIViewController(_ controller: DataScannerViewController, context: Context) {
         context.coordinator.onRecognize = onRecognize
+        // Re-applied on every update: the view has no size on the first pass,
+        // and the region has to be re-cut when the device is turned.
+        let bounds = controller.view.bounds
+        if bounds.width > 0, bounds.height > 0 {
+            controller.regionOfInterest = Self.regionOfInterest(in: bounds)
+        }
         guard !controller.isScanning else { return }
         do {
             try controller.startScanning()

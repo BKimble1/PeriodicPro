@@ -82,13 +82,10 @@ final class ChemistryScannerModel {
     @ObservationIgnored private var resolved: [String: CompoundMatchCandidate] = [:]
     @ObservationIgnored private var missed: Set<String> = []
 
-    let structureRecognizer: StructureRecognizer
 
     init(
-        structureRecognizer: StructureRecognizer = UnavailableStructureRecognizer(),
         phase: Phase = .idle
     ) {
-        self.structureRecognizer = structureRecognizer
         self.phase = phase
     }
 
@@ -98,7 +95,6 @@ final class ChemistryScannerModel {
         return false
     }
 
-    var readsStructureDiagrams: Bool { structureRecognizer.isAvailable }
 
     // MARK: - Lifecycle
 
