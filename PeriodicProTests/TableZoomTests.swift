@@ -165,15 +165,20 @@ struct TableZoomLayoutTests {
 /// discover.
 @Suite("The fitted table is the whole table")
 struct FittedTableTests {
-    /// The screens the app ships for: width, and the room the page has
-    /// between the navigation bar and the tab bar at rest.
+    /// The screens the app ships for: display width, display height, and the
+    /// chrome that screen gives up — its own safe areas, the navigation bar
+    /// with its large title, the search field and the tab bar.
+    ///
+    /// The app budgets one constant for that chrome rather than measuring it,
+    /// because measuring it is what made the table resize while the page
+    /// scrolled. These are the real numbers that constant has to stay inside.
     typealias Device = (name: String, width: CGFloat, screenHeight: CGFloat, chrome: CGFloat)
 
     private static let devices: [Device] = [
-        ("iPhone SE (3rd generation)", 375, 450),
-        ("iPhone 16e", 390, 540),
-        ("iPhone 17", 393, 562),
-        ("iPhone 17 Pro", 402, 570),
+        ("iPhone SE (3rd generation)", 375, 667, 217),
+        ("iPhone 16e", 390, 844, 304),
+        ("iPhone 17", 393, 852, 290),
+        ("iPhone 17 Pro", 402, 874, 304),
         ("iPhone 17 Pro Max", 440, 956, 290),
         ("iPad (A16) portrait", 820, 1_180, 230),
         ("iPad Pro 11 portrait", 834, 1_210, 242),
