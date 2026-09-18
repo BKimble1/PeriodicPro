@@ -118,12 +118,16 @@ final class PeriodicProLaunchTests: XCTestCase {
         held.launchArguments = ["-uiTesting", "-holdLaunchScreen"]
         held.launch()
 
-        let launchScreen = held.descendants(matching: .any)
-            .matching(identifier: "launch.screen").firstMatch
-        XCTAssertTrue(launchScreen.waitForExistence(timeout: 10),
+        let matches = held.descendants(matching: .any).matching(identifier: "launch.screen")
+        XCTAssertTrue(matches.firstMatch.waitForExistence(timeout: 10),
                       "The app should open on its loading screen")
-        XCTAssertEqual(launchScreen.label, "Elemora",
-                       "The loading screen should name the app to VoiceOver")
+        // Any element carrying the identifier, not whichever one `firstMatch`
+        // happens to return: SwiftUI can surface a wrapper alongside the
+        // element itself, and the claim being made is that the loading screen
+        // names the app, not that it does so in a particular tree position.
+        let names = matches.allElementsBoundByAccessibilityElement.map(\.label)
+        XCTAssertTrue(names.contains("Elemora"),
+                      "The loading screen should name the app to VoiceOver; saw \(names)")
         XCTAssertFalse(held.navigationBars["Periodic Table"].exists,
                        "The table should be behind the loading screen, not beside it")
 

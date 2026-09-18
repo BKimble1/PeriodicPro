@@ -68,8 +68,13 @@ struct LaunchScreenView: View {
             }
             .padding(.horizontal, Theme.Spacing.xl)
         }
-        .accessibilityIdentifier("launch.screen")
+        // The element is created first and described afterwards. Applied the
+        // other way round, the identifier attaches to the view underneath
+        // while the label attaches to the element `children: .ignore` makes,
+        // so the two end up on different elements — and a VoiceOver user, or
+        // a test, finds one with an identifier and no name.
         .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("launch.screen")
         .accessibilityLabel("Elemora")
         .accessibilityValue(showsSlowHint ? "Loading" : "")
         .accessibilityAddTraits(.isImage)

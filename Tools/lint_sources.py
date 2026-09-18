@@ -164,6 +164,37 @@ def check_key_path_expectations(path: str, raw: str, errors: list[str]) -> None:
         )
 
 
+def check_accessibility_order(path: str, raw: str, errors: list[str]) -> None:
+    """An element has to exist before it can be identified.
+
+        .accessibilityIdentifier("launch.screen")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Elemora")
+
+    `accessibilityElement(children: .ignore)` *creates* an element. Anything
+    applied above it describes the view underneath instead, so the identifier
+    and the label end up on two different elements: VoiceOver reads an
+    unnamed control, and a test that finds the element by identifier reads an
+    empty label. Nothing fails to build and nothing looks wrong on screen.
+
+    Put `accessibilityElement` first, then identify and describe it.
+    """
+    lines = raw.split("\n")
+    for index, line in enumerate(lines):
+        if ".accessibilityElement(children: .ignore)" not in line:
+            continue
+        back = index - 1
+        while back >= 0 and lines[back].strip().startswith("."):
+            if ".accessibilityIdentifier(" in lines[back]:
+                errors.append(
+                    f"{path}:{back + 1}: accessibilityIdentifier is applied above "
+                    f"accessibilityElement(children: .ignore) on line {index + 1}, so it "
+                    "lands on a different element than the label; create the element first"
+                )
+                break
+            back -= 1
+
+
 def check_expectation_comments(path: str, raw: str, errors: list[str]) -> None:
     """An expectation's message is a literal, not a String expression.
 
@@ -282,6 +313,7 @@ def check(path: str, errors: list[str], mutating: set[str] | None = None) -> Non
     lines = raw.split("\n")
     check_mutating_in_expectations(path, raw, mutating or set(), errors)
     check_expectation_comments(path, raw, errors)
+    check_accessibility_order(path, raw, errors)
     check_key_path_expectations(path, raw, errors)
 
     if not raw.endswith("\n"):
