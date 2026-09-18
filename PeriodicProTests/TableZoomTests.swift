@@ -167,18 +167,28 @@ struct TableZoomLayoutTests {
 struct FittedTableTests {
     /// The screens the app ships for: width, and the room the page has
     /// between the navigation bar and the tab bar at rest.
-    private static let devices: [(name: String, width: CGFloat, visible: CGFloat)] = [
+    typealias Device = (name: String, width: CGFloat, screenHeight: CGFloat, chrome: CGFloat)
+
+    private static let devices: [Device] = [
         ("iPhone SE (3rd generation)", 375, 450),
         ("iPhone 16e", 390, 540),
         ("iPhone 17", 393, 562),
         ("iPhone 17 Pro", 402, 570),
-        ("iPhone 17 Pro Max", 440, 666),
-        ("iPad (A16) portrait", 820, 950),
-        ("iPad Pro 11 portrait", 834, 968),
-        ("iPad Pro 13 portrait", 1_024, 1_180),
-        ("iPad Pro 11 landscape", 1_210, 592),
-        ("iPad Pro 13 landscape", 1_366, 720),
+        ("iPhone 17 Pro Max", 440, 956, 290),
+        ("iPad (A16) portrait", 820, 1_180, 230),
+        ("iPad Pro 11 portrait", 834, 1_210, 242),
+        ("iPad Pro 13 portrait", 1_024, 1_366, 186),
+        ("iPad Pro 11 landscape", 1_210, 834, 242),
+        ("iPad Pro 13 landscape", 1_366, 1_024, 242),
     ]
+
+    /// What each screen really leaves for the table, chrome and header off.
+    /// The app budgets one constant instead; these are what that constant has
+    /// to stay inside.
+    private static func realRoom(_ device: Device) -> CGFloat {
+        device.screenHeight - device.chrome - headerHeight
+            - TableZoomLayout.tableRegionBreathingRoom
+    }
 
     /// The hint line and the families filter bar, plus the constants the
     /// screen adds to them. Measured at 375 points, where the hint wraps to
@@ -189,7 +199,7 @@ struct FittedTableTests {
     func theWholeTableFits() {
         for device in Self.devices {
             let available = TableZoomLayout.availableTableHeight(
-                pageViewportHeight: device.visible, headerHeight: Self.headerHeight
+                screenHeight: device.screenHeight
             )
             let tile = TableZoomLayout.fittedTileSize(
                 viewportWidth: device.width, availableHeight: available
@@ -208,7 +218,7 @@ struct FittedTableTests {
     func fittedZoomHasNoScrollRange() {
         for device in Self.devices {
             let available = TableZoomLayout.availableTableHeight(
-                pageViewportHeight: device.visible, headerHeight: Self.headerHeight
+                screenHeight: device.screenHeight
             )
             let tile = TableZoomLayout.fittedTileSize(
                 viewportWidth: device.width, availableHeight: available
@@ -221,7 +231,7 @@ struct FittedTableTests {
                 width: device.width,
                 height: TableZoomLayout.viewportHeight(
                     fittedHeight: content.height + TableZoomLayout.contentHeightCushion,
-                    expandedHeight: TableZoomLayout.expandedViewportHeight(screenHeight: device.visible),
+                    expandedHeight: TableZoomLayout.expandedViewportHeight(screenHeight: device.screenHeight),
                     zoom: 1
                 )
             )
@@ -274,7 +284,7 @@ struct FittedTableTests {
         // most learners hold, it changes nothing, so nothing moves.
         for device in Self.devices.prefix(5) {
             let available = TableZoomLayout.availableTableHeight(
-                pageViewportHeight: device.visible, headerHeight: Self.headerHeight
+                screenHeight: device.screenHeight
             )
             #expect(TableZoomLayout.fittedTileSize(viewportWidth: device.width, availableHeight: available)
                     == TableZoomLayout.fittedTileSize(viewportWidth: device.width),
@@ -284,9 +294,9 @@ struct FittedTableTests {
 
     @Test("A wide, short window shrinks the tile until the whole table fits")
     func landscapeTabletsAreHeightBound() {
-        let available = TableZoomLayout.availableTableHeight(
-            pageViewportHeight: 592, headerHeight: Self.headerHeight
-        )
+        // An 11-inch iPad on its side: 834 points tall, and the table is the
+        // one place the height pass still binds.
+        let available = TableZoomLayout.availableTableHeight(screenHeight: 834)
         let widthOnly = TableZoomLayout.fittedTileSize(viewportWidth: 1_210)
         let fitted = TableZoomLayout.fittedTileSize(viewportWidth: 1_210, availableHeight: available)
         #expect(fitted < widthOnly, "the height pass did nothing on a landscape tablet")
@@ -298,40 +308,53 @@ struct FittedTableTests {
         // A phone held sideways has room for about four periods at any tile
         // size worth tapping. Shrinking to the floor would not bring the last
         // row on screen, so the table stays legible and the page scrolls.
-        let available = TableZoomLayout.availableTableHeight(
-            pageViewportHeight: 244, headerHeight: Self.headerHeight
-        )
+        // A phone on its side. The window is short enough that the budget
+        // bottoms out at `smallestTableRegion`.
+        let available = TableZoomLayout.availableTableHeight(screenHeight: 393)
+        #expect(available == TableZoomLayout.smallestTableRegion)
         #expect(TableZoomLayout.contentHeight(forTileSize: TableZoomLayout.smallestFittedTile) > available)
         #expect(TableZoomLayout.fittedTileSize(viewportWidth: 852, availableHeight: available)
                 == TableZoomLayout.fittedTileSize(viewportWidth: 852))
     }
 
-    @Test("Before anything has been measured the table is still fitted, not guessed at")
-    func theAssumedRoomIsEnough() {
-        for device in Self.devices.prefix(5) {
-            let assumed = TableZoomLayout.availableTableHeight(
-                pageViewportHeight: TableZoomLayout.assumedPageViewportHeight(screenHeight: device.visible + 290),
-                headerHeight: TableZoomLayout.assumedHeaderHeight
+    @Test("The budgeted room really is there on every screen")
+    func theChromeAllowanceFitsEveryDevice() {
+        // The app cannot measure this without reintroducing the bug: the large
+        // title and the search field collapse as the page scrolls, so anything
+        // read from a live safe-area inset resizes the tiles under the
+        // learner's thumb. It budgets one constant instead — and a constant
+        // that claimed more room than a device has would put the last row off
+        // the bottom, which is what this holds down.
+        for device in Self.devices {
+            let budget = TableZoomLayout.availableTableHeight(screenHeight: device.screenHeight)
+            let tile = TableZoomLayout.fittedTileSize(
+                viewportWidth: device.width, availableHeight: budget
             )
-            let measured = TableZoomLayout.availableTableHeight(
-                pageViewportHeight: device.visible, headerHeight: Self.headerHeight
-            )
-            // The first frame and the measured one pick the same tile, so the
-            // measurement replacing the assumption moves nothing on screen.
-            #expect(TableZoomLayout.fittedTileSize(viewportWidth: device.width, availableHeight: assumed)
-                    == TableZoomLayout.fittedTileSize(viewportWidth: device.width, availableHeight: measured),
-                    "\(device.name) resizes its tiles once the page is measured")
+            let height = TableZoomLayout.contentHeight(forTileSize: tile)
+            #expect(height <= Self.realRoom(device),
+                    "\(device.name): the table needs \(height) points and the screen leaves "
+                    + "\(Self.realRoom(device))")
         }
     }
 
-    @Test("An unmeasured page falls back to fitting the width alone")
-    func noMeasurementMeansNoHeightConstraint() {
-        #expect(TableZoomLayout.availableTableHeight(pageViewportHeight: 0, headerHeight: 0)
-                == .greatestFiniteMagnitude)
+    @Test("The table's size depends on the window and nothing else")
+    func theFitIgnoresEverythingThatMoves() {
+        // The whole point. Scrolling changes what is visible between the bars;
+        // it must not change the answer. There is no longer any input that
+        // could carry that, so the property is that one window height gives
+        // one tile size, every time.
+        for device in Self.devices {
+            let first = TableZoomLayout.availableTableHeight(screenHeight: device.screenHeight)
+            let again = TableZoomLayout.availableTableHeight(screenHeight: device.screenHeight)
+            #expect(first == again)
+        }
+        // A window with no height yet imposes no constraint, so the first
+        // frame fits the width rather than guessing at a tiny tile.
+        #expect(TableZoomLayout.availableTableHeight(screenHeight: 0) == .greatestFiniteMagnitude)
         #expect(TableZoomLayout.fittedTileSize(viewportWidth: 393, availableHeight: .greatestFiniteMagnitude)
                 == TableZoomLayout.fittedTileSize(viewportWidth: 393))
-        // And the room never collapses to nothing, however the page is laid out.
-        #expect(TableZoomLayout.availableTableHeight(pageViewportHeight: 100, headerHeight: 900)
+        // And the room never collapses to nothing, however short the window.
+        #expect(TableZoomLayout.availableTableHeight(screenHeight: 100)
                 == TableZoomLayout.smallestTableRegion)
     }
 }
