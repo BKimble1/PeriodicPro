@@ -48,11 +48,19 @@ struct PeriodicTableScreen: View {
     /// The vertical room the table is fitted into.
     ///
     /// A pure function of the window height, which changes when the device is
-    /// turned and at no other time. Nothing here is measured, so nothing a
-    /// scroll does to the navigation bar or the search field can resize the
-    /// tiles. See `TableZoomLayout.pageChromeAllowance`.
+    /// turned and at no other time. The one thing measured is the window
+    /// itself, so nothing a scroll does to the navigation bar or the search
+    /// field can resize the tiles. See `TableZoomLayout.pageChromeAllowance`.
     private var availableTableHeight: CGFloat {
-        TableZoomLayout.availableTableHeight(screenHeight: screenHeight > 0 ? screenHeight : 852)
+        TableZoomLayout.availableTableHeight(screenHeight: measuredWindowHeight)
+    }
+
+    /// The window height, or a modern iPhone's until the first layout pass
+    /// reports one. One assumption in one place: two different guesses for the
+    /// same quantity is how the table came to be fitted into one height and
+    /// the zoomed window bounded by another.
+    private var measuredWindowHeight: CGFloat {
+        screenHeight > 0 ? screenHeight : TableZoomLayout.assumedWindowHeight
     }
 
     private var searchResults: [ChemicalElement] {
@@ -72,7 +80,7 @@ struct PeriodicTableScreen: View {
                         recentSearches: progress.recentSearches,
                         namespace: tableNamespace,
                         viewportWidth: usableWidth,
-                        screenHeight: screenHeight > 0 ? screenHeight : 700,
+                        screenHeight: measuredWindowHeight,
                         availableTableHeight: availableTableHeight,
                         tableAnchor: Self.tableAnchor,
                         zoom: $zoom,
@@ -151,17 +159,42 @@ struct PeriodicTableScreen: View {
             // The safe width, not the raw frame width: in landscape the sensor
             // housing eats 60-odd points on one side, and a vertical ScrollView
             // lays its content out inside those insets.
-            .onGeometryChange(for: CGSize.self) { proxy in
-                CGSize(
-                    width: proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing,
-                    height: proxy.size.height
-                )
-            } action: { size in
-                screenWidth = size.width
-                screenHeight = size.height
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.size.width - proxy.safeAreaInsets.leading - proxy.safeAreaInsets.trailing
+            } action: { width in
+                screenWidth = width
             }
         }
         .tint(AppColor.accent)
+        .background(windowHeight)
+    }
+
+    /// The height of the window, measured behind everything on the screen.
+    ///
+    /// `TableZoomLayout.pageChromeAllowance` is the whole of the chrome — the
+    /// status bar, the navigation bar and its large title, the search field,
+    /// the page header and the tab bar — so the height it is subtracted from
+    /// has to be the window's own. The scroll view's height is not: the
+    /// navigation bar, the search field and the tab bar have already been
+    /// taken out of it, and taking the allowance out as well left the table
+    /// about two hundred points to fit ten rows into. That is the arithmetic
+    /// that shrank a 19-point tile to the 13-point floor on a phone with room
+    /// for the full size.
+    ///
+    /// A background that ignores the safe area is the one rectangle on this
+    /// screen that nothing the learner does can change: a collapsing large
+    /// title, a search field, the keyboard and a scroll all move the room
+    /// *inside* the window and none of them move the window. So the table's
+    /// fitted size is a function of the device and the zoom, and of nothing
+    /// else.
+    private var windowHeight: some View {
+        Color.clear
+            .ignoresSafeArea()
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.size.height
+            } action: { height in
+                screenHeight = height
+            }
     }
 
     private func open(_ element: ChemicalElement) {

@@ -101,6 +101,37 @@ final class PeriodicProLaunchTests: XCTestCase {
                                      "The fitted table overflows the trailing edge")
         }
 
+        // And it must use the width it has. "Does not overflow" was the only
+        // thing asserted here, and a table shrunk to the 13-point floor does
+        // not overflow anything — it sits in the middle of the screen at two
+        // thirds of the size, which is what a wrong height budget did to it:
+        // the allowance for the bars was subtracted from a height that had
+        // already had the bars taken out of it.
+        //
+        // In portrait the eighteen columns are what the fitted size is decided
+        // by, so they should reach the page margins. Measured across the
+        // screens the app ships for, the columns span between 95% and 100% of
+        // the room inside those margins — the gap is the remainder of dividing
+        // the width by eighteen. Two thirds is the failure this catches.
+        //
+        // Portrait only: held sideways, a phone or an iPad has the height as
+        // the binding constraint and a table narrower than the screen is the
+        // correct answer rather than a bug.
+        //
+        // 32 is the page margin either side, `Theme.Spacing.l * 2`, which is
+        // what `TableZoomLayout.fittedTileSize` takes off the width before it
+        // divides.
+        if sizedToFit, window.height > window.width {
+            let span = oganesson.frame.maxX - hydrogen.frame.minX
+            let usable = window.width - 32
+            XCTAssertGreaterThan(
+                span, usable * 0.85,
+                "The fitted table should fill the width it is given: eighteen columns "
+                + "span \(span) of \(usable) usable points, with tiles \(hydrogen.frame.width) "
+                + "wide\(diagnostics(app))"
+            )
+        }
+
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Periodic Table"
         screenshot.lifetime = .keepAlways

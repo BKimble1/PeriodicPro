@@ -195,6 +195,23 @@ def main() -> int:
                 "points past the bottom")
         if tile < SMALLEST_TILE:
             failures.append(f"{name}: tile shrank to {tile}")
+        # Held upright, the eighteen columns are what decides the fitted size.
+        # If the height budget decides it instead, the table is smaller than
+        # the screen can hold and sits in the middle of the page with the
+        # margins around it — which is what a too-large allowance looks like,
+        # and it fits everything, so none of the checks above would say a word.
+        # Landscape is excluded on purpose: sideways there is genuinely not
+        # room for ten rows at the width-fitted size, and shrinking is the
+        # right answer there.
+        #
+        # This pins the constant. What the *app* feeds the constant is a
+        # different question and not one a Linux runner can answer;
+        # `PeriodicProLaunchTests` asserts that on the simulator.
+        if screen_height > width and tile != fitted_tile(width):
+            failures.append(
+                f"{name}: the width fits a {fitted_tile(width):.0f}-point tile and the "
+                f"{allowance:.0f}-point chrome allowance cuts it to {tile:.0f}, so the "
+                "table would open smaller than the screen it is on")
 
     # Ten rows of tiles are really in the height, whatever else is.
     for tile in range(int(SMALLEST_TILE), 113):

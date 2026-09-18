@@ -320,10 +320,21 @@ enum TableZoomLayout {
     /// screen, against each one's real chrome rather than this allowance.
     static let pageChromeAllowance: CGFloat = 360
 
+    /// The window height to assume before the first layout pass reports one.
+    ///
+    /// A modern iPhone's. Only a starting point — the measurement replaces it
+    /// on the frame the screen appears — but it is deliberately a whole
+    /// window rather than a guess at the room inside one, because that is
+    /// what `availableTableHeight` subtracts the chrome from.
+    static let assumedWindowHeight: CGFloat = 852
+
     /// How much vertical room the table has on the Table screen.
     ///
-    /// A function of the window height alone. `screenHeight` changes when the
-    /// device is turned or the window is resized, and at no other time.
+    /// A function of the window height alone. `screenHeight` is the height of
+    /// the *window* — not of the scroll view inside it, which has the bars
+    /// taken out of it already and would have the allowance taken out twice.
+    /// It changes when the device is turned or the window is resized, and at
+    /// no other time.
     static func availableTableHeight(screenHeight: CGFloat) -> CGFloat {
         guard screenHeight > 0 else { return .greatestFiniteMagnitude }
         return max(
