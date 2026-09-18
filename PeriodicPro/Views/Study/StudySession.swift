@@ -355,54 +355,8 @@ struct CardSessionView: View {
             SessionProgressHeader(current: index, total: cards.count, noun: "Card")
 
             if let card {
-                // Scrollable rather than a fixed VStack: a long element name at
-                // an accessibility text size makes the card taller than a small
-                // phone, and clipped copy is never acceptable.
-                ScrollView {
-                    cardFace(card)
-                        .id(card.id)
-                        .rotation3DEffect(
-                            .degrees(reduceMotion ? 0 : (isRevealed ? 180 : 0)),
-                            axis: (x: 0, y: 1, z: 0),
-                            perspective: 0.35
-                        )
-                        .offset(x: dragOffset)
-                        .transition(reduceMotion
-                                    ? .opacity
-                                    : .asymmetric(
-                                        insertion: .opacity.combined(with: .offset(x: 40)),
-                                        removal: .opacity.combined(with: .offset(x: -40))
-                                      ))
-                        .padding(.horizontal, Theme.Spacing.screenMargin)
-                        .padding(.vertical, 2)
-                        // The whole card turns it over, which is what a
-                        // flashcard does. The button underneath stays: it is
-                        // what VoiceOver and the UI tests reach for, and a
-                        // learner who has not guessed that the card is
-                        // tappable still has something that says so.
-                        .contentShape(Rectangle())
-                        .onTapGesture { flip() }
-                        .gesture(swipe)
-                }
-                .scrollIndicators(.hidden)
-                .scrollBounceBehavior(.basedOnSize)
-
-                VStack(spacing: Theme.Spacing.s) {
-                    // The two gestures, said once, under the card. A flip and
-                    // a swipe are both invisible until somebody tries them.
-                    Text(cards.count > 1
-                         ? "Tap the card to flip it. Swipe to move through the \(cards.count)."
-                         : "Tap the card to flip it.")
-                        .font(AppFont.caption2)
-                        .foregroundStyle(AppColor.tertiaryText)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .accessibilityHidden(true)
-
-                    controls(for: card)
-                }
-                .padding(.horizontal, Theme.Spacing.screenMargin)
-                .padding(.bottom, Theme.Spacing.l)
+                deck(card)
+                footer(card)
             }
         }
         // A swipe is a gesture VoiceOver cannot pass through, so the two moves
@@ -419,6 +373,66 @@ struct CardSessionView: View {
         // played with.
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("session.card")
+    }
+
+    /// The card itself: scrollable, because a long element name at an
+    /// accessibility text size makes it taller than a small phone and clipped
+    /// copy is never acceptable.
+    ///
+    /// Broken out of `body` rather than written inline. Two of these went into
+    /// `StudyScreen.body` in this build and took the type-checker past its
+    /// budget; this one is kept small for the same reason.
+    private func deck(_ card: StudyCard) -> some View {
+        ScrollView {
+            cardFace(card)
+                .id(card.id)
+                .rotation3DEffect(
+                    .degrees(reduceMotion ? 0 : (isRevealed ? 180 : 0)),
+                    axis: (x: 0, y: 1, z: 0),
+                    perspective: 0.35
+                )
+                .offset(x: dragOffset)
+                .transition(reduceMotion
+                            ? .opacity
+                            : .asymmetric(
+                                insertion: .opacity.combined(with: .offset(x: 40)),
+                                removal: .opacity.combined(with: .offset(x: -40))
+                              ))
+                .padding(.horizontal, Theme.Spacing.screenMargin)
+                .padding(.vertical, 2)
+                // The whole card turns it over, which is what a flashcard
+                // does. The button underneath stays: it is what VoiceOver and
+                // the UI tests reach for, and a learner who has not guessed
+                // that the card is tappable still has something that says so.
+                .contentShape(Rectangle())
+                .onTapGesture { flip() }
+                .gesture(swipe)
+        }
+        .scrollIndicators(.hidden)
+        .scrollBounceBehavior(.basedOnSize)
+    }
+
+    /// What the gestures are, and the rating. Both gestures are invisible
+    /// until somebody tries them, so the line says them once.
+    private func footer(_ card: StudyCard) -> some View {
+        VStack(spacing: Theme.Spacing.s) {
+            Text(gestureHint)
+                .font(AppFont.caption2)
+                .foregroundStyle(AppColor.tertiaryText)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .accessibilityHidden(true)
+
+            controls(for: card)
+        }
+        .padding(.horizontal, Theme.Spacing.screenMargin)
+        .padding(.bottom, Theme.Spacing.l)
+    }
+
+    private var gestureHint: String {
+        cards.count > 1
+            ? "Tap the card to flip it. Swipe to move through the \(cards.count)."
+            : "Tap the card to flip it."
     }
 
     private func cardFace(_ card: StudyCard) -> some View {

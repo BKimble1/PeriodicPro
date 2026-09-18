@@ -138,30 +138,12 @@ struct StudyScreen: View {
                     start(mode == .match ? .match(dealer) : .quiz(dealer))
                 }
             }
-            .fullScreenCover(item: $activeRound) {
-                // Whatever the round was, it is over now. Without this a
-                // challenge that was opened and abandoned would still be armed
-                // when some later round finished, and that round would spend
-                // the day's challenge instead.
-                activeRoundIsDailyChallenge = false
-                // onDismiss runs after the cover has finished dismissing.
-                // Reacting to the binding going nil instead would fire at the
-                // *start* of the transition, and asking to present a sheet from
-                // a host that is still presenting is how "Get Elemora Pro"
-                // ends up doing nothing at all.
-                guard let pending = paywallAfterSession else { return }
-                paywallAfterSession = nil
-                paywall = pending
-            } content: { plan in
+            .fullScreenCover(item: $activeRound, onDismiss: roundDismissed) { plan in
                 StudySessionContainer(
                     plan: plan,
                     catalog: catalog,
                     onAllowanceSpent: { paywallAfterSession = .dailyLimit },
-                    onRoundFinished: {
-                        guard activeRoundIsDailyChallenge else { return }
-                        activeRoundIsDailyChallenge = false
-                        DailyChallengeRecord.markComplete()
-                    }
+                    onRoundFinished: roundFinished
                 )
             }
             .sheet(item: $paywall) { context in
@@ -307,6 +289,35 @@ struct StudyScreen: View {
         .padding(.horizontal, Theme.Spacing.screenMargin)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("study.dailyChallenge")
+    }
+
+    /// A round is over, however it ended.
+    ///
+    /// `onDismiss` runs after the cover has finished dismissing. Reacting to
+    /// the binding going nil instead would fire at the *start* of the
+    /// transition, and asking to present a sheet from a host that is still
+    /// presenting is how "Get Elemora Pro" ends up doing nothing at all.
+    ///
+    /// Written as a method rather than a closure inside `body`. Two
+    /// multi-statement closures in there took the type-checker past its budget
+    /// — "unable to type-check this expression in reasonable time", on a
+    /// `body` that was already long.
+    private func roundDismissed() {
+        // Whatever the round was, it is over. Without this a challenge that was
+        // opened and abandoned would still be armed when some later round
+        // finished, and that round would spend the day's challenge instead.
+        activeRoundIsDailyChallenge = false
+        guard let pending = paywallAfterSession else { return }
+        paywallAfterSession = nil
+        paywall = pending
+    }
+
+    /// A round was actually finished — the last question confirmed, not the
+    /// cover dismissed.
+    private func roundFinished() {
+        guard activeRoundIsDailyChallenge else { return }
+        activeRoundIsDailyChallenge = false
+        DailyChallengeRecord.markComplete()
     }
 
     private func startDailyChallenge() {
