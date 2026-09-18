@@ -40,28 +40,28 @@ DEVICE 2 of 2   role = build   layer = in front of device 1
   Wanted screen = Build canvas
   The SAME Build capture used as the hero of frame 03. Only the lower left corner of the device reaches this slide, so almost no UI shows here; it is the device body that carries the eye into the next screenshot.
 
-  X        = 1272.5          (unrotated top-left)
-  Y        = 700
-  W        = 1085
-  H        = 2257.7273
-  Rotation = 3 deg    (about the device centre, 1815, 1828.8636)
-  Corner radius   = 130.5
-  Bezel thickness = 42.5 on every side
+  X        = 1239.59          (unrotated top-left)
+  Y        = 759.36
+  W        = 976.5
+  H        = 2031.9545
+  Rotation = 5 deg    (about the device centre, 1727.84, 1775.3373)
+  Corner radius   = 117.45
+  Bezel thickness = 38.25 on every side
 
   ROTATED BOUNDING BOX
-    Left = 1214.1633   Top = 673.1548   Right = 2415.8367   Bottom = 2984.5725
-    Off-canvas left none, right 1095.8px, bottom 116.6px
+    Left = 1152.8997   Top = 720.6723   Right = 2302.7803   Bottom = 2830.0022
+    Off-canvas left none, right 982.8px, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 1815, 1828.8636
-    Unrotated X,Y = 1315, 742.5
-    Unrotated W,H = 1000 x 2172.7273
-    Rotation      = 3 deg  (identical to the device, one rigid group)
-    Corner radius = 88   (the overlay rounds this for you)
+    Centre        = 1727.84, 1775.3373
+    Unrotated X,Y = 1277.84, 797.61
+    Unrotated W,H = 900 x 1955.4545
+    Rotation      = 5 deg  (identical to the device, one rigid group)
+    Corner radius = 79.2   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
-    Delta         = 5.551e-17
-    Uniform scale of the source screenshot = 0.7575757576
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.6818181818
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 

@@ -64,12 +64,16 @@ by eye, and the QA pass asserts all four conditions: identical screen width,
 identical rotation, identical y, and an x differing by exactly one panel width.
 
 The Build phone is the hero of slide 3 and reaches back into slide 2 with its
-lower left corner only. Its top left corner clears the seam by 12px, so what
-appears on slide 2 is a wedge starting about a third of the way down and widening
-to roughly 105px at the bottom: 8.8 percent of the device, enough to say
-"something continues" without reading as a second phone. Its screen begins just
-5px before the seam, so **essentially no Build UI is split**; the continuation is
-carried by the device body.
+lower left corner only. It is sized and angled after CoreCredit's own spanning
+device: 74 percent of a panel's width at 5 degrees, and seated so its **bottom
+sits on the canvas** rather than running off it, which means slide 2 shows a real
+corner of the phone rather than an open-ended edge.
+
+Its top left corner clears the seam by 10px, so what appears on slide 2 is a
+wedge starting a little under a fifth of the way down and widening to 167px at
+the bottom left corner: 14.5 percent of the device. Only **5.2 percent of the
+Build screen area** falls on slide 2, and it is the bottom left corner of it, so
+nothing worth reading is split; the continuation is carried by the device body.
 
 Each slide still works alone. Slide 2 reads as a calm periodic table with a
 device entering at the edge; slide 3 reads as a large Build phone arriving from
@@ -106,7 +110,7 @@ centre-cropped by a pixel or two rather than distorted.
 |---|---|---|
 | Home | 01 hero | the strongest top level state; the most important image in the set |
 | Periodic Table | 02 main | scrolled so the grid fills the screen. Fully visible and straight on |
-| Build canvas | 02 build, 03 build | mid-assembly, with a molecule actually on the canvas, never an empty builder. Almost all of it lands on slide 3; only 5px of its left edge falls on slide 2 |
+| Build canvas | 02 build, 03 build | mid-assembly, with a molecule actually on the canvas, never an empty builder. Almost all of it lands on slide 3; only the bottom left corner of the screen, about 5 percent of its area, falls on slide 2 |
 | Element detail | 04 hero | the most visually complete element. Iron matches frame 04's shell diagram |
 | Study overview | 05 front | the Study home or dashboard, with real progress on it |
 | Quiz or flashcard | 05 back | a quiz mid-question, or a flashcard |
@@ -179,8 +183,8 @@ centre; the QA pass enforces that. Margin is 96px, giving a 1128px column, and
 every line is measured in the real renderer at build time so the build fails if
 one exceeds it.
 
-**Variety.** Device widths run from 673px to 1009px across the set. Three frames
-carry more than one device, three carry one. Tilts stay between 0 and 3 degrees
+**Variety.** Device widths run from 803px to 1042px across the set. Three frames
+carry more than one device, three carry one. Tilts stay between 0 and 5 degrees
 and are rigid 2D rotations of the whole device group, never a perspective
 homography, which is why a real screenshot follows the bezel exactly. The QA pass
 fingerprints each frame by device count, scale band, horizontal placement and
@@ -305,8 +309,8 @@ everything else is derived.
 - marketing copy read back out of each SVG matches the frame definition, and the
   six headlines match the agreed sequence
 - decoration never exceeds 20 percent opacity
-- the six frames produce at least five distinct composition signatures, device
-  widths span more than 250px, exactly two frames carry more than one device,
+- the six frames produce at least five distinct composition signatures, the largest
+  device is at least 25 percent wider than the smallest, exactly two frames carry more than one device,
   and every frame's largest device is at least 63 percent of the canvas width
 - frame 02's periodic table device is exactly 0 degrees and fully visible
 - frame 06's device is exactly 0 degrees, leaves the canvas on the RIGHT ONLY,
@@ -315,8 +319,10 @@ everything else is derived.
 - only a device marked `bleed` leaves the canvas; every other device is complete
 - the 02 + 03 master slices exactly: same screen width, same rotation, same y,
   x differing by exactly 1320. Between 8 and 15 percent of the Build device sits
-  on slide 2, its top left corner clears the seam, less than 3 percent of its
-  screen is split, and it never collides with the periodic table device
+  on slide 2, its top left corner clears the seam and its bottom stays on canvas,
+  under 8 percent of its screen AREA is split (measured by clipping the rotated
+  screen, not by its unrotated edge), and it never collides with the periodic
+  table device
 - exactly one anchor motif per frame at 8 to 12 percent, something ambient at 6
   percent or below, and no more than five decorative marks
 - no fabricated app UI: every template still carries its screenshot placeholder
@@ -324,7 +330,7 @@ everything else is derived.
 - chemistry: derived formulas match their labels, no over-valent atoms, uniform
   bond lengths, shells sum to Z, weights match reference data, equations balance
 
-Current state: **513 checks, 0 failures, 0 warnings.**
+Current state: **514 checks, 0 failures, 0 warnings.**
 
 ## Relationship to CoreCredit
 

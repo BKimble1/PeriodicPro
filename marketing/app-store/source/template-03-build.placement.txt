@@ -11,28 +11,28 @@ DEVICE 1 of 1   role = build   layer = backmost
   Wanted screen = Build canvas
   The Build screen mid-assembly, with a molecule actually on the canvas, never an empty builder. The same capture continues off the right edge of frame 02. The leftmost seventh of the screen falls on that slide, so keep controls and the molecule itself away from the extreme left edge.
 
-  X        = -47.5          (unrotated top-left)
-  Y        = 700
-  W        = 1085
-  H        = 2257.7273
-  Rotation = 3 deg    (about the device centre, 495, 1828.8636)
-  Corner radius   = 130.5
-  Bezel thickness = 42.5 on every side
+  X        = -80.41          (unrotated top-left)
+  Y        = 759.36
+  W        = 976.5
+  H        = 2031.9545
+  Rotation = 5 deg    (about the device centre, 407.84, 1775.3373)
+  Corner radius   = 117.45
+  Bezel thickness = 38.25 on every side
 
   ROTATED BOUNDING BOX
-    Left = -105.8367   Top = 673.1548   Right = 1095.8367   Bottom = 2984.5725
-    Off-canvas left 105.8px, right none, bottom 116.6px
+    Left = -167.1003   Top = 720.6723   Right = 982.7803   Bottom = 2830.0022
+    Off-canvas left 167.1px, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 495, 1828.8636
-    Unrotated X,Y = -5, 742.5
-    Unrotated W,H = 1000 x 2172.7273
-    Rotation      = 3 deg  (identical to the device, one rigid group)
-    Corner radius = 88   (the overlay rounds this for you)
+    Centre        = 407.84, 1775.3373
+    Unrotated X,Y = -42.16, 797.61
+    Unrotated W,H = 900 x 1955.4545
+    Rotation      = 5 deg  (identical to the device, one rigid group)
+    Corner radius = 79.2   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
-    Delta         = 5.551e-17
-    Uniform scale of the source screenshot = 0.7575757576
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.6818181818
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 

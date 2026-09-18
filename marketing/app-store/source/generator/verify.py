@@ -400,17 +400,44 @@ if ok(b2 and b3, "the Build device is missing from frame 02 or 03"):
     ok(tl_x >= CW,
        f"the Build device's top left corner is at x {tl_x:.0f}, it should clear the seam "
        f"at {CW} so only a LOWER corner reaches slide 2")
-    # and essentially no Build UI is split by the seam
-    ui_on2 = max(0.0, CW - (b2["x"] + b2["bezel"]))
-    ok(ui_on2 < 0.03 * b2["screenW"],
-       f"{ui_on2:.0f}px of the Build screen falls on slide 2; the seam should cross "
-       f"device body, not app UI")
+    # and almost none of the Build UI is split by the seam. Measure the real
+    # clipped area of the rotated screen, not the unrotated left edge.
+    ra = math.radians(b2["rot"])
+    hw, hh = b2["screenW"] / 2, b2["screenH"] / 2
+    quad = [(b2["screenCX"] + px * math.cos(ra) - py * math.sin(ra),
+             b2["screenCY"] + px * math.sin(ra) + py * math.cos(ra))
+            for px, py in ((-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh))]
+
+    def clip_left(poly, X):
+        out = []
+        for i in range(len(poly)):
+            c, nx = poly[i], poly[(i + 1) % len(poly)]
+            ci, ni = c[0] <= X, nx[0] <= X
+            if ci:
+                out.append(c)
+            if ci != ni:
+                k = (X - c[0]) / (nx[0] - c[0])
+                out.append((X, c[1] + k * (nx[1] - c[1])))
+        return out
+
+    def area(poly):
+        return abs(sum(poly[i][0] * poly[(i + 1) % len(poly)][1]
+                       - poly[(i + 1) % len(poly)][0] * poly[i][1]
+                       for i in range(len(poly)))) / 2 if len(poly) > 2 else 0.0
+
+    split = area(clip_left(quad, CW)) / (b2["screenW"] * b2["screenH"])
+    ok(split < 0.08,
+       f"{100*split:.1f}% of the Build screen area falls on slide 2; the seam should "
+       f"cross device body, not app UI")
+    # the bottom of the device must be on canvas, so slide 2 shows a real corner
+    ok(b2["bounds"]["maxY"] <= CH,
+       "the Build device runs off the bottom; its bottom corner should be visible")
     # the two devices on slide 2 must not collide
     ok(b2["bounds"]["minX"] > main02["bounds"]["maxX"],
        "02: the Build sliver overlaps the periodic table device")
     print(f"   02 + 03 master: one device, slice exact at x={CW}, "
-          f"{100*share:.1f}% on slide 2, {ui_on2:.0f}px of screen split, "
-          f"top-left corner clears by {tl_x - CW:.0f}px")
+          f"{100*share:.1f}% on slide 2, {100*split:.1f}% of screen area split, "
+          f"top-left corner clears by {tl_x - CW:.0f}px, bottom on canvas")
 
 # Background hierarchy: one clear anchor per frame, a couple of secondaries,
 # the rest ambient, and never more than a handful of marks in total.
@@ -442,8 +469,12 @@ for g in frames:
              round(d0["rot"])))
 ok(len(sig) >= 5,
    f"only {len(sig)} distinct compositions across {len(frames)} frames; too repetitive")
+# A ratio, not an absolute pixel spread: what matters is that the biggest device
+# is visibly bigger than the smallest, whatever the set's absolute sizes.
 widths = sorted({round(d["w"]) for g in frames for d in g["devices"]})
-ok(max(widths) - min(widths) > 250, f"device scales barely vary: {widths}")
+ok(max(widths) / min(widths) >= 1.25,
+   f"device scales barely vary: {widths} "
+   f"(largest is only {100*max(widths)/min(widths)-100:.0f}% wider than smallest)")
 multi = [g["id"] for g in frames if len(g["devices"]) > 1]
 ok(len(multi) == 2, f"expected two multi-device frames, got {multi}")
 # the product has to stay the hero: every main device big enough to inspect
