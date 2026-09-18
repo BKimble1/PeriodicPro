@@ -98,28 +98,48 @@ struct StudyScreen: View {
 
     private var hasFavorites: Bool { !favorites.isEmpty || !favoriteCompounds.isEmpty }
 
+    /// Split into named stages rather than written as one expression.
+    ///
+    /// It was one expression, and this build added two more closures to it —
+    /// at which point the compiler gave up: "unable to type-check this
+    /// expression in reasonable time". A `NavigationStack` around a
+    /// `ScrollView` with nineteen chained modifiers, several carrying trailing
+    /// closures and two building a `Binding` inline, is a single constraint
+    /// system, and it had been close to the edge for a while.
+    ///
+    /// Each stage below is its own `some View`, so the solver gets four small
+    /// problems instead of one large one. The two bindings are hoisted for the
+    /// same reason.
     var body: some View {
-        NavigationStack(path: $path) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: Theme.Spacing.section) {
-                    greeting
-                    statusCards
-                    dailyChallengeCard
-                    heroCard
-                    practiceSection
-                    myQuizzesSection
-                    recentSearchesSection
-                    favoritesSection
-                    if !studyCompounds.isEmpty { compoundsSection }
-                    if !recentlyStudied.isEmpty { recentSection }
-                }
-                .padding(.top, Theme.Spacing.s)
-                .padding(.bottom, Theme.Spacing.xxxl)
+        NavigationStack(path: $path) { presentedPage }
+            .tint(AppColor.accent)
+    }
+
+    private var page: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.Spacing.section) {
+                greeting
+                statusCards
+                dailyChallengeCard
+                heroCard
+                practiceSection
+                myQuizzesSection
+                recentSearchesSection
+                favoritesSection
+                if !studyCompounds.isEmpty { compoundsSection }
+                if !recentlyStudied.isEmpty { recentSection }
             }
-            .scrollIndicators(.hidden)
-            .background(AppColor.canvas)
-            .navigationTitle("Study")
-            .navigationBarTitleDisplayMode(.inline)
+            .padding(.top, Theme.Spacing.s)
+            .padding(.bottom, Theme.Spacing.xxxl)
+        }
+        .scrollIndicators(.hidden)
+        .background(AppColor.canvas)
+        .navigationTitle("Study")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var routedPage: some View {
+        page
             .navigationDestination(for: ChemicalElement.self) { element in
                 ElementDetailScreen(element: element)
                     .zoomTransition(id: element.atomicNumber, namespace: studyNamespace)
@@ -133,6 +153,10 @@ struct StudyScreen: View {
                     MyQuizzesScreen { dealer in start(.quiz(dealer)) }
                 }
             }
+    }
+
+    private var presentedPage: some View {
+        routedPage
             .sheet(item: $setup) { mode in
                 QuizSetupView(mode: mode) { dealer in
                     start(mode == .match ? .match(dealer) : .quiz(dealer))
@@ -151,13 +175,7 @@ struct StudyScreen: View {
             }
             // A quiz that arrived through a shared link. It is already saved
             // by the time this appears; this says so and offers to play it.
-            .sheet(
-                isPresented: Binding(
-                    get: { savedQuizzes.lastImportOutcome != nil },
-                    set: { if !$0 { savedQuizzes.lastImportOutcome = nil } }
-                ),
-                onDismiss: performSharedQuizAction
-            ) {
+            .sheet(isPresented: sharedQuizPresented, onDismiss: performSharedQuizAction) {
                 if let outcome = savedQuizzes.lastImportOutcome {
                     SharedQuizResultView(
                         outcome: outcome,
@@ -166,19 +184,25 @@ struct StudyScreen: View {
                     )
                 }
             }
-            .alert(
-                "Not enough history yet",
-                isPresented: Binding(
-                    get: { smartReviewNotice != nil },
-                    set: { if !$0 { smartReviewNotice = nil } }
-                )
-            ) {
+            .alert("Not enough history yet", isPresented: smartReviewNoticePresented) {
                 Button("OK", role: .cancel) { smartReviewNotice = nil }
             } message: {
                 Text(smartReviewNotice ?? "")
             }
-        }
-        .tint(AppColor.accent)
+    }
+
+    private var sharedQuizPresented: Binding<Bool> {
+        Binding(
+            get: { savedQuizzes.lastImportOutcome != nil },
+            set: { if !$0 { savedQuizzes.lastImportOutcome = nil } }
+        )
+    }
+
+    private var smartReviewNoticePresented: Binding<Bool> {
+        Binding(
+            get: { smartReviewNotice != nil },
+            set: { if !$0 { smartReviewNotice = nil } }
+        )
     }
 
     // MARK: - Greeting
