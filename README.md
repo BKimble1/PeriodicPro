@@ -508,7 +508,7 @@ still in the tree, so it is known to fire on the thing it is named for:
 | Check | The error it replaces |
 | --- | --- |
 | `check_conformances.py` | `type 'X' does not conform to protocol 'Hashable'`, where the error names the outer type and not the property responsible |
-| `check_undeclared.py` | `cannot find 'x' in scope` |
+| `check_undeclared.py` | `cannot find 'x' in scope`; `type 'X' has no member 'y'`, where a static member outlived the thing that named it |
 | `check_initializers.py` | an initializer call that no longer matches its type |
 | `check_table_fit.py` | a table that does not fit, which only a screenshot shows |
 | `lint_sources.py` | `binary operator '+' cannot be applied to two 'OSLogMessage' operands`; `cannot use mutating member on immutable value: '$0' is immutable`; `cannot convert value of type 'String' to expected argument type 'Comment?'`; `unexpected non-void return value in void function`; `Font.system` with its arguments transposed; an accessibility identifier that lands on the wrong element, or on an alert's text field where UIAlertController drops it |

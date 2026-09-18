@@ -27,6 +27,7 @@ Skips itself, with a note, when the grammar is not installed.
 from __future__ import annotations
 
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -160,6 +161,71 @@ def collect(node, source: bytes, declared: set[str], used: list[tuple]) -> None:
             stack.append((child, ignored))
 
 
+# Members reached through a project type that no project file declares,
+# because the compiler or a protocol synthesizes them.
+SYNTHESIZED = {
+    "init",        # every initializer, including the memberwise one
+    "self",        # Type.self
+    "allCases",    # CaseIterable
+    "rawValue",    # RawRepresentable
+    "id",          # Identifiable, when it comes from a raw value
+}
+
+# `SomeProjectType.member`, which is how a static function or a static
+# constant is reached.
+MEMBER_ACCESS = re.compile(r"\b([A-Z]\w*)\.([a-z]\w*)\b")
+
+# Deliberately not `extension`: this project extends Color, View and String,
+# and an extension on a foreign type does not make that type ours to know the
+# members of. `Color.black` is SwiftUI's business.
+TYPE_DECLARATION = re.compile(r"\b(?:struct|enum|class|actor|protocol)\s+([A-Z]\w*)")
+
+
+def check_type_members(files: list[str], declared: set[str], errors: list[str]) -> None:
+    """A static member of a project type that the project does not declare.
+
+        TableZoomLayout.assumedPageViewportHeight(screenHeight: …)
+        TableZoomLayout.assumedHeaderHeight
+
+    Both of those outlived the thing they named. The identifier walk above
+    cannot see them: it skips anything after a dot, because most of what
+    follows one belongs to UIKit, SwiftUI or the standard library and is not
+    this project's to know about. That blind spot let a renamed layout rule
+    leave two dead call sites in the test target, which cost a full macOS CI
+    cycle to discover.
+
+    The narrowing that makes this safe is the receiver. When the thing before
+    the dot is a type *this project declares*, every member it has is declared
+    here too — with the short list of exceptions above, which the compiler or a
+    protocol conformance writes instead. So a member that appears nowhere is
+    not a member at all.
+    """
+    sources: dict[str, str] = {}
+    types: set[str] = set()
+    for path in files:
+        with open(os.path.join(ROOT, path), encoding="utf-8") as handle:
+            raw = handle.read()
+        sources[path] = raw
+        types.update(TYPE_DECLARATION.findall(raw))
+
+    for path, raw in sources.items():
+        for number, line in enumerate(raw.split("\n"), start=1):
+            # Comments and string literals name things that are not code.
+            code = line.split("//", 1)[0]
+            if '"' in code:
+                continue
+            for match in MEMBER_ACCESS.finditer(code):
+                owner, member = match.group(1), match.group(2)
+                if owner not in types:
+                    continue
+                if member in declared or member in SYNTHESIZED or member in FOREIGN:
+                    continue
+                errors.append(
+                    f"{path}:{number}: '{owner}.{member}' is reached on a type this project "
+                    f"declares, but '{member}' is declared nowhere — a renamed or deleted member"
+                )
+
+
 def main() -> int:
     try:
         import tree_sitter_swift
@@ -195,6 +261,8 @@ def main() -> int:
             continue
         for path, line in uses[name][:3]:
             errors.append(f"{path}:{line}: '{name}' is used but declared nowhere in the project")
+
+    check_type_members(files, declared, errors)
 
     for error in errors:
         print(f"error: {error}")
