@@ -60,11 +60,13 @@ struct StudySessionContainer: View {
         plan: StudyRoundPlan,
         catalog: ElementCatalog,
         seed: UInt64? = nil,
-        onAllowanceSpent: @escaping () -> Void = {}
+        onAllowanceSpent: @escaping () -> Void = {},
+        onRoundFinished: @escaping () -> Void = {}
     ) {
         self.plan = plan
         self.catalog = catalog
         self.onAllowanceSpent = onAllowanceSpent
+        self.onRoundFinished = onRoundFinished
         let initialSeed = seed ?? QuizSeed.fresh()
         _roundSeed = State(initialValue: initialSeed)
         switch plan {

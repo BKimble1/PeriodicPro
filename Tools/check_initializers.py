@@ -91,7 +91,14 @@ def collect_types() -> tuple[dict[str, set[str]], dict[str, list[str]]]:
 
             if in_init:
                 init_buffer += " " + stripped
-                if ")" in stripped:
+                # Balanced, not "contains a bracket". A default value is
+                # allowed to call something —
+                # `catalog: CompoundCatalog = CompoundCatalog.load()` — and
+                # stopping at the first `)` ended the scan on that line, so
+                # every parameter after it went unseen. That made
+                # `CompoundStore(client:)` look like a mismatch while
+                # compiling perfectly well.
+                if init_buffer.count("(") - init_buffer.count(")") <= 0:
                     found = PARAM_LABEL.findall(init_buffer)
                     accepted[current].update(found)
                     explicit[current].append(found)
@@ -99,7 +106,7 @@ def collect_types() -> tuple[dict[str, set[str]], dict[str, list[str]]]:
                     init_buffer = ""
             elif INIT_DECL.match(line):
                 init_buffer = stripped
-                if ")" in stripped.split("init", 1)[1]:
+                if init_buffer.count("(") - init_buffer.count(")") <= 0:
                     found = PARAM_LABEL.findall(init_buffer)
                     accepted[current].update(found)
                     explicit[current].append(found)
