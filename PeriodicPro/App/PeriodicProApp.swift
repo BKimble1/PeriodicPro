@@ -33,13 +33,6 @@ struct PeriodicProApp: App {
             // `@Query` or `\.modelContext`, so injecting a second context here
             // would only create two views of the same store.
             RootView(catalogError: services.catalogError)
-                // While the loading screen is up, what is behind it is not
-                // there as far as VoiceOver is concerned. Without this the
-                // tabs and the table stay in the accessibility tree under a
-                // cover that hides them visually, so a learner using
-                // VoiceOver can swipe into a half-built table while the app
-                // is still saying it is loading.
-                .accessibilityHidden(!hasLaunched)
                 .environment(\.elementCatalog, services.catalog)
                 .environment(services.progress)
                 .environment(services.store)

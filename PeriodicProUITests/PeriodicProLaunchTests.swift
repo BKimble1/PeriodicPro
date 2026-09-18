@@ -128,12 +128,13 @@ final class PeriodicProLaunchTests: XCTestCase {
         let names = matches.allElementsBoundByAccessibilityElement.map(\.label)
         XCTAssertTrue(names.contains("Elemora"),
                       "The loading screen should name the app to VoiceOver; saw \(names)")
-        // The table's own content, not the navigation bar. SwiftUI renders a
-        // navigation bar as UIKit chrome outside the view the overlay covers,
-        // so it stays in the tree however thoroughly the content behind is
-        // hidden — and a bar nobody can see or reach is not what "beside"
-        // means. What matters is that none of the table is reachable.
-        XCTAssertFalse(held.buttons["element.H"].exists,
+        // Hittable, not existent. The tabs, the table and the navigation bar
+        // are hosted by UIKit and stay in the accessibility tree behind the
+        // cover whatever the SwiftUI content says about itself — so their
+        // presence proves nothing either way. What "behind, not beside"
+        // actually means is that you cannot touch them, which is the one
+        // thing hit-testing can answer.
+        XCTAssertFalse(held.buttons["element.H"].isHittable,
                        "The table should be behind the loading screen, not beside it")
 
         let frame = XCTAttachment(screenshot: held.screenshot())

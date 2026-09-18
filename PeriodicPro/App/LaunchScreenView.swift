@@ -77,7 +77,12 @@ struct LaunchScreenView: View {
         .accessibilityIdentifier("launch.screen")
         .accessibilityLabel("Elemora")
         .accessibilityValue(showsSlowHint ? "Loading" : "")
-        .accessibilityAddTraits(.isImage)
+        // Modal, so VoiceOver treats what is behind the cover as unavailable
+        // rather than as the next thing to swipe to. `accessibilityHidden` on
+        // the content cannot do this job: the tabs and the navigation bar are
+        // hosted by UIKit, outside the SwiftUI view the modifier applies to,
+        // and they stay in the tree regardless.
+        .accessibilityAddTraits([.isImage, .isModal])
         .task { await run() }
         .onChange(of: isReady) { _, ready in
             if ready, minimumElapsed { onFinished() }
