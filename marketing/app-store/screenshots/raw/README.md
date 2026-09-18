@@ -1,6 +1,6 @@
 # Raw captures
 
-Screenshots straight off the simulator, untouched. Keep them — if a frame needs
+Screenshots straight off the simulator, untouched. Keep them: if a frame needs
 recomposing later you want the original, not a prepared copy.
 
     xcrun simctl io booted screenshot marketing/app-store/screenshots/raw/01-home.png

@@ -1,28 +1,31 @@
-/* 06 — PROGRESS.  Straight on. The decoration turns deliberately more
-   structured here: a period 1-4 table strip above the copy reads as coverage,
-   and the orbit motif supplies the only curve. */
+/* 06  PROGRESS.  Composition: SINGLE DEVICE, HARD OFFSET. The closing image
+   returns to one phone but places it nothing like frame 01: rising out of the
+   lower left corner, cropped on two sides, with the whole right of the canvas
+   left deliberately empty. An ethanol chain and a hexane chain drift in from
+   that empty side at watermark strength. */
 import { C } from '../system.mjs';
-import { molecule, bohr, periodicFragment, orbits, lattice } from '../chemistry.mjs';
+import { skeletal, elementTile, periodicFragment, formula, EQUATIONS } from '../chemistry.mjs';
 
 export default {
   id: '06', slug: 'progress',
-  title: 'Elemora — 06 Progress',
-  label: 'Progress',
-  need: 'The progress / mastery view, with enough real activity on it to look earned.',
+  title: 'Elemora 06 Progress',
   headline: ['See Your', 'Progress'],
   sub: ['Track mastery, activity, and what', 'to review next.'],
   copy: { top: 236, align: 'start' },
-  device: { rot: 0 },
+  devices: [{
+    role: 'hero', label: 'Progress', screenW: 960, x: -46, y: 940, rot: 5,
+    need: 'The progress or mastery view, with enough real activity on it to look earned. Cropped on the left and bottom, so keep the headline numbers high and right.',
+  }],
   light: [
-    { x: 660, y: 520, r: 1120, c: C.paleC, o: 0.52 },
-    { x: 1180, y: 1820, r: 1020, c: C.paleB, o: 0.44 },
-    { x: 140, y: 2700, r: 900, c: C.paleA, o: 0.48 },
+    { x: 420, y: 1720, r: 1160, c: C.paleC, o: 0.56 },
+    { x: 1140, y: 520, r: 1000, c: C.paleB, o: 0.46 },
+    { x: 1160, y: 2620, r: 900, c: C.paleA, o: 0.50 },
   ],
-  deco: (D) => [
-    periodicFragment({ x: 706, y: 58, cell: 30, gap: 5, opacity: 0.085 }),
-    orbits({ cx: 52, cy: 1520, r: 250, opacity: 0.075 }),
-    bohr('O', { cx: 1286, cy: 2260, r: 236, opacity: 0.085 }),
-    lattice({ x: -66, y: 2500, cols: 3, rows: 3, a: 72, opacity: 0.05, width: 5 }),
-    molecule(D, 'water', { cx: 1304, cy: 1150, scale: 128, rx: -12, ry: -26, rz: -6 }),
+  deco: () => [
+    periodicFragment({ x: 704, y: 88, cell: 30, gap: 5, opacity: 0.065 }),
+    formula(EQUATIONS.combustionH2, { x: 1224, y: 790, size: 50, opacity: 0.09, anchor: 'end' }),
+    elementTile('Fe', { x: 1158, y: 2276, w: 184, opacity: 0.07, rot: 4 }),
+    skeletal('hexane', { cx: 1272, cy: 1452, scale: 134, rot: -14, opacity: 0.075, width: 10 }),
+    skeletal('ethanol', { cx: 1252, cy: 1872, scale: 122, rot: 8, opacity: 0.065, width: 10 }),
   ].join('\n'),
 };

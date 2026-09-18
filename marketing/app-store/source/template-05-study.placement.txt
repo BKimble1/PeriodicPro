@@ -1,51 +1,69 @@
-Elemora — App Store image 05  (study)
+Elemora, App Store image 05  (study)
 Study Smarter
-Production placement data — measured from the finished composition. Pixels.
+Production placement data, measured from the finished composition. Pixels.
 
 CANVAS
   W = 1320
   H = 2868
+  Devices = 2
 
-DEVICE
-  X        = 178.26          (unrotated top-left)
-  Y        = 745
-  W        = 963.48
-  H        = 2004.8618
-  Rotation = -3 deg    (about the device centre, 660, 1747.4309)
-  Centre   = 660, 1747.4309
-  Corner radius   = 115.884
-  Bezel thickness = 37.74 on every side
-  Scale vs the 888px campaign base opening = 0.897
+DEVICE 1 of 2   role = back   layer = backmost
+  Wanted screen = Quiz or flashcard
+  The second strongest study surface: a quiz mid-question, or a flashcard. Cropped by the left edge, so keep the subject right of centre.
 
-DEVICE ROTATED BOUNDING BOX
-  Left = 126.457   Top = 721.1615
-  Right = 1193.543  Bottom = 2773.7003
-  Off-canvas left   = none
-  Off-canvas right  = none
-  Off-canvas bottom = none
+  X        = -70          (unrotated top-left)
+  Y        = 800
+  W        = 868
+  H        = 1806.1818
+  Rotation = 4 deg    (about the device centre, 364, 1703.0909)
+  Corner radius   = 104.4
+  Bezel thickness = 34 on every side
 
-SCREENSHOT  (place the real 1320x2868 Elemora capture here)
-  Wanted screen = Study
-  The strongest single study surface — the Study home, a quiz in progress, or a flashcard. One mode only.
+  ROTATED BOUNDING BOX
+    Left = -131.9392   Top = 771.9256   Right = 859.9392   Bottom = 2634.2562
+    Off-canvas left 131.9px, right none, bottom none
 
-  Centre X      = 660
-  Centre Y      = 1747.4309
-  Unrotated W   = 888
-  Unrotated H   = 1929.3818
-  Rotation      = -3 deg  (identical to the device — one rigid group)
-  Unrotated X,Y = 216, 782.74   (top-left before rotation)
-  Corner radius = 78.144   (the overlay rounds this for you)
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 364, 1703.0909
+    Unrotated X,Y = -36, 834
+    Unrotated W,H = 800 x 1738.1818
+    Rotation      = 4 deg  (identical to the device, one rigid group)
+    Corner radius = 70.4   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.6060606061
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
 
-  Aspect ratio = 0.4602510460251046
-  Required     = 1320 / 2868 = 0.4602510460251046
-  Delta        = 0.000e+0
-  Uniform scale of the source screenshot = 0.6727272727
-  NEVER scale X and Y independently, and never rotate the screenshot separately
-  from the bezel — set the size first, then apply the single rotation above.
+DEVICE 2 of 2   role = front   layer = in front of device 1
+  Wanted screen = Study overview
+  The Study home or dashboard, with real progress on it. This is the dominant device.
 
-SCREENSHOT AS CANVAS PERCENTAGES (unrotated box)
-  Left = 16.3636%   Top = 27.2922%
-  Width = 67.2727%  Height = 67.2727%
+  X        = 392          (unrotated top-left)
+  Y        = 910
+  W        = 980.84
+  H        = 2040.9855
+  Rotation = -4 deg    (about the device centre, 882.42, 1930.4927)
+  Corner radius   = 117.972
+  Bezel thickness = 38.42 on every side
+
+  ROTATED BOUNDING BOX
+    Left = 322.0087   Top = 878.2759   Right = 1442.8313   Bottom = 2982.7096
+    Off-canvas left none, right 122.8px, bottom 114.7px
+
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 882.42, 1930.4927
+    Unrotated X,Y = 430.42, 948.42
+    Unrotated W,H = 904 x 1964.1455
+    Rotation      = -4 deg  (identical to the device, one rigid group)
+    Corner radius = 79.552   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.6848484848
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
@@ -62,8 +80,10 @@ COPY
   Supporting = "Practice with focused tools that" + "make chemistry stick."
 
 LAYER ORDER (bottom to top)
-  1. assets/backgrounds/05-study.png       — 1320x2868, opaque
-  2. your real Elemora screenshot — sized + rotated exactly as above
-  3. assets/device/05-study-overlay.png    — 1320x2868, transparent screen
+  1. assets/backgrounds/05-study.png      1320x2868, opaque
+  2. your real capture for device 1 (Quiz or flashcard)
+  3. assets/device/05-study-overlay-back.png   RGBA, transparent screen
+  4. your real capture for device 2 (Study overview)
+  5. assets/device/05-study-overlay-front.png   RGBA, transparent screen
 
-  python3 place_screenshot.py 05 screenshots/selected/<capture>.png
+  python3 place_screenshot.py 05 <back>.png <front>.png

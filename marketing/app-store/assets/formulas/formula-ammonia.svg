@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="420" height="130" viewBox="0 0 420 130">
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="130" viewBox="0 0 640 130">
   <defs>
     <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
-
   </defs>
 <text x="16" y="96" text-anchor="start" style="font-size:96px;font-weight:600;letter-spacing:0px" fill="#0E2039" fill-opacity="1">NH<tspan dy="19.2" style="font-size:59.52px">3</tspan><tspan dy="-19.2">&#8203;</tspan></text>
 </svg>

@@ -1,51 +1,40 @@
-Elemora — App Store image 04  (element-detail)
+Elemora, App Store image 04  (element-detail)
 See More Than Symbols
-Production placement data — measured from the finished composition. Pixels.
+Production placement data, measured from the finished composition. Pixels.
 
 CANVAS
   W = 1320
   H = 2868
+  Devices = 1
 
-DEVICE
-  X        = 144.625          (unrotated top-left)
-  Y        = 700
-  W        = 1030.75
-  H        = 2144.8409
-  Rotation = 0 deg    (about the device centre, 660, 1772.4205)
-  Centre   = 660, 1772.4205
-  Corner radius   = 123.975
-  Bezel thickness = 40.375 on every side
-  Scale vs the 888px campaign base opening = 0.9596
-
-DEVICE ROTATED BOUNDING BOX
-  Left = 144.625   Top = 700
-  Right = 1175.375  Bottom = 2844.8409
-  Off-canvas left   = none
-  Off-canvas right  = none
-  Off-canvas bottom = none
-
-SCREENSHOT  (place the real 1320x2868 Elemora capture here)
+DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Element Detail
-  A single element detail screen — pick the most visually complete one (Carbon or Iron).
+  One element detail screen, the most visually complete you have. Carbon or Iron usually read best. The lower sixth is cropped by the canvas, so keep the tile, name and key properties high.
 
-  Centre X      = 660
-  Centre Y      = 1772.4205
-  Unrotated W   = 950
-  Unrotated H   = 2064.0909
-  Rotation      = 0 deg  (identical to the device — one rigid group)
-  Unrotated X,Y = 185, 740.375   (top-left before rotation)
-  Corner radius = 83.6   (the overlay rounds this for you)
+  X        = 112          (unrotated top-left)
+  Y        = 800
+  W        = 1198.925
+  H        = 2494.7886
+  Rotation = 1.5 deg    (about the device centre, 711.4625, 2047.3943)
+  Corner radius   = 144.2025
+  Bezel thickness = 46.9625 on every side
 
-  Aspect ratio = 0.4602510460251046
-  Required     = 1320 / 2868 = 0.4602510460251046
-  Delta        = 5.551e-17
-  Uniform scale of the source screenshot = 0.7196969697
-  NEVER scale X and Y independently, and never rotate the screenshot separately
-  from the bezel — set the size first, then apply the single rotation above.
+  ROTATED BOUNDING BOX
+    Left = 79.5524   Top = 784.7354   Right = 1343.3726   Bottom = 3310.0533
+    Off-canvas left none, right 23.4px, bottom 442.1px
 
-SCREENSHOT AS CANVAS PERCENTAGES (unrotated box)
-  Left = 14.0152%   Top = 25.8150%
-  Width = 71.9697%  Height = 71.9697%
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 711.4625, 2047.3943
+    Unrotated X,Y = 158.9625, 846.9625
+    Unrotated W,H = 1105 x 2400.8636
+    Rotation      = 1.5 deg  (identical to the device, one rigid group)
+    Corner radius = 97.24   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.8371212121
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
@@ -54,16 +43,16 @@ TYPOGRAPHY
   Left margin = 96px  (column 1128px)
   Headline cap-top y = 236   Supporting baseline y = 510.499
   Measured headline widths = 857.4, 503.6
-  Measured supporting widths = 749.3, 551.8
+  Measured supporting widths = 773.0, 643.5
   Widest line vs column = 857.4 / 1128
 
 COPY
   Headline   = "See More Than" + "Symbols"
-  Supporting = "Properties, structure, uses, and the" + "facts worth remembering."
+  Supporting = "Explore properties, structures, uses," + "and facts worth remembering."
 
 LAYER ORDER (bottom to top)
-  1. assets/backgrounds/04-element-detail.png       — 1320x2868, opaque
-  2. your real Elemora screenshot — sized + rotated exactly as above
-  3. assets/device/04-element-detail-overlay.png    — 1320x2868, transparent screen
+  1. assets/backgrounds/04-element-detail.png      1320x2868, opaque
+  2. your real capture for device 1 (Element Detail)
+  3. assets/device/04-element-detail-overlay.png   RGBA, transparent screen
 
-  python3 place_screenshot.py 04 screenshots/selected/<capture>.png
+  python3 place_screenshot.py 04 <hero>.png

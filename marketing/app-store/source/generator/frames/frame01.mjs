@@ -1,30 +1,30 @@
-/* 01 — HERO.  Centre hero, straight-on device for maximum screenshot clarity.
-   A cropped ethane model enters the top-right corner above the headline; water
-   and methane sit at the side margins and tuck behind the phone. */
+/* 01  HERO.  One large centred device, dead straight so the hero capture stays
+   pixel sharp. Composition: CENTRE HERO. The quietest decoration in the set:
+   a half benzene leaving the left edge, half a naphthalene leaving the right,
+   two element tiles and a barely-there orbit diagram in the bottom corner. */
 import { C } from '../system.mjs';
-import { molecule, elementTile, bohr, formula, EQUATIONS } from '../chemistry.mjs';
+import { skeletal, elementTile, orbits } from '../chemistry.mjs';
 
 export default {
   id: '01', slug: 'hero',
-  title: 'Elemora — 01 Hero',
-  label: 'Home',
-  need: 'Home screen. The single strongest top-level introduction to Elemora.',
+  title: 'Elemora 01 Hero',
   headline: ['Learn Chemistry', 'Visually'],
-  sub: ['Explore elements, build molecules, and', 'master chemistry — all in one app.'],
+  sub: ['Explore elements, build molecules, and', 'master chemistry, all in one app.'],
   copy: { top: 236, align: 'start' },
-  device: { rot: 0 },
+  devices: [{
+    role: 'hero', label: 'Home', screenW: 912, x: 165.24, y: 762, rot: 0,
+    need: 'Home screen. The strongest top level introduction to Elemora, and the most important capture in the set.',
+  }],
   light: [
-    { x: 210, y: 380, r: 1180, c: C.paleC, o: 0.60 },
-    { x: 1210, y: 1560, r: 1080, c: C.paleB, o: 0.46 },
-    { x: 640, y: 2760, r: 940, c: C.paleA, o: 0.52 },
+    { x: 240, y: 400, r: 1180, c: C.paleC, o: 0.56 },
+    { x: 1180, y: 1520, r: 1060, c: C.paleB, o: 0.42 },
+    { x: 660, y: 2780, r: 940, c: C.paleA, o: 0.50 },
   ],
-  deco: (D) => [
-    elementTile('O', { x: -34, y: 900, w: 214, opacity: 0.085, rot: -6 }),
-    elementTile('H', { x: 1178, y: 604, w: 196, opacity: 0.075, rot: 5 }),
-    bohr('C', { cx: 58, cy: 2706, r: 262, opacity: 0.075 }),
-    formula(EQUATIONS.combustionH2, { x: 1224, y: 2812, size: 56, opacity: 0.13, anchor: 'end' }),
-    molecule(D, 'ethane', { cx: 1300, cy: 30, scale: 98, rx: -18, ry: 38, rz: -16 }),
-    molecule(D, 'water', { cx: 30, cy: 1420, scale: 122, rx: -10, ry: 24, rz: -6 }),
-    molecule(D, 'methane', { cx: 1302, cy: 2080, scale: 152, rx: -16, ry: 30, rz: 8 }),
+  deco: () => [
+    elementTile('C', { x: 1152, y: 116, w: 176, opacity: 0.07, rot: 4 }),
+    elementTile('O', { x: -34, y: 2364, w: 182, opacity: 0.06, rot: -5 }),
+    orbits({ cx: 36, cy: 2768, r: 232, opacity: 0.05 }),
+    skeletal('benzene', { cx: 16, cy: 1480, scale: 152, opacity: 0.062, width: 8 }),
+    skeletal('naphthalene', { cx: 1316, cy: 2076, scale: 112, rot: 90, opacity: 0.058, width: 8 }),
   ].join('\n'),
 };

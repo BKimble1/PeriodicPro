@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" viewBox="0 0 460 460">
+  <defs>
+    <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
+  </defs>
+<g id="Skeletal-C2H4O2" opacity="1">
+    <path d="M 230 192 L 295.8179 230 M 295.8179 230 L 342.6803 202.944 M 289.4567 230 L 289.4567 284.112 M 302.1791 230 L 302.1791 284.112" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="361.6359" y="202.64" text-anchor="middle" style="font-size:30.4px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">OH</text><text x="295.8179" y="316.64" text-anchor="middle" style="font-size:30.4px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">O</text>
+  </g>
+</svg>

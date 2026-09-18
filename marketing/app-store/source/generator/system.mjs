@@ -1,5 +1,5 @@
 /* ============================================================================
-   Elemora — App Store campaign design system.
+   Elemora, App Store campaign design system.
 
    Light, scientific, spacious. Near-white paper, pale chemistry blues, deep
    navy type, one large device per frame, and restrained chemistry decoration
@@ -8,7 +8,7 @@
    Geometry is derived from a single screen width, so a device can be scaled or
    rotated as ONE rigid group without ever distorting the 1320:2868 opening.
 
-   The palette is sampled from the Elemora brand reference artwork — see
+   The palette is sampled from the Elemora brand reference artwork, see
    ../../README.md § Palette provenance.
    ========================================================================== */
 
@@ -148,9 +148,9 @@ export function deviceGeom({ screenW, x, y, rot = 0 }) {
   };
 }
 
-/* Campaign device placement. The phone runs from 26% to 96% of the canvas
-   height — dominant in the lower three quarters — and leaves ~178px of clear
-   margin either side for the chemistry decoration to breathe. */
+/* A centred default placement. The six campaign frames position their devices
+   explicitly instead, because composition variety is the point; this stays as
+   the neutral starting point for a new frame. */
 export const BASE_SCREEN_W = 888;
 export const DEVICE_TOP = 745;
 
@@ -194,22 +194,46 @@ export function deviceDefs(d, sfx = '') {
     <stop offset="1"    stop-color="#1D2534"/>
   </linearGradient>
   <filter id="elShadowA${sfx}" x="-45%" y="-35%" width="190%" height="180%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="${n(70 * d.scale)}"/>
+    <feGaussianBlur stdDeviation="${n(78 * d.scale)}"/>
   </filter>
   <filter id="elShadowB${sfx}" x="-40%" y="-30%" width="180%" height="170%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="${n(24 * d.scale)}"/>
-  </filter>`;
+    <feGaussianBlur stdDeviation="${n(26 * d.scale)}"/>
+  </filter>
+  <filter id="elShadowC${sfx}" x="-25%" y="-20%" width="150%" height="140%" color-interpolation-filters="sRGB">
+    <feGaussianBlur stdDeviation="${n(7 * d.scale)}"/>
+  </filter>
+  <radialGradient id="elGlow${sfx}" cx="${n(d.cx)}" cy="${n(d.cy)}" r="${n(d.h * 0.58)}"
+                  gradientUnits="userSpaceOnUse"
+                  gradientTransform="translate(${n(d.cx)} ${n(d.cy)}) scale(1 ${n(d.h / d.w * 0.92)}) translate(${n(-d.cx)} ${n(-d.cy)})">
+    <stop offset="0"    stop-color="${C.paleC}" stop-opacity="0.17"/>
+    <stop offset="0.55" stop-color="${C.paleB}" stop-opacity="0.07"/>
+    <stop offset="1"    stop-color="${C.paleB}" stop-opacity="0"/>
+  </radialGradient>`;
 }
 
-/** One restrained, cool shadow language shared by all eight frames. */
+/* A soft pool of cool light under the device, so it reads as sitting IN the
+   composition rather than pasted on top of it. Only ever drawn behind the
+   backmost device, where it cannot tint a real screenshot. */
+export function deviceGlow(d, sfx = '') {
+  return `
+  <g id="Device-Glow${sfx}">
+    <rect width="${CANVAS.W}" height="${CANVAS.H}" fill="url(#elGlow${sfx})"/>
+  </g>`;
+}
+
+/* Three shadow passes: a wide ambient bloom, a mid body shadow, and a tight
+   contact shadow hugging the silhouette. The contact pass is what stops the
+   device floating. */
 export function deviceShadow(d, sfx = '') {
   const s = d.scale;
   return `
   <g id="Device-Shadow${sfx}">${rigid(d, `
-    <path d="${roundRect(d.x + 16 * s, d.y + 62 * s, d.w - 32 * s, d.h, d.r)}"
-          fill="${C.shadow}" fill-opacity="0.20" filter="url(#elShadowA${sfx})"/>
-    <path d="${roundRect(d.x + 30 * s, d.y + 20 * s, d.w - 60 * s, d.h, d.r)}"
-          fill="${C.shadow}" fill-opacity="0.15" filter="url(#elShadowB${sfx})"/>`)}
+    <path d="${roundRect(d.x + 16 * s, d.y + 74 * s, d.w - 32 * s, d.h, d.r)}"
+          fill="${C.shadow}" fill-opacity="0.19" filter="url(#elShadowA${sfx})"/>
+    <path d="${roundRect(d.x + 28 * s, d.y + 26 * s, d.w - 56 * s, d.h, d.r)}"
+          fill="${C.shadow}" fill-opacity="0.15" filter="url(#elShadowB${sfx})"/>
+    <path d="${roundRect(d.x + 5 * s, d.y + 9 * s, d.w - 10 * s, d.h, d.r)}"
+          fill="${C.shadow}" fill-opacity="0.17" filter="url(#elShadowC${sfx})"/>`)}
   </g>`;
 }
 
@@ -251,15 +275,21 @@ export function deviceOverlay(d, sfx = '') {
   </g>`;
 }
 
-/** Plain placeholder — no fabricated app UI, no dashed guides. */
+/* Development placeholder. It is the exact crop the real capture will occupy
+   and nothing more: no fabricated app UI, no dashed guides, and quiet enough
+   that it never changes how the composition reads. It disappears the moment a
+   real screenshot is placed. */
 export function screenPlaceholder(d, label, sfx = '') {
-  const s = d.screen;
+  const s = d.screen, k = d.screen.w / 888;
+  const { text, dx = 0, dy = 0 } = typeof label === 'string' ? { text: label } : label;
+  const lx = s.cx + dx, ly = s.cy + dy;
   return `
   <g id="Screen-Placeholder${sfx}">${rigid(d, `
       <path d="${roundRect(s.x, s.y, s.w, s.h, s.r)}" fill="${C.screen}"/>
-      <text x="${n(s.cx)}" y="${n(s.cy - 46)}" class="el-ph"  text-anchor="middle">REPLACE WITH REAL SCREENSHOT</text>
-      <text x="${n(s.cx)}" y="${n(s.cy + 14)}" class="el-ph2" text-anchor="middle">${esc(label)}</text>
-      <text x="${n(s.cx)}" y="${n(s.cy + 66)}" class="el-ph3" text-anchor="middle">1320 &#215; 2868</text>`)}
+      <text x="${n(lx)}" y="${n(ly)}" class="el-ph2" text-anchor="middle"
+            style="font-size:${n(36 * k)}px">${esc(text)}</text>
+      <text x="${n(lx)}" y="${n(ly + 44 * k)}" class="el-ph3" text-anchor="middle"
+            style="font-size:${n(23 * k)}px">replace &#183; 1320 &#215; 2868</text>`)}
   </g>`;
 }
 
@@ -353,25 +383,60 @@ ${body}
 `;
 }
 
-/* Compose the three deliverable layers from one frame definition.
-   `deco` is chemistry artwork; it is ALWAYS behind the device. */
-export function composeFrame({ title, dev, copy, light, deco = '', decoDefs = '', label }) {
-  const defs = baseDefs(light) + decoDefs + deviceDefs(dev);
-  const under = [background(light), deco, deviceShadow(dev), copy.svg];
+export const SFX = ['-a', '-b', '-c'];
+
+/* Compose the deliverable layers for a frame carrying one or more devices,
+   ordered back to front.
+
+   The stack a compositor replays is:
+
+     background            paper, chemistry linework, copy, the BACK device's
+                           glow, shadow and screen well
+     screenshot 0          the back capture
+     overlay 0             the back device's chrome, then the NEXT device's
+                           shadow and screen well
+     screenshot 1          the front capture
+     overlay 1             the front device's chrome
+
+   Chemistry decoration is always behind every device, so no marketing graphic
+   can ever cover app UI. The one thing that does fall across a rear capture is
+   the front device's soft shadow, which is what makes an overlap read as depth
+   rather than as collage; the glow is confined to the backmost device where it
+   cannot tint a screenshot. */
+export function composeFrame({ title, devices, copy, light, deco = '', decoDefs = '', labels }) {
+  const N = devices.length;
+  const allDefs = baseDefs(light) + decoDefs +
+    devices.map((d, i) => deviceDefs(d, SFX[i])).join('');
+
+  const under = [background(light), deco, copy.svg];
+  const seat = (i) => [deviceGlow(devices[i], SFX[i]), deviceShadow(devices[i], SFX[i])];
+  /* only the backmost device gets a glow; the rest get shadow alone */
+  const seatFront = (i) => [deviceShadow(devices[i], SFX[i])];
+
+  const bgBody = [...under, ...seat(0), screenWell(devices[0], SFX[0])];
+
+  const overlays = devices.map((d, i) => {
+    const body = [deviceOverlay(d, SFX[i])];
+    if (i + 1 < N) {
+      body.push(...seatFront(i + 1), screenWell(devices[i + 1], SFX[i + 1]));
+    }
+    return svgDoc({
+      title: `${title}, device overlay ${i + 1} of ${N}`,
+      defs: deviceDefs(d, SFX[i]) + (i + 1 < N ? deviceDefs(devices[i + 1], SFX[i + 1]) : ''),
+      body: body.join('\n'),
+    });
+  });
+
+  const masterBody = [...under, ...seat(0)];
+  devices.forEach((d, i) => {
+    masterBody.push(screenPlaceholder(d, labels[i], SFX[i]));
+    masterBody.push(deviceOverlay(d, SFX[i]));
+    if (i + 1 < N) masterBody.push(...seatFront(i + 1));
+  });
+
   return {
-    master: svgDoc({
-      title, defs,
-      body: [...under, screenPlaceholder(dev, label), deviceOverlay(dev)].join('\n'),
-    }),
-    background: svgDoc({
-      title: title + ' — background',
-      defs,
-      body: [...under, screenWell(dev)].join('\n'),
-    }),
-    overlay: svgDoc({
-      title: title + ' — device overlay',
-      defs: deviceDefs(dev),
-      body: deviceOverlay(dev),
-    }),
+    master: svgDoc({ title, defs: allDefs, body: masterBody.join('\n') }),
+    background: svgDoc({ title: title + ', background', defs: allDefs, body: bgBody.join('\n') }),
+    overlays,
   };
 }

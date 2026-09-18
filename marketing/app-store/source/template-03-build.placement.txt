@@ -1,51 +1,69 @@
-Elemora — App Store image 03  (build)
+Elemora, App Store image 03  (build)
 Build Real Molecules
-Production placement data — measured from the finished composition. Pixels.
+Production placement data, measured from the finished composition. Pixels.
 
 CANVAS
   W = 1320
   H = 2868
+  Devices = 2
 
-DEVICE
-  X        = 73.26          (unrotated top-left)
-  Y        = 745
-  W        = 963.48
-  H        = 2004.8618
-  Rotation = 3.5 deg    (about the device centre, 555, 1747.4309)
-  Centre   = 555, 1747.4309
-  Corner radius   = 115.884
-  Bezel thickness = 37.74 on every side
-  Scale vs the 888px campaign base opening = 0.897
+DEVICE 1 of 2   role = back   layer = backmost
+  Wanted screen = Finished compound
+  The result of a build: a completed compound, its detail sheet, or the 3D viewer if the app has one. Cropped by the right edge, so keep the subject left of centre.
 
-DEVICE ROTATED BOUNDING BOX
-  Left = 12.9616   Top = 717.4602
-  Right = 1097.0384  Bottom = 2777.4016
-  Off-canvas left   = none
-  Off-canvas right  = none
-  Off-canvas bottom = none
+  X        = 660          (unrotated top-left)
+  Y        = 740
+  W        = 792.05
+  H        = 1648.1409
+  Rotation = 5 deg    (about the device centre, 1056.025, 1564.0705)
+  Corner radius   = 95.265
+  Bezel thickness = 31.025 on every side
 
-SCREENSHOT  (place the real 1320x2868 Elemora capture here)
-  Wanted screen = Build
-  The Build screen showing a molecule that has actually been assembled.
+  ROTATED BOUNDING BOX
+    Left = 589.6845   Top = 708.62   Right = 1522.3655   Bottom = 2419.5209
+    Off-canvas left none, right 202.4px, bottom none
 
-  Centre X      = 555
-  Centre Y      = 1747.4309
-  Unrotated W   = 888
-  Unrotated H   = 1929.3818
-  Rotation      = 3.5 deg  (identical to the device — one rigid group)
-  Unrotated X,Y = 111, 782.74   (top-left before rotation)
-  Corner radius = 78.144   (the overlay rounds this for you)
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 1056.025, 1564.0705
+    Unrotated X,Y = 691.025, 771.025
+    Unrotated W,H = 730 x 1586.0909
+    Rotation      = 5 deg  (identical to the device, one rigid group)
+    Corner radius = 64.24   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 5.551e-17
+    Uniform scale of the source screenshot = 0.5530303030
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
 
-  Aspect ratio = 0.4602510460251046
-  Required     = 1320 / 2868 = 0.4602510460251046
-  Delta        = 0.000e+0
-  Uniform scale of the source screenshot = 0.6727272727
-  NEVER scale X and Y independently, and never rotate the screenshot separately
-  from the bezel — set the size first, then apply the single rotation above.
+DEVICE 2 of 2   role = front   layer = in front of device 1
+  Wanted screen = Build canvas
+  The Build screen mid-assembly, with a molecule actually on the canvas. Never an empty builder.
 
-SCREENSHOT AS CANVAS PERCENTAGES (unrotated box)
-  Left = 8.4091%   Top = 27.2922%
-  Width = 67.2727%  Height = 67.2727%
+  X        = 70          (unrotated top-left)
+  Y        = 920
+  W        = 911.4
+  H        = 1896.4909
+  Rotation = -3 deg    (about the device centre, 525.7, 1868.2455)
+  Corner radius   = 109.62
+  Bezel thickness = 35.7 on every side
+
+  ROTATED BOUNDING BOX
+    Left = 20.9972   Top = 897.45   Right = 1030.4028   Bottom = 2839.0409
+    Off-canvas left none, right none, bottom none
+
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 525.7, 1868.2455
+    Unrotated X,Y = 105.7, 955.7
+    Unrotated W,H = 840 x 1825.0909
+    Rotation      = -3 deg  (identical to the device, one rigid group)
+    Corner radius = 73.92   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 5.551e-17
+    Uniform scale of the source screenshot = 0.6363636364
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
@@ -62,8 +80,10 @@ COPY
   Supporting = "Create compounds visually and see" + "how atoms connect."
 
 LAYER ORDER (bottom to top)
-  1. assets/backgrounds/03-build.png       — 1320x2868, opaque
-  2. your real Elemora screenshot — sized + rotated exactly as above
-  3. assets/device/03-build-overlay.png    — 1320x2868, transparent screen
+  1. assets/backgrounds/03-build.png      1320x2868, opaque
+  2. your real capture for device 1 (Finished compound)
+  3. assets/device/03-build-overlay-back.png   RGBA, transparent screen
+  4. your real capture for device 2 (Build canvas)
+  5. assets/device/03-build-overlay-front.png   RGBA, transparent screen
 
-  python3 place_screenshot.py 03 screenshots/selected/<capture>.png
+  python3 place_screenshot.py 03 <back>.png <front>.png

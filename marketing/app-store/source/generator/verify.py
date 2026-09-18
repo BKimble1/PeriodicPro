@@ -1,10 +1,13 @@
-"""Elemora App Store campaign — full QA sweep.
+"""Elemora App Store campaign, full QA sweep.
 
     python3 source/generator/verify.py
 
-Everything here is checked against the built artefacts or against reference data
-held in THIS file, never against the generator's own constants, so a mistake in
-the design system cannot quietly validate itself.
+Everything is checked against the built artefacts or against reference data held
+in THIS file, never against the generator's own constants, so a mistake in the
+design system cannot quietly validate itself. The molecular formulas are
+re-derived from the drawn skeletal graphs rather than read off their labels, and
+the compositing pipeline is proved end to end by placing a marker image through
+the real compositor and looking for leaks.
 """
 import json
 import os
@@ -13,11 +16,15 @@ import sys
 import math
 import glob
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 CW, CH = 1320, 2868
+EM_DASH = "\u2014"
+
+sys.path.insert(0, ROOT)
+import place_screenshot as PS                                    # noqa: E402
 
 fails, warns, checks = [], [], [0]
 
@@ -40,57 +47,33 @@ def r(*a):
 
 
 # ---------------------------------------------------------------- reference --
-# Independent copy of the element facts, for cross-checking chemistry.mjs.
-# Standard atomic weights: IUPAC 2021 abridged.
+# Independent copy of the element facts. Atomic weights: IUPAC 2021 abridged.
 REF = {
-    "H":  (1,  "1.008",  [1]),
-    "He": (2,  "4.0026", [2]),
-    "Li": (3,  "6.94",   [2, 1]),
-    "Be": (4,  "9.0122", [2, 2]),
-    "B":  (5,  "10.81",  [2, 3]),
-    "C":  (6,  "12.011", [2, 4]),
-    "N":  (7,  "14.007", [2, 5]),
-    "O":  (8,  "15.999", [2, 6]),
-    "F":  (9,  "18.998", [2, 7]),
-    "Ne": (10, "20.180", [2, 8]),
-    "Na": (11, "22.990", [2, 8, 1]),
-    "Mg": (12, "24.305", [2, 8, 2]),
-    "Al": (13, "26.982", [2, 8, 3]),
-    "Si": (14, "28.085", [2, 8, 4]),
-    "P":  (15, "30.974", [2, 8, 5]),
-    "S":  (16, "32.06",  [2, 8, 6]),
-    "Cl": (17, "35.45",  [2, 8, 7]),
-    "Ar": (18, "39.95",  [2, 8, 8]),
-    "K":  (19, "39.098", [2, 8, 8, 1]),
-    "Ca": (20, "40.078", [2, 8, 8, 2]),
-    "Fe": (26, "55.845", [2, 8, 14, 2]),
-    "Cu": (29, "63.546", [2, 8, 18, 1]),
+    "H":  (1,  "1.008",  [1]),          "He": (2,  "4.0026", [2]),
+    "Li": (3,  "6.94",   [2, 1]),       "Be": (4,  "9.0122", [2, 2]),
+    "B":  (5,  "10.81",  [2, 3]),       "C":  (6,  "12.011", [2, 4]),
+    "N":  (7,  "14.007", [2, 5]),       "O":  (8,  "15.999", [2, 6]),
+    "F":  (9,  "18.998", [2, 7]),       "Ne": (10, "20.180", [2, 8]),
+    "Na": (11, "22.990", [2, 8, 1]),    "Mg": (12, "24.305", [2, 8, 2]),
+    "Al": (13, "26.982", [2, 8, 3]),    "Si": (14, "28.085", [2, 8, 4]),
+    "P":  (15, "30.974", [2, 8, 5]),    "S":  (16, "32.06",  [2, 8, 6]),
+    "Cl": (17, "35.45",  [2, 8, 7]),    "Ar": (18, "39.95",  [2, 8, 8]),
+    "K":  (19, "39.098", [2, 8, 8, 1]), "Ca": (20, "40.078", [2, 8, 8, 2]),
+    "Fe": (26, "55.845", [2, 8, 14, 2]),"Cu": (29, "63.546", [2, 8, 18, 1]),
     "Au": (79, "196.97", [2, 8, 18, 32, 18, 1]),
 }
-
-# Bond lengths (angstrom) and angles (deg) the geometries must reproduce.
-GEOM_REF = {
-    "water":         {"bond": ("O", "H", 0.958), "angle": 104.5},
-    "carbonDioxide": {"bond": ("C", "O", 1.163), "angle": 180.0},
-    "methane":       {"bond": ("C", "H", 1.087), "angle": 109.47},
-    "ammonia":       {"bond": ("N", "H", 1.012), "angle": 107.0},
-    "ethane":        {"bond": ("C", "H", 1.090), "angle": 109.47},
-    "benzene":       {"bond": ("C", "C", 1.390), "angle": 120.0},
-    "dioxygen":      {"bond": ("O", "O", 1.208), "angle": None},
-    "dinitrogen":    {"bond": ("N", "N", 1.098), "angle": None},
-}
+VALENCE = {"C": 4, "N": 3, "O": 2, "S": 2, "H": 1}
+HILL = ["C", "H", "N", "O", "S"]
 
 
 # ------------------------------------------------------------ equation maths --
 def parse_formula(f):
-    """'2H2O' -> (2, {'H':2,'O':1})"""
     m = re.match(r"^(\d*)(.*)$", f)
     coef = int(m.group(1)) if m.group(1) else 1
     atoms = {}
     for sym, cnt in re.findall(r"([A-Z][a-z]?)(\d*)", m.group(2)):
-        if not sym:
-            continue
-        atoms[sym] = atoms.get(sym, 0) + (int(cnt) if cnt else 1)
+        if sym:
+            atoms[sym] = atoms.get(sym, 0) + (int(cnt) if cnt else 1)
     return coef, atoms
 
 
@@ -114,7 +97,6 @@ def balanced(eq):
     return left == right, f"{left} vs {right}"
 
 
-# --------------------------------------------------------- chemistry.mjs read --
 src = open(r("source", "generator", "chemistry.mjs"), encoding="utf-8").read()
 
 print("== element data ==")
@@ -122,11 +104,10 @@ for sym, (z, mass, shells) in REF.items():
     m = re.search(
         r"^\s*%s:\s*\{\s*z:\s*(\d+),\s*name:\s*'([^']+)',\s*mass:\s*'([^']+)',"
         r"\s*group:\s*(\d+),\s*period:\s*(\d+),\s*cat:\s*'([^']*)',"
-        r"\s*shells:\s*\[([0-9, ]+)\]" % re.escape(sym),
-        src, re.M)
+        r"\s*shells:\s*\[([0-9, ]+)\]" % re.escape(sym), src, re.M)
     if not ok(m, f"element {sym} missing from chemistry.mjs"):
         continue
-    gz, name, gmass, group, period, cat, gsh = m.groups()
+    gz, _name, gmass, group, period, _cat, gsh = m.groups()
     ok(int(gz) == z, f"{sym}: atomic number {gz} should be {z}")
     ok(gmass == mass, f"{sym}: atomic weight {gmass} should be {mass}")
     got = [int(x) for x in gsh.replace(" ", "").split(",") if x]
@@ -139,157 +120,236 @@ print(f"   {len(REF)} elements cross-checked against IUPAC 2021 reference")
 print("== balanced equations ==")
 eq_block = src[src.index("export const EQUATIONS"):]
 for name, eq in re.findall(r"(\w+):\s*'([^']+)'", eq_block):
-    # the source may carry the arrow literally or as a JS escape
     eq = eq.replace("\\u2192", "\u2192").replace("\\u21CC", "\u21CC")
     good, detail = balanced(eq)
     ok(good, f"equation {name} is not balanced: {eq}  ({detail})")
     print(f"   {name:16s} {eq}   balanced")
 
-# ------------------------------------------------------------ molecular maths --
-print("== molecular geometry ==")
-mol_src = src[src.index("export const MOLECULES"):src.index("/* ------------------------------------------------------------- projection")]
+# --------------------------------------------------- skeletal structure maths
+print("== skeletal structures ==")
+SK = json.load(open(r("source", "skeletal.json"), encoding="utf-8"))
+ok(len(SK) >= 8, f"only {len(SK)} skeletal structures; the set needs a real library")
 
+for key, S in SK.items():
+    pts, bonds = S["pts"], S["bonds"]
+    labels = {int(k): v for k, v in S["labels"].items()}
 
-def atoms_of(key):
-    blk = re.search(r"\b%s:\s*\{(.*?)\n  \}," % key, mol_src, re.S)
-    if not blk:
-        return None
-    txt = blk.group(1)
-    if key == "benzene":                      # generated by an IIFE
-        pts = []
-        for i in range(6):
-            t = math.pi / 3 * i
-            pts.append(("C", 1.39 * math.cos(t), 1.39 * math.sin(t), 0.0))
-        for i in range(6):
-            t = math.pi / 3 * i
-            pts.append(("H", 2.48 * math.cos(t), 2.48 * math.sin(t), 0.0))
-        return pts
-    out = []
-    for sym, x, y, z in re.findall(
-            r"\['([A-Z][a-z]?)',\s*(-?[\d.]+),\s*(-?[\d.]+),\s*(-?[\d.]+)\]", txt):
-        out.append((sym, float(x), float(y), float(z)))
-    return out
+    # 1. every drawn bond must be exactly one bond length: rings regular, chains
+    #    at a true 120 deg, no accidental stretching
+    lens = [math.dist(pts[i], pts[j]) for i, j, *_ in bonds]
+    ok(max(abs(L - 1.0) for L in lens) < 2e-3,
+       f"{key}: bond lengths vary ({min(lens):.4f}..{max(lens):.4f}), rings not regular")
 
+    # 2. re-derive the molecular formula from the graph itself
+    order_sum = [0] * len(pts)
+    for i, j, *rest in bonds:
+        o = rest[0] if rest else 1
+        order_sum[i] += o
+        order_sum[j] += o
+    counts = {}
+    overvalent = []
+    for idx in range(len(pts)):
+        lab = labels.get(idx, "C")
+        el = re.match(r"^([A-Z][a-z]?)", lab).group(1)
+        v = VALENCE.get(el)
+        if v is None:
+            fails.append(f"{key}: no reference valence for {el}")
+            continue
+        if order_sum[idx] > v:
+            overvalent.append(f"{el}{idx}={order_sum[idx]}")
+        counts[el] = counts.get(el, 0) + 1
+        counts["H"] = counts.get("H", 0) + max(0, v - order_sum[idx])
+    ok(not overvalent, f"{key}: over-valent atoms {overvalent}")
 
-def dist(a, b):
-    return math.dist(a[1:], b[1:])
+    derived = "".join(f"{e}{counts[e] if counts[e] > 1 else ''}"
+                      for e in HILL if counts.get(e))
+    ok(derived == S["formula"],
+       f"{key}: graph gives {derived}, but it is labelled {S['formula']}")
+    print(f"   {S['name']:14s} {S['formula']:12s} derived {derived:12s} "
+          f"{len(pts)} vertices, {len(bonds)} bonds")
 
-
-for key, ref in GEOM_REF.items():
-    at = atoms_of(key)
-    if not ok(at, f"molecule {key} not found"):
-        continue
-    s1, s2, want = ref["bond"]
-    # shortest s1-s2 distance is the bond in every molecule here
-    ds = [dist(a, b) for a in at for b in at
-          if a is not b and {a[0], b[0]} == {s1, s2}]
-    got = min(ds)
-    ok(abs(got - want) < 0.006,
-       f"{key}: {s1}-{s2} bond {got:.4f} A should be {want} A")
-    if ref["angle"] is not None:
-        c = at[0]
-        nb = [a for a in at[1:] if abs(dist(a, c) - min(dist(x, c) for x in at[1:])) < 0.02]
-        if len(nb) >= 2:
-            v1 = [nb[0][i] - c[i] for i in (1, 2, 3)]
-            v2 = [nb[1][i] - c[i] for i in (1, 2, 3)]
-            dot = sum(p * q for p, q in zip(v1, v2))
-            ang = math.degrees(math.acos(max(-1, min(1, dot / (math.dist([0]*3, v1) * math.dist([0]*3, v2))))))
-            ok(abs(ang - ref["angle"]) < 0.6,
-               f"{key}: bond angle {ang:.2f} deg should be {ref['angle']} deg")
-    print(f"   {key:15s} {s1}-{s2} = {got:.4f} A" +
-          (f"   angle = {ang:.2f} deg" if ref["angle"] is not None and len(nb) >= 2 else ""))
+# ---------------------------------- the 3D ball-and-stick language is retired
+print("== decorative language ==")
+ok("export function molecule(" not in src,
+   "the 3D ball-and-stick renderer is back in chemistry.mjs")
+ok("elAtomSpec" not in src and "RAMP" not in src,
+   "3D atom sphere gradients are back in chemistry.mjs")
+ok(not os.path.isdir(r("assets", "molecules")),
+   "assets/molecules (3D ball-and-stick renders) still exists")
+ok(os.path.isdir(r("assets", "skeletal")),
+   "assets/skeletal is missing; skeletal art should be the decorative library")
+sk_assets = glob.glob(r("assets", "skeletal", "*.svg"))
+ok(len(sk_assets) >= 8, f"only {len(sk_assets)} skeletal assets exported")
+print(f"   no 3D ball-and-stick renderer, {len(sk_assets)} skeletal assets present")
 
 # ------------------------------------------------------------------- frames --
 print("== frames ==")
 frames = json.load(open(r("source", "frames.json"), encoding="utf-8"))
-ok(len(frames) == 8, f"expected 8 frames, found {len(frames)}")
+ok(len(frames) == 6, f"expected 6 frames, found {len(frames)}")
+WANT = ["Learn Chemistry Visually", "Explore Every Element", "Build Real Molecules",
+        "See More Than Symbols", "Study Smarter", "See Your Progress"]
 
-for g in frames:
+for g, want in zip(frames, WANT):
     tag = f"{g['id']}-{g['slug']}"
+    ok(" ".join(g["headline"]) == want,
+       f"{tag}: headline is {' '.join(g['headline'])!r}, the agreed sequence says {want!r}")
 
-    # ---- exact canvas ratio in the screen opening
-    ratio = g["screenW"] / g["screenH"]
-    ok(abs(ratio - CW / CH) < 1e-12,
-       f"{tag}: screen ratio {ratio!r} != {CW}/{CH}")
-
-    # ---- a square screenshot must stay inside the bezel, corners included.
-    # Rotation is rigid (screen and body share one transform), so this is
-    # rotation-invariant and can be proved in unrotated space.
-    screen_r = g["screenR"]
-    bez = g["bezel"]
-    corner_gap = (bez + screen_r) - math.sqrt(2) * screen_r
-    ok(corner_gap > 0.5,
-       f"{tag}: square screenshot corner would escape the bezel (gap {corner_gap:.2f}px)")
-
-    # ---- files
-    for key in ("background", "overlay", "output"):
-        path = r(g[key])
-        if not ok(os.path.exists(path), f"{tag}: missing {g[key]}"):
+    for path_key in ("background", "output"):
+        p = r(g[path_key])
+        if not ok(os.path.exists(p), f"{tag}: missing {g[path_key]}"):
             continue
-        im = Image.open(path)
-        ok(im.size == (CW, CH), f"{tag}: {g[key]} is {im.size}, must be {CW}x{CH}")
+        im = Image.open(p)
+        ok(im.size == (CW, CH), f"{tag}: {g[path_key]} is {im.size}, must be {CW}x{CH}")
 
     bg = Image.open(r(g["background"]))
-    ov = Image.open(r(g["overlay"]))
     ex = Image.open(r(g["output"]))
-
     ok(bg.mode == "RGB", f"{tag}: background must be flattened RGB, is {bg.mode}")
     ok(ex.mode == "RGB", f"{tag}: App Store export must have no alpha, is {ex.mode}")
-    ok(ov.mode == "RGBA", f"{tag}: device overlay must be RGBA, is {ov.mode}")
 
-    # ---- the overlay's screen must be a genuine hole
-    a = ov.split()[3]
-    cx, cy = int(g["screenCX"]), int(g["screenCY"])
-    ok(a.getpixel((cx, cy)) == 0,
-       f"{tag}: overlay is not transparent at the screen centre")
-    # ---- and its bezel must be genuinely opaque. Sample mid-bezel on the left
-    # edge, carried through the device's own rigid rotation.
-    ang = math.radians(g["rot"])
-    ox, oy = g["deviceCX"], g["deviceCY"]
-    ux, uy = g["deviceX"] + g["bezel"] / 2 - ox, 0.0
-    bx = ox + ux * math.cos(ang) - uy * math.sin(ang)
-    by = oy + ux * math.sin(ang) + uy * math.cos(ang)
-    ok(a.getpixel((round(bx), round(by))) > 200,
-       f"{tag}: overlay bezel is not opaque at the left edge")
+    # the renderer used to stop painting ~88px short of the window height
+    ok(bg.convert("RGB").getpixel((CW // 2, CH - 1)) != (255, 255, 255),
+       f"{tag}: background bottom row is bare white, raster clipping regression")
 
-    # ---- regression guard: the renderer used to stop painting ~88px short
-    last = bg.convert("RGB").getpixel((CW // 2, CH - 1))
-    ok(last != (255, 255, 255),
-       f"{tag}: background bottom row is bare white - raster clipping regression")
-
-    # ---- no fabricated app UI: the template must still say what it is
     svg = open(r("source", f"template-{tag}.svg"), encoding="utf-8").read()
-    ok("REPLACE WITH REAL SCREENSHOT" in svg,
-       f"{tag}: template lost its screenshot placeholder")
+    ok("replace" in svg, f"{tag}: template lost its screenshot placeholder")
+
+    # no em dash anywhere in the artwork, marketing copy first of all
+    for line in g["headline"] + g["sub"]:
+        ok(EM_DASH not in line, f"{tag}: em dash in marketing copy: {line!r}")
+    body = re.sub(r"<!--.*?-->", "", svg, flags=re.S)
+    rendered = " ".join(re.findall(r">([^<>]*)<", body))
+    ok(EM_DASH not in rendered, f"{tag}: em dash in rendered SVG text")
+
     for line in g["headline"] + g["sub"]:
         esc = line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         ok(esc in svg, f"{tag}: copy line not found in the SVG: {line!r}")
 
-    # ---- decoration must stay quiet
-    for op in re.findall(r'<g id="(?:Molecule|Tile|Bohr|Orbits|Lattice|Periodic|Skeletal)[^"]*"[^>]*opacity="([\d.]+)"', svg):
-        warn(float(op) <= 1.0, f"{tag}: decoration opacity {op} out of range")
+    # decoration stays at watermark strength
+    for op in re.findall(
+            r'<g id="(?:Skeletal|Tile|Bohr|Orbits|Lattice|Periodic)[^"]*"[^>]*opacity="([\d.]+)"',
+            svg):
+        ok(float(op) <= 0.20,
+           f"{tag}: decoration opacity {op} is louder than a watermark")
 
-    # ---- margins
-    ok(abs(g["copyX"] - 96) < 0.01 or g["copyX"] == CW / 2,
-       f"{tag}: copy x {g['copyX']} is neither the 96px margin nor centred")
-    ok(g["copyBottom"] < g["deviceY"] - 40,
-       f"{tag}: copy bottom {g['copyBottom']:.1f} too close to device top {g['deviceY']:.1f}")
+    ok(g["copyBottom"] < min(d["bounds"]["minY"] for d in g["devices"]) - 40,
+       f"{tag}: copy runs into the topmost device edge")
 
-    print(f"   {tag:20s} screen {g['screenW']:.0f}x{g['screenH']:.1f} "
-          f"rot {g['rot']:+.1f}  corner gap {corner_gap:.1f}px  "
-          f"uniform scale {g['uniformScale']:.6f}")
+    for i, d in enumerate(g["devices"]):
+        ratio = d["screenW"] / d["screenH"]
+        ok(abs(ratio - CW / CH) < 1e-12,
+           f"{tag}/{d['role']}: screen ratio {ratio!r} != {CW}/{CH}")
+        # a square capture must stay inside the bezel, corners included; rigid
+        # rotation makes this rotation-invariant, so prove it unrotated
+        gap = (d["bezel"] + d["screenR"]) - math.sqrt(2) * d["screenR"]
+        ok(gap > 0.5,
+           f"{tag}/{d['role']}: square capture corner escapes the bezel ({gap:.2f}px)")
 
-# ------------------------------------------------------------ shared checks --
+        ovp = r(d["overlay"])
+        if not ok(os.path.exists(ovp), f"{tag}: missing {d['overlay']}"):
+            continue
+        ov = Image.open(ovp)
+        ok(ov.mode == "RGBA", f"{tag}/{d['role']}: overlay must be RGBA, is {ov.mode}")
+        ok(ov.size == (CW, CH), f"{tag}/{d['role']}: overlay is {ov.size}")
+        a = ov.split()[3]
+        # the bezel is genuinely opaque, sampled mid-bezel through the rotation
+        ang = math.radians(d["rot"])
+        ux = d["x"] + d["bezel"] / 2 - d["cx"]
+        bx = d["cx"] + ux * math.cos(ang)
+        by = d["cy"] + ux * math.sin(ang)
+        if 0 <= round(bx) < CW and 0 <= round(by) < CH:
+            ok(a.getpixel((round(bx), round(by))) > 200,
+               f"{tag}/{d['role']}: overlay bezel is not opaque at the left edge")
+
+    sizes = "  ".join(f"{d['role']}:{d['w']:.0f}x{d['h']:.0f}@{d['rot']:+g}"
+                      for d in g["devices"])
+    print(f"   {tag:20s} {len(g['devices'])} device(s)  {sizes}")
+
+# ----------------------------------------- end to end: place a marker capture
+print("== compositing (marker capture through the real compositor) ==")
+marker = Image.new("RGB", (CW, CH), (255, 255, 255))
+md = ImageDraw.Draw(marker)
+md.rectangle([0, 0, CW - 1, CH - 1], outline=(255, 0, 170), width=14)
+for (x, y) in [(0, 0), (CW - 240, 0), (0, CH - 240), (CW - 240, CH - 240)]:
+    md.rectangle([x, y, x + 240, y + 240], fill=(255, 0, 170))
+md.line([(CW // 2, 0), (CW // 2, CH)], fill=(20, 40, 80), width=8)
+md.line([(0, CH // 2), (CW, CH // 2)], fill=(20, 40, 80), width=8)
+tmp = os.path.join(ROOT, ".qa-marker.png")
+marker.save(tmp)
+
+
+def silhouettes(g, grow=1, pad=900):
+    """Union of the device outlines. Drawn on a padded canvas so a device that
+    starts outside the frame is not clipped away BEFORE its rotation carries it
+    back into view, which would make the mask lie about where the device is."""
+    m = Image.new("L", (CW, CH), 0)
+    for d in g["devices"]:
+        one = Image.new("L", (CW + 2 * pad, CH + 2 * pad), 0)
+        dd = ImageDraw.Draw(one)
+        dd.rounded_rectangle([pad + d["x"] - grow, pad + d["y"] - grow,
+                              pad + d["x"] + d["w"] + grow, pad + d["y"] + d["h"] + grow],
+                             radius=d["r"] + grow, fill=255)
+        if d["rot"]:
+            one = one.rotate(-d["rot"], resample=Image.BICUBIC,
+                             center=(pad + d["cx"], pad + d["cy"]))
+        m.paste(255, (0, 0), one.crop((pad, pad, pad + CW, pad + CH)))
+    return m
+
+
+for g in frames:
+    tag = f"{g['id']}-{g['slug']}"
+    out = os.path.join(ROOT, f".qa-{tag}.png")
+    PS.place(g, [tmp] * len(g["devices"]), out, quiet=True)
+    im = Image.open(out).convert("RGB")
+    sil = silhouettes(g).load()
+    px = im.load()
+    leaks = 0
+    for y in range(0, CH, 2):
+        for x in range(0, CW, 2):
+            rr, gg, bb = px[x, y]
+            if rr > 215 and gg < 70 and 120 < bb < 215 and sil[x, y] < 128:
+                leaks += 1
+    ok(leaks == 0, f"{tag}: {leaks} capture pixels leaked outside the device silhouette")
+
+    # and the captures really did land (guards against a silently empty stack)
+    seen = 0
+    for d in g["devices"]:
+        cx, cy = round(d["screenCX"]), round(d["screenCY"])
+        if 0 <= cx < CW and 0 <= cy < CH and px[cx, cy] != (255, 255, 255):
+            seen += 1
+    ok(seen >= 1, f"{tag}: no capture is visible after compositing")
+    print(f"   {tag:20s} {len(g['devices'])} capture(s) placed, {leaks} leaks")
+    os.remove(out)
+os.remove(tmp)
+
+# ------------------------------------------------------------ set consistency
 print("== set consistency ==")
 tops = {round(g["copyTop"]) for g in frames}
 ok(tops <= {236, 296}, f"headline cap-tops drift across the set: {sorted(tops)}")
 centres = {round((g["copyTop"] + g["copyBottom"]) / 2) for g in frames}
 ok(max(centres) - min(centres) < 14,
    f"copy blocks are not optically aligned: {sorted(centres)}")
-rots = [g["rot"] for g in frames]
+
+rots = [d["rot"] for g in frames for d in g["devices"]]
 ok(all(abs(x) <= 5 for x in rots), f"a device is tilted too far: {rots}")
-ok(len([x for x in rots if x == 0]) >= 3,
-   "too few straight-on frames; the set will feel gimmicky")
+
+# the whole point of the revision: six compositions, not one repeated six times
+sig = set()
+for g in frames:
+    d0 = g["devices"][0]
+    sig.add((len(g["devices"]),
+             round(d0["w"] / 60),                       # scale band
+             round(d0["bounds"]["minX"] / 220),         # horizontal placement band
+             d0["bounds"]["maxY"] > CH + 20,            # cropped at the bottom?
+             d0["bounds"]["maxX"] > CW + 20 or d0["bounds"]["minX"] < -20))
+ok(len(sig) >= 5,
+   f"only {len(sig)} distinct compositions across {len(frames)} frames; too repetitive")
+widths = sorted({round(d["w"]) for g in frames for d in g["devices"]})
+ok(max(widths) - min(widths) > 250,
+   f"device scales barely vary: {widths}")
+two = [g["id"] for g in frames if len(g["devices"]) > 1]
+ok(len(two) == 2, f"expected exactly two multi-device frames, got {two}")
+print(f"   {len(sig)} distinct compositions, device widths {widths}, "
+      f"multi-device frames {two}")
 
 for f in sorted(glob.glob(r("assets", "**", "*.svg"), recursive=True)):
     head = open(f, encoding="utf-8").read(200)

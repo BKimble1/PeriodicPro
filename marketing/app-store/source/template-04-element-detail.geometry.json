@@ -1,46 +1,53 @@
 {
  "id": "04",
  "slug": "element-detail",
- "label": "Element Detail",
- "need": "A single element detail screen — pick the most visually complete one (Carbon or Iron).",
  "headline": [
   "See More Than",
   "Symbols"
  ],
  "sub": [
-  "Properties, structure, uses, and the",
-  "facts worth remembering."
+  "Explore properties, structures, uses,",
+  "and facts worth remembering."
  ],
  "canvasW": 1320,
  "canvasH": 2868,
  "margin": 96,
- "deviceX": 144.625,
- "deviceY": 700,
- "deviceW": 1030.75,
- "deviceH": 2144.840909090909,
- "deviceR": 123.975,
- "deviceCX": 660,
- "deviceCY": 1772.4204545454545,
- "rot": 0,
- "bezel": 40.375,
- "scale": 0.9595959595959596,
- "screenX": 185,
- "screenY": 740.375,
- "screenW": 950,
- "screenH": 2064.090909090909,
- "screenR": 83.6,
- "screenCX": 660,
- "screenCY": 1772.4204545454545,
- "uniformScale": 0.7196969696969697,
+ "deviceCount": 1,
+ "devices": [
+  {
+   "role": "hero",
+   "label": "Element Detail",
+   "need": "One element detail screen, the most visually complete you have. Carbon or Iron usually read best. The lower sixth is cropped by the canvas, so keep the tile, name and key properties high.",
+   "sfx": "-a",
+   "x": 112,
+   "y": 800,
+   "w": 1198.925,
+   "h": 2494.7886363636367,
+   "r": 144.2025,
+   "rot": 1.5,
+   "cx": 711.4625,
+   "cy": 2047.3943181818183,
+   "bezel": 46.962500000000006,
+   "scale": 1.1161616161616161,
+   "screenX": 158.9625,
+   "screenY": 846.9625,
+   "screenW": 1105,
+   "screenH": 2400.8636363636365,
+   "screenR": 97.24,
+   "screenCX": 711.4625,
+   "screenCY": 2047.394318181818,
+   "uniformScale": 0.8371212121212122,
+   "bounds": {
+    "minX": 79.55244424025989,
+    "maxX": 1343.37255575974,
+    "minY": 784.7353520034642,
+    "maxY": 3310.0532843601723
+   },
+   "overlay": "assets/device/04-element-detail-overlay.png"
+  }
+ ],
  "background": "assets/backgrounds/04-element-detail.png",
- "overlay": "assets/device/04-element-detail-overlay.png",
  "output": "exports/iphone/04-element-detail.png",
- "bounds": {
-  "minX": 144.625,
-  "maxX": 1175.375,
-  "minY": 700,
-  "maxY": 2844.840909090909
- },
  "copyTop": 236,
  "copyBottom": 580.2990234375,
  "copyX": 96

@@ -2,7 +2,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="560" height="560" viewBox="0 0 560 560">
   <defs>
     <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
-
   </defs>
 <g id="Bohr-H" opacity="1"><circle cx="280" cy="280" r="20.944" fill="#2F6BE8" fill-opacity="0.55"/><circle cx="280" cy="280" r="246.4" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="2.2176"/><circle cx="280" cy="33.6" r="7.392" fill="#2F6BE8" fill-opacity="0.9"/><text x="280" y="600.32" text-anchor="middle" style="font-size:41.888px;font-weight:600" fill="#0E2039" fill-opacity="0.8">H</text></g>
 </svg>

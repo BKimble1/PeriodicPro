@@ -1,51 +1,40 @@
-Elemora — App Store image 02  (elements)
+Elemora, App Store image 02  (elements)
 Explore Every Element
-Production placement data — measured from the finished composition. Pixels.
+Production placement data, measured from the finished composition. Pixels.
 
 CANVAS
   W = 1320
   H = 2868
+  Devices = 1
 
-DEVICE
-  X        = 283.26          (unrotated top-left)
-  Y        = 745
-  W        = 963.48
-  H        = 2004.8618
-  Rotation = -3.5 deg    (about the device centre, 765, 1747.4309)
-  Centre   = 765, 1747.4309
-  Corner radius   = 115.884
-  Bezel thickness = 37.74 on every side
-  Scale vs the 888px campaign base opening = 0.897
-
-DEVICE ROTATED BOUNDING BOX
-  Left = 222.9616   Top = 717.4602
-  Right = 1307.0384  Bottom = 2777.4016
-  Off-canvas left   = none
-  Off-canvas right  = none
-  Off-canvas bottom = none
-
-SCREENSHOT  (place the real 1320x2868 Elemora capture here)
+DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Periodic Table
-  The full periodic table view, scrolled so the table fills the screen.
+  The full periodic table, scrolled so the grid fills the screen. The lower right of this capture is cropped by the canvas, so keep the important rows high.
 
-  Centre X      = 765
-  Centre Y      = 1747.4309
-  Unrotated W   = 888
-  Unrotated H   = 1929.3818
-  Rotation      = -3.5 deg  (identical to the device — one rigid group)
-  Unrotated X,Y = 321, 782.74   (top-left before rotation)
-  Corner radius = 78.144   (the overlay rounds this for you)
+  X        = 470          (unrotated top-left)
+  Y        = 860
+  W        = 1128.4
+  H        = 2348.0364
+  Rotation = -5 deg    (about the device centre, 1034.2, 2034.0182)
+  Corner radius   = 135.72
+  Bezel thickness = 44.2 on every side
 
-  Aspect ratio = 0.4602510460251046
-  Required     = 1320 / 2868 = 0.4602510460251046
-  Delta        = 0.000e+0
-  Uniform scale of the source screenshot = 0.6727272727
-  NEVER scale X and Y independently, and never rotate the screenshot separately
-  from the bezel — set the size first, then apply the single rotation above.
+  ROTATED BOUNDING BOX
+    Left = 369.8245   Top = 815.2942   Right = 1698.5755   Bottom = 3252.7421
+    Off-canvas left none, right 378.6px, bottom 384.7px
 
-SCREENSHOT AS CANVAS PERCENTAGES (unrotated box)
-  Left = 24.3182%   Top = 27.2922%
-  Width = 67.2727%  Height = 67.2727%
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 1034.2, 2034.0182
+    Unrotated X,Y = 514.2, 904.2
+    Unrotated W,H = 1040 x 2259.6364
+    Rotation      = -5 deg  (identical to the device, one rigid group)
+    Corner radius = 91.52   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 5.551e-17
+    Uniform scale of the source screenshot = 0.7878787879
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
@@ -62,8 +51,8 @@ COPY
   Supporting = "Browse the periodic table and open" + "any element for the full picture."
 
 LAYER ORDER (bottom to top)
-  1. assets/backgrounds/02-elements.png       — 1320x2868, opaque
-  2. your real Elemora screenshot — sized + rotated exactly as above
-  3. assets/device/02-elements-overlay.png    — 1320x2868, transparent screen
+  1. assets/backgrounds/02-elements.png      1320x2868, opaque
+  2. your real capture for device 1 (Periodic Table)
+  3. assets/device/02-elements-overlay.png   RGBA, transparent screen
 
-  python3 place_screenshot.py 02 screenshots/selected/<capture>.png
+  python3 place_screenshot.py 02 <hero>.png

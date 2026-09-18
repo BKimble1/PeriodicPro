@@ -1,51 +1,40 @@
-Elemora — App Store image 06  (progress)
+Elemora, App Store image 06  (progress)
 See Your Progress
-Production placement data — measured from the finished composition. Pixels.
+Production placement data, measured from the finished composition. Pixels.
 
 CANVAS
   W = 1320
   H = 2868
+  Devices = 1
 
-DEVICE
-  X        = 178.26          (unrotated top-left)
-  Y        = 745
-  W        = 963.48
-  H        = 2004.8618
-  Rotation = 0 deg    (about the device centre, 660, 1747.4309)
-  Centre   = 660, 1747.4309
-  Corner radius   = 115.884
-  Bezel thickness = 37.74 on every side
-  Scale vs the 888px campaign base opening = 0.897
-
-DEVICE ROTATED BOUNDING BOX
-  Left = 178.26   Top = 745
-  Right = 1141.74  Bottom = 2749.8618
-  Off-canvas left   = none
-  Off-canvas right  = none
-  Off-canvas bottom = none
-
-SCREENSHOT  (place the real 1320x2868 Elemora capture here)
+DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Progress
-  The progress / mastery view, with enough real activity on it to look earned.
+  The progress or mastery view, with enough real activity on it to look earned. Cropped on the left and bottom, so keep the headline numbers high and right.
 
-  Centre X      = 660
-  Centre Y      = 1747.4309
-  Unrotated W   = 888
-  Unrotated H   = 1929.3818
-  Rotation      = 0 deg  (identical to the device — one rigid group)
-  Unrotated X,Y = 216, 782.74   (top-left before rotation)
-  Corner radius = 78.144   (the overlay rounds this for you)
+  X        = -46          (unrotated top-left)
+  Y        = 940
+  W        = 1041.6
+  H        = 2167.4182
+  Rotation = 5 deg    (about the device centre, 474.8, 2023.7091)
+  Corner radius   = 125.28
+  Bezel thickness = 40.8 on every side
 
-  Aspect ratio = 0.4602510460251046
-  Required     = 1320 / 2868 = 0.4602510460251046
-  Delta        = 0.000e+0
-  Uniform scale of the source screenshot = 0.6727272727
-  NEVER scale X and Y independently, and never rotate the screenshot separately
-  from the bezel — set the size first, then apply the single rotation above.
+  ROTATED BOUNDING BOX
+    Left = -138.4697   Top = 898.7331   Right = 1088.0697   Bottom = 3148.6851
+    Off-canvas left 138.5px, right none, bottom 280.7px
 
-SCREENSHOT AS CANVAS PERCENTAGES (unrotated box)
-  Left = 16.3636%   Top = 27.2922%
-  Width = 67.2727%  Height = 67.2727%
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 474.8, 2023.7091
+    Unrotated X,Y = -5.2, 980.8
+    Unrotated W,H = 960 x 2085.8182
+    Rotation      = 5 deg  (identical to the device, one rigid group)
+    Corner radius = 84.48   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.7272727273
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
@@ -62,8 +51,8 @@ COPY
   Supporting = "Track mastery, activity, and what" + "to review next."
 
 LAYER ORDER (bottom to top)
-  1. assets/backgrounds/06-progress.png       — 1320x2868, opaque
-  2. your real Elemora screenshot — sized + rotated exactly as above
-  3. assets/device/06-progress-overlay.png    — 1320x2868, transparent screen
+  1. assets/backgrounds/06-progress.png      1320x2868, opaque
+  2. your real capture for device 1 (Progress)
+  3. assets/device/06-progress-overlay.png   RGBA, transparent screen
 
-  python3 place_screenshot.py 06 screenshots/selected/<capture>.png
+  python3 place_screenshot.py 06 <hero>.png

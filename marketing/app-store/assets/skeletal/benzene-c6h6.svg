@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" viewBox="0 0 460 460">
+  <defs>
+    <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
+  </defs>
+<g id="Skeletal-C6H6" opacity="1">
+    <path d="M 230 154 L 164.1821 192 M 224.5991 168.9654 L 179.8429 194.8054 M 164.1821 192 L 164.1821 268 M 164.1821 268 L 230 306 M 179.8429 265.1946 L 224.5991 291.0346 M 230 306 L 295.8179 268 M 295.8179 268 L 295.8179 192 M 285.5579 255.84 L 285.5579 204.16 M 295.8179 192 L 230 154" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+</svg>

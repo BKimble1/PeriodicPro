@@ -1,46 +1,53 @@
 {
  "id": "01",
  "slug": "hero",
- "label": "Home",
- "need": "Home screen. The single strongest top-level introduction to Elemora.",
  "headline": [
   "Learn Chemistry",
   "Visually"
  ],
  "sub": [
   "Explore elements, build molecules, and",
-  "master chemistry — all in one app."
+  "master chemistry, all in one app."
  ],
  "canvasW": 1320,
  "canvasH": 2868,
  "margin": 96,
- "deviceX": 178.26,
- "deviceY": 745,
- "deviceW": 963.48,
- "deviceH": 2004.8618181818183,
- "deviceR": 115.88399999999999,
- "deviceCX": 660,
- "deviceCY": 1747.4309090909092,
- "rot": 0,
- "bezel": 37.74,
- "scale": 0.896969696969697,
- "screenX": 216,
- "screenY": 782.74,
- "screenW": 888,
- "screenH": 1929.3818181818183,
- "screenR": 78.14399999999999,
- "screenCX": 660,
- "screenCY": 1747.4309090909092,
- "uniformScale": 0.6727272727272727,
+ "deviceCount": 1,
+ "devices": [
+  {
+   "role": "hero",
+   "label": "Home",
+   "need": "Home screen. The strongest top level introduction to Elemora, and the most important capture in the set.",
+   "sfx": "-a",
+   "x": 165.24,
+   "y": 762,
+   "w": 989.52,
+   "h": 2059.0472727272727,
+   "r": 119.016,
+   "rot": 0,
+   "cx": 660,
+   "cy": 1791.5236363636363,
+   "bezel": 38.760000000000005,
+   "scale": 0.9212121212121213,
+   "screenX": 204,
+   "screenY": 800.76,
+   "screenW": 912,
+   "screenH": 1981.5272727272727,
+   "screenR": 80.256,
+   "screenCX": 660,
+   "screenCY": 1791.5236363636363,
+   "uniformScale": 0.6909090909090909,
+   "bounds": {
+    "minX": 165.24,
+    "maxX": 1154.76,
+    "minY": 762,
+    "maxY": 2821.0472727272727
+   },
+   "overlay": "assets/device/01-hero-overlay.png"
+  }
+ ],
  "background": "assets/backgrounds/01-hero.png",
- "overlay": "assets/device/01-hero-overlay.png",
  "output": "exports/iphone/01-hero.png",
- "bounds": {
-  "minX": 178.26,
-  "maxX": 1141.74,
-  "minY": 745,
-  "maxY": 2749.8618181818183
- },
  "copyTop": 236,
  "copyBottom": 580.2990234375,
  "copyX": 96

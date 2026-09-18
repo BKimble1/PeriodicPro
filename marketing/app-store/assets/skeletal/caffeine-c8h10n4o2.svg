@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" viewBox="0 0 460 460">
+  <defs>
+    <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
+  </defs>
+<g id="Skeletal-C8H10N4O2" opacity="1">
+    <path d="M 184.9667 218.976 L 184.9667 256 M 184.9667 256 L 217.0304 274.512 M 242.9696 274.512 L 275.0333 256 M 275.0333 256 L 275.0333 204 M 282.0533 247.68 L 282.0533 212.32 M 275.0333 204 L 230 178 M 230 178 L 197.9363 196.512 M 234.3524 178 L 234.3524 140.976 M 225.6476 178 L 225.6476 140.976 M 182.7905 252.2307 L 150.7268 270.7427 M 187.1429 259.7693 L 155.0792 278.2813 M 275.0333 204 L 310.2452 192.559 M 333.2909 200.047 L 355.0531 230 M 355.0531 230 L 333.2909 259.953 M 345.8918 230.6662 L 331.0936 251.0343 M 310.2452 267.441 L 275.0333 256 M 171.9971 196.512 L 139.9334 178 M 230 296.976 L 230 334 M 329.1161 173.6881 L 340.5571 138.4762" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="184.9667" y="211.28" text-anchor="middle" style="font-size:20.8px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="230" y="289.28" text-anchor="middle" style="font-size:20.8px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="324.4883" y="195.2111" text-anchor="middle" style="font-size:20.8px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="324.4883" y="279.3489" text-anchor="middle" style="font-size:20.8px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="230" y="133.28" text-anchor="middle" style="font-size:20.8px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">O</text><text x="139.9334" y="289.28" text-anchor="middle" style="font-size:20.8px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">O</text>
+  </g>
+</svg>
