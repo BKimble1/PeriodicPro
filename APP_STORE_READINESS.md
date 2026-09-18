@@ -1,11 +1,11 @@
-# App Store readiness — Elemora Build 5
+# App Store readiness — Elemora Build 6
 
 Every release-critical item, with a verdict. **PASS** means it is done and
 checkable in this repository. **MANUAL ACTION** means it is outside what a
 build can do and needs a person in App Store Connect, the Apple Developer
 portal or the website host. There is no "looks good".
 
-Audited at Build 5. Version `5.0.0`, bundle identifier `com.idlery.periodicpro`.
+Audited at Build 6. Version `6.0.0`, bundle identifier `com.idlery.periodicpro`.
 
 **What CI proved before this build was sent to TestFlight.** A full green run:
 every data and source gate on Ubuntu, the unit suite, the 62-test UI suite on
@@ -17,6 +17,25 @@ camera, so live text recognition is exercised only against text fixtures. The
 live PubChem calls — `Tools/smoke_pubchem.py` is deliberately out of CI and has
 not been run from the environment that wrote this build, which cannot reach
 PubChem. Those two are items 6 and 7 under *Remaining blockers*.
+
+**Two things a learner reported cannot be fixed in the repository.**
+
+*Shared quiz links open the website instead of the app.* Everything the app
+and the site control is already correct and gated by `check_website.py`: the
+association template names `com.idlery.periodicpro`, matches `/quiz/*` and
+nothing else, `_headers` serves it as `application/json`, `_redirects`
+rewrites `/quiz/*` with a 200 so the path survives, and the app claims
+`applinks:elemora.idlery.com` and imports a payload from either. A Universal
+Link reaches an app only once Apple has fetched
+`https://elemora.idlery.com/.well-known/apple-app-site-association` and found
+the bundle in it — so until the site is deployed with `APPLE_TEAM_ID`
+substituted (blocker 1, and `Website/README.md` step 2), the system correctly
+believes no app claims those links and opens the page. There is no app-side
+change that fixes this; a private URL scheme was tried and reverted, because
+the site is deliberately script-free and a static page cannot read the payload
+out of its own URL to hand one off.
+
+*The Home Screen widget is not offered.* It is not in the build — see below.
 
 **The Home Screen widget is not in this build.** The first archive failed on
 the App Group it needed: `-allowProvisioningUpdates` cannot create an App Group

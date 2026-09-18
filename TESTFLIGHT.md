@@ -219,10 +219,11 @@ succeeds.
 5. **External Testing** needs a short Beta App Review (usually under 24 hours)
    the first time. Fill in the *Test Information* fields:
 
-   - **What to Test** (Build 5): "The whole periodic table is visible the
+   - **What to Test** (Build 6): "The whole periodic table is visible the
      moment the app opens — check it fits your screen without scrolling. Point
-     the scanner at a printed formula or compound name. Build a compound with
-     more than thirty atoms. Try the Advanced
+     the scanner at a printed formula or compound name — only the text inside
+     the frame is read. Tap a flashcard to flip it and swipe between cards.
+     Build a compound with more than thirty atoms. Try the Advanced
      mode in Study, and look at your rank and learning path in Progress."
      Section 7a lists the cases in full.
    - **Feedback Email:** yours.
@@ -233,11 +234,27 @@ succeeds.
 
 ---
 
-## 7a. Build 5 — what to test on a real device
+## 7a. Build 6 — what to test on a real device
 
-Build 5 adds three things a simulator cannot fully exercise. These are the
-cases worth a person's time; everything else in the build is covered by the
+Build 6 changes several things a simulator cannot judge. These are the cases
+worth a person's time; everything else in the build is covered by the
 automated tests.
+
+**The table's size** — Table tab. Scroll the page up and down. The tiles must
+not change size at any point: the only thing that resizes the table is a
+pinch. This is the one to check first, because it is the bug Build 6 exists
+to fix. Turn the phone sideways and back; the table may be re-fitted then, and
+only then.
+
+**Flashcards** — Study → Flashcards. Tap the card: it should turn over, with
+the answer the right way round rather than mirrored. Swipe left and right to
+move through the deck, including back to a card already answered — answering
+it a second time must not change your progress twice. The header counts the
+deck, and the line under the card says how many there are.
+
+**The Daily Challenge** — Study. Open it and back straight out without
+answering: it must still be waiting. Finish it, and only then should it read
+as done.
 
 **The chemistry scanner** — Table tab → the scan button in the toolbar.
 A simulator has no camera, so none of this has been run against live video.
