@@ -74,22 +74,17 @@ def main() -> int:
     for match in ISA.finditer(source):
         counts[match.group(1)] = counts.get(match.group(1), 0) + 1
 
-    # Four targets: the app, its two test bundles and the widget extension.
-    # The extension adds one copy-files phase (the app embeds the .appex) and
-    # the one build file that phase copies.
     expected = {
         "PBXProject": 1,
-        "PBXNativeTarget": 4,
-        "PBXFileSystemSynchronizedRootGroup": 4,
-        "PBXSourcesBuildPhase": 4,
-        "PBXFrameworksBuildPhase": 4,
-        "PBXResourcesBuildPhase": 4,
-        "PBXCopyFilesBuildPhase": 1,
-        "PBXBuildFile": 1,
-        "PBXTargetDependency": 3,
-        "PBXContainerItemProxy": 3,
-        "XCConfigurationList": 5,
-        "XCBuildConfiguration": 10,
+        "PBXNativeTarget": 3,
+        "PBXFileSystemSynchronizedRootGroup": 3,
+        "PBXSourcesBuildPhase": 3,
+        "PBXFrameworksBuildPhase": 3,
+        "PBXResourcesBuildPhase": 3,
+        "PBXTargetDependency": 2,
+        "PBXContainerItemProxy": 2,
+        "XCConfigurationList": 4,
+        "XCBuildConfiguration": 8,
     }
     for isa, count in expected.items():
         if counts.get(isa, 0) != count:
@@ -111,41 +106,14 @@ def main() -> int:
             errors.append("a build configuration has no Debug/Release name")
 
     # --- the xcconfigs the project points at exist ---------------------------
-    for name in ("Shared.xcconfig", "Debug.xcconfig", "Release.xcconfig", "Info.plist",
-                 "Elemora.entitlements", "ElemoraWidgets-Info.plist",
-                 "ElemoraWidgets.entitlements"):
+    for name in ("Shared.xcconfig", "Debug.xcconfig", "Release.xcconfig", "Info.plist"):
         if not os.path.exists(os.path.join(ROOT, "Config", name)):
             errors.append(f"Config/{name} is referenced by the project but missing")
 
     # --- synchronized folders exist ------------------------------------------
-    for folder in ("PeriodicPro", "PeriodicProTests", "PeriodicProUITests", "ElemoraWidgets"):
+    for folder in ("PeriodicPro", "PeriodicProTests", "PeriodicProUITests"):
         if not os.path.isdir(os.path.join(ROOT, folder)):
             errors.append(f"synchronized group {folder}/ does not exist on disk")
-
-    # --- the widget extension --------------------------------------------------
-    # An extension that is built but never embedded produces an app that
-    # installs cleanly and has no widget, with nothing in the build log to say
-    # so. These four assertions are the difference.
-    if "com.apple.product-type.app-extension" not in source:
-        errors.append("no app-extension target; the widget would not be built")
-    if "dstSubfolderSpec = 13;" not in source:
-        errors.append(
-            "the copy-files phase does not target the Extensions folder "
-            "(dstSubfolderSpec 13), so the widget would not be embedded"
-        )
-    app_target = re.search(
-        r"isa = PBXNativeTarget;(?:(?!\n\t\t\};).)*?name = PeriodicPro;", source, re.S
-    )
-    if app_target and "Embed Foundation Extensions" not in app_target.group(0):
-        errors.append("the app target does not embed the widget extension")
-    widget_config = re.findall(
-        r"CODE_SIGN_ENTITLEMENTS = Config/ElemoraWidgets\.entitlements;", source
-    )
-    if len(widget_config) != 2:
-        errors.append(
-            "the widget extension should use Config/ElemoraWidgets.entitlements "
-            f"in both configurations; found {len(widget_config)}"
-        )
 
     # --- shared scheme -------------------------------------------------------
     if not os.path.exists(SCHEME):

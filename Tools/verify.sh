@@ -26,7 +26,6 @@ run "Xcode project structure" python3 Tools/validate_project.py
 run "Initializer call sites"  python3 Tools/check_initializers.py
 run "Synthesized conformances" python3 Tools/check_conformances.py
 run "Undeclared identifiers"  python3 Tools/check_undeclared.py
-run "Widget shared layer"    python3 Tools/check_widget_shared.py
 run "Colour contrast"        python3 Tools/check_contrast.py
 run "StoreKit configuration" python3 Tools/check_storekit.py
 run "Branding (Elemora)"     python3 Tools/check_branding.py
@@ -41,7 +40,7 @@ printf '\n\033[1m==> US English spelling\033[0m\n'
 before=$(git status --porcelain)
 python3 Tools/normalize_spelling.py \
   PeriodicPro/Data/elements.json \
-  $(find PeriodicPro PeriodicProTests PeriodicProUITests ElemoraWidgets -name '*.swift') \
+  $(find PeriodicPro PeriodicProTests PeriodicProUITests -name '*.swift') \
   $(find . -maxdepth 2 -name '*.md' -not -path './.git/*') >/dev/null
 after=$(git status --porcelain)
 if [ "$before" != "$after" ]; then

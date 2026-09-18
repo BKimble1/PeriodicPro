@@ -26,7 +26,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests", "ElemoraWidgets"]
+SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests"]
 
 CHECKED = ["Equatable", "Hashable", "Codable", "Decodable", "Encodable", "Sendable"]
 # Hashable implies Equatable; Codable implies both halves.

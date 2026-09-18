@@ -221,9 +221,8 @@ succeeds.
 
    - **What to Test** (Build 5): "The whole periodic table is visible the
      moment the app opens — check it fits your screen without scrolling. Point
-     the scanner at a printed formula or compound name. Add the Elemora widget
-     to your Home Screen, answer a question there, then open the app and check
-     it counted. Build a compound with more than thirty atoms. Try the Advanced
+     the scanner at a printed formula or compound name. Build a compound with
+     more than thirty atoms. Try the Advanced
      mode in Study, and look at your rank and learning path in Progress."
      Section 7a lists the cases in full.
    - **Feedback Email:** yours.
@@ -261,22 +260,6 @@ A simulator has no camera, so none of this has been run against live video.
   bug worth reporting immediately.
 - Cover the lens, point it at a blank wall, point it at a moving page. None of
   those should produce a result or a crash.
-
-**The Home Screen widget** — touch and hold the Home Screen → Edit → Add
-Widget → Elemora.
-
-- Both widgets should be offered: *Quick Question* (medium and large) and
-  *Progress* (small and medium). If neither appears, the App Group did not
-  survive signing — see `APP_STORE_READINESS.md` §4a.
-- Answer a question on the Home Screen. It should tell you right or wrong and
-  show the fact behind it, then move on when you tap Next.
-- **Then open Elemora and check the Progress tab.** The answer should be
-  counted: cards answered goes up, and the element you answered about moves.
-  Answer one late at night and open the app the next morning — it should count
-  for the night you answered it, not the morning you opened the app.
-- Answer several, then open and close the app twice. Nothing should be counted
-  twice.
-- Add both widgets and answer in one. The other should keep working.
 
 **Notifications** — Progress → ⚙︎ → Notifications.
 
@@ -429,47 +412,18 @@ is 18.0 in `Config/Shared.xcconfig`; the archive destination must be
 `generic/platform=iOS`.
 
 **`Provisioning profile ... doesn't match the entitlements file's value for
-the com.apple.security.application-groups entitlement` — this is what the
-first Build 5 archive actually did**
-TestFlight run 61, build 5.0.0 (61), failed here in thirteen seconds, naming
-both targets:
-
-```
-Provisioning profile "iOS Team Provisioning Profile: com.idlery.periodicpro.widgets"
-doesn't match the entitlements file's value for the
-com.apple.security.application-groups entitlement.
-  (in target 'ElemoraWidgetsExtension')
-
-Provisioning profile "iOS Team Provisioning Profile: com.idlery.periodicpro"
-doesn't match the entitlements file's value for the
-com.apple.security.application-groups entitlement.
-  (in target 'PeriodicPro')
-```
-
-Read the second line: it stops the **app**, not only the widget. A shared
-container has to be declared by both processes that open it, so
-`Config/Elemora.entitlements` asks for the App Group too, and a profile without
-it no longer matches. Nothing uploads until the App Group exists.
-
-`-allowProvisioningUpdates` can regenerate a profile but cannot create an App
-Group identifier the team does not have; that needs an API key with **App
-Manager** access rather than Developer. Create them by hand instead, in
-*Certificates, Identifiers & Profiles*:
-
-1. **Identifiers → App Groups → +** → `group.com.idlery.periodicpro`.
-2. **Identifiers → App IDs → `com.idlery.periodicpro`** → tick **App Groups**
-   → *Edit* → tick that group → Save.
-3. The same for **`com.idlery.periodicpro.widgets`**, creating that App ID
-   first if it does not exist.
-4. Re-run the workflow. Nothing in the repository changes; the next archive
-   picks up the regenerated profiles.
-
-Nothing about the main app's identifier changes either way.
-
-If you would rather ship Build 5 without the widget than wait, revert the
-commit that added it ("Answer a chemistry question without opening the app").
-It is deliberately the only commit that touches signing, and reverting it
-leaves every other Build 5 feature intact.
+the com.apple.security.application-groups entitlement`**
+This build declares no App Group, so it should not happen. It did happen once,
+to the Build 5 archive that still carried the Home Screen widget: the widget
+needed `group.com.idlery.periodicpro`, `-allowProvisioningUpdates` could not
+create an App Group identifier the team did not have, and the entitlement was
+in `Config/Elemora.entitlements` as well, so the error stopped the app too. The
+widget was removed rather than waited on. If this error comes back, something
+has reintroduced an App Group entitlement — check `Config/Elemora.entitlements`,
+which should declare associated domains only. To bring the widget back, register
+the App Group first: *Certificates, Identifiers & Profiles → Identifiers → App
+Groups*, then enable **App Groups** on both `com.idlery.periodicpro` and
+`com.idlery.periodicpro.widgets`.
 
 **Upload succeeds but the build never appears**
 Check the email on the Apple ID that owns the API key. App Store Connect emails

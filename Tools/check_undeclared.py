@@ -30,7 +30,7 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests", "ElemoraWidgets"]
+SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests"]
 
 # Node types whose DIRECT identifier children are declarations rather than
 # uses. Deliberately direct only: a `let x = prefixes.first` is one

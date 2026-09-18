@@ -14,7 +14,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests", "ElemoraWidgets"]
+SOURCE_DIRS = ["PeriodicPro", "PeriodicProTests", "PeriodicProUITests"]
 
 MAX_LINE = 118
 BANNED = [

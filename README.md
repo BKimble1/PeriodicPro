@@ -33,7 +33,6 @@ for one.
 - [Getting started](#getting-started)
 - [Architecture](#architecture)
 - [Folder structure](#folder-structure)
-- [The Home Screen widget](#the-home-screen-widget)
 - [How element data works](#how-element-data-works)
 - [How study progress works](#how-study-progress-works)
 - [Design system](#design-system)
@@ -322,8 +321,6 @@ PeriodicPro/
 ├── StudyEngine/            Quiz and deck generation, mastery, Smart Review, RNG
 ├── Scanner/                Live text recognition, candidate ranking, stability
 ├── Notifications/          Local study reminders: preferences, planner, scheduler
-├── Widgets/                The app's half of the Home Screen widget
-├── WidgetShared/           Shared with the widget — see "The Home Screen widget"
 ├── Services/               Haptics
 ├── Utilities/              SF Symbol allowlist
 ├── Views/
@@ -335,60 +332,12 @@ PeriodicPro/
 ├── Assets.xcassets/        App icon (light/dark/tinted) and accent color
 └── PrivacyInfo.xcprivacy   Privacy manifest
 
-ElemoraWidgets/             The widget extension target
-├── Shared/                 A byte-identical copy of PeriodicPro/WidgetShared/
-└── *.swift                 Widgets, timeline provider, App Intents, palette
-
 PeriodicProTests/           Swift Testing unit tests
 PeriodicProUITests/         XCUITest end-to-end flows
 Config/                     xcconfig, Info.plist, StoreKit configuration
 Tools/                      Dataset generation, validation and icon rendering
 .github/workflows/          CI and TestFlight pipelines
 ```
-
----
-
-## The Home Screen widget
-
-Two widgets: *Quick Question*, which asks one question with four tappable
-answers, and *Progress*, which shows how far through the table you are.
-
-The constraint that shapes the whole design is that a widget runs in its own
-process and **must never write the learner's progress**. Two writers on one
-SwiftData store is how progress gets corrupted. So:
-
-```
-widget                          app group container            app
-------                          -------------------            ---
-draws from ──────────────────►  widget-snapshot.json  ◄──────── writes
-appends to ──────────────────►  widget-events.jsonl   ◄──────── drains, then clears
-owns ────────────────────────►  widget-state.json
-```
-
-`WidgetBridge` (in the app) merges the log into `ProgressStore` on launch, on
-every foreground, and on the way to the background. Every event carries a UUID
-minted at the tap, and the app keeps a bounded ledger of the ones it has
-counted, so a retried App Intent, a duplicated line and a re-read of a log that
-was never cleared all count exactly once. An answer counts on the day it was
-given rather than the day it was merged.
-
-### Why the shared file exists twice
-
-`PeriodicPro/WidgetShared/ElemoraSharedStore.swift` and
-`ElemoraWidgets/Shared/ElemoraSharedStore.swift` are the same file. The project
-uses file-system synchronized groups, where a folder belongs to a target; two
-targets sharing one folder is expressible and fragile to hand-maintain, and a
-serialization contract that silently diverges between a widget and its app is
-the exact bug this arrangement exists to prevent.
-
-`Tools/check_widget_shared.py` compares them byte for byte and fails the build
-on any difference, naming the first line that disagrees and printing the `cp`
-that fixes it. It also checks the App Group identifier in the source against
-both entitlements files, the extension point identifier that decides whether
-iOS loads the widget at all, and the widget's written-out palette against the
-app icon's.
-
-**If you edit one, copy it to the other.** That is the whole rule.
 
 ---
 
@@ -561,7 +510,6 @@ still in the tree, so it is known to fire on the thing it is named for:
 | `check_conformances.py` | `type 'X' does not conform to protocol 'Hashable'`, where the error names the outer type and not the property responsible |
 | `check_undeclared.py` | `cannot find 'x' in scope` |
 | `check_initializers.py` | an initializer call that no longer matches its type |
-| `check_widget_shared.py` | a widget that builds and shows a placeholder forever |
 | `check_table_fit.py` | a table that does not fit, which only a screenshot shows |
 | `lint_sources.py` | `binary operator '+' cannot be applied to two 'OSLogMessage' operands`; `cannot use mutating member on immutable value: '$0' is immutable`; `cannot convert value of type 'String' to expected argument type 'Comment?'`; `unexpected non-void return value in void function`; `Font.system` with its arguments transposed; an accessibility identifier that lands on the wrong element, or on an alert's text field where UIAlertController drops it |
 

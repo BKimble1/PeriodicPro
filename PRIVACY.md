@@ -42,9 +42,6 @@ shared with third parties, and not readable by other apps.
 | Which notification categories you turned on, and the time you chose | `UserDefaults` | So reminders arrive when and how you asked |
 | The day you last completed the Daily Challenge | `UserDefaults` | So today's challenge is not offered twice |
 | How many advanced-chemistry questions you answered each day, and how many were right | SwiftData store | The depth part of your learning rank |
-| Questions the Home Screen widget can ask, and your mastered count, streak and rank | JSON file in the app group container | So the widget can draw itself without opening the app |
-| Answers you gave in the widget, until the app next opens | JSON file in the app group container | So a Home Screen answer counts towards your progress |
-| Which of today's widget questions you have already answered | JSON file in the app group container | So the widget moves on instead of repeating itself |
 
 Nothing else is recorded. In particular the app does not store your name, email
 address, contacts, location, photos, identifiers for advertising, or any device
@@ -119,25 +116,6 @@ on your device.
 - At most one a day, and never at a critical or time-sensitive interruption
   level, so a Focus silences them.
 - Turning the master switch off removes every reminder Elemora has pending.
-
-## The Home Screen widget
-
-Elemora's widgets are optional — a widget exists only if you add one — and
-they work the same way the rest of the app does: on your device, with no
-network involved.
-
-- **A widget cannot reach the network and does not.** It draws from a small
-  file the app writes, containing the questions it may ask and the four
-  numbers it shows: elements mastered, your streak, items due for review, and
-  your rank.
-- **That file lives in an app group container**, which is a folder the app and
-  its widget can both open on your device. It is not cloud storage, is not
-  synced, and is not shared with any other app.
-- **Answers you give on the Home Screen are written to the same folder** and
-  merged into your progress the next time you open Elemora. An answer counts
-  for the day you gave it, not the day it was merged.
-- **Deleting Elemora deletes this folder**, exactly as it deletes everything
-  else described above.
 
 ## Subscriptions
 

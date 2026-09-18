@@ -73,19 +73,10 @@ RETAINED_IDENTIFIERS = {
         "StoreKit product identifiers periodicpro.pro.monthly and .yearly",
     "Config/Elemora.entitlements":
         "documents the signed app ID com.idlery.periodicpro the association file names",
-    "Config/ElemoraWidgets.entitlements":
-        "the App Group group.com.idlery.periodicpro, derived from the bundle identifier",
-    "PeriodicPro/WidgetShared/ElemoraSharedStore.swift":
-        "ElemoraAppGroup.identifier, which must equal the signed App Group",
-    "ElemoraWidgets/Shared/ElemoraSharedStore.swift":
-        "the byte-identical widget copy of the same App Group identifier",
-    "Tools/check_widget_shared.py":
-        "checks that identifier against the entitlements, so it names it",
     "PeriodicPro/Store/SubscriptionProduct.swift":
         "those product identifiers and the periodicpro.pro group identifier",
     "PeriodicProTests/NotificationTests.swift": "@testable import PeriodicPro",
     "Tools/check_undeclared.py": "walks the same source trees as the other checkers",
-    "PeriodicProTests/WidgetTests.swift": "@testable import PeriodicPro",
     "PeriodicProTests/ProGateTests.swift":
         "asserts the product identifiers have not drifted",
     "APP_STORE_READINESS.md":
@@ -197,7 +188,6 @@ RETAINED_IDENTIFIERS = {
     "TESTFLIGHT.md": "documents the bundle identifier and the scheme",
     "MONETIZATION.md": "documents the product identifiers",
     "APP_ICON.md": "asset-catalog path",
-    "APP_STORE_READINESS.md": "bundle and product identifiers, and tool paths",
     "DATA_SOURCES.md": "path to PeriodicPro/Data/elements.json",
     "OCSR.md": "paths to PeriodicPro/Scanner sources",
     "STRUCTURE_SOURCES.md": "paths to PeriodicPro/Data/structures.json and the test bundle",

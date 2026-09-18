@@ -10,10 +10,9 @@ import Foundation
 /// and nobody's existing progress has to be rewritten; and it keeps the rule
 /// small enough to be completely tested.
 ///
-/// What this feeds: Smart Review's ordering, the widget's choice of question,
-/// the review-due notification, and the review-consistency term of the
-/// learning rank. All four ask the same question, so all four get the same
-/// answer.
+/// What this feeds: Smart Review's ordering, the review-due notification, and
+/// the review-consistency term of the learning rank. All three ask the same
+/// question, so all three get the same answer.
 enum ReviewSchedule {
     /// The base interval for each familiarity level.
     ///

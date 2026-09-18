@@ -16,14 +16,16 @@ and an iPad, an unsigned Release build, and four simulator screenshot captures.
 camera, so live text recognition is exercised only against text fixtures. The
 live PubChem calls — `Tools/smoke_pubchem.py` is deliberately out of CI and has
 not been run from the environment that wrote this build, which cannot reach
-PubChem. The widget appearing on a Home Screen — that needs the App Group to
-survive signing, which only a real signed build installed on a device shows.
-Those three are items 7, 8 and 9 under *Remaining blockers*.
+PubChem. Those two are items 6 and 7 under *Remaining blockers*.
 
-**The build has not reached TestFlight.** The archive failed at signing, on the
-App Group the widget needs — a capability only a person with access to the Apple
-Developer portal can create. That is blocker 1 below, and section *4a* has the
-error and the four steps that clear it.
+**The Home Screen widget is not in this build.** The first archive failed on
+the App Group it needed: `-allowProvisioningUpdates` cannot create an App Group
+identifier the team does not have, and because a shared container has to be
+declared by both processes that open it, the entitlement was in the *app's*
+entitlements too — so the error stopped the app as well as the extension.
+Rather than wait on the developer portal, the widget was removed and Build 5
+ships without it. Nothing else in Build 5 changed. The app now requests one
+entitlement, associated domains, exactly as Build 4 did.
 
 ---
 
@@ -103,61 +105,6 @@ submission where it 404s.
 | Deep links land where they say | **PASS** | `NotificationDestination` round-trips through `userInfo`; unit-tested |
 | Stale requests cannot accumulate | **PASS** | Stable identifiers, and every reconcile removes this app's own pending requests first; unit-tested |
 
-## 4a. The Home Screen widget
-
-| Item | Verdict | Evidence |
-| --- | --- | --- |
-| The widget reaches no network | **PASS** | `ElemoraWidgets/` contains no URL, no `URLSession` and no networking import; it reads one JSON file |
-| The widget never writes the learner's progress | **PASS** | It appends to a log; `WidgetBridge` in the app is the only thing that writes `ProgressStore` |
-| A repeated intent cannot double-count | **PASS** | A UUID per answer plus a bounded merge ledger; unit-tested, including a second merge of the same batch |
-| Existing progress is not migrated or erased | **PASS** | No schema change: `WidgetBridge` calls the same `recordAnswer` a study round does. A test asserts pre-existing progress is identical after a merge |
-| The App Group is the only new capability | **PASS** | `Config/Elemora.entitlements` and `Config/ElemoraWidgets.entitlements` declare `com.apple.security.application-groups` and nothing else; `Tools/check_widget_shared.py` fails if the app gains a third |
-| An unavailable App Group is handled | **PASS** | Every store takes an optional URL and no-ops on `nil`; the widget renders an explanatory state; unit-tested |
-| The extension declares its extension point | **PASS** | `Config/ElemoraWidgets-Info.plist`, checked by `Tools/check_widget_shared.py` — without it the widget builds and never appears |
-| The shared serialization cannot drift | **PASS** | Byte-for-byte comparison of the two copies, in `Tools/verify.sh` and CI |
-
-**MANUAL ACTION — Apple Developer portal. This happened; it is not a
-precaution.** The first archive of Build 5 (TestFlight run 61, build 5.0.0
-(61)) failed in thirteen seconds, on both targets:
-
-```
-Provisioning profile "iOS Team Provisioning Profile: com.idlery.periodicpro.widgets"
-doesn't match the entitlements file's value for the
-com.apple.security.application-groups entitlement.
-  (in target 'ElemoraWidgetsExtension')
-
-Provisioning profile "iOS Team Provisioning Profile: com.idlery.periodicpro"
-doesn't match the entitlements file's value for the
-com.apple.security.application-groups entitlement.
-  (in target 'PeriodicPro')
-```
-
-`-allowProvisioningUpdates` with the App Store Connect API key can regenerate a
-profile, but it cannot create an App Group identifier the team does not have —
-that needs the **App Manager** role, and this key does not appear to have it.
-Note that it stops the *app* as well as the widget: the App Group is declared
-in `Config/Elemora.entitlements` too, because a shared container has to be
-declared by both processes that open it. So nothing uploads until this is done.
-
-To fix it, in *Certificates, Identifiers & Profiles*:
-
-1. **Identifiers → App Groups → +**, identifier `group.com.idlery.periodicpro`,
-   description anything.
-2. **Identifiers → App IDs → `com.idlery.periodicpro`** → enable **App Groups**
-   → *Edit* → tick `group.com.idlery.periodicpro` → Save.
-3. The same for **`com.idlery.periodicpro.widgets`**. If that App ID does not
-   exist yet, create it as an App ID with that exact identifier first.
-4. Re-run the TestFlight workflow. Nothing in the repository needs to change;
-   the next archive picks up the regenerated profiles.
-
-**The alternative, if you would rather ship Build 5 now and add the widget
-later:** revert commit `0681e75` and push. That single commit adds the widget
-target, both entitlements files' App Group and the whole `ElemoraWidgets/`
-directory — it is the only change in Build 5 that touches signing, which is why
-it was sequenced last. Everything else in Build 5 then archives as before. This
-has **not** been done: which of the two you want is your call, not a decision a
-build should make.
-
 ## 5. Privacy manifest and required-reason APIs
 
 | Item | Verdict | Evidence |
@@ -168,8 +115,7 @@ build should make.
 | `NSPrivacyCollectedDataTypes` empty | **PASS** | Nothing is transmitted off the device in a form that outlives servicing the request. Reasoning in `PRIVACY.md` → *App Store privacy declaration* |
 | `UserDefaults` reason declared | **PASS** | `CA92.1` |
 | File timestamp reason declared | **PASS** | `C617.1` |
-| No newly used required-reason API | **PASS** | Build 5 adds AVFoundation authorization, VisionKit, UserNotifications, WidgetKit and AppIntents. None is on Apple's required-reason list; no disk-space, boot-time or active-keyboard API is used |
-| The widget's file access is already declared | **PASS** | It reads and writes JSON in the app group container, covered by the existing `C617.1` file-timestamp reason; it uses no `UserDefaults` |
+| No newly used required-reason API | **PASS** | Build 5 adds AVFoundation authorization, VisionKit and UserNotifications. None is on Apple's required-reason list; no disk-space, boot-time or active-keyboard API is used |
 
 **MANUAL ACTION — App Store Connect:** confirm the *App Privacy* answers still
 read **"Data Not Collected"**. Build 5 does not change what leaves the device,
@@ -187,8 +133,8 @@ to change with them.
 | Associated Domains | **PASS** (already enabled) | `Config/Elemora.entitlements`; shared quiz links depend on it |
 | Camera | **PASS** | Needs a purpose string only — no entitlement and no App ID capability |
 | Notifications | **PASS** | Local notifications need no entitlement |
-| App Groups | **BLOCKED — MANUAL ACTION** | New in Build 5, for the widget. The first archive failed on it, on both targets. See *4a* for the error and the four steps that clear it |
-| Widget extension bundle identifier | **PASS** | `com.idlery.periodicpro.widgets`, derived from the app's rather than a new identifier; the main app's is untouched |
+| App Groups | **NOT USED** | Build 5 requested one for a Home Screen widget; the widget was removed when the App Group could not be registered, and `Config/Elemora.entitlements` asks for associated domains only. The archive step fails the run if an App Group ever reappears in the signed app |
+| App extensions | **NONE** | The app ships alone. The archive step fails the run if `PlugIns/` is non-empty |
 | Automatic signing via the API key | **PASS** | The archive step passes `-allowProvisioningUpdates` with the App Store Connect key |
 
 ## 7. Content and rights
@@ -220,32 +166,21 @@ to change with them.
 
 Nothing in the repository. Everything below needs a person.
 
-1. **Create the App Group `group.com.idlery.periodicpro`** in the Apple
-   Developer portal and enable App Groups on both `com.idlery.periodicpro` and
-   `com.idlery.periodicpro.widgets`. Until it exists **nothing uploads at all**:
-   the archive fails on the app as well as on the widget, because a shared
-   container has to be declared by both processes that open it. Section *4a*
-   has the exact error, the four steps, and the alternative — reverting one
-   commit to ship Build 5 without the widget.
-2. **Deploy the website** and confirm all four URLs answer 200 over HTTPS.
-3. **Set the Privacy Policy URL and Support URL** on the App Store Connect
+1. **Deploy the website** and confirm all four URLs answer 200 over HTTPS.
+2. **Set the Privacy Policy URL and Support URL** on the App Store Connect
    record.
-4. **Re-read the App Privacy answers** against `PRIVACY.md` now that the app
+3. **Re-read the App Privacy answers** against `PRIVACY.md` now that the app
    has a camera feature.
-5. **Confirm both subscription products are Ready to Submit** in the
+4. **Confirm both subscription products are Ready to Submit** in the
    `periodicpro.pro` group.
-6. **Upload screenshots** for every device size the listing requires. CI
+5. **Upload screenshots** for every device size the listing requires. CI
    captures a tour on four simulators and attaches it to each run as
    `elemora-simulator-screenshots`.
-7. **Confirm the widget appears** after installing the TestFlight build:
-   touch and hold the Home Screen → Edit → Add Widget → Elemora. A widget that
-   never appears means the App Group or the extension point did not make it
-   through signing — see *4a*.
-8. **Test the scanner on a physical device.** A simulator has no camera and
+6. **Test the scanner on a physical device.** A simulator has no camera and
    cannot run live text recognition, so the recognition core is unit-tested
    against text fixtures and the camera path is not exercised by CI. The
    TestFlight notes list the exact cases to try.
-9. **Run the live PubChem smoke suite** (`python3 Tools/smoke_pubchem.py`) from
+7. **Run the live PubChem smoke suite** (`python3 Tools/smoke_pubchem.py`) from
    a machine that can reach the internet. It is not in CI on purpose, and it
    has not been run from the environment that wrote this build — PubChem is
    unreachable from there, which the tool reports as unreachable rather than

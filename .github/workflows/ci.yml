@@ -70,12 +70,6 @@ jobs:
       - name: Check for undeclared identifiers
         run: python3 Tools/check_undeclared.py
 
-      # The app and its widget share one serialization contract, compiled
-      # into two targets from two copies of one file. A copy that drifts
-      # builds cleanly and produces a widget stuck on a placeholder.
-      - name: Check the widget's shared layer
-        run: python3 Tools/check_widget_shared.py
-
       - name: Check the whole periodic table fits at fitted zoom
         run: python3 Tools/check_table_fit.py
 
@@ -104,7 +98,7 @@ jobs:
           set -euo pipefail
           python3 Tools/normalize_spelling.py \
             PeriodicPro/Data/elements.json \
-            $(find PeriodicPro PeriodicProTests PeriodicProUITests ElemoraWidgets -name '*.swift') \
+            $(find PeriodicPro PeriodicProTests PeriodicProUITests -name '*.swift') \
             ./*.md
           if ! git diff --quiet; then
             echo "::error::Sources contain British spellings. Run Tools/verify.sh and commit."

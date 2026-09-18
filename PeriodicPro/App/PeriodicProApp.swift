@@ -45,10 +45,6 @@ struct PeriodicProApp: App {
                 // means a transaction that completed while the app was closed
                 // is picked up as soon as there is a scene to show it in.
                 .task { services.store.start() }
-                // A cold launch merges before the first screen appears, so a
-                // learner who answered on the Home Screen this morning opens
-                // the app to a streak that already counts it.
-                .task { services.synchronizeWidget() }
                 .task {
                     UNUserNotificationCenter.current().delegate = notificationDelegate
                     await services.notifications.refreshAuthorization()
@@ -58,17 +54,8 @@ struct PeriodicProApp: App {
                 // case, so without this a learner who used their rounds last
                 // night would still be locked out this morning.
                 .onChange(of: scenePhase) { _, phase in
-                    // Leaving the app republishes the widget, so a Home Screen
-                    // that is about to become visible shows what the session
-                    // just changed rather than what it knew an hour ago.
-                    guard phase == .active else {
-                        if phase == .background { services.synchronizeWidget() }
-                        return
-                    }
+                    guard phase == .active else { return }
                     services.progress.refreshCompletedRoundsToday()
-                    // Anything answered on the Home Screen since the app last
-                    // ran is merged here, before any screen reads progress.
-                    services.synchronizeWidget()
                     // Every foreground reconciles what is scheduled with what
                     // the learner's progress now calls for, so nothing stale
                     // is ever left pending.
@@ -152,22 +139,6 @@ final class AppServices {
             ? (UserDefaults(suiteName: "uiTesting.notifications") ?? .standard)
             : .standard
         self.notifications = StudyNotificationScheduler(center: center, defaults: store)
-    }
-
-    /// Merges anything the Home Screen widget recorded and republishes what
-    /// the widget draws.
-    ///
-    /// A no-op when the App Group is unavailable, which is every UI-test run
-    /// and every unprovisioned simulator: there is no shared container to read
-    /// or write, and the app behaves exactly as it did before the widget
-    /// existed.
-    func synchronizeWidget() {
-        guard !RuntimeFlags.isUITesting else { return }
-        WidgetBridge.synchronize(
-            progress: progress,
-            catalog: catalog,
-            compounds: compounds.catalog.compounds
-        )
     }
 
     /// The compound store, with the network wired the way this launch needs.
