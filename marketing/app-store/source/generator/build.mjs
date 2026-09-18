@@ -155,7 +155,13 @@ function buildFrame(f) {
   }
 
   const D = deco();
-  const decoSvg = f.deco ? f.deco(D) : '';
+  const decoItems = f.deco ? f.deco(D) : [];
+  const decoSvg = decoItems.join('\n');
+  const inventory = decoItems.map((svg) => {
+    const kind = (svg.match(/id="([A-Za-z-]+?)[-"]/) || [, 'Formula'])[1];
+    const op = svg.match(/\sopacity="([\d.]+)"/) || svg.match(/fill-opacity="([\d.]+)"/);
+    return { kind, opacity: op ? Number(op[1]) : 1 };
+  }).sort((a, c2) => c2.opacity - a.opacity);
   const out = composeFrame({
     title: f.title, devices, copy: cp, light: f.light,
     deco: `\n  <g id="Chemistry-Decoration">\n${decoSvg}\n  </g>`,
@@ -183,6 +189,7 @@ function buildFrame(f) {
     background: `assets/backgrounds/${f.id}-${f.slug}.png`,
     output: `exports/iphone/${f.id}-${f.slug}.png`,
     copyTop: cp.capTop, copyBottom: cp.bottom, copyX: cp.x,
+    decoration: inventory,
   };
   write(p('source', `${stem}.geometry.json`), JSON.stringify(geom, null, 1) + '\n');
   write(p('source', `${stem}.placement.txt`), placementText(f, devices, cp, m));

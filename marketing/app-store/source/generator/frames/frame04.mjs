@@ -1,11 +1,18 @@
-/* 04  ELEMENT DETAIL.  Composition: EXTREME SCALE, NEAR UPRIGHT. The largest
-   device in the set, almost square to the canvas and wide enough to run edge to
-   edge, bleeding off the bottom. That deliberately separates it from the two
-   other single-device frames, which both lean: 02 enters at an angle from the
-   right and 06 from the left, while this one simply fills the frame. Only one
-   phone here, because a second view of an element would be decoration rather
-   than information. A large carbon shell diagram sits in the only clear space
-   left, the top right beside the headline. */
+/* 04  ELEMENT DETAIL.  One full device, near upright and fully visible, because
+   the real element detail screen is the densest in the app and readability
+   beats drama here.
+
+   The device sits left of centre, which together with frame 06's shift to the
+   right keeps the three single-device frames from reading as one composition
+   used three times.
+
+   Background hierarchy
+     anchor     an iron electron-shell diagram wider than the phone, centred on
+                it, so its outer shells pass behind the device and surface again
+                in the wide right-hand margin. This is the clearest statement of
+                the layering idea in the set.
+     secondary  one large iron tile, top right
+     ambient    a phenol ring clipped by the top edge                         */
 import { C } from '../system.mjs';
 import { skeletal, elementTile, bohr } from '../chemistry.mjs';
 
@@ -16,17 +23,17 @@ export default {
   sub: ['Explore properties, structures, uses,', 'and facts worth remembering.'],
   copy: { top: 236, align: 'start' },
   devices: [{
-    role: 'hero', label: 'Element Detail', screenW: 1105, x: 112, y: 800, rot: 1.5,
-    need: 'One element detail screen, the most visually complete you have. Carbon or Iron usually read best. The lower sixth is cropped by the canvas, so keep the tile, name and key properties high.',
+    role: 'hero', label: 'Element Detail', screenW: 930, x: 70, y: 720, rot: 1.5,
+    need: 'One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.',
   }],
   light: [
-    { x: 1080, y: 400, r: 1080, c: C.paleC, o: 0.56 },
-    { x: 160, y: 1560, r: 1060, c: C.paleB, o: 0.44 },
+    { x: 1060, y: 480, r: 1080, c: C.paleC, o: 0.54 },
+    { x: 180, y: 1620, r: 1060, c: C.paleB, o: 0.44 },
     { x: 700, y: 2800, r: 880, c: C.paleA, o: 0.44 },
   ],
   deco: () => [
-    bohr('C', { cx: 1262, cy: 356, r: 284, opacity: 0.075 }),
-    elementTile('C', { x: 1148, y: 636, w: 156, variant: 'soft', opacity: 0.10, rot: 5 }),
-    skeletal('phenol', { cx: 176, cy: 60, scale: 74, rot: 12, opacity: 0.055, width: 7 }),
-  ].join('\n'),
+    bohr('Fe', { cx: 574.5, cy: 1810, r: 880, opacity: 0.095 }),
+    elementTile('Fe', { x: 1112, y: 128, w: 208, variant: 'soft', opacity: 0.06, rot: 4 }),
+    skeletal('phenol', { cx: 196, cy: 44, scale: 72, rot: 12, opacity: 0.03, width: 6 }),
+  ],
 };

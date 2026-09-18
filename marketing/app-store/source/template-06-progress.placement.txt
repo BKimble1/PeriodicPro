@@ -9,42 +9,42 @@ CANVAS
 
 DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Progress
-  The progress or mastery view, with enough real activity on it to look earned. Cropped on the left and bottom, so keep the headline numbers high and right.
+  The progress or mastery view, with enough real activity on it to look earned. Fully visible, so nothing is cropped.
 
-  X        = -46          (unrotated top-left)
-  Y        = 940
-  W        = 1041.6
-  H        = 2167.4182
-  Rotation = 5 deg    (about the device centre, 474.8, 2023.7091)
-  Corner radius   = 125.28
-  Bezel thickness = 40.8 on every side
+  X        = 320          (unrotated top-left)
+  Y        = 720
+  W        = 954.8
+  H        = 1986.8
+  Rotation = 2.5 deg    (about the device centre, 797.4, 1713.4)
+  Corner radius   = 114.84
+  Bezel thickness = 37.4 on every side
 
   ROTATED BOUNDING BOX
-    Left = -138.4697   Top = 898.7331   Right = 1088.0697   Bottom = 3148.6851
-    Off-canvas left 138.5px, right none, bottom 280.7px
+    Left = 277.1229   Top = 700.1216   Right = 1317.6771   Bottom = 2726.6784
+    Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 474.8, 2023.7091
-    Unrotated X,Y = -5.2, 980.8
-    Unrotated W,H = 960 x 2085.8182
-    Rotation      = 5 deg  (identical to the device, one rigid group)
-    Corner radius = 84.48   (the overlay rounds this for you)
+    Centre        = 797.4, 1713.4
+    Unrotated X,Y = 357.4, 757.4
+    Unrotated W,H = 880 x 1912
+    Rotation      = 2.5 deg  (identical to the device, one rigid group)
+    Corner radius = 77.44   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
     Delta         = 0.000e+0
-    Uniform scale of the source screenshot = 0.7272727273
+    Uniform scale of the source screenshot = 0.6666666667
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
   Headline   = 122px / 119px, weight 800, tracking -3.4px
-  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Supporting = 50px / 64px, weight 500, #425873 at 0.88
   Left margin = 96px  (column 1128px)
-  Headline cap-top y = 236   Supporting baseline y = 510.499
+  Headline cap-top y = 236   Supporting baseline y = 514.1367
   Measured headline widths = 509.7, 515.1
-  Measured supporting widths = 702.9, 312.7
-  Widest line vs column = 702.9 / 1128
+  Measured supporting widths = 781.9, 347.8
+  Widest line vs column = 781.9 / 1128
 
 COPY
   Headline   = "See Your" + "Progress"

@@ -12,43 +12,92 @@
  "canvasW": 1320,
  "canvasH": 2868,
  "margin": 96,
- "deviceCount": 1,
+ "deviceCount": 2,
  "devices": [
   {
-   "role": "hero",
-   "label": "Periodic Table",
-   "need": "The full periodic table, scrolled so the grid fills the screen. The lower right of this capture is cropped by the canvas, so keep the important rows high.",
+   "role": "handoff",
+   "label": "Element detail",
+   "need": "An element detail screen, the same capture used at the left edge of frame 03 and as frame 04. Only its left side shows here, so keep the element tile and name in the left half.",
    "sfx": "-a",
-   "x": 470,
-   "y": 860,
-   "w": 1128.4,
-   "h": 2348.0363636363636,
-   "r": 135.72,
-   "rot": -5,
-   "cx": 1034.2,
-   "cy": 2034.0181818181818,
-   "bezel": 44.2,
-   "scale": 1.0505050505050506,
-   "screenX": 514.2,
-   "screenY": 904.2,
-   "screenW": 1040,
-   "screenH": 2259.6363636363635,
-   "screenR": 91.52,
-   "screenCX": 1034.2,
-   "screenCY": 2034.0181818181818,
-   "uniformScale": 0.7878787878787878,
+   "x": 1150,
+   "y": 1180,
+   "w": 672.7,
+   "h": 1399.790909090909,
+   "r": 80.91,
+   "rot": 0,
+   "cx": 1486.35,
+   "cy": 1879.8954545454544,
+   "bezel": 26.35,
+   "scale": 0.6262626262626263,
+   "screenX": 1176.35,
+   "screenY": 1206.35,
+   "screenW": 620,
+   "screenH": 1347.090909090909,
+   "screenR": 54.559999999999995,
+   "screenCX": 1486.35,
+   "screenCY": 1879.8954545454544,
+   "uniformScale": 0.4696969696969697,
    "bounds": {
-    "minX": 369.8245247010183,
-    "maxX": 1698.575475298982,
-    "minY": 815.2942235693693,
-    "maxY": 3252.7421400669946
+    "minX": 1150,
+    "maxX": 1822.6999999999998,
+    "minY": 1180,
+    "maxY": 2579.790909090909
    },
-   "overlay": "assets/device/02-elements-overlay.png"
+   "overlay": "assets/device/02-elements-overlay-handoff.png"
+  },
+  {
+   "role": "main",
+   "label": "Periodic Table",
+   "need": "The full periodic table, scrolled so the grid fills the screen. Fully visible and straight on, so nothing is cropped.",
+   "sfx": "-b",
+   "x": 120,
+   "y": 740,
+   "w": 976.5,
+   "h": 2031.9545454545455,
+   "r": 117.44999999999999,
+   "rot": 0,
+   "cx": 608.25,
+   "cy": 1755.9772727272727,
+   "bezel": 38.25,
+   "scale": 0.9090909090909091,
+   "screenX": 158.25,
+   "screenY": 778.25,
+   "screenW": 900,
+   "screenH": 1955.4545454545455,
+   "screenR": 79.19999999999999,
+   "screenCX": 608.25,
+   "screenCY": 1755.9772727272727,
+   "uniformScale": 0.6818181818181818,
+   "bounds": {
+    "minX": 120,
+    "maxX": 1096.5,
+    "minY": 740,
+    "maxY": 2771.9545454545455
+   },
+   "overlay": "assets/device/02-elements-overlay-main.png"
   }
  ],
  "background": "assets/backgrounds/02-elements.png",
  "output": "exports/iphone/02-elements.png",
  "copyTop": 236,
- "copyBottom": 580.2990234375,
- "copyX": 96
+ "copyBottom": 590.13671875,
+ "copyX": 96,
+ "decoration": [
+  {
+   "kind": "Periodic",
+   "opacity": 0.1
+  },
+  {
+   "kind": "Tile",
+   "opacity": 0.06
+  },
+  {
+   "kind": "Orbits",
+   "opacity": 0.055
+  },
+  {
+   "kind": "Formula",
+   "opacity": 0.03
+  }
+ ]
 }

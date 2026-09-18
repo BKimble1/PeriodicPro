@@ -50,8 +50,26 @@
   "background": "assets/backgrounds/01-hero.png",
   "output": "exports/iphone/01-hero.png",
   "copyTop": 236,
-  "copyBottom": 580.2990234375,
-  "copyX": 96
+  "copyBottom": 590.13671875,
+  "copyX": 96,
+  "decoration": [
+   {
+    "kind": "Skeletal",
+    "opacity": 0.1
+   },
+   {
+    "kind": "Tile",
+    "opacity": 0.055
+   },
+   {
+    "kind": "Tile",
+    "opacity": 0.05
+   },
+   {
+    "kind": "Formula",
+    "opacity": 0.032
+   }
+  ]
  },
  {
   "id": "02",
@@ -67,45 +85,94 @@
   "canvasW": 1320,
   "canvasH": 2868,
   "margin": 96,
-  "deviceCount": 1,
+  "deviceCount": 2,
   "devices": [
    {
-    "role": "hero",
-    "label": "Periodic Table",
-    "need": "The full periodic table, scrolled so the grid fills the screen. The lower right of this capture is cropped by the canvas, so keep the important rows high.",
+    "role": "handoff",
+    "label": "Element detail",
+    "need": "An element detail screen, the same capture used at the left edge of frame 03 and as frame 04. Only its left side shows here, so keep the element tile and name in the left half.",
     "sfx": "-a",
-    "x": 470,
-    "y": 860,
-    "w": 1128.4,
-    "h": 2348.0363636363636,
-    "r": 135.72,
-    "rot": -5,
-    "cx": 1034.2,
-    "cy": 2034.0181818181818,
-    "bezel": 44.2,
-    "scale": 1.0505050505050506,
-    "screenX": 514.2,
-    "screenY": 904.2,
-    "screenW": 1040,
-    "screenH": 2259.6363636363635,
-    "screenR": 91.52,
-    "screenCX": 1034.2,
-    "screenCY": 2034.0181818181818,
-    "uniformScale": 0.7878787878787878,
+    "x": 1150,
+    "y": 1180,
+    "w": 672.7,
+    "h": 1399.790909090909,
+    "r": 80.91,
+    "rot": 0,
+    "cx": 1486.35,
+    "cy": 1879.8954545454544,
+    "bezel": 26.35,
+    "scale": 0.6262626262626263,
+    "screenX": 1176.35,
+    "screenY": 1206.35,
+    "screenW": 620,
+    "screenH": 1347.090909090909,
+    "screenR": 54.559999999999995,
+    "screenCX": 1486.35,
+    "screenCY": 1879.8954545454544,
+    "uniformScale": 0.4696969696969697,
     "bounds": {
-     "minX": 369.8245247010183,
-     "maxX": 1698.575475298982,
-     "minY": 815.2942235693693,
-     "maxY": 3252.7421400669946
+     "minX": 1150,
+     "maxX": 1822.6999999999998,
+     "minY": 1180,
+     "maxY": 2579.790909090909
     },
-    "overlay": "assets/device/02-elements-overlay.png"
+    "overlay": "assets/device/02-elements-overlay-handoff.png"
+   },
+   {
+    "role": "main",
+    "label": "Periodic Table",
+    "need": "The full periodic table, scrolled so the grid fills the screen. Fully visible and straight on, so nothing is cropped.",
+    "sfx": "-b",
+    "x": 120,
+    "y": 740,
+    "w": 976.5,
+    "h": 2031.9545454545455,
+    "r": 117.44999999999999,
+    "rot": 0,
+    "cx": 608.25,
+    "cy": 1755.9772727272727,
+    "bezel": 38.25,
+    "scale": 0.9090909090909091,
+    "screenX": 158.25,
+    "screenY": 778.25,
+    "screenW": 900,
+    "screenH": 1955.4545454545455,
+    "screenR": 79.19999999999999,
+    "screenCX": 608.25,
+    "screenCY": 1755.9772727272727,
+    "uniformScale": 0.6818181818181818,
+    "bounds": {
+     "minX": 120,
+     "maxX": 1096.5,
+     "minY": 740,
+     "maxY": 2771.9545454545455
+    },
+    "overlay": "assets/device/02-elements-overlay-main.png"
    }
   ],
   "background": "assets/backgrounds/02-elements.png",
   "output": "exports/iphone/02-elements.png",
   "copyTop": 236,
-  "copyBottom": 580.2990234375,
-  "copyX": 96
+  "copyBottom": 590.13671875,
+  "copyX": 96,
+  "decoration": [
+   {
+    "kind": "Periodic",
+    "opacity": 0.1
+   },
+   {
+    "kind": "Tile",
+    "opacity": 0.06
+   },
+   {
+    "kind": "Orbits",
+    "opacity": 0.055
+   },
+   {
+    "kind": "Formula",
+    "opacity": 0.03
+   }
+  ]
  },
  {
   "id": "03",
@@ -121,67 +188,98 @@
   "canvasW": 1320,
   "canvasH": 2868,
   "margin": 96,
-  "deviceCount": 2,
+  "deviceCount": 3,
   "devices": [
+   {
+    "role": "handoff",
+    "label": "Element detail",
+    "need": "The SAME element detail capture used at the right edge of frame 02. Only its right side shows here, which is what makes the two frames read as one continuous device.",
+    "sfx": "-a",
+    "x": -502.69999999999993,
+    "y": 1180,
+    "w": 672.7,
+    "h": 1399.790909090909,
+    "r": 80.91,
+    "rot": 0,
+    "cx": -166.3499999999999,
+    "cy": 1879.8954545454544,
+    "bezel": 26.35,
+    "scale": 0.6262626262626263,
+    "screenX": -476.3499999999999,
+    "screenY": 1206.35,
+    "screenW": 620,
+    "screenH": 1347.090909090909,
+    "screenR": 54.559999999999995,
+    "screenCX": -166.3499999999999,
+    "screenCY": 1879.8954545454544,
+    "uniformScale": 0.4696969696969697,
+    "bounds": {
+     "minX": -502.69999999999993,
+     "maxX": 170.0000000000001,
+     "minY": 1180,
+     "maxY": 2579.790909090909
+    },
+    "overlay": "assets/device/03-build-overlay-handoff.png"
+   },
    {
     "role": "back",
     "label": "Finished compound",
-    "need": "The result of a build: a completed compound, its detail sheet, or the 3D viewer if the app has one. Cropped by the right edge, so keep the subject left of centre.",
-    "sfx": "-a",
-    "x": 660,
-    "y": 740,
-    "w": 792.05,
-    "h": 1648.140909090909,
-    "r": 95.265,
-    "rot": 5,
-    "cx": 1056.025,
-    "cy": 1564.0704545454546,
-    "bezel": 31.025000000000002,
-    "scale": 0.7373737373737373,
-    "screenX": 691.025,
-    "screenY": 771.025,
-    "screenW": 730,
-    "screenH": 1586.090909090909,
-    "screenR": 64.24,
-    "screenCX": 1056.025,
-    "screenCY": 1564.0704545454546,
-    "uniformScale": 0.553030303030303,
+    "need": "The result of a build: a completed compound sheet, or the 3D viewer if the app has one. Fully visible, so nothing is cropped.",
+    "sfx": "-b",
+    "x": 480,
+    "y": 760,
+    "w": 759.5,
+    "h": 1580.409090909091,
+    "r": 91.35,
+    "rot": -3,
+    "cx": 859.75,
+    "cy": 1550.2045454545455,
+    "bezel": 29.750000000000004,
+    "scale": 0.7070707070707071,
+    "screenX": 509.75,
+    "screenY": 789.75,
+    "screenW": 700,
+    "screenH": 1520.909090909091,
+    "screenR": 61.599999999999994,
+    "screenCX": 859.75,
+    "screenCY": 1550.2045454545455,
+    "uniformScale": 0.5303030303030303,
     "bounds": {
-     "minX": 589.6845221459073,
-     "maxX": 1522.365477854093,
-     "minY": 708.6199838515768,
-     "maxY": 2419.5209252393324
+     "minX": 439.16432366306617,
+     "maxX": 1280.3356763369338,
+     "minY": 741.2083684830653,
+     "maxY": 2359.2007224260255
     },
     "overlay": "assets/device/03-build-overlay-back.png"
    },
    {
     "role": "front",
     "label": "Build canvas",
-    "need": "The Build screen mid-assembly, with a molecule actually on the canvas. Never an empty builder.",
-    "sfx": "-b",
-    "x": 70,
-    "y": 920,
-    "w": 911.4,
-    "h": 1896.490909090909,
-    "r": 109.62,
-    "rot": -3,
-    "cx": 525.7,
-    "cy": 1868.2454545454545,
-    "bezel": 35.7,
-    "scale": 0.8484848484848485,
-    "screenX": 105.7,
-    "screenY": 955.7,
-    "screenW": 840,
-    "screenH": 1825.090909090909,
-    "screenR": 73.92,
-    "screenCX": 525.7,
-    "screenCY": 1868.2454545454545,
-    "uniformScale": 0.6363636363636364,
+    "need": "The Build screen mid-assembly, with a molecule actually on the canvas. Never an empty builder. Fully visible and dominant.",
+    "sfx": "-c",
+    "x": 250,
+    "y": 940,
+    "w": 868,
+    "h": 1806.1818181818182,
+    "r": 104.39999999999999,
+    "rot": 2,
+    "cx": 684,
+    "cy": 1843.090909090909,
+    "bezel": 34,
+    "scale": 0.8080808080808081,
+    "screenX": 284,
+    "screenY": 974,
+    "screenW": 800,
+    "screenH": 1738.1818181818182,
+    "screenR": 70.39999999999999,
+    "screenCX": 684,
+    "screenCY": 1843.090909090909,
+    "uniformScale": 0.6060606060606061,
     "bounds": {
-     "minX": 20.997188395679473,
-     "maxX": 1030.4028116043205,
-     "minY": 897.4500421796783,
-     "maxY": 2839.0408669112308
+     "minX": 218.74696286983567,
+     "maxX": 1149.2530371301643,
+     "minY": 925.4037570122329,
+     "maxY": 2760.7780611695853
     },
     "overlay": "assets/device/03-build-overlay-front.png"
    }
@@ -189,8 +287,26 @@
   "background": "assets/backgrounds/03-build.png",
   "output": "exports/iphone/03-build.png",
   "copyTop": 236,
-  "copyBottom": 580.2990234375,
-  "copyX": 96
+  "copyBottom": 590.13671875,
+  "copyX": 96,
+  "decoration": [
+   {
+    "kind": "Skeletal",
+    "opacity": 0.1
+   },
+   {
+    "kind": "Tile",
+    "opacity": 0.055
+   },
+   {
+    "kind": "Formula",
+    "opacity": 0.05
+   },
+   {
+    "kind": "Skeletal",
+    "opacity": 0.032
+   }
+  ]
  },
  {
   "id": "04",
@@ -211,31 +327,31 @@
    {
     "role": "hero",
     "label": "Element Detail",
-    "need": "One element detail screen, the most visually complete you have. Carbon or Iron usually read best. The lower sixth is cropped by the canvas, so keep the tile, name and key properties high.",
+    "need": "One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.",
     "sfx": "-a",
-    "x": 112,
-    "y": 800,
-    "w": 1198.925,
-    "h": 2494.7886363636367,
-    "r": 144.2025,
+    "x": 70,
+    "y": 720,
+    "w": 1009.05,
+    "h": 2099.6863636363637,
+    "r": 121.365,
     "rot": 1.5,
-    "cx": 711.4625,
-    "cy": 2047.3943181818183,
-    "bezel": 46.962500000000006,
-    "scale": 1.1161616161616161,
-    "screenX": 158.9625,
-    "screenY": 846.9625,
-    "screenW": 1105,
-    "screenH": 2400.8636363636365,
-    "screenR": 97.24,
-    "screenCX": 711.4625,
-    "screenCY": 2047.394318181818,
-    "uniformScale": 0.8371212121212122,
+    "cx": 574.525,
+    "cy": 1769.8431818181818,
+    "bezel": 39.525000000000006,
+    "scale": 0.9393939393939394,
+    "screenX": 109.525,
+    "screenY": 759.525,
+    "screenW": 930,
+    "screenH": 2020.6363636363637,
+    "screenR": 81.83999999999999,
+    "screenCX": 574.525,
+    "screenCY": 1769.8431818181818,
+    "uniformScale": 0.7045454545454546,
     "bounds": {
-     "minX": 79.55244424025989,
-     "maxX": 1343.37255575974,
-     "minY": 784.7353520034642,
-     "maxY": 3310.0532843601723
+     "minX": 42.69119741487941,
+     "maxX": 1106.3588025851204,
+     "minY": 707.1528301929609,
+     "maxY": 2832.533533443403
     },
     "overlay": "assets/device/04-element-detail-overlay.png"
    }
@@ -243,8 +359,22 @@
   "background": "assets/backgrounds/04-element-detail.png",
   "output": "exports/iphone/04-element-detail.png",
   "copyTop": 236,
-  "copyBottom": 580.2990234375,
-  "copyX": 96
+  "copyBottom": 590.13671875,
+  "copyX": 96,
+  "decoration": [
+   {
+    "kind": "Bohr",
+    "opacity": 0.095
+   },
+   {
+    "kind": "Tile",
+    "opacity": 0.06
+   },
+   {
+    "kind": "Skeletal",
+    "opacity": 0.03
+   }
+  ]
  },
  {
   "id": "05",
@@ -264,62 +394,62 @@
    {
     "role": "back",
     "label": "Quiz or flashcard",
-    "need": "The second strongest study surface: a quiz mid-question, or a flashcard. Cropped by the left edge, so keep the subject right of centre.",
+    "need": "The second study surface: a quiz mid-question, or a flashcard. Fully visible, so nothing is cropped.",
     "sfx": "-a",
-    "x": -70,
-    "y": 800,
-    "w": 868,
-    "h": 1806.1818181818182,
-    "r": 104.39999999999999,
-    "rot": 4,
-    "cx": 364,
-    "cy": 1703.090909090909,
-    "bezel": 34,
-    "scale": 0.8080808080808081,
-    "screenX": -36,
-    "screenY": 834,
-    "screenW": 800,
-    "screenH": 1738.1818181818182,
-    "screenR": 70.39999999999999,
-    "screenCX": 364,
-    "screenCY": 1703.090909090909,
-    "uniformScale": 0.6060606060606061,
+    "x": 96,
+    "y": 700,
+    "w": 802.9,
+    "h": 1670.7181818181818,
+    "r": 96.57,
+    "rot": -3,
+    "cx": 497.45,
+    "cy": 1535.3590909090908,
+    "bezel": 31.450000000000003,
+    "scale": 0.7474747474747475,
+    "screenX": 127.45,
+    "screenY": 731.45,
+    "screenW": 740,
+    "screenH": 1607.8181818181818,
+    "screenR": 65.11999999999999,
+    "screenCX": 497.45,
+    "screenCY": 1535.3590909090908,
+    "uniformScale": 0.5606060606060606,
     "bounds": {
-     "minX": -131.93923510132197,
-     "maxX": 859.939235101322,
-     "minY": 771.9255744604046,
-     "maxY": 2634.2562437214133
+     "minX": 52.83085644381282,
+     "maxX": 942.0691435561871,
+     "minY": 680.1345609678118,
+     "maxY": 2390.5836208503697
     },
     "overlay": "assets/device/05-study-overlay-back.png"
    },
    {
     "role": "front",
     "label": "Study overview",
-    "need": "The Study home or dashboard, with real progress on it. This is the dominant device.",
+    "need": "The Study home or dashboard, with real progress on it. The dominant device, fully visible.",
     "sfx": "-b",
-    "x": 392,
-    "y": 910,
-    "w": 980.84,
-    "h": 2040.9854545454546,
-    "r": 117.972,
-    "rot": -4,
-    "cx": 882.4200000000001,
-    "cy": 1930.4927272727273,
-    "bezel": 38.42,
-    "scale": 0.9131313131313131,
-    "screenX": 430.42,
-    "screenY": 948.42,
-    "screenW": 904,
-    "screenH": 1964.1454545454546,
-    "screenR": 79.55199999999999,
-    "screenCX": 882.4200000000001,
-    "screenCY": 1930.4927272727273,
-    "uniformScale": 0.6848484848484848,
+    "x": 380,
+    "y": 900,
+    "w": 878.85,
+    "h": 1828.759090909091,
+    "r": 105.70500000000001,
+    "rot": 3,
+    "cx": 819.425,
+    "cy": 1814.3795454545455,
+    "bezel": 34.425000000000004,
+    "scale": 0.8181818181818182,
+    "screenX": 414.425,
+    "screenY": 934.425,
+    "screenW": 810,
+    "screenH": 1759.909090909091,
+    "screenR": 71.28,
+    "screenCX": 819.425,
+    "screenCY": 1814.3795454545455,
+    "uniformScale": 0.6136363636363636,
     "bounds": {
-     "minX": 322.0086643355063,
-     "maxX": 1442.831335664494,
-     "minY": 878.2758991402575,
-     "maxY": 2982.709555405197
+     "minX": 332.74728881011936,
+     "maxX": 1306.1027111898807,
+     "minY": 878.2553978161184,
+     "maxY": 2750.5036930929728
     },
     "overlay": "assets/device/05-study-overlay-front.png"
    }
@@ -327,8 +457,26 @@
   "background": "assets/backgrounds/05-study.png",
   "output": "exports/iphone/05-study.png",
   "copyTop": 296,
-  "copyBottom": 521.2990234375,
-  "copyX": 96
+  "copyBottom": 531.13671875,
+  "copyX": 96,
+  "decoration": [
+   {
+    "kind": "Skeletal",
+    "opacity": 0.1
+   },
+   {
+    "kind": "Formula",
+    "opacity": 0.055
+   },
+   {
+    "kind": "Skeletal",
+    "opacity": 0.05
+   },
+   {
+    "kind": "Formula",
+    "opacity": 0.03
+   }
+  ]
  },
  {
   "id": "06",
@@ -349,31 +497,31 @@
    {
     "role": "hero",
     "label": "Progress",
-    "need": "The progress or mastery view, with enough real activity on it to look earned. Cropped on the left and bottom, so keep the headline numbers high and right.",
+    "need": "The progress or mastery view, with enough real activity on it to look earned. Fully visible, so nothing is cropped.",
     "sfx": "-a",
-    "x": -46,
-    "y": 940,
-    "w": 1041.6,
-    "h": 2167.418181818182,
-    "r": 125.28,
-    "rot": 5,
-    "cx": 474.79999999999995,
-    "cy": 2023.709090909091,
-    "bezel": 40.800000000000004,
-    "scale": 0.9696969696969697,
-    "screenX": -5.199999999999996,
-    "screenY": 980.8,
-    "screenW": 960,
-    "screenH": 2085.818181818182,
-    "screenR": 84.47999999999999,
-    "screenCX": 474.8,
-    "screenCY": 2023.709090909091,
-    "uniformScale": 0.7272727272727273,
+    "x": 320,
+    "y": 720,
+    "w": 954.8,
+    "h": 1986.8,
+    "r": 114.84,
+    "rot": 2.5,
+    "cx": 797.4,
+    "cy": 1713.4,
+    "bezel": 37.400000000000006,
+    "scale": 0.8888888888888888,
+    "screenX": 357.4,
+    "screenY": 757.4,
+    "screenW": 880,
+    "screenH": 1912,
+    "screenR": 77.44,
+    "screenCX": 797.4,
+    "screenCY": 1713.4,
+    "uniformScale": 0.6666666666666666,
     "bounds": {
-     "minX": -138.46966950675233,
-     "maxX": 1088.0696695067522,
-     "minY": 898.7331294486487,
-     "maxY": 3148.685052369533
+     "minX": 277.12287960809624,
+     "maxX": 1317.6771203919038,
+     "minY": 700.1216011523711,
+     "maxY": 2726.678398847629
     },
     "overlay": "assets/device/06-progress-overlay.png"
    }
@@ -381,7 +529,21 @@
   "background": "assets/backgrounds/06-progress.png",
   "output": "exports/iphone/06-progress.png",
   "copyTop": 236,
-  "copyBottom": 580.2990234375,
-  "copyX": 96
+  "copyBottom": 590.13671875,
+  "copyX": 96,
+  "decoration": [
+   {
+    "kind": "Periodic",
+    "opacity": 0.1
+   },
+   {
+    "kind": "Formula",
+    "opacity": 0.055
+   },
+   {
+    "kind": "Tile",
+    "opacity": 0.03
+   }
+  ]
  }
 ]

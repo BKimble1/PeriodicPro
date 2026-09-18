@@ -5,75 +5,104 @@ Production placement data, measured from the finished composition. Pixels.
 CANVAS
   W = 1320
   H = 2868
-  Devices = 2
+  Devices = 3
 
-DEVICE 1 of 2   role = back   layer = backmost
-  Wanted screen = Finished compound
-  The result of a build: a completed compound, its detail sheet, or the 3D viewer if the app has one. Cropped by the right edge, so keep the subject left of centre.
+DEVICE 1 of 3   role = handoff   layer = backmost
+  Wanted screen = Element detail
+  The SAME element detail capture used at the right edge of frame 02. Only its right side shows here, which is what makes the two frames read as one continuous device.
 
-  X        = 660          (unrotated top-left)
-  Y        = 740
-  W        = 792.05
-  H        = 1648.1409
-  Rotation = 5 deg    (about the device centre, 1056.025, 1564.0705)
-  Corner radius   = 95.265
-  Bezel thickness = 31.025 on every side
+  X        = -502.7          (unrotated top-left)
+  Y        = 1180
+  W        = 672.7
+  H        = 1399.7909
+  Rotation = 0 deg    (about the device centre, -166.35, 1879.8955)
+  Corner radius   = 80.91
+  Bezel thickness = 26.35 on every side
 
   ROTATED BOUNDING BOX
-    Left = 589.6845   Top = 708.62   Right = 1522.3655   Bottom = 2419.5209
-    Off-canvas left none, right 202.4px, bottom none
+    Left = -502.7   Top = 1180   Right = 170   Bottom = 2579.7909
+    Off-canvas left 502.7px, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 1056.025, 1564.0705
-    Unrotated X,Y = 691.025, 771.025
-    Unrotated W,H = 730 x 1586.0909
-    Rotation      = 5 deg  (identical to the device, one rigid group)
-    Corner radius = 64.24   (the overlay rounds this for you)
+    Centre        = -166.35, 1879.8955
+    Unrotated X,Y = -476.35, 1206.35
+    Unrotated W,H = 620 x 1347.0909
+    Rotation      = 0 deg  (identical to the device, one rigid group)
+    Corner radius = 54.56   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
     Delta         = 5.551e-17
-    Uniform scale of the source screenshot = 0.5530303030
+    Uniform scale of the source screenshot = 0.4696969697
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 
-DEVICE 2 of 2   role = front   layer = in front of device 1
-  Wanted screen = Build canvas
-  The Build screen mid-assembly, with a molecule actually on the canvas. Never an empty builder.
+DEVICE 2 of 3   role = back   layer = in front of device 1
+  Wanted screen = Finished compound
+  The result of a build: a completed compound sheet, or the 3D viewer if the app has one. Fully visible, so nothing is cropped.
 
-  X        = 70          (unrotated top-left)
-  Y        = 920
-  W        = 911.4
-  H        = 1896.4909
-  Rotation = -3 deg    (about the device centre, 525.7, 1868.2455)
-  Corner radius   = 109.62
-  Bezel thickness = 35.7 on every side
+  X        = 480          (unrotated top-left)
+  Y        = 760
+  W        = 759.5
+  H        = 1580.4091
+  Rotation = -3 deg    (about the device centre, 859.75, 1550.2045)
+  Corner radius   = 91.35
+  Bezel thickness = 29.75 on every side
 
   ROTATED BOUNDING BOX
-    Left = 20.9972   Top = 897.45   Right = 1030.4028   Bottom = 2839.0409
+    Left = 439.1643   Top = 741.2084   Right = 1280.3357   Bottom = 2359.2007
     Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 525.7, 1868.2455
-    Unrotated X,Y = 105.7, 955.7
-    Unrotated W,H = 840 x 1825.0909
+    Centre        = 859.75, 1550.2045
+    Unrotated X,Y = 509.75, 789.75
+    Unrotated W,H = 700 x 1520.9091
     Rotation      = -3 deg  (identical to the device, one rigid group)
-    Corner radius = 73.92   (the overlay rounds this for you)
+    Corner radius = 61.6   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
-    Delta         = 5.551e-17
-    Uniform scale of the source screenshot = 0.6363636364
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.5303030303
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
+
+DEVICE 3 of 3   role = front   layer = in front of device 2
+  Wanted screen = Build canvas
+  The Build screen mid-assembly, with a molecule actually on the canvas. Never an empty builder. Fully visible and dominant.
+
+  X        = 250          (unrotated top-left)
+  Y        = 940
+  W        = 868
+  H        = 1806.1818
+  Rotation = 2 deg    (about the device centre, 684, 1843.0909)
+  Corner radius   = 104.4
+  Bezel thickness = 34 on every side
+
+  ROTATED BOUNDING BOX
+    Left = 218.747   Top = 925.4038   Right = 1149.253   Bottom = 2760.7781
+    Off-canvas left none, right none, bottom none
+
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 684, 1843.0909
+    Unrotated X,Y = 284, 974
+    Unrotated W,H = 800 x 1738.1818
+    Rotation      = 2 deg  (identical to the device, one rigid group)
+    Corner radius = 70.4   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.6060606061
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
   Headline   = 122px / 119px, weight 800, tracking -3.4px
-  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Supporting = 50px / 64px, weight 500, #425873 at 0.88
   Left margin = 96px  (column 1128px)
-  Headline cap-top y = 236   Supporting baseline y = 510.499
+  Headline cap-top y = 236   Supporting baseline y = 514.1367
   Measured headline widths = 558.4, 596.2
-  Measured supporting widths = 759.4, 431.7
-  Widest line vs column = 759.4 / 1128
+  Measured supporting widths = 844.6, 480.0
+  Widest line vs column = 844.6 / 1128
 
 COPY
   Headline   = "Build Real" + "Molecules"
@@ -81,9 +110,11 @@ COPY
 
 LAYER ORDER (bottom to top)
   1. assets/backgrounds/03-build.png      1320x2868, opaque
-  2. your real capture for device 1 (Finished compound)
-  3. assets/device/03-build-overlay-back.png   RGBA, transparent screen
-  4. your real capture for device 2 (Build canvas)
-  5. assets/device/03-build-overlay-front.png   RGBA, transparent screen
+  2. your real capture for device 1 (Element detail)
+  3. assets/device/03-build-overlay-handoff.png   RGBA, transparent screen
+  4. your real capture for device 2 (Finished compound)
+  5. assets/device/03-build-overlay-back.png   RGBA, transparent screen
+  6. your real capture for device 3 (Build canvas)
+  7. assets/device/03-build-overlay-front.png   RGBA, transparent screen
 
-  python3 place_screenshot.py 03 <back>.png <front>.png
+  python3 place_screenshot.py 03 <handoff>.png <back>.png <front>.png

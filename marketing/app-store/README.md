@@ -40,16 +40,30 @@ no device is tilted more than 5 degrees.
 
 | # | file | headline | composition | devices |
 |---|---|---|---|---|
-| 1 | `01-hero.png` | Learn Chemistry Visually | centred, upright, fully visible, wide margins | 1 |
-| 2 | `02-elements.png` | Explore Every Element | oversized, leaning in from the lower right, cropped right and bottom | 1 |
-| 3 | `03-build.png` | Build Real Molecules | two phones, front low and left, rear high and right | 2 |
-| 4 | `04-element-detail.png` | See More Than Symbols | the largest device, near upright, edge to edge, bleeding off the bottom | 1 |
-| 5 | `05-study.png` | Study Smarter | two phones, mirrored from 03: rear enters left, front sits right | 2 |
-| 6 | `06-progress.png` | See Your Progress | rising out of the lower left corner, cropped on two sides | 1 |
+| 1 | `01-hero.png` | Learn Chemistry Visually | one full straight device, centred, wide margins | 1 |
+| 2 | `02-elements.png` | Explore Every Element | full straight periodic table device, plus a small handoff device leaving the right edge | 2 |
+| 3 | `03-build.png` | Build Real Molecules | the handoff device arriving at the left edge, then two complete overlapping Build phones | 3 |
+| 4 | `04-element-detail.png` | See More Than Symbols | one very large device, 1.5 degrees, fully visible | 1 |
+| 5 | `05-study.png` | Study Smarter | two complete overlapping devices, rear high and left, front low and right | 2 |
+| 6 | `06-progress.png` | See Your Progress | one complete device, small tilt, shifted right for an asymmetric close | 1 |
 
-Frames 1 to 3 carry the pitch on their own: what the app is, the table, the
-builder. Eight captures are needed in total, because frames 3 and 5 hold two
-devices each.
+Frames 1 to 3 are designed as one mini campaign: a calm hero, a calm periodic
+table, then the layered Build composition. Every device is a complete phone
+except the one handoff device described below.
+
+### The 2 to 3 handoff
+
+One device crosses the gallery. It leaves the right edge of frame 02 showing its
+left side, and arrives at the left edge of frame 03 showing its right side, at
+the same screen width, the same rotation and the same y. Side by side the two
+frames read as one device continuing; on its own each frame still reads as a
+finished composition, because this is a shared device rather than one image cut
+in half. The QA pass checks that the two halves match and that each shows the
+same amount, currently 170px.
+
+It is also the only device in the set permitted to leave the canvas. Everything
+else is a whole phone; the QA pass fails if any non-handoff device is clipped by
+the frame.
 
 ### Before you ship this copy
 
@@ -68,20 +82,24 @@ the rendered artwork.
 
 ## What is still needed
 
-Eight captures at **1320 x 2868** (iPhone 17 Pro Max or 16 Pro Max, or any
-device whose captures you can render at that size). Anything with a close aspect
-ratio is centre-cropped by a pixel or two rather than distorted.
+**Eight** captures at **1320 x 2868** (iPhone 17 Pro Max or 16 Pro Max, or any
+device whose captures you can render at that size). Ten device slots, but the
+element detail capture fills three of them. Anything with a close aspect ratio is
+centre-cropped by a pixel or two rather than distorted.
 
-| frame | device | capture | make sure |
-|---|---|---|---|
-| 01 | hero | Home | the strongest top level state; the most important image in the set |
-| 02 | hero | Periodic Table | scrolled so the grid fills the screen. The lower right is cropped, so keep the important rows high |
-| 03 | front | Build canvas | mid-assembly, with a molecule actually on the canvas. Never an empty builder |
-| 03 | back | Finished compound | the result of a build: a compound sheet, or the 3D viewer if the app has one. Cropped by the right edge, so keep the subject left of centre |
-| 04 | hero | Element detail | the most visually complete element, usually Carbon or Iron. The lower sixth is cropped, so keep the tile, name and key properties high |
-| 05 | front | Study overview | the Study home or dashboard, with real progress on it |
-| 05 | back | Quiz or flashcard | a quiz mid-question, or a flashcard. Cropped by the left edge, so keep the subject right of centre |
-| 06 | hero | Progress | enough real activity to look earned. Cropped left and bottom, so keep the headline numbers high and right |
+| capture | used by | make sure |
+|---|---|---|
+| Home | 01 hero | the strongest top level state; the most important image in the set |
+| Periodic Table | 02 main | scrolled so the grid fills the screen. Fully visible and straight on |
+| Element detail | 02 handoff, 03 handoff, 04 hero | the most visually complete element. Iron matches frame 04's shell diagram. In 02 only its left side shows and in 03 only its right, so keep the element tile and name off-centre-left |
+| Build canvas | 03 front | mid-assembly, with a molecule actually on the canvas. Never an empty builder |
+| Finished compound | 03 back | the result of a build: a compound sheet, or the 3D viewer if the app has one |
+| Study overview | 05 front | the Study home or dashboard, with real progress on it |
+| Quiz or flashcard | 05 back | a quiz mid-question, or a flashcard |
+| Progress | 06 hero | enough real activity to look earned |
+
+Nothing but the handoff device is cropped, so every capture can be composed for
+its full frame.
 
 Populate the app with believable sample data first. Empty states sell nothing.
 
@@ -104,12 +122,17 @@ Then copy the chosen file into `screenshots/selected/`, keeping the `NN-` prefix
 and for the two-device frames include the word `front` or `back` in the name:
 
 ```
-01-home.png   02-periodic-table.png
-03-front-build.png   03-back-compound.png
+01-home.png
+02-main-periodic-table.png      02-handoff-element-detail.png
+03-front-build.png              03-back-compound.png
+03-handoff-element-detail.png
 04-element-detail.png
-05-front-study.png   05-back-quiz.png
+05-front-study.png              05-back-quiz.png
 06-progress.png
 ```
+
+The three element detail entries are the same capture under three names; copy the
+file rather than taking three screenshots.
 
 ### Inserting a real screenshot
 
@@ -122,8 +145,8 @@ cd marketing/app-store
 python3 place_screenshot.py --all                         # everything it can find
 python3 place_screenshot.py 01 screenshots/selected/01-home.png
 python3 place_screenshot.py hero screenshots/selected/01-home.png      # slug works too
-python3 place_screenshot.py 03 back.png front.png                     # layer order
-python3 place_screenshot.py 03 --front build.png --back compound.png  # or by role
+python3 place_screenshot.py 03 handoff.png back.png front.png          # layer order
+python3 place_screenshot.py 03 --front build.png --back compound.png --handoff detail.png
 ```
 
 Output overwrites `exports/iphone/NN-slug.png`. `--all` places what it finds and
@@ -143,12 +166,27 @@ centre; the QA pass enforces that. Margin is 96px, giving a 1128px column, and
 every line is measured in the real renderer at build time so the build fails if
 one exceeds it.
 
-**Variety.** Device widths run from 792px to 1199px across the set. Two frames
-carry two devices, four carry one. Tilts stay between 0 and 5 degrees and are
-rigid 2D rotations of the whole device group, never a perspective homography,
-which is why a real screenshot follows the bezel exactly. The QA pass fingerprints
-each frame by device count, scale band, horizontal placement and which edges it
-crops, and fails if the six do not produce at least five distinct signatures.
+**Variety.** Device widths run from 673px to 1009px across the set. Three frames
+carry more than one device, three carry one. Tilts stay between 0 and 3 degrees
+and are rigid 2D rotations of the whole device group, never a perspective
+homography, which is why a real screenshot follows the bezel exactly. The QA pass
+fingerprints each frame by device count, scale band, horizontal placement and
+rotation, and fails if the six do not produce at least five distinct signatures.
+It also fails if any frame's largest device drops below 63 percent of the canvas
+width, because the product has to stay the hero.
+
+**Background hierarchy.** Every frame carries exactly one anchor motif at 8 to 12
+percent, one to three secondary marks at 4 to 7 percent, and at least one ambient
+mark at 2 to 4 percent, with at most five marks in total. The build records the
+inventory into each frame's geometry file and the QA pass enforces those bands,
+so no frame can drift back into uniformly faint wallpaper. The anchors are sized
+to pass *behind* the devices and surface again on the far side: a decane chain
+crossing frame 01, an iron shell diagram wider than the phone in frame 04, a
+period 1-4 table fragment sliding under frames 02 and 06. That occlusion is what
+seats the devices in the composition.
+
+Everything is crisp vector linework at low opacity. Nothing is blurred to make it
+subtle, so the chemistry is legible to anyone who looks closely.
 
 **Integration.** Every device sits on three shadow passes: a wide ambient bloom,
 a mid body shadow, and a tight contact shadow hugging the silhouette, plus a
@@ -158,11 +196,15 @@ overlap read as depth rather than collage.
 
 **Typography.** Inter (latin variable subset), embedded in every SVG so a render
 is self-contained. Headline 122px/119px ExtraBold, tracking -3.4. Supporting
-45px/59px Medium.
+50px/64px Medium, raised from 45px so it stays readable at App Store browsing
+scale without competing with the headline.
 
-**Device.** One rigid group derived from a single screen width, so the 1320:2868
-opening can never distort. Light titanium rim, thin black border, and a Dynamic
-Island drawn *over* the screenshot, because it is hardware rather than app UI.
+**Device.** A neutral, custom-drawn vector frame: no Apple product imagery is
+used anywhere in this system, so rotating, overlapping or cropping a device does
+not touch Apple marketing assets. One rigid group derived from a single screen
+width, so the 1320:2868 opening can never distort. Light titanium rim, thin black
+border, and a Dynamic Island drawn *over* the screenshot, because it is hardware
+rather than app UI. The hardware stays understated; the app UI is the product.
 
 ### Palette provenance
 
@@ -208,7 +250,7 @@ The structure library, all checked:
 | Toluene | C7H8 | Acetic acid | C2H4O2 |
 | Phenol | C6H6O | Butane | C4H10 |
 | Naphthalene | C10H8 | Hexane | C6H14 |
-| Caffeine | C8H10N4O2 | | |
+| Caffeine | C8H10N4O2 | Decane | C10H22 |
 
 `verify.py` does not trust those labels. It reads the drawn graph out of
 `source/skeletal.json` and re-derives each molecular formula from the bond orders
@@ -251,13 +293,20 @@ everything else is derived.
   six headlines match the agreed sequence
 - decoration never exceeds 20 percent opacity
 - the six frames produce at least five distinct composition signatures, device
-  widths span more than 250px, and exactly two frames carry two devices
+  widths span more than 250px, exactly three frames carry more than one device,
+  and every frame's largest device is at least 63 percent of the canvas width
+- frame 02's periodic table device is exactly 0 degrees
+- only a handoff device leaves the canvas; every other device is complete
+- the 02 to 03 handoff carries the same screen width, rotation and y, exits right
+  in 02, enters left in 03, and shows the same amount in both
+- exactly one anchor motif per frame at 8 to 12 percent, something ambient at 6
+  percent or below, and no more than five decorative marks
 - no fabricated app UI: every template still carries its screenshot placeholder
 - no 3D ball-and-stick renderer or assets
 - chemistry: derived formulas match their labels, no over-valent atoms, uniform
   bond lengths, shells sum to Z, weights match reference data, equations balance
 
-Current state: **455 checks, 0 failures, 0 warnings.**
+Current state: **519 checks, 0 failures, 0 warnings.**
 
 ## Relationship to CoreCredit
 

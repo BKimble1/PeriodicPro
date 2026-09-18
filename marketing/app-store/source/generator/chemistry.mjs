@@ -175,6 +175,11 @@ export const SKELETAL = {
     pts: chain(6),
     bonds: [[0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 4, 1], [4, 5, 1]],
   },
+  decane: {
+    name: 'Decane', formula: 'C10H22',
+    pts: chain(10),
+    bonds: Array.from({ length: 9 }, (_, i) => [i, i + 1, 1]),
+  },
   caffeine: {
     name: 'Caffeine', formula: 'C8H10N4O2',
     pts: CAF,

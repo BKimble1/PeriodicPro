@@ -1,9 +1,12 @@
-/* 01  HERO.  One large centred device, dead straight so the hero capture stays
-   pixel sharp. Composition: CENTRE HERO. The quietest decoration in the set:
-   a half benzene leaving the left edge, half a naphthalene leaving the right,
-   two element tiles and a barely-there orbit diagram in the bottom corner. */
+/* 01  HERO.  One full, straight, centred device: the calm introduction.
+
+   Background hierarchy
+     anchor     a decane chain crossing the whole canvas, entering at the left
+                margin, vanishing behind the phone and reappearing on the right
+     secondary  two element tiles, one of them tucked behind the phone edge
+     ambient    a balanced equation along the bottom                          */
 import { C } from '../system.mjs';
-import { skeletal, elementTile, orbits } from '../chemistry.mjs';
+import { skeletal, elementTile, formula, EQUATIONS } from '../chemistry.mjs';
 
 export default {
   id: '01', slug: 'hero',
@@ -21,10 +24,9 @@ export default {
     { x: 660, y: 2780, r: 940, c: C.paleA, o: 0.50 },
   ],
   deco: () => [
-    elementTile('C', { x: 1152, y: 116, w: 176, opacity: 0.07, rot: 4 }),
-    elementTile('O', { x: -34, y: 2364, w: 182, opacity: 0.06, rot: -5 }),
-    orbits({ cx: 36, cy: 2768, r: 232, opacity: 0.05 }),
-    skeletal('benzene', { cx: 16, cy: 1480, scale: 152, opacity: 0.062, width: 8 }),
-    skeletal('naphthalene', { cx: 1316, cy: 2076, scale: 112, rot: 90, opacity: 0.058, width: 8 }),
-  ].join('\n'),
+    skeletal('decane', { cx: 660, cy: 2150, scale: 150, rot: 5, opacity: 0.10, width: 9 }),
+    elementTile('C', { x: 1150, y: 120, w: 178, opacity: 0.055, rot: 4 }),
+    elementTile('O', { x: 30, y: 1180, w: 186, opacity: 0.05, rot: -5 }),
+    formula(EQUATIONS.combustionH2, { x: 660, y: 2848, size: 46, opacity: 0.032, anchor: 'middle' }),
+  ],
 };

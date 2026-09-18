@@ -17,31 +17,31 @@
   {
    "role": "hero",
    "label": "Progress",
-   "need": "The progress or mastery view, with enough real activity on it to look earned. Cropped on the left and bottom, so keep the headline numbers high and right.",
+   "need": "The progress or mastery view, with enough real activity on it to look earned. Fully visible, so nothing is cropped.",
    "sfx": "-a",
-   "x": -46,
-   "y": 940,
-   "w": 1041.6,
-   "h": 2167.418181818182,
-   "r": 125.28,
-   "rot": 5,
-   "cx": 474.79999999999995,
-   "cy": 2023.709090909091,
-   "bezel": 40.800000000000004,
-   "scale": 0.9696969696969697,
-   "screenX": -5.199999999999996,
-   "screenY": 980.8,
-   "screenW": 960,
-   "screenH": 2085.818181818182,
-   "screenR": 84.47999999999999,
-   "screenCX": 474.8,
-   "screenCY": 2023.709090909091,
-   "uniformScale": 0.7272727272727273,
+   "x": 320,
+   "y": 720,
+   "w": 954.8,
+   "h": 1986.8,
+   "r": 114.84,
+   "rot": 2.5,
+   "cx": 797.4,
+   "cy": 1713.4,
+   "bezel": 37.400000000000006,
+   "scale": 0.8888888888888888,
+   "screenX": 357.4,
+   "screenY": 757.4,
+   "screenW": 880,
+   "screenH": 1912,
+   "screenR": 77.44,
+   "screenCX": 797.4,
+   "screenCY": 1713.4,
+   "uniformScale": 0.6666666666666666,
    "bounds": {
-    "minX": -138.46966950675233,
-    "maxX": 1088.0696695067522,
-    "minY": 898.7331294486487,
-    "maxY": 3148.685052369533
+    "minX": 277.12287960809624,
+    "maxX": 1317.6771203919038,
+    "minY": 700.1216011523711,
+    "maxY": 2726.678398847629
    },
    "overlay": "assets/device/06-progress-overlay.png"
   }
@@ -49,6 +49,20 @@
  "background": "assets/backgrounds/06-progress.png",
  "output": "exports/iphone/06-progress.png",
  "copyTop": 236,
- "copyBottom": 580.2990234375,
- "copyX": 96
+ "copyBottom": 590.13671875,
+ "copyX": 96,
+ "decoration": [
+  {
+   "kind": "Periodic",
+   "opacity": 0.1
+  },
+  {
+   "kind": "Formula",
+   "opacity": 0.055
+  },
+  {
+   "kind": "Tile",
+   "opacity": 0.03
+  }
+ ]
 }

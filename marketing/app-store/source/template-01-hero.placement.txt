@@ -39,11 +39,11 @@ DEVICE 1 of 1   role = hero   layer = backmost
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
   Headline   = 122px / 119px, weight 800, tracking -3.4px
-  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Supporting = 50px / 64px, weight 500, #425873 at 0.88
   Left margin = 96px  (column 1128px)
-  Headline cap-top y = 236   Supporting baseline y = 510.499
+  Headline cap-top y = 236   Supporting baseline y = 514.1367
   Measured headline widths = 957.3, 469.5
-  Measured supporting widths = 830.9, 689.6
+  Measured supporting widths = 924.1, 767.0
   Widest line vs column = 957.3 / 1128
 
 COPY

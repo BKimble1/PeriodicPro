@@ -1,11 +1,25 @@
-/* 02  PERIODIC TABLE.  Composition: OVERSIZED DIAGONAL ENTRY. The largest
-   single device in the set leans in from the lower right and runs off both the
-   right and bottom edges, opening a wide diagonal of negative space on the
-   left. That space carries a true period 1-4 table fragment and two oversized
-   element tiles, so the decoration says "periodic table" before the screenshot
-   does. */
+/* 02  PERIODIC TABLE.  The primary device is straight, full and large, because
+   the real periodic table screen carries plenty of visual information on its
+   own and the frame around it should stay calm.
+
+   A much smaller secondary device sits at the right edge and is the only thing
+   in this frame allowed to leave the canvas. It is the first half of the
+   handoff into frame 03: same screen width, same rotation, same y, and it shows
+   its LEFT side here because it is on its way out to the right. Frame 03 picks
+   the same device up at its left edge showing its RIGHT side. The two frames
+   still read correctly on their own.
+
+   Background hierarchy
+     anchor     a period 1-4 table fragment sliding under the phone and out
+                both sides
+     secondary  an orbit diagram off the top right, one oversized carbon tile
+                half hidden behind the phone
+     ambient    a balanced equation along the bottom                          */
 import { C } from '../system.mjs';
-import { skeletal, elementTile, periodicFragment } from '../chemistry.mjs';
+import { elementTile, periodicFragment, orbits, formula, EQUATIONS } from '../chemistry.mjs';
+
+/* shared with frame 03: the handoff device must match on all three */
+export const HANDOFF = { screenW: 620, rot: 0, y: 1180 };
 
 export default {
   id: '02', slug: 'elements',
@@ -13,20 +27,26 @@ export default {
   headline: ['Explore Every', 'Element'],
   sub: ['Browse the periodic table and open', 'any element for the full picture.'],
   copy: { top: 236, align: 'start' },
-  devices: [{
-    role: 'hero', label: 'Periodic Table', screenW: 1040, x: 470, y: 860, rot: -5,
-    need: 'The full periodic table, scrolled so the grid fills the screen. The lower right of this capture is cropped by the canvas, so keep the important rows high.',
-  }],
+  devices: [
+    {
+      role: 'handoff', label: 'Element detail',
+      screenW: HANDOFF.screenW, x: 1150, y: HANDOFF.y, rot: HANDOFF.rot,
+      need: 'An element detail screen, the same capture used at the left edge of frame 03 and as frame 04. Only its left side shows here, so keep the element tile and name in the left half.',
+    },
+    {
+      role: 'main', label: 'Periodic Table', screenW: 900, x: 120, y: 740, rot: 0,
+      need: 'The full periodic table, scrolled so the grid fills the screen. Fully visible and straight on, so nothing is cropped.',
+    },
+  ],
   light: [
-    { x: 250, y: 1500, r: 1140, c: C.paleC, o: 0.62 },
-    { x: 1080, y: 380, r: 960, c: C.paleB, o: 0.42 },
-    { x: 220, y: 2760, r: 900, c: C.paleA, o: 0.46 },
+    { x: 300, y: 1400, r: 1160, c: C.paleC, o: 0.58 },
+    { x: 1140, y: 480, r: 980, c: C.paleB, o: 0.44 },
+    { x: 520, y: 2740, r: 920, c: C.paleA, o: 0.48 },
   ],
   deco: () => [
-    periodicFragment({ x: -80, y: 1204, cell: 58, gap: 9, opacity: 0.058 }),
-    elementTile('C', { x: 28, y: 1560, w: 238, variant: 'soft', opacity: 0.13, rot: -4 }),
-    elementTile('Fe', { x: 44, y: 1910, w: 206, opacity: 0.075, rot: 3 }),
-    elementTile('O', { x: 1116, y: 168, w: 172, opacity: 0.065, rot: 5 }),
-    skeletal('benzene', { cx: 6, cy: 2424, scale: 152, opacity: 0.072, width: 10 }),
-  ].join('\n'),
+    periodicFragment({ x: -100, y: 2560, cell: 72, gap: 11, opacity: 0.10 }),
+    orbits({ cx: 1245, cy: 880, r: 215, opacity: 0.055 }),
+    elementTile('C', { x: -46, y: 1320, w: 230, variant: 'soft', opacity: 0.06, rot: -4 }),
+    formula(EQUATIONS.saltFormation, { x: 96, y: 2840, size: 44, opacity: 0.03 }),
+  ],
 };

@@ -9,42 +9,42 @@ CANVAS
 
 DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Element Detail
-  One element detail screen, the most visually complete you have. Carbon or Iron usually read best. The lower sixth is cropped by the canvas, so keep the tile, name and key properties high.
+  One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.
 
-  X        = 112          (unrotated top-left)
-  Y        = 800
-  W        = 1198.925
-  H        = 2494.7886
-  Rotation = 1.5 deg    (about the device centre, 711.4625, 2047.3943)
-  Corner radius   = 144.2025
-  Bezel thickness = 46.9625 on every side
+  X        = 70          (unrotated top-left)
+  Y        = 720
+  W        = 1009.05
+  H        = 2099.6864
+  Rotation = 1.5 deg    (about the device centre, 574.525, 1769.8432)
+  Corner radius   = 121.365
+  Bezel thickness = 39.525 on every side
 
   ROTATED BOUNDING BOX
-    Left = 79.5524   Top = 784.7354   Right = 1343.3726   Bottom = 3310.0533
-    Off-canvas left none, right 23.4px, bottom 442.1px
+    Left = 42.6912   Top = 707.1528   Right = 1106.3588   Bottom = 2832.5335
+    Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 711.4625, 2047.3943
-    Unrotated X,Y = 158.9625, 846.9625
-    Unrotated W,H = 1105 x 2400.8636
+    Centre        = 574.525, 1769.8432
+    Unrotated X,Y = 109.525, 759.525
+    Unrotated W,H = 930 x 2020.6364
     Rotation      = 1.5 deg  (identical to the device, one rigid group)
-    Corner radius = 97.24   (the overlay rounds this for you)
+    Corner radius = 81.84   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
     Delta         = 0.000e+0
-    Uniform scale of the source screenshot = 0.8371212121
+    Uniform scale of the source screenshot = 0.7045454545
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
   Headline   = 122px / 119px, weight 800, tracking -3.4px
-  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Supporting = 50px / 64px, weight 500, #425873 at 0.88
   Left margin = 96px  (column 1128px)
-  Headline cap-top y = 236   Supporting baseline y = 510.499
+  Headline cap-top y = 236   Supporting baseline y = 514.1367
   Measured headline widths = 857.4, 503.6
-  Measured supporting widths = 773.0, 643.5
-  Widest line vs column = 857.4 / 1128
+  Measured supporting widths = 859.7, 715.6
+  Widest line vs column = 859.7 / 1128
 
 COPY
   Headline   = "See More Than" + "Symbols"

@@ -17,31 +17,31 @@
   {
    "role": "hero",
    "label": "Element Detail",
-   "need": "One element detail screen, the most visually complete you have. Carbon or Iron usually read best. The lower sixth is cropped by the canvas, so keep the tile, name and key properties high.",
+   "need": "One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.",
    "sfx": "-a",
-   "x": 112,
-   "y": 800,
-   "w": 1198.925,
-   "h": 2494.7886363636367,
-   "r": 144.2025,
+   "x": 70,
+   "y": 720,
+   "w": 1009.05,
+   "h": 2099.6863636363637,
+   "r": 121.365,
    "rot": 1.5,
-   "cx": 711.4625,
-   "cy": 2047.3943181818183,
-   "bezel": 46.962500000000006,
-   "scale": 1.1161616161616161,
-   "screenX": 158.9625,
-   "screenY": 846.9625,
-   "screenW": 1105,
-   "screenH": 2400.8636363636365,
-   "screenR": 97.24,
-   "screenCX": 711.4625,
-   "screenCY": 2047.394318181818,
-   "uniformScale": 0.8371212121212122,
+   "cx": 574.525,
+   "cy": 1769.8431818181818,
+   "bezel": 39.525000000000006,
+   "scale": 0.9393939393939394,
+   "screenX": 109.525,
+   "screenY": 759.525,
+   "screenW": 930,
+   "screenH": 2020.6363636363637,
+   "screenR": 81.83999999999999,
+   "screenCX": 574.525,
+   "screenCY": 1769.8431818181818,
+   "uniformScale": 0.7045454545454546,
    "bounds": {
-    "minX": 79.55244424025989,
-    "maxX": 1343.37255575974,
-    "minY": 784.7353520034642,
-    "maxY": 3310.0532843601723
+    "minX": 42.69119741487941,
+    "maxX": 1106.3588025851204,
+    "minY": 707.1528301929609,
+    "maxY": 2832.533533443403
    },
    "overlay": "assets/device/04-element-detail-overlay.png"
   }
@@ -49,6 +49,20 @@
  "background": "assets/backgrounds/04-element-detail.png",
  "output": "exports/iphone/04-element-detail.png",
  "copyTop": 236,
- "copyBottom": 580.2990234375,
- "copyX": 96
+ "copyBottom": 590.13671875,
+ "copyX": 96,
+ "decoration": [
+  {
+   "kind": "Bohr",
+   "opacity": 0.095
+  },
+  {
+   "kind": "Tile",
+   "opacity": 0.06
+  },
+  {
+   "kind": "Skeletal",
+   "opacity": 0.03
+  }
+ ]
 }

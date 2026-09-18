@@ -1,10 +1,15 @@
-/* 06  PROGRESS.  Composition: SINGLE DEVICE, HARD OFFSET. The closing image
-   returns to one phone but places it nothing like frame 01: rising out of the
-   lower left corner, cropped on two sides, with the whole right of the canvas
-   left deliberately empty. An ethanol chain and a hexane chain drift in from
-   that empty side at watermark strength. */
+/* 06  PROGRESS.  The closing image: one complete device, a small tilt, shifted well
+   right of centre, opening a wide left margin, so the frame closes the set
+   asymmetrically without cropping anything. After
+   frame 01 this is the cleanest background in the set.
+
+   Background hierarchy
+     anchor     a period 1-4 table fragment running behind the device and out
+                both sides, the scientific grid the headline is talking about
+     secondary  one balanced equation along the bottom
+     ambient    a single iron tile half hidden by the device                  */
 import { C } from '../system.mjs';
-import { skeletal, elementTile, periodicFragment, formula, EQUATIONS } from '../chemistry.mjs';
+import { elementTile, periodicFragment, formula, EQUATIONS } from '../chemistry.mjs';
 
 export default {
   id: '06', slug: 'progress',
@@ -13,19 +18,17 @@ export default {
   sub: ['Track mastery, activity, and what', 'to review next.'],
   copy: { top: 236, align: 'start' },
   devices: [{
-    role: 'hero', label: 'Progress', screenW: 960, x: -46, y: 940, rot: 5,
-    need: 'The progress or mastery view, with enough real activity on it to look earned. Cropped on the left and bottom, so keep the headline numbers high and right.',
+    role: 'hero', label: 'Progress', screenW: 880, x: 320, y: 720, rot: 2.5,
+    need: 'The progress or mastery view, with enough real activity on it to look earned. Fully visible, so nothing is cropped.',
   }],
   light: [
-    { x: 420, y: 1720, r: 1160, c: C.paleC, o: 0.56 },
-    { x: 1140, y: 520, r: 1000, c: C.paleB, o: 0.46 },
-    { x: 1160, y: 2620, r: 900, c: C.paleA, o: 0.50 },
+    { x: 420, y: 1700, r: 1160, c: C.paleC, o: 0.54 },
+    { x: 1160, y: 540, r: 1000, c: C.paleB, o: 0.46 },
+    { x: 180, y: 2680, r: 900, c: C.paleA, o: 0.48 },
   ],
   deco: () => [
-    periodicFragment({ x: 704, y: 88, cell: 30, gap: 5, opacity: 0.065 }),
-    formula(EQUATIONS.combustionH2, { x: 1224, y: 790, size: 50, opacity: 0.09, anchor: 'end' }),
-    elementTile('Fe', { x: 1158, y: 2276, w: 184, opacity: 0.07, rot: 4 }),
-    skeletal('hexane', { cx: 1272, cy: 1452, scale: 134, rot: -14, opacity: 0.075, width: 10 }),
-    skeletal('ethanol', { cx: 1252, cy: 1872, scale: 122, rot: 8, opacity: 0.065, width: 10 }),
-  ].join('\n'),
+    periodicFragment({ x: -100, y: 1500, cell: 72, gap: 11, opacity: 0.10 }),
+    formula(EQUATIONS.combustionH2, { x: 96, y: 2848, size: 48, opacity: 0.055 }),
+    elementTile('Fe', { x: 150, y: 2300, w: 176, opacity: 0.03, rot: -5 }),
+  ],
 };

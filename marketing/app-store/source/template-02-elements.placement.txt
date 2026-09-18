@@ -5,46 +5,75 @@ Production placement data, measured from the finished composition. Pixels.
 CANVAS
   W = 1320
   H = 2868
-  Devices = 1
+  Devices = 2
 
-DEVICE 1 of 1   role = hero   layer = backmost
-  Wanted screen = Periodic Table
-  The full periodic table, scrolled so the grid fills the screen. The lower right of this capture is cropped by the canvas, so keep the important rows high.
+DEVICE 1 of 2   role = handoff   layer = backmost
+  Wanted screen = Element detail
+  An element detail screen, the same capture used at the left edge of frame 03 and as frame 04. Only its left side shows here, so keep the element tile and name in the left half.
 
-  X        = 470          (unrotated top-left)
-  Y        = 860
-  W        = 1128.4
-  H        = 2348.0364
-  Rotation = -5 deg    (about the device centre, 1034.2, 2034.0182)
-  Corner radius   = 135.72
-  Bezel thickness = 44.2 on every side
+  X        = 1150          (unrotated top-left)
+  Y        = 1180
+  W        = 672.7
+  H        = 1399.7909
+  Rotation = 0 deg    (about the device centre, 1486.35, 1879.8955)
+  Corner radius   = 80.91
+  Bezel thickness = 26.35 on every side
 
   ROTATED BOUNDING BOX
-    Left = 369.8245   Top = 815.2942   Right = 1698.5755   Bottom = 3252.7421
-    Off-canvas left none, right 378.6px, bottom 384.7px
+    Left = 1150   Top = 1180   Right = 1822.7   Bottom = 2579.7909
+    Off-canvas left none, right 502.7px, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 1034.2, 2034.0182
-    Unrotated X,Y = 514.2, 904.2
-    Unrotated W,H = 1040 x 2259.6364
-    Rotation      = -5 deg  (identical to the device, one rigid group)
-    Corner radius = 91.52   (the overlay rounds this for you)
+    Centre        = 1486.35, 1879.8955
+    Unrotated X,Y = 1176.35, 1206.35
+    Unrotated W,H = 620 x 1347.0909
+    Rotation      = 0 deg  (identical to the device, one rigid group)
+    Corner radius = 54.56   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
     Delta         = 5.551e-17
-    Uniform scale of the source screenshot = 0.7878787879
+    Uniform scale of the source screenshot = 0.4696969697
+    NEVER scale X and Y independently, and never rotate the screenshot
+    separately from the bezel. Set the size first, then apply the rotation.
+
+DEVICE 2 of 2   role = main   layer = in front of device 1
+  Wanted screen = Periodic Table
+  The full periodic table, scrolled so the grid fills the screen. Fully visible and straight on, so nothing is cropped.
+
+  X        = 120          (unrotated top-left)
+  Y        = 740
+  W        = 976.5
+  H        = 2031.9545
+  Rotation = 0 deg    (about the device centre, 608.25, 1755.9773)
+  Corner radius   = 117.45
+  Bezel thickness = 38.25 on every side
+
+  ROTATED BOUNDING BOX
+    Left = 120   Top = 740   Right = 1096.5   Bottom = 2771.9545
+    Off-canvas left none, right none, bottom none
+
+  SCREENSHOT  (place the real 1320x2868 capture here)
+    Centre        = 608.25, 1755.9773
+    Unrotated X,Y = 158.25, 778.25
+    Unrotated W,H = 900 x 1955.4545
+    Rotation      = 0 deg  (identical to the device, one rigid group)
+    Corner radius = 79.2   (the overlay rounds this for you)
+    Aspect ratio  = 0.4602510460251046
+    Required      = 1320 / 2868 = 0.4602510460251046
+    Delta         = 0.000e+0
+    Uniform scale of the source screenshot = 0.6818181818
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
   Headline   = 122px / 119px, weight 800, tracking -3.4px
-  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Supporting = 50px / 64px, weight 500, #425873 at 0.88
   Left margin = 96px  (column 1128px)
-  Headline cap-top y = 236   Supporting baseline y = 510.499
+  Headline cap-top y = 236   Supporting baseline y = 514.1367
   Measured headline widths = 790.6, 470.7
-  Measured supporting widths = 753.8, 664.5
-  Widest line vs column = 790.6 / 1128
+  Measured supporting widths = 838.3, 739.0
+  Widest line vs column = 838.3 / 1128
 
 COPY
   Headline   = "Explore Every" + "Element"
@@ -52,7 +81,9 @@ COPY
 
 LAYER ORDER (bottom to top)
   1. assets/backgrounds/02-elements.png      1320x2868, opaque
-  2. your real capture for device 1 (Periodic Table)
-  3. assets/device/02-elements-overlay.png   RGBA, transparent screen
+  2. your real capture for device 1 (Element detail)
+  3. assets/device/02-elements-overlay-handoff.png   RGBA, transparent screen
+  4. your real capture for device 2 (Periodic Table)
+  5. assets/device/02-elements-overlay-main.png   RGBA, transparent screen
 
-  python3 place_screenshot.py 02 <hero>.png
+  python3 place_screenshot.py 02 <handoff>.png <main>.png

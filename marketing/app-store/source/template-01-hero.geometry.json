@@ -49,6 +49,24 @@
  "background": "assets/backgrounds/01-hero.png",
  "output": "exports/iphone/01-hero.png",
  "copyTop": 236,
- "copyBottom": 580.2990234375,
- "copyX": 96
+ "copyBottom": 590.13671875,
+ "copyX": 96,
+ "decoration": [
+  {
+   "kind": "Skeletal",
+   "opacity": 0.1
+  },
+  {
+   "kind": "Tile",
+   "opacity": 0.055
+  },
+  {
+   "kind": "Tile",
+   "opacity": 0.05
+  },
+  {
+   "kind": "Formula",
+   "opacity": 0.032
+  }
+ ]
 }

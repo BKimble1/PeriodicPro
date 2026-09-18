@@ -9,70 +9,70 @@ CANVAS
 
 DEVICE 1 of 2   role = back   layer = backmost
   Wanted screen = Quiz or flashcard
-  The second strongest study surface: a quiz mid-question, or a flashcard. Cropped by the left edge, so keep the subject right of centre.
+  The second study surface: a quiz mid-question, or a flashcard. Fully visible, so nothing is cropped.
 
-  X        = -70          (unrotated top-left)
-  Y        = 800
-  W        = 868
-  H        = 1806.1818
-  Rotation = 4 deg    (about the device centre, 364, 1703.0909)
-  Corner radius   = 104.4
-  Bezel thickness = 34 on every side
+  X        = 96          (unrotated top-left)
+  Y        = 700
+  W        = 802.9
+  H        = 1670.7182
+  Rotation = -3 deg    (about the device centre, 497.45, 1535.3591)
+  Corner radius   = 96.57
+  Bezel thickness = 31.45 on every side
 
   ROTATED BOUNDING BOX
-    Left = -131.9392   Top = 771.9256   Right = 859.9392   Bottom = 2634.2562
-    Off-canvas left 131.9px, right none, bottom none
+    Left = 52.8309   Top = 680.1346   Right = 942.0691   Bottom = 2390.5836
+    Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 364, 1703.0909
-    Unrotated X,Y = -36, 834
-    Unrotated W,H = 800 x 1738.1818
-    Rotation      = 4 deg  (identical to the device, one rigid group)
-    Corner radius = 70.4   (the overlay rounds this for you)
+    Centre        = 497.45, 1535.3591
+    Unrotated X,Y = 127.45, 731.45
+    Unrotated W,H = 740 x 1607.8182
+    Rotation      = -3 deg  (identical to the device, one rigid group)
+    Corner radius = 65.12   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
-    Delta         = 0.000e+0
-    Uniform scale of the source screenshot = 0.6060606061
+    Delta         = 5.551e-17
+    Uniform scale of the source screenshot = 0.5606060606
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 
 DEVICE 2 of 2   role = front   layer = in front of device 1
   Wanted screen = Study overview
-  The Study home or dashboard, with real progress on it. This is the dominant device.
+  The Study home or dashboard, with real progress on it. The dominant device, fully visible.
 
-  X        = 392          (unrotated top-left)
-  Y        = 910
-  W        = 980.84
-  H        = 2040.9855
-  Rotation = -4 deg    (about the device centre, 882.42, 1930.4927)
-  Corner radius   = 117.972
-  Bezel thickness = 38.42 on every side
+  X        = 380          (unrotated top-left)
+  Y        = 900
+  W        = 878.85
+  H        = 1828.7591
+  Rotation = 3 deg    (about the device centre, 819.425, 1814.3795)
+  Corner radius   = 105.705
+  Bezel thickness = 34.425 on every side
 
   ROTATED BOUNDING BOX
-    Left = 322.0087   Top = 878.2759   Right = 1442.8313   Bottom = 2982.7096
-    Off-canvas left none, right 122.8px, bottom 114.7px
+    Left = 332.7473   Top = 878.2554   Right = 1306.1027   Bottom = 2750.5037
+    Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 882.42, 1930.4927
-    Unrotated X,Y = 430.42, 948.42
-    Unrotated W,H = 904 x 1964.1455
-    Rotation      = -4 deg  (identical to the device, one rigid group)
-    Corner radius = 79.552   (the overlay rounds this for you)
+    Centre        = 819.425, 1814.3795
+    Unrotated X,Y = 414.425, 934.425
+    Unrotated W,H = 810 x 1759.9091
+    Rotation      = 3 deg  (identical to the device, one rigid group)
+    Corner radius = 71.28   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
     Delta         = 0.000e+0
-    Uniform scale of the source screenshot = 0.6848484848
+    Uniform scale of the source screenshot = 0.6136363636
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 
 TYPOGRAPHY
   Family     = Inter (latin variable, embedded in the SVG)
   Headline   = 122px / 119px, weight 800, tracking -3.4px
-  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Supporting = 50px / 64px, weight 500, #425873 at 0.88
   Left margin = 96px  (column 1128px)
-  Headline cap-top y = 296   Supporting baseline y = 451.499
+  Headline cap-top y = 296   Supporting baseline y = 455.1367
   Measured headline widths = 833.1
-  Measured supporting widths = 672.0, 465.9
+  Measured supporting widths = 747.6, 518.1
   Widest line vs column = 833.1 / 1128
 
 COPY

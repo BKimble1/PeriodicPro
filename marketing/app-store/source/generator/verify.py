@@ -332,24 +332,89 @@ ok(max(centres) - min(centres) < 14,
 rots = [d["rot"] for g in frames for d in g["devices"]]
 ok(all(abs(x) <= 5 for x in rots), f"a device is tilted too far: {rots}")
 
+# Screenshot 2's primary device must be dead straight: the real periodic table
+# carries the visual complexity, the frame around it stays calm.
+f02 = next(g for g in frames if g["id"] == "02")
+main02 = next(d for d in f02["devices"] if d["role"] == "main")
+ok(main02["rot"] == 0, f"02: the periodic table device is rotated {main02['rot']} deg, must be 0")
+
+# Only a device whose role is 'handoff' may leave the canvas. Every other device
+# has to read as a complete phone.
+for g in frames:
+    for d in g["devices"]:
+        b = d["bounds"]
+        inside = (b["minX"] >= -2 and b["maxX"] <= CW + 2
+                  and b["minY"] >= -2 and b["maxY"] <= CH + 2)
+        if d["role"] == "handoff":
+            ok(not inside, f"{g['id']}/{d['role']}: a handoff device should leave the canvas")
+        else:
+            ok(inside,
+               f"{g['id']}/{d['role']}: device is cut by the canvas "
+               f"(x {b['minX']:.0f}..{b['maxX']:.0f}, y {b['minY']:.0f}..{b['maxY']:.0f}); "
+               f"only a handoff device may do that")
+
+# The cross-screen handoff: frames 02 and 03 must carry the SAME device, so the
+# gallery reads as continuous when they sit side by side.
+h2 = next((d for d in f02["devices"] if d["role"] == "handoff"), None)
+f03 = next(g for g in frames if g["id"] == "03")
+h3 = next((d for d in f03["devices"] if d["role"] == "handoff"), None)
+if ok(h2 and h3, "the 02 -> 03 handoff device is missing from one of the frames"):
+    ok(abs(h2["screenW"] - h3["screenW"]) < 0.5,
+       f"handoff screen widths differ: {h2['screenW']} vs {h3['screenW']}")
+    ok(h2["rot"] == h3["rot"], f"handoff rotations differ: {h2['rot']} vs {h3['rot']}")
+    ok(abs(h2["y"] - h3["y"]) < 0.5, f"handoff y differs: {h2['y']} vs {h3['y']}")
+    # 02 shows its left side on the way out, 03 shows its right side arriving
+    vis2 = CW - h2["bounds"]["minX"]
+    vis3 = h3["bounds"]["maxX"]
+    ok(h2["bounds"]["maxX"] > CW, "02's handoff should exit the right edge")
+    ok(h3["bounds"]["minX"] < 0, "03's handoff should enter from the left edge")
+    ok(abs(vis2 - vis3) < 40,
+       f"the handoff shows {vis2:.0f}px in 02 but {vis3:.0f}px in 03; "
+       f"the continuation will not read")
+    print(f"   02 -> 03 handoff: same device, {vis2:.0f}px visible leaving 02, "
+          f"{vis3:.0f}px arriving in 03")
+
+# Background hierarchy: one clear anchor per frame, a couple of secondaries,
+# the rest ambient, and never more than a handful of marks in total.
+for g in frames:
+    inv = g.get("decoration", [])
+    tag = f"{g['id']}-{g['slug']}"
+    ok(inv, f"{tag}: no decoration inventory recorded")
+    if not inv:
+        continue
+    ops = [d["opacity"] for d in inv]
+    anchor = max(ops)
+    ok(0.08 <= anchor <= 0.13,
+       f"{tag}: anchor motif is at {anchor}, should sit between 0.08 and 0.12")
+    ok(sum(1 for o in ops if o >= 0.08) == 1,
+       f"{tag}: {sum(1 for o in ops if o >= 0.08)} motifs at anchor strength, want exactly 1")
+    ok(min(ops) <= 0.06,
+       f"{tag}: nothing is ambient; the faintest mark is {min(ops)}")
+    ok(len(inv) <= 5, f"{tag}: {len(inv)} decorative marks, too busy")
+    detail = ", ".join("{} {:g}".format(d["kind"], d["opacity"]) for d in inv)
+    print(f"   {tag:20s} anchor {anchor:.3f} ({inv[0]['kind']}), {len(inv)} marks: {detail}")
+
 # the whole point of the revision: six compositions, not one repeated six times
 sig = set()
 for g in frames:
-    d0 = g["devices"][0]
+    d0 = max(g["devices"], key=lambda d: d["w"])
     sig.add((len(g["devices"]),
-             round(d0["w"] / 60),                       # scale band
-             round(d0["bounds"]["minX"] / 220),         # horizontal placement band
-             d0["bounds"]["maxY"] > CH + 20,            # cropped at the bottom?
-             d0["bounds"]["maxX"] > CW + 20 or d0["bounds"]["minX"] < -20))
+             round(d0["w"] / 60),
+             round(d0["bounds"]["minX"] / 220),
+             round(d0["rot"])))
 ok(len(sig) >= 5,
    f"only {len(sig)} distinct compositions across {len(frames)} frames; too repetitive")
 widths = sorted({round(d["w"]) for g in frames for d in g["devices"]})
-ok(max(widths) - min(widths) > 250,
-   f"device scales barely vary: {widths}")
-two = [g["id"] for g in frames if len(g["devices"]) > 1]
-ok(len(two) == 2, f"expected exactly two multi-device frames, got {two}")
+ok(max(widths) - min(widths) > 250, f"device scales barely vary: {widths}")
+multi = [g["id"] for g in frames if len(g["devices"]) > 1]
+ok(len(multi) == 3, f"expected three multi-device frames, got {multi}")
+# the product has to stay the hero: every main device big enough to inspect
+for g in frames:
+    biggest = max(d["w"] for d in g["devices"])
+    ok(biggest >= 0.63 * CW,
+       f"{g['id']}: largest device is only {100 * biggest / CW:.0f}% of canvas width")
 print(f"   {len(sig)} distinct compositions, device widths {widths}, "
-      f"multi-device frames {two}")
+      f"multi-device frames {multi}")
 
 for f in sorted(glob.glob(r("assets", "**", "*.svg"), recursive=True)):
     head = open(f, encoding="utf-8").read(200)

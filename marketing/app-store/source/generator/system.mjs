@@ -38,7 +38,7 @@ export const COL_W = CANVAS.W - MARGIN * 2;            // 1128
 
 export const TYPE = {
   headSize: 122, headLead: 119, headWeight: 800, headTrack: -3.4,
-  subSize: 45, subLead: 59, subWeight: 500, subTrack: -0.2, subOpacity: 0.86,
+  subSize: 50, subLead: 64, subWeight: 500, subTrack: -0.2, subOpacity: 0.88,
 };
 /* Inter cap-height / em. */
 export const CAP = 1490 / 2048;
