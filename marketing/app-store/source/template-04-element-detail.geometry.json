@@ -20,29 +20,29 @@
    "need": "One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.",
    "bleed": false,
    "sfx": "-a",
-   "x": 70,
+   "x": 120,
    "y": 720,
    "w": 1009.05,
    "h": 2099.6863636363637,
    "r": 121.365,
-   "rot": 1.5,
-   "cx": 574.525,
+   "rot": 1,
+   "cx": 624.525,
    "cy": 1769.8431818181818,
    "bezel": 39.525000000000006,
    "scale": 0.9393939393939394,
-   "screenX": 109.525,
+   "screenX": 159.525,
    "screenY": 759.525,
    "screenW": 930,
    "screenH": 2020.6363636363637,
    "screenR": 81.83999999999999,
-   "screenCX": 574.525,
+   "screenCX": 624.525,
    "screenCY": 1769.8431818181818,
    "uniformScale": 0.7045454545454546,
    "bounds": {
-    "minX": 42.69119741487941,
-    "maxX": 1106.3588025851204,
-    "minY": 707.1528301929609,
-    "maxY": 2832.533533443403
+    "minX": 101.75455169671989,
+    "maxX": 1147.29544830328,
+    "minY": 711.3547208438501,
+    "maxY": 2828.331642792514
    },
    "overlay": "assets/device/04-element-detail-overlay.png"
   }
@@ -55,15 +55,15 @@
  "decoration": [
   {
    "kind": "Bohr",
-   "opacity": 0.095
+   "opacity": 0.1
   },
   {
    "kind": "Tile",
-   "opacity": 0.06
+   "opacity": 0.045
   },
   {
    "kind": "Skeletal",
-   "opacity": 0.03
+   "opacity": 0.028
   }
  ]
 }

@@ -11,23 +11,23 @@ DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Element Detail
   One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.
 
-  X        = 70          (unrotated top-left)
+  X        = 120          (unrotated top-left)
   Y        = 720
   W        = 1009.05
   H        = 2099.6864
-  Rotation = 1.5 deg    (about the device centre, 574.525, 1769.8432)
+  Rotation = 1 deg    (about the device centre, 624.525, 1769.8432)
   Corner radius   = 121.365
   Bezel thickness = 39.525 on every side
 
   ROTATED BOUNDING BOX
-    Left = 42.6912   Top = 707.1528   Right = 1106.3588   Bottom = 2832.5335
+    Left = 101.7546   Top = 711.3547   Right = 1147.2954   Bottom = 2828.3316
     Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 574.525, 1769.8432
-    Unrotated X,Y = 109.525, 759.525
+    Centre        = 624.525, 1769.8432
+    Unrotated X,Y = 159.525, 759.525
     Unrotated W,H = 930 x 2020.6364
-    Rotation      = 1.5 deg  (identical to the device, one rigid group)
+    Rotation      = 1 deg  (identical to the device, one rigid group)
     Corner radius = 81.84   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046

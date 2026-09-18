@@ -21,11 +21,11 @@ export default {
   devices: [
     {
       role: 'back', label: 'Quiz or flashcard', screenW: 740, x: 96, y: 700, rot: -2,
-      need: 'The second study surface: a quiz mid-question, or a flashcard. Fully visible, so nothing is cropped.',
+      need: 'A DIFFERENT study surface from the front device: a quiz mid-question, or a flashcard. The two phones must show two distinct states, otherwise the composition says nothing. Fully visible, so nothing is cropped.',
     },
     {
       role: 'front', label: 'Study overview', screenW: 810, x: 380, y: 900, rot: 2,
-      need: 'The Study home or dashboard, with real progress on it. The dominant device, fully visible.',
+      need: 'The Study home or dashboard, with real progress on it. Must be visibly different from the rear device. The dominant device, fully visible.',
     },
   ],
   light: [
@@ -35,8 +35,8 @@ export default {
   ],
   deco: () => [
     skeletal('naphthalene', { cx: 1280, cy: 980, scale: 165, rot: -14, opacity: 0.10, width: 9 }),
-    skeletal('acetone', { cx: 120, cy: 2680, scale: 96, opacity: 0.05, width: 7 }),
-    formula('C10H8', { x: 1224, y: 2840, size: 52, opacity: 0.055, anchor: 'end' }),
-    formula(EQUATIONS.haber, { x: 96, y: 624, size: 40, opacity: 0.03 }),
+    skeletal('acetone', { cx: 120, cy: 2680, scale: 96, opacity: 0.04, width: 7 }),
+    formula('C10H8', { x: 1224, y: 2840, size: 52, opacity: 0.045, anchor: 'end' }),
+    formula(EQUATIONS.haber, { x: 96, y: 624, size: 40, opacity: 0.028 }),
   ],
 };

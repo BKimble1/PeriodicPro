@@ -16,7 +16,7 @@
   {
    "role": "back",
    "label": "Quiz or flashcard",
-   "need": "The second study surface: a quiz mid-question, or a flashcard. Fully visible, so nothing is cropped.",
+   "need": "A DIFFERENT study surface from the front device: a quiz mid-question, or a flashcard. The two phones must show two distinct states, otherwise the composition says nothing. Fully visible, so nothing is cropped.",
    "bleed": false,
    "sfx": "-a",
    "x": 96,
@@ -48,7 +48,7 @@
   {
    "role": "front",
    "label": "Study overview",
-   "need": "The Study home or dashboard, with real progress on it. The dominant device, fully visible.",
+   "need": "The Study home or dashboard, with real progress on it. Must be visibly different from the rear device. The dominant device, fully visible.",
    "bleed": false,
    "sfx": "-b",
    "x": 380,
@@ -90,15 +90,15 @@
   },
   {
    "kind": "Formula",
-   "opacity": 0.055
+   "opacity": 0.045
   },
   {
    "kind": "Skeletal",
-   "opacity": 0.05
+   "opacity": 0.04
   },
   {
    "kind": "Formula",
-   "opacity": 0.03
+   "opacity": 0.028
   }
  ]
 }

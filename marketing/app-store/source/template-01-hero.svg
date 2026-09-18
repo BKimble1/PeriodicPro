@@ -88,25 +88,25 @@
   </g>
 
   <g id="Chemistry-Decoration">
-<g id="Skeletal-C10H22" opacity="0.1">
-    <path d="M 653.4633 2075.2854 L 789.4095 2138.6781 M 789.4095 2138.6781 L 912.2823 2052.6417 M 912.2823 2052.6417 L 1048.2285 2116.0344 M 1048.2285 2116.0344 L 1171.1013 2029.9979 M 1171.1013 2029.9979 L 1307.0474 2093.3907 M 1307.0474 2093.3907 L 1429.9202 2007.3542 M 1429.9202 2007.3542 L 1565.8664 2070.747 M 1565.8664 2070.747 L 1688.7392 1984.7105 M 1688.7392 1984.7105 L 1824.6854 2048.1032" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="Skeletal-C10H8" opacity="0.095">
+    <path d="M 350.3017 1855.299 L 206.4387 1695.5228 M 305.7139 1849.1563 L 207.887 1740.5085 M 206.4387 1695.5228 L -3.8631 1740.2239 M -3.8631 1740.2239 L -70.3017 1944.701 M 13.1112 1781.9094 L -32.0671 1920.9539 M -70.3017 1944.701 L 73.5613 2104.4772 M 73.5613 2104.4772 L 283.8631 2059.7761 M 101.175 2068.9343 L 244.1802 2038.5376 M 283.8631 2059.7761 L 350.3017 1855.299 M 206.4387 1695.5228 L 272.8773 1491.0457 M 272.8773 1491.0457 L 129.0142 1331.2696 M 228.2894 1484.903 L 130.4625 1376.2553 M 129.0142 1331.2696 L -81.2875 1375.9706 M -81.2875 1375.9706 L -147.7262 1580.4477 M -64.3133 1417.6561 L -109.4916 1556.7006 M -147.7262 1580.4477 L -3.8631 1740.2239" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
     
   </g>
-<g id="Tile-C" transform="rotate(4 1239 223.24)" opacity="0.055">
+<g id="Tile-C" transform="rotate(4 1239 223.24)" opacity="0.048">
     <path d="M 1175.81 120 H 1302.19 A 25.81 25.81 0 0 1 1328 145.81 V 300.67 A 25.81 25.81 0 0 1 1302.19 326.48 H 1175.81 A 25.81 25.81 0 0 1 1150 300.67 V 145.81 A 25.81 25.81 0 0 1 1175.81 120 Z" fill="none" stroke="#2F6BE8" stroke-opacity="0.85" stroke-width="2.314"/>
     <text x="1174.03" y="161.296" style="font-size:24.03px;font-weight:600" fill="#0E2039" fill-opacity="0.72">6</text>
     <text x="1239" y="232.5316" text-anchor="middle" style="font-size:71.2px;font-weight:650;letter-spacing:-1.424px" fill="#0E2039" fill-opacity="0.95">C</text>
     <text x="1239" y="267.6332" text-anchor="middle" style="font-size:19.224px;font-weight:500" fill="#0E2039" fill-opacity="0.72">Carbon</text>
     <text x="1239" y="296.5404" text-anchor="middle" style="font-size:17.8px;font-weight:500" fill="#0E2039" fill-opacity="0.62">12.011</text>
   </g>
-<g id="Tile-O" transform="rotate(-5 123 1287.88)" opacity="0.05">
-    <path d="M 56.97 1180 H 189.03 A 26.97 26.97 0 0 1 216 1206.97 V 1368.79 A 26.97 26.97 0 0 1 189.03 1395.76 H 56.97 A 26.97 26.97 0 0 1 30 1368.79 V 1206.97 A 26.97 26.97 0 0 1 56.97 1180 Z" fill="none" stroke="#2F6BE8" stroke-opacity="0.85" stroke-width="2.418"/>
-    <text x="55.11" y="1223.152" style="font-size:25.11px;font-weight:600" fill="#0E2039" fill-opacity="0.72">8</text>
-    <text x="123" y="1297.5892" text-anchor="middle" style="font-size:74.4px;font-weight:650;letter-spacing:-1.488px" fill="#0E2039" fill-opacity="0.95">O</text>
-    <text x="123" y="1334.2684" text-anchor="middle" style="font-size:20.088px;font-weight:500" fill="#0E2039" fill-opacity="0.72">Oxygen</text>
-    <text x="123" y="1364.4748" text-anchor="middle" style="font-size:18.6px;font-weight:500" fill="#0E2039" fill-opacity="0.62">15.999</text>
+<g id="Tile-O" transform="rotate(-5 1270 2144.4)" opacity="0.04">
+    <path d="M 1206.1 2040 H 1333.9 A 26.1 26.1 0 0 1 1360 2066.1 V 2222.7 A 26.1 26.1 0 0 1 1333.9 2248.8 H 1206.1 A 26.1 26.1 0 0 1 1180 2222.7 V 2066.1 A 26.1 26.1 0 0 1 1206.1 2040 Z" fill="none" stroke="#2F6BE8" stroke-opacity="0.85" stroke-width="2.34"/>
+    <text x="1204.3" y="2081.76" style="font-size:24.3px;font-weight:600" fill="#0E2039" fill-opacity="0.72">8</text>
+    <text x="1270" y="2153.796" text-anchor="middle" style="font-size:72px;font-weight:650;letter-spacing:-1.44px" fill="#0E2039" fill-opacity="0.95">O</text>
+    <text x="1270" y="2189.292" text-anchor="middle" style="font-size:19.44px;font-weight:500" fill="#0E2039" fill-opacity="0.72">Oxygen</text>
+    <text x="1270" y="2218.524" text-anchor="middle" style="font-size:18px;font-weight:500" fill="#0E2039" fill-opacity="0.62">15.999</text>
   </g>
-<text x="660" y="2848" text-anchor="middle" style="font-size:46px;font-weight:600;letter-spacing:0px" fill="#2F6BE8" fill-opacity="0.032">2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> + O<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> → 2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan>O</text>
+<text x="660" y="2848" text-anchor="middle" style="font-size:46px;font-weight:600;letter-spacing:0px" fill="#2F6BE8" fill-opacity="0.03">2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> + O<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> → 2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan>O</text>
   </g>
 
   <g id="Marketing-Copy">

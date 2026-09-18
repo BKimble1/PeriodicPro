@@ -9,7 +9,8 @@
 
    Background hierarchy
      anchor     a period 1-4 table fragment sliding under the phone and out
-                both sides
+                both sides, dissolving toward the middle of the slide so it
+                reads as atmosphere rather than a band of squares
      secondary  an orbit diagram off the top right, partly hidden by the Build
                 phone, and one oversized carbon tile half behind the main phone
      ambient    a balanced equation along the bottom                          */
@@ -44,9 +45,9 @@ export default {
     { x: 520, y: 2740, r: 920, c: C.paleA, o: 0.48 },
   ],
   deco: () => [
-    periodicFragment({ x: -100, y: 2560, cell: 72, gap: 11, opacity: 0.10 }),
-    orbits({ cx: 1245, cy: 880, r: 215, opacity: 0.055 }),
-    elementTile('C', { x: -46, y: 1320, w: 230, variant: 'soft', opacity: 0.06, rot: -4 }),
-    formula(EQUATIONS.saltFormation, { x: 96, y: 2840, size: 44, opacity: 0.03 }),
+    periodicFragment({ x: -100, y: 2560, cell: 72, gap: 11, opacity: 0.10, fadeCX: 660, fadeR: 640 }),
+    orbits({ cx: 1245, cy: 880, r: 215, opacity: 0.042 }),
+    elementTile('C', { x: -46, y: 1320, w: 230, variant: 'soft', opacity: 0.048, rot: -4 }),
+    formula(EQUATIONS.saltFormation, { x: 96, y: 2840, size: 44, opacity: 0.028 }),
   ],
 };

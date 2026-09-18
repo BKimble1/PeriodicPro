@@ -7,8 +7,9 @@
    so the two halves line up exactly.
 
    Background hierarchy
-     anchor     a caffeine skeleton running behind the device and surfacing in
-                the open right margin
+     anchor     a caffeine skeleton centred ON the device, so most of the ring
+                system is hidden behind it and the rest surfaces in the open
+                right margin
      secondary  its molecular formula, half occluded by the phone
      ambient    a nitrogen tile in the top band                               */
 import { C } from '../system.mjs';
@@ -35,8 +36,8 @@ export default {
     { x: 1120, y: 2740, r: 900, c: C.paleA, o: 0.46 },
   ],
   deco: () => [
-    skeletal('caffeine', { cx: 1120, cy: 1640, scale: 190, rot: -8, opacity: 0.10, width: 8 }),
-    formula('C8H10N4O2', { x: 1224, y: 2792, size: 54, opacity: 0.05, anchor: 'end' }),
-    elementTile('N', { x: 1140, y: 108, w: 168, opacity: 0.03, rot: 4 }),
+    skeletal('caffeine', { cx: 930, cy: 1660, scale: 205, rot: -8, opacity: 0.10, width: 9 }),
+    formula('C8H10N4O2', { x: 1224, y: 2788, size: 62, opacity: 0.055, anchor: 'end' }),
+    elementTile('N', { x: 1140, y: 108, w: 168, opacity: 0.028, rot: 4 }),
   ],
 };

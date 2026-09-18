@@ -228,7 +228,7 @@ for g, want in zip(frames, WANT):
     for op in re.findall(
             r'<g id="(?:Skeletal|Tile|Bohr|Orbits|Lattice|Periodic)[^"]*"[^>]*opacity="([\d.]+)"',
             svg):
-        ok(float(op) <= 0.20,
+        ok(float(op) <= 0.11,
            f"{tag}: decoration opacity {op} is louder than a watermark")
 
     ok(g["copyBottom"] < min(d["bounds"]["minY"] for d in g["devices"]) - 40,
@@ -449,11 +449,13 @@ for g in frames:
         continue
     ops = [d["opacity"] for d in inv]
     anchor = max(ops)
-    ok(0.08 <= anchor <= 0.13,
-       f"{tag}: anchor motif is at {anchor}, should sit between 0.08 and 0.12")
-    ok(sum(1 for o in ops if o >= 0.08) == 1,
-       f"{tag}: {sum(1 for o in ops if o >= 0.08)} motifs at anchor strength, want exactly 1")
-    ok(min(ops) <= 0.06,
+    ok(0.07 <= anchor <= 0.105,
+       f"{tag}: anchor motif is at {anchor}, should sit between 0.07 and 0.10")
+    ok(sum(1 for o in ops if o >= 0.07) == 1,
+       f"{tag}: {sum(1 for o in ops if o >= 0.07)} motifs at anchor strength, want exactly 1")
+    ok(max([o for o in ops if o < 0.07] or [0]) <= 0.06,
+       f"{tag}: a secondary mark is louder than 0.06")
+    ok(min(ops) <= 0.04,
        f"{tag}: nothing is ambient; the faintest mark is {min(ops)}")
     ok(len(inv) <= 5, f"{tag}: {len(inv)} decorative marks, too busy")
     detail = ", ".join("{} {:g}".format(d["kind"], d["opacity"]) for d in inv)

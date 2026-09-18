@@ -1,9 +1,11 @@
 /* 01  HERO.  One full, straight, centred device: the calm introduction.
 
    Background hierarchy
-     anchor     a decane chain crossing the whole canvas, entering at the left
-                margin, vanishing behind the phone and reappearing on the right
-     secondary  two element tiles, one of them tucked behind the phone edge
+     anchor     a naphthalene ring system straddling the phone's left edge:
+                about a third of it sits in the open margin and the rest
+                disappears behind the device, which is what gives the slide
+                depth rather than decoration
+     secondary  two element tiles, the right-hand one tucked behind the phone
      ambient    a balanced equation along the bottom                          */
 import { C } from '../system.mjs';
 import { skeletal, elementTile, formula, EQUATIONS } from '../chemistry.mjs';
@@ -24,9 +26,9 @@ export default {
     { x: 660, y: 2780, r: 940, c: C.paleA, o: 0.50 },
   ],
   deco: () => [
-    skeletal('decane', { cx: 660, cy: 2150, scale: 150, rot: 5, opacity: 0.10, width: 9 }),
-    elementTile('C', { x: 1150, y: 120, w: 178, opacity: 0.055, rot: 4 }),
-    elementTile('O', { x: 30, y: 1180, w: 186, opacity: 0.05, rot: -5 }),
-    formula(EQUATIONS.combustionH2, { x: 660, y: 2848, size: 46, opacity: 0.032, anchor: 'middle' }),
+    skeletal('naphthalene', { cx: 140, cy: 1900, scale: 215, rot: 12, opacity: 0.095, width: 11 }),
+    elementTile('C', { x: 1150, y: 120, w: 178, opacity: 0.048, rot: 4 }),
+    elementTile('O', { x: 1180, y: 2040, w: 180, opacity: 0.04, rot: -5 }),
+    formula(EQUATIONS.combustionH2, { x: 660, y: 2848, size: 46, opacity: 0.03, anchor: 'middle' }),
   ],
 };

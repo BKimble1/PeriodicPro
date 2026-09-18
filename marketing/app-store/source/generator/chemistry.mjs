@@ -406,15 +406,25 @@ const PT_ROWS = [
 ];
 
 export function periodicFragment({ x, y, cell = 54, gap = 9, opacity = 0.05,
-                                   fill = C.accent, rows = 4, highlight = {} } = {}) {
+                                   fill = C.accent, rows = 4, highlight = {},
+                                   fadeCX = null, fadeR = 620 } = {}) {
+  /* fadeCX dissolves the grid toward a focus: tiles at that x vanish and reach
+     full strength fadeR away, which turns a flat band of squares into
+     atmosphere without touching the group opacity. */
   let out2 = '';
   for (let r = 0; r < Math.min(rows, PT_ROWS.length); r++) {
     for (const g of PT_ROWS[r]) {
       const px = x + (g - 1) * (cell + gap);
       const py = y + r * (cell + gap);
       const hi = highlight[`${r}-${g}`];
+      let a = hi ? 0.85 : 0.5;
+      if (fadeCX !== null) {
+        const d = Math.abs(px + cell / 2 - fadeCX) / fadeR;
+        a *= Math.pow(Math.min(1, Math.max(0, d)), 0.8);
+      }
+      if (a < 0.004) continue;
       out2 += `<path d="${roundRect(px, py, cell, cell, cell * 0.2)}" fill="${hi || fill}" ` +
-              `fill-opacity="${hi ? 0.85 : 0.5}"/>`;
+              `fill-opacity="${n(a)}"/>`;
     }
   }
   return `<g id="Periodic-Fragment" opacity="${n(opacity)}">${out2}</g>`;

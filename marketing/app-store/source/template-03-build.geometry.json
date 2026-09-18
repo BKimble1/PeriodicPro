@@ -19,31 +19,31 @@
    "label": "Build canvas",
    "need": "The Build screen mid-assembly, with a molecule actually on the canvas, never an empty builder. The same capture continues off the right edge of frame 02. The leftmost seventh of the screen falls on that slide, so keep controls and the molecule itself away from the extreme left edge.",
    "bleed": true,
-   "masterX": -80.41000000000008,
+   "masterX": -71.22000000000003,
    "sfx": "-a",
-   "x": -80.41000000000008,
-   "y": 759.36,
+   "x": -71.22000000000003,
+   "y": 762.87,
    "w": 976.5,
    "h": 2031.9545454545455,
    "r": 117.44999999999999,
-   "rot": 5,
-   "cx": 407.8399999999999,
-   "cy": 1775.3372727272726,
+   "rot": 4.5,
+   "cx": 417.03,
+   "cy": 1778.8472727272729,
    "bezel": 38.25,
    "scale": 0.9090909090909091,
-   "screenX": -42.16000000000008,
-   "screenY": 797.61,
+   "screenX": -32.97000000000003,
+   "screenY": 801.12,
    "screenW": 900,
    "screenH": 1955.4545454545455,
    "screenR": 79.19999999999999,
-   "screenCX": 407.8399999999999,
-   "screenCY": 1775.3372727272726,
+   "screenCX": 417.03,
+   "screenCY": 1778.8472727272729,
    "uniformScale": 0.6818181818181818,
    "bounds": {
-    "minX": -167.1003151625804,
-    "maxX": 982.7803151625802,
-    "minY": 720.672308858108,
-    "maxY": 2830.0022365964373
+    "minX": -149.4275462934237,
+    "maxX": 983.4875462934236,
+    "minY": 727.6942653774249,
+    "maxY": 2830.000280077121
    },
    "overlay": "assets/device/03-build-overlay.png"
   }
@@ -60,11 +60,11 @@
   },
   {
    "kind": "Formula",
-   "opacity": 0.05
+   "opacity": 0.055
   },
   {
    "kind": "Tile",
-   "opacity": 0.03
+   "opacity": 0.028
   }
  ]
 }

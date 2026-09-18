@@ -9,7 +9,7 @@ CANVAS
 
 DEVICE 1 of 2   role = back   layer = backmost
   Wanted screen = Quiz or flashcard
-  The second study surface: a quiz mid-question, or a flashcard. Fully visible, so nothing is cropped.
+  A DIFFERENT study surface from the front device: a quiz mid-question, or a flashcard. The two phones must show two distinct states, otherwise the composition says nothing. Fully visible, so nothing is cropped.
 
   X        = 96          (unrotated top-left)
   Y        = 700
@@ -38,7 +38,7 @@ DEVICE 1 of 2   role = back   layer = backmost
 
 DEVICE 2 of 2   role = front   layer = in front of device 1
   Wanted screen = Study overview
-  The Study home or dashboard, with real progress on it. The dominant device, fully visible.
+  The Study home or dashboard, with real progress on it. Must be visibly different from the rear device. The dominant device, fully visible.
 
   X        = 380          (unrotated top-left)
   Y        = 900

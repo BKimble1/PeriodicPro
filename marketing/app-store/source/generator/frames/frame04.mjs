@@ -23,7 +23,7 @@ export default {
   sub: ['Explore properties, structures, uses,', 'and facts worth remembering.'],
   copy: { top: 236, align: 'start' },
   devices: [{
-    role: 'hero', label: 'Element Detail', screenW: 930, x: 70, y: 720, rot: 1.5,
+    role: 'hero', label: 'Element Detail', screenW: 930, x: 120, y: 720, rot: 1,
     need: 'One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.',
   }],
   light: [
@@ -32,8 +32,8 @@ export default {
     { x: 700, y: 2800, r: 880, c: C.paleA, o: 0.44 },
   ],
   deco: () => [
-    bohr('Fe', { cx: 574.5, cy: 1810, r: 880, opacity: 0.095 }),
-    elementTile('Fe', { x: 1112, y: 128, w: 208, variant: 'soft', opacity: 0.06, rot: 4 }),
-    skeletal('phenol', { cx: 196, cy: 44, scale: 72, rot: 12, opacity: 0.03, width: 6 }),
+    bohr('Fe', { cx: 624.5, cy: 1810, r: 880, opacity: 0.10 }),
+    elementTile('Fe', { x: 1112, y: 128, w: 208, variant: 'soft', opacity: 0.045, rot: 4 }),
+    skeletal('phenol', { cx: 196, cy: 44, scale: 72, rot: 12, opacity: 0.028, width: 6 }),
   ],
 };

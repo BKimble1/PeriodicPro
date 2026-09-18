@@ -55,19 +55,19 @@
  "decoration": [
   {
    "kind": "Skeletal",
-   "opacity": 0.1
+   "opacity": 0.095
   },
   {
    "kind": "Tile",
-   "opacity": 0.055
+   "opacity": 0.048
   },
   {
    "kind": "Tile",
-   "opacity": 0.05
+   "opacity": 0.04
   },
   {
    "kind": "Formula",
-   "opacity": 0.032
+   "opacity": 0.03
   }
  ]
 }

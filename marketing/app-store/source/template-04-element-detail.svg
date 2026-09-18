@@ -41,7 +41,7 @@
     <stop offset="0.74" stop-color="#EAF3FD" stop-opacity="0.0704"/>
     <stop offset="1"    stop-color="#EAF3FD" stop-opacity="0"/>
   </radialGradient>
-  <linearGradient id="elRim-a" x1="70" y1="0" x2="1079.05" y2="0" gradientUnits="userSpaceOnUse">
+  <linearGradient id="elRim-a" x1="120" y1="0" x2="1129.05" y2="0" gradientUnits="userSpaceOnUse">
     <stop offset="0"    stop-color="#C6D0DE"/>
     <stop offset="0.028" stop-color="#F8FAFD"/>
     <stop offset="0.10" stop-color="#B2BFD0"/>
@@ -51,7 +51,7 @@
     <stop offset="0.972" stop-color="#EEF2F7"/>
     <stop offset="1"    stop-color="#AEBBCC"/>
   </linearGradient>
-  <linearGradient id="elBody-a" x1="70" y1="0" x2="1079.05" y2="0" gradientUnits="userSpaceOnUse">
+  <linearGradient id="elBody-a" x1="120" y1="0" x2="1129.05" y2="0" gradientUnits="userSpaceOnUse">
     <stop offset="0"    stop-color="#1B2231"/>
     <stop offset="0.05" stop-color="#0C1119"/>
     <stop offset="0.5"  stop-color="#070A11"/>
@@ -67,9 +67,9 @@
   <filter id="elShadowC-a" x="-25%" y="-20%" width="150%" height="140%" color-interpolation-filters="sRGB">
     <feGaussianBlur stdDeviation="6.5758"/>
   </filter>
-  <radialGradient id="elGlow-a" cx="574.525" cy="1769.8432" r="1217.8181"
+  <radialGradient id="elGlow-a" cx="624.525" cy="1769.8432" r="1217.8181"
                   gradientUnits="userSpaceOnUse"
-                  gradientTransform="translate(574.525 1769.8432) scale(1 1.9144) translate(-574.525 -1769.8432)">
+                  gradientTransform="translate(624.525 1769.8432) scale(1 1.9144) translate(-624.525 -1769.8432)">
     <stop offset="0"    stop-color="#D6EAF7" stop-opacity="0.17"/>
     <stop offset="0.55" stop-color="#DDEBFA" stop-opacity="0.07"/>
     <stop offset="1"    stop-color="#DDEBFA" stop-opacity="0"/>
@@ -88,15 +88,15 @@
   </g>
 
   <g id="Chemistry-Decoration">
-<g id="Bohr-Fe" opacity="0.095"><circle cx="574.5" cy="1810" r="74.8" fill="#2F6BE8" fill-opacity="0.55"/><circle cx="574.5" cy="1810" r="391.6" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="574.5" cy="1418.4" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="2201.6" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="1810" r="554.4" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="727.7116" cy="1277.1909" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1059.5899" cy="1541.584" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1107.3091" cy="1963.2116" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="842.916" cy="2295.0899" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="421.2884" cy="2342.8091" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="89.4101" cy="2078.416" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="41.6909" cy="1656.7884" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="306.084" cy="1324.9101" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="1810" r="717.2" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="955.4667" cy="1202.3486" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1181.3892" cy="1427.8203" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1287.1098" cy="1728.9874" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1251.6894" cy="2046.2" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1082.1432" cy="2316.6303" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="812.0521" cy="2486.7162" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="494.9109" cy="2522.7702" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="193.5333" cy="2417.6514" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-32.3892" cy="2192.1797" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-138.1098" cy="1891.0126" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-102.6894" cy="1573.8" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="66.8568" cy="1303.3697" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="336.9479" cy="1133.2838" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="654.0891" cy="1097.2298" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="1810" r="880" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="1229.7859" cy="1222.6327" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-80.7859" cy="2397.3673" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/></g>
-<g id="Tile-Fe" transform="rotate(4 1216 248.64)" opacity="0.06">
+<g id="Bohr-Fe" opacity="0.1"><circle cx="624.5" cy="1810" r="74.8" fill="#2F6BE8" fill-opacity="0.55"/><circle cx="624.5" cy="1810" r="391.6" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="624.5" cy="1418.4" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="624.5" cy="2201.6" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="624.5" cy="1810" r="554.4" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="777.7116" cy="1277.1909" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1109.5899" cy="1541.584" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1157.3091" cy="1963.2116" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="892.916" cy="2295.0899" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="471.2884" cy="2342.8091" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="139.4101" cy="2078.416" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="91.6909" cy="1656.7884" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="356.084" cy="1324.9101" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="624.5" cy="1810" r="717.2" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="1005.4667" cy="1202.3486" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1231.3892" cy="1427.8203" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1337.1098" cy="1728.9874" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1301.6894" cy="2046.2" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1132.1432" cy="2316.6303" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="862.0521" cy="2486.7162" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="544.9109" cy="2522.7702" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="243.5333" cy="2417.6514" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="17.6108" cy="2192.1797" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-88.1098" cy="1891.0126" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-52.6894" cy="1573.8" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="116.8568" cy="1303.3697" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="386.9479" cy="1133.2838" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="704.0891" cy="1097.2298" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="624.5" cy="1810" r="880" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="1279.7859" cy="1222.6327" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-30.7859" cy="2397.3673" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/></g>
+<g id="Tile-Fe" transform="rotate(4 1216 248.64)" opacity="0.045">
     <path d="M 1142.16 128 H 1289.84 A 30.16 30.16 0 0 1 1320 158.16 V 339.12 A 30.16 30.16 0 0 1 1289.84 369.28 H 1142.16 A 30.16 30.16 0 0 1 1112 339.12 V 158.16 A 30.16 30.16 0 0 1 1142.16 128 Z" fill="#EAF3FD" fill-opacity="0.85"/><path d="M 1142.16 128 H 1289.84 A 30.16 30.16 0 0 1 1320 158.16 V 339.12 A 30.16 30.16 0 0 1 1289.84 369.28 H 1142.16 A 30.16 30.16 0 0 1 1112 339.12 V 158.16 A 30.16 30.16 0 0 1 1142.16 128 Z" fill="none" stroke="#2F6BE8" stroke-opacity="0.22" stroke-width="2.288"/>
     <text x="1140.08" y="176.256" style="font-size:28.08px;font-weight:600" fill="#0E2039" fill-opacity="0.72">26</text>
     <text x="1216" y="259.4976" text-anchor="middle" style="font-size:83.2px;font-weight:650;letter-spacing:-1.664px" fill="#0E2039" fill-opacity="0.95">Fe</text>
     <text x="1216" y="300.5152" text-anchor="middle" style="font-size:22.464px;font-weight:500" fill="#0E2039" fill-opacity="0.72">Iron</text>
     <text x="1216" y="334.2944" text-anchor="middle" style="font-size:20.8px;font-weight:500" fill="#0E2039" fill-opacity="0.62">55.845</text>
   </g>
-<g id="Skeletal-C6H6O" opacity="0.03">
+<g id="Skeletal-C6H6O" opacity="0.028">
     <path d="M 181.0304 -26.4266 L 127.5239 21.7508 M 178.9733 -11.4949 L 142.5889 21.2658 M 127.5239 21.7508 L 142.4936 92.1774 M 142.4936 92.1774 L 210.9696 114.4266 M 156.4534 86.493 L 203.0171 101.6225 M 210.9696 114.4266 L 264.4761 66.2492 M 264.4761 66.2492 L 249.5064 -4.1774 M 252.5733 57.0019 L 242.394 9.1118 M 249.5064 -4.1774 L 181.0304 -26.4266 M 181.0304 -26.4266 L 170.372 -76.5704" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
     <text x="166.0607" y="-86.7733" text-anchor="middle" style="font-size:28.8px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">OH</text>
   </g>
@@ -107,37 +107,37 @@
     <text id="Supporting" class="el-sub" text-rendering="geometricPrecision"><tspan x="96" y="514.1367">Explore properties, structures, uses,</tspan><tspan x="96" y="578.1367">and facts worth remembering.</tspan></text>
   </g>
 
-  <g id="Device-Shadow-a"><g transform="rotate(1.5 574.525 1769.8432)">
-    <path d="M 206.3953 789.5152 H 942.6547 A 121.365 121.365 0 0 1 1064.0197 910.8802 V 2767.8365 A 121.365 121.365 0 0 1 942.6547 2889.2015 H 206.3953 A 121.365 121.365 0 0 1 85.0303 2767.8365 V 910.8802 A 121.365 121.365 0 0 1 206.3953 789.5152 Z"
+  <g id="Device-Shadow-a"><g transform="rotate(1 624.525 1769.8432)">
+    <path d="M 256.3953 789.5152 H 992.6547 A 121.365 121.365 0 0 1 1114.0197 910.8802 V 2767.8365 A 121.365 121.365 0 0 1 992.6547 2889.2015 H 256.3953 A 121.365 121.365 0 0 1 135.0303 2767.8365 V 910.8802 A 121.365 121.365 0 0 1 256.3953 789.5152 Z"
           fill="#22456F" fill-opacity="0.19" filter="url(#elShadowA-a)"/>
-    <path d="M 217.668 744.4242 H 931.382 A 121.365 121.365 0 0 1 1052.747 865.7892 V 2722.7456 A 121.365 121.365 0 0 1 931.382 2844.1106 H 217.668 A 121.365 121.365 0 0 1 96.303 2722.7456 V 865.7892 A 121.365 121.365 0 0 1 217.668 744.4242 Z"
+    <path d="M 267.668 744.4242 H 981.382 A 121.365 121.365 0 0 1 1102.747 865.7892 V 2722.7456 A 121.365 121.365 0 0 1 981.382 2844.1106 H 267.668 A 121.365 121.365 0 0 1 146.303 2722.7456 V 865.7892 A 121.365 121.365 0 0 1 267.668 744.4242 Z"
           fill="#22456F" fill-opacity="0.15" filter="url(#elShadowB-a)"/>
-    <path d="M 196.062 728.4545 H 952.988 A 121.365 121.365 0 0 1 1074.353 849.8195 V 2706.7759 A 121.365 121.365 0 0 1 952.988 2828.1409 H 196.062 A 121.365 121.365 0 0 1 74.697 2706.7759 V 849.8195 A 121.365 121.365 0 0 1 196.062 728.4545 Z"
+    <path d="M 246.062 728.4545 H 1002.988 A 121.365 121.365 0 0 1 1124.353 849.8195 V 2706.7759 A 121.365 121.365 0 0 1 1002.988 2828.1409 H 246.062 A 121.365 121.365 0 0 1 124.697 2706.7759 V 849.8195 A 121.365 121.365 0 0 1 246.062 728.4545 Z"
           fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-a)"/></g>
   </g>
 
-  <g id="Screen-Placeholder-a"><g transform="rotate(1.5 574.525 1769.8432)">
-      <path d="M 191.365 759.525 H 957.685 A 81.84 81.84 0 0 1 1039.525 841.365 V 2698.3214 A 81.84 81.84 0 0 1 957.685 2780.1614 H 191.365 A 81.84 81.84 0 0 1 109.525 2698.3214 V 841.365 A 81.84 81.84 0 0 1 191.365 759.525 Z" fill="#F2F6FB"/>
-      <text x="574.525" y="1769.8432" class="el-ph2" text-anchor="middle"
+  <g id="Screen-Placeholder-a"><g transform="rotate(1 624.525 1769.8432)">
+      <path d="M 241.365 759.525 H 1007.685 A 81.84 81.84 0 0 1 1089.525 841.365 V 2698.3214 A 81.84 81.84 0 0 1 1007.685 2780.1614 H 241.365 A 81.84 81.84 0 0 1 159.525 2698.3214 V 841.365 A 81.84 81.84 0 0 1 241.365 759.525 Z" fill="#F2F6FB"/>
+      <text x="624.525" y="1769.8432" class="el-ph2" text-anchor="middle"
             style="font-size:37.7027px">Element Detail</text>
-      <text x="574.525" y="1815.9243" class="el-ph3" text-anchor="middle"
+      <text x="624.525" y="1815.9243" class="el-ph3" text-anchor="middle"
             style="font-size:24.0878px">replace &#183; 1320 &#215; 2868</text></g>
   </g>
 
-  <g id="Device-Overlay-a"><g transform="rotate(1.5 574.525 1769.8432)">
-      <rect id="Button-Action-a" x="65.7727" y="1190.3297" width="8.4545" height="98.6853" rx="3.7576" fill="#94A2B5"/>
-      <rect id="Button-Volume-Up-a" x="65.7727" y="1362.504" width="8.4545" height="167.9749" rx="3.7576" fill="#94A2B5"/>
-      <rect id="Button-Volume-Down-a" x="65.7727" y="1557.7749" width="8.4545" height="167.9749" rx="3.7576" fill="#94A2B5"/>
-      <rect id="Button-Power-a" x="1074.8227" y="1425.4946" width="8.4545" height="296.0558" rx="3.7576" fill="#94A2B5"/>
+  <g id="Device-Overlay-a"><g transform="rotate(1 624.525 1769.8432)">
+      <rect id="Button-Action-a" x="115.7727" y="1190.3297" width="8.4545" height="98.6853" rx="3.7576" fill="#94A2B5"/>
+      <rect id="Button-Volume-Up-a" x="115.7727" y="1362.504" width="8.4545" height="167.9749" rx="3.7576" fill="#94A2B5"/>
+      <rect id="Button-Volume-Down-a" x="115.7727" y="1557.7749" width="8.4545" height="167.9749" rx="3.7576" fill="#94A2B5"/>
+      <rect id="Button-Power-a" x="1124.8227" y="1425.4946" width="8.4545" height="296.0558" rx="3.7576" fill="#94A2B5"/>
       <path id="Device-Rim-a" fill-rule="evenodd" fill="url(#elRim-a)"
-            d="M 191.365 720 H 957.685 A 121.365 121.365 0 0 1 1079.05 841.365 V 2698.3214 A 121.365 121.365 0 0 1 957.685 2819.6864 H 191.365 A 121.365 121.365 0 0 1 70 2698.3214 V 841.365 A 121.365 121.365 0 0 1 191.365 720 Z M 191.365 759.525 H 957.685 A 81.84 81.84 0 0 1 1039.525 841.365 V 2698.3214 A 81.84 81.84 0 0 1 957.685 2780.1614 H 191.365 A 81.84 81.84 0 0 1 109.525 2698.3214 V 841.365 A 81.84 81.84 0 0 1 191.365 759.525 Z"/>
+            d="M 241.365 720 H 1007.685 A 121.365 121.365 0 0 1 1129.05 841.365 V 2698.3214 A 121.365 121.365 0 0 1 1007.685 2819.6864 H 241.365 A 121.365 121.365 0 0 1 120 2698.3214 V 841.365 A 121.365 121.365 0 0 1 241.365 720 Z M 241.365 759.525 H 1007.685 A 81.84 81.84 0 0 1 1089.525 841.365 V 2698.3214 A 81.84 81.84 0 0 1 1007.685 2780.1614 H 241.365 A 81.84 81.84 0 0 1 159.525 2698.3214 V 841.365 A 81.84 81.84 0 0 1 241.365 759.525 Z"/>
       <path id="Device-Body-a" fill-rule="evenodd" fill="url(#elBody-a)"
-            d="M 191.365 737.67 H 957.685 A 103.695 103.695 0 0 1 1061.38 841.365 V 2698.3214 A 103.695 103.695 0 0 1 957.685 2802.0164 H 191.365 A 103.695 103.695 0 0 1 87.67 2698.3214 V 841.365 A 103.695 103.695 0 0 1 191.365 737.67 Z M 191.365 759.525 H 957.685 A 81.84 81.84 0 0 1 1039.525 841.365 V 2698.3214 A 81.84 81.84 0 0 1 957.685 2780.1614 H 191.365 A 81.84 81.84 0 0 1 109.525 2698.3214 V 841.365 A 81.84 81.84 0 0 1 191.365 759.525 Z"/>
+            d="M 241.365 737.67 H 1007.685 A 103.695 103.695 0 0 1 1111.38 841.365 V 2698.3214 A 103.695 103.695 0 0 1 1007.685 2802.0164 H 241.365 A 103.695 103.695 0 0 1 137.67 2698.3214 V 841.365 A 103.695 103.695 0 0 1 241.365 737.67 Z M 241.365 759.525 H 1007.685 A 81.84 81.84 0 0 1 1089.525 841.365 V 2698.3214 A 81.84 81.84 0 0 1 1007.685 2780.1614 H 241.365 A 81.84 81.84 0 0 1 159.525 2698.3214 V 841.365 A 81.84 81.84 0 0 1 241.365 759.525 Z"/>
       <path id="Device-Edge-Light-a" fill="none" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="1.4091"
-            d="M 191.365 720.75 H 957.685 A 120.615 120.615 0 0 1 1078.3 841.365 V 2698.3214 A 120.615 120.615 0 0 1 957.685 2818.9364 H 191.365 A 120.615 120.615 0 0 1 70.75 2698.3214 V 841.365 A 120.615 120.615 0 0 1 191.365 720.75 Z"/>
+            d="M 241.365 720.75 H 1007.685 A 120.615 120.615 0 0 1 1128.3 841.365 V 2698.3214 A 120.615 120.615 0 0 1 1007.685 2818.9364 H 241.365 A 120.615 120.615 0 0 1 120.75 2698.3214 V 841.365 A 120.615 120.615 0 0 1 241.365 720.75 Z"/>
       <path id="Screen-Edge-a" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="1.3152"
-            d="M 191.365 760.225 H 957.685 A 81.14 81.14 0 0 1 1038.825 841.365 V 2698.3214 A 81.14 81.14 0 0 1 957.685 2779.4614 H 191.365 A 81.14 81.14 0 0 1 110.225 2698.3214 V 841.365 A 81.14 81.14 0 0 1 191.365 760.225 Z"/>
-      <rect id="Dynamic-Island" x="442.4227" y="782.775"
+            d="M 241.365 760.225 H 1007.685 A 81.14 81.14 0 0 1 1088.825 841.365 V 2698.3214 A 81.14 81.14 0 0 1 1007.685 2779.4614 H 241.365 A 81.14 81.14 0 0 1 160.225 2698.3214 V 841.365 A 81.14 81.14 0 0 1 241.365 760.225 Z"/>
+      <rect id="Dynamic-Island" x="492.4227" y="782.775"
         width="264.2045" height="77.5" rx="38.75" fill="#05070C"/></g>
   </g>
 </svg>
