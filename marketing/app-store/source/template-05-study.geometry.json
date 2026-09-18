@@ -1,0 +1,46 @@
+{
+ "id": "05",
+ "slug": "study",
+ "label": "Study",
+ "need": "The strongest single study surface — the Study home, a quiz in progress, or a flashcard. One mode only.",
+ "headline": [
+  "Study Smarter"
+ ],
+ "sub": [
+  "Practice with focused tools that",
+  "make chemistry stick."
+ ],
+ "canvasW": 1320,
+ "canvasH": 2868,
+ "margin": 96,
+ "deviceX": 178.26,
+ "deviceY": 745,
+ "deviceW": 963.48,
+ "deviceH": 2004.8618181818183,
+ "deviceR": 115.88399999999999,
+ "deviceCX": 660,
+ "deviceCY": 1747.4309090909092,
+ "rot": -3,
+ "bezel": 37.74,
+ "scale": 0.896969696969697,
+ "screenX": 216,
+ "screenY": 782.74,
+ "screenW": 888,
+ "screenH": 1929.3818181818183,
+ "screenR": 78.14399999999999,
+ "screenCX": 660,
+ "screenCY": 1747.4309090909092,
+ "uniformScale": 0.6727272727272727,
+ "background": "assets/backgrounds/05-study.png",
+ "overlay": "assets/device/05-study-overlay.png",
+ "output": "exports/iphone/05-study.png",
+ "bounds": {
+  "minX": 126.4570277325754,
+  "maxX": 1193.5429722674246,
+  "minY": 721.1614731613743,
+  "maxY": 2773.700345020444
+ },
+ "copyTop": 296,
+ "copyBottom": 521.2990234375,
+ "copyX": 96
+}

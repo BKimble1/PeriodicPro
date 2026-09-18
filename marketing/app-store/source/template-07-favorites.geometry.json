@@ -1,0 +1,47 @@
+{
+ "id": "07",
+ "slug": "favorites",
+ "label": "Favourites",
+ "need": "Favourites / saved items, populated with several elements and compounds.",
+ "headline": [
+  "Keep What",
+  "Matters Close"
+ ],
+ "sub": [
+  "Save the elements and compounds",
+  "you come back to."
+ ],
+ "canvasW": 1320,
+ "canvasH": 2868,
+ "margin": 96,
+ "deviceX": 278.26,
+ "deviceY": 745,
+ "deviceW": 963.48,
+ "deviceH": 2004.8618181818183,
+ "deviceR": 115.88399999999999,
+ "deviceCX": 760,
+ "deviceCY": 1747.4309090909092,
+ "rot": 4,
+ "bezel": 37.74,
+ "scale": 0.896969696969697,
+ "screenX": 316,
+ "screenY": 782.74,
+ "screenW": 888,
+ "screenH": 1929.3818181818183,
+ "screenR": 78.14399999999999,
+ "screenCX": 760,
+ "screenCY": 1747.4309090909092,
+ "uniformScale": 0.6727272727272727,
+ "background": "assets/backgrounds/07-favorites.png",
+ "overlay": "assets/device/07-favorites-overlay.png",
+ "output": "exports/iphone/07-favorites.png",
+ "bounds": {
+  "minX": 209.50744903753264,
+  "maxX": 1310.4925509624672,
+  "minY": 713.8373876510493,
+  "maxY": 2781.0244305307688
+ },
+ "copyTop": 236,
+ "copyBottom": 580.2990234375,
+ "copyX": 96
+}

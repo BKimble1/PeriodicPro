@@ -1,0 +1,69 @@
+Elemora — App Store image 08  (overview)
+Chemistry, Made Clear
+Production placement data — measured from the finished composition. Pixels.
+
+CANVAS
+  W = 1320
+  H = 2868
+
+DEVICE
+  X        = 192.365          (unrotated top-left)
+  Y        = 785
+  W        = 935.27
+  H        = 1946.1609
+  Rotation = 0 deg    (about the device centre, 660, 1758.0805)
+  Centre   = 660, 1758.0805
+  Corner radius   = 112.491
+  Bezel thickness = 36.635 on every side
+  Scale vs the 888px campaign base opening = 0.8707
+
+DEVICE ROTATED BOUNDING BOX
+  Left = 192.365   Top = 785
+  Right = 1127.635  Bottom = 2731.1609
+  Off-canvas left   = none
+  Off-canvas right  = none
+  Off-canvas bottom = none
+
+SCREENSHOT  (place the real 1320x2868 Elemora capture here)
+  Wanted screen = Home or Periodic Table
+  Whichever single screen best sums the app up — usually the same capture as 01, or the periodic table.
+
+  Centre X      = 660
+  Centre Y      = 1758.0805
+  Unrotated W   = 862
+  Unrotated H   = 1872.8909
+  Rotation      = 0 deg  (identical to the device — one rigid group)
+  Unrotated X,Y = 229, 821.635   (top-left before rotation)
+  Corner radius = 75.856   (the overlay rounds this for you)
+
+  Aspect ratio = 0.4602510460251046
+  Required     = 1320 / 2868 = 0.4602510460251046
+  Delta        = 0.000e+0
+  Uniform scale of the source screenshot = 0.6530303030
+  NEVER scale X and Y independently, and never rotate the screenshot separately
+  from the bezel — set the size first, then apply the single rotation above.
+
+SCREENSHOT AS CANVAS PERCENTAGES (unrotated box)
+  Left = 17.3485%   Top = 28.6484%
+  Width = 65.3030%  Height = 65.3030%
+
+TYPOGRAPHY
+  Family     = Inter (latin variable, embedded in the SVG)
+  Headline   = 122px / 119px, weight 800, tracking -3.4px
+  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Left margin = 96px  (column 1128px)
+  Headline cap-top y = 236   Supporting baseline y = 510.499
+  Measured headline widths = 638.8, 655.6
+  Measured supporting widths = 801.4, 637.2
+  Widest line vs column = 801.4 / 1128
+
+COPY
+  Headline   = "Chemistry," + "Made Clear"
+  Supporting = "A visual toolkit for exploring, building," + "and understanding chemistry."
+
+LAYER ORDER (bottom to top)
+  1. assets/backgrounds/08-overview.png       — 1320x2868, opaque
+  2. your real Elemora screenshot — sized + rotated exactly as above
+  3. assets/device/08-overview-overlay.png    — 1320x2868, transparent screen
+
+  python3 place_screenshot.py 08 screenshots/selected/<capture>.png

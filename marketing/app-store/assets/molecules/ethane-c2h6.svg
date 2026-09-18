@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" viewBox="0 0 420 420">
+  <defs>
+    <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
+
+  <radialGradient id="elAtomC" cx="0.35" cy="0.30" r="0.76">
+    <stop offset="0"    stop-color="#78808F"/>
+    <stop offset="0.36" stop-color="#3D4553"/>
+    <stop offset="0.80" stop-color="#1A2029"/>
+    <stop offset="1"    stop-color="#0D1119"/>
+  </radialGradient>
+
+  <radialGradient id="elAtomRim" cx="0.70" cy="0.76" r="0.60">
+    <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/>
+    <stop offset="0.88" stop-color="#FFFFFF" stop-opacity="0.16"/>
+    <stop offset="1"    stop-color="#FFFFFF" stop-opacity="0.34"/>
+  </radialGradient>
+
+  <radialGradient id="elAtomSpec" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0"    stop-color="#FFFFFF" stop-opacity="0.92"/>
+    <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.40"/>
+    <stop offset="1"    stop-color="#FFFFFF" stop-opacity="0"/>
+  </radialGradient>
+
+  <linearGradient id="elBondG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0"    stop-color="#A5B2C4"/>
+    <stop offset="0.14" stop-color="#D6DEE9"/>
+    <stop offset="0.36" stop-color="#EBEFF6"/>
+    <stop offset="0.66" stop-color="#BEC9D7"/>
+    <stop offset="0.88" stop-color="#9CAABD"/>
+    <stop offset="1"    stop-color="#8794A8"/>
+  </linearGradient>
+
+  <filter id="elMolShadow" x="-25%" y="-25%" width="160%" height="160%" color-interpolation-filters="sRGB">
+    <feDropShadow dx="7" dy="16" stdDeviation="17" flood-color="#22456F" flood-opacity="0.20"/>
+  </filter>
+
+  <radialGradient id="elAtomH" cx="0.35" cy="0.30" r="0.76">
+    <stop offset="0"    stop-color="#FFFFFF"/>
+    <stop offset="0.36" stop-color="#F1F4F9"/>
+    <stop offset="0.80" stop-color="#C2CCD9"/>
+    <stop offset="1"    stop-color="#A6B3C5"/>
+  </radialGradient>
+  </defs>
+<g id="Molecule-C2H6"><g filter="url(#elMolShadow)"><g><circle cx="190.2857" cy="167.2835" r="31.5905" fill="url(#elAtomH)"/><circle cx="190.2857" cy="167.2835" r="31.5905" fill="url(#elAtomRim)"/><ellipse cx="179.8608" cy="155.5951" rx="9.4771" ry="6.634" fill="url(#elAtomSpec)" transform="rotate(-27 179.8608 155.5951)"/></g><g transform="translate(181.3601 192.5736) rotate(-70.5607)"><rect x="0" y="-10.7695" width="26.8189" height="21.539" fill="url(#elBondG)"/></g><g><circle cx="179.3923" cy="292.8867" r="32.3984" fill="url(#elAtomH)"/><circle cx="179.3923" cy="292.8867" r="32.3984" fill="url(#elAtomRim)"/><ellipse cx="168.7009" cy="280.8993" rx="9.7195" ry="6.8037" fill="url(#elAtomSpec)" transform="rotate(-27 168.7009 280.8993)"/></g><g transform="translate(175.9135 255.3752) rotate(84.7015)"><rect x="0" y="-11.0449" width="37.6725" height="22.0898" fill="url(#elBondG)"/></g><g transform="translate(172.4346 217.8637) rotate(-70.5607)"><rect x="0" y="-11.2927" width="26.8189" height="22.5854" fill="url(#elBondG)"/></g><g transform="translate(172.4346 217.8637) rotate(84.7015)"><rect x="0" y="-11.2927" width="37.6725" height="22.5854" fill="url(#elBondG)"/></g><g><circle cx="172.4346" cy="217.8637" r="48.3328" fill="url(#elAtomC)"/><circle cx="172.4346" cy="217.8637" r="48.3328" fill="url(#elAtomRim)"/><ellipse cx="156.4848" cy="199.9805" rx="14.4998" ry="10.1499" fill="url(#elAtomSpec)" transform="rotate(-27 156.4848 199.9805)"/></g><g transform="translate(172.4346 217.8637) rotate(-170.4899)"><rect x="0" y="-11.2927" width="39.9806" height="22.5854" fill="url(#elBondG)"/></g><g transform="translate(133.0035 211.2581) rotate(-170.4899)"><rect x="0" y="-11.5437" width="39.9806" height="23.0874" fill="url(#elBondG)"/></g><g transform="translate(211.4056 209.7058) rotate(168.1768)"><rect x="0" y="-11.2927" width="39.8157" height="22.5854" fill="url(#elBondG)"/></g><g><circle cx="93.5724" cy="204.6524" r="33.8615" fill="url(#elAtomH)"/><circle cx="93.5724" cy="204.6524" r="33.8615" fill="url(#elAtomRim)"/><ellipse cx="82.3981" cy="192.1237" rx="10.1585" ry="7.1109" fill="url(#elAtomSpec)" transform="rotate(-27 82.3981 192.1237)"/></g><g><circle cx="329.6236" cy="215.4944" r="34.791" fill="url(#elAtomH)"/><circle cx="329.6236" cy="215.4944" r="34.791" fill="url(#elAtomRim)"/><ellipse cx="318.1425" cy="202.6217" rx="10.4373" ry="7.3061" fill="url(#elAtomSpec)" transform="rotate(-27 318.1425 202.6217)"/></g><g transform="translate(250.3765 201.5479) rotate(168.1768)"><rect x="0" y="-12.1378" width="39.8157" height="24.2755" fill="url(#elBondG)"/></g><g transform="translate(290.0001 208.5211) rotate(9.9811)"><rect x="0" y="-11.8606" width="40.2325" height="23.7212" fill="url(#elBondG)"/></g><g transform="translate(250.3765 201.5479) rotate(9.9811)"><rect x="0" y="-12.1378" width="40.2325" height="24.2755" fill="url(#elBondG)"/></g><g><circle cx="250.3765" cy="201.5479" r="51.9497" fill="url(#elAtomC)"/><circle cx="250.3765" cy="201.5479" r="51.9497" fill="url(#elAtomRim)"/><ellipse cx="233.2331" cy="182.3265" rx="15.5849" ry="10.9094" fill="url(#elAtomSpec)" transform="rotate(-27 233.2331 182.3265)"/></g><g transform="translate(250.3765 201.5479) rotate(-93.982)"><rect x="0" y="-12.1378" width="42.5462" height="24.2755" fill="url(#elBondG)"/></g><g transform="translate(250.3765 201.5479) rotate(105.95)"><rect x="0" y="-12.1378" width="30.8103" height="24.2755" fill="url(#elBondG)"/></g><g transform="translate(247.422 159.1043) rotate(-93.982)"><rect x="0" y="-12.4377" width="42.5462" height="24.8754" fill="url(#elBondG)"/></g><g><circle cx="244.4675" cy="116.6608" r="36.484" fill="url(#elAtomH)"/><circle cx="244.4675" cy="116.6608" r="36.484" fill="url(#elAtomRim)"/><ellipse cx="232.4278" cy="103.1617" rx="10.9452" ry="7.6616" fill="url(#elAtomSpec)" transform="rotate(-27 232.4278 103.1617)"/></g><g transform="translate(241.9099 231.1721) rotate(105.95)"><rect x="0" y="-12.8065" width="30.8103" height="25.6131" fill="url(#elBondG)"/></g><g><circle cx="233.4433" cy="260.7963" r="37.5658" fill="url(#elAtomH)"/><circle cx="233.4433" cy="260.7963" r="37.5658" fill="url(#elAtomRim)"/><ellipse cx="221.0466" cy="246.8969" rx="11.2697" ry="7.8888" fill="url(#elAtomSpec)" transform="rotate(-27 221.0466 246.8969)"/></g></g></g>
+</svg>

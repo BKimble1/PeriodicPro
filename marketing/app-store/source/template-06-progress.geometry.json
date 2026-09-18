@@ -1,0 +1,47 @@
+{
+ "id": "06",
+ "slug": "progress",
+ "label": "Progress",
+ "need": "The progress / mastery view, with enough real activity on it to look earned.",
+ "headline": [
+  "See Your",
+  "Progress"
+ ],
+ "sub": [
+  "Track mastery, activity, and what",
+  "to review next."
+ ],
+ "canvasW": 1320,
+ "canvasH": 2868,
+ "margin": 96,
+ "deviceX": 178.26,
+ "deviceY": 745,
+ "deviceW": 963.48,
+ "deviceH": 2004.8618181818183,
+ "deviceR": 115.88399999999999,
+ "deviceCX": 660,
+ "deviceCY": 1747.4309090909092,
+ "rot": 0,
+ "bezel": 37.74,
+ "scale": 0.896969696969697,
+ "screenX": 216,
+ "screenY": 782.74,
+ "screenW": 888,
+ "screenH": 1929.3818181818183,
+ "screenR": 78.14399999999999,
+ "screenCX": 660,
+ "screenCY": 1747.4309090909092,
+ "uniformScale": 0.6727272727272727,
+ "background": "assets/backgrounds/06-progress.png",
+ "overlay": "assets/device/06-progress-overlay.png",
+ "output": "exports/iphone/06-progress.png",
+ "bounds": {
+  "minX": 178.26,
+  "maxX": 1141.74,
+  "minY": 745,
+  "maxY": 2749.8618181818183
+ },
+ "copyTop": 236,
+ "copyBottom": 580.2990234375,
+ "copyX": 96
+}

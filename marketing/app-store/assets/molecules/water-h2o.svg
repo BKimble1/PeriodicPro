@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" viewBox="0 0 420 420">
+  <defs>
+    <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
+
+  <radialGradient id="elAtomO" cx="0.35" cy="0.30" r="0.76">
+    <stop offset="0"    stop-color="#F6ABA2"/>
+    <stop offset="0.36" stop-color="#DC5A50"/>
+    <stop offset="0.80" stop-color="#A03A32"/>
+    <stop offset="1"    stop-color="#7E2C25"/>
+  </radialGradient>
+
+  <radialGradient id="elAtomRim" cx="0.70" cy="0.76" r="0.60">
+    <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/>
+    <stop offset="0.88" stop-color="#FFFFFF" stop-opacity="0.16"/>
+    <stop offset="1"    stop-color="#FFFFFF" stop-opacity="0.34"/>
+  </radialGradient>
+
+  <radialGradient id="elAtomSpec" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0"    stop-color="#FFFFFF" stop-opacity="0.92"/>
+    <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.40"/>
+    <stop offset="1"    stop-color="#FFFFFF" stop-opacity="0"/>
+  </radialGradient>
+
+  <linearGradient id="elBondG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0"    stop-color="#A5B2C4"/>
+    <stop offset="0.14" stop-color="#D6DEE9"/>
+    <stop offset="0.36" stop-color="#EBEFF6"/>
+    <stop offset="0.66" stop-color="#BEC9D7"/>
+    <stop offset="0.88" stop-color="#9CAABD"/>
+    <stop offset="1"    stop-color="#8794A8"/>
+  </linearGradient>
+
+  <filter id="elMolShadow" x="-25%" y="-25%" width="160%" height="160%" color-interpolation-filters="sRGB">
+    <feDropShadow dx="7" dy="16" stdDeviation="17" flood-color="#22456F" flood-opacity="0.20"/>
+  </filter>
+
+  <radialGradient id="elAtomH" cx="0.35" cy="0.30" r="0.76">
+    <stop offset="0"    stop-color="#FFFFFF"/>
+    <stop offset="0.36" stop-color="#F1F4F9"/>
+    <stop offset="0.80" stop-color="#C2CCD9"/>
+    <stop offset="1"    stop-color="#A6B3C5"/>
+  </radialGradient>
+  </defs>
+<g id="Molecule-H2O"><g filter="url(#elMolShadow)"><g><circle cx="291.3785" cy="151.7542" r="50.651" fill="url(#elAtomH)"/><circle cx="291.3785" cy="151.7542" r="50.651" fill="url(#elAtomRim)"/><ellipse cx="274.6637" cy="133.0133" rx="15.1953" ry="10.6367" fill="url(#elAtomSpec)" transform="rotate(-27 274.6637 133.0133)"/></g><g transform="translate(250.6893 180.8771) rotate(-35.5928)"><rect x="0" y="-17.2674" width="50.0376" height="34.5348" fill="url(#elBondG)"/></g><g transform="translate(210 210) rotate(-35.5928)"><rect x="0" y="-17.7" width="50.0376" height="35.4" fill="url(#elBondG)"/></g><g><circle cx="210" cy="210" r="70.446" fill="url(#elAtomO)"/><circle cx="210" cy="210" r="70.446" fill="url(#elAtomRim)"/><ellipse cx="186.7528" cy="183.935" rx="21.1338" ry="14.7937" fill="url(#elAtomSpec)" transform="rotate(-27 186.7528 183.935)"/></g><g transform="translate(210 210) rotate(-135.7841)"><rect x="0" y="-17.7" width="55.7888" height="35.4" fill="url(#elBondG)"/></g><g transform="translate(170.0152 171.095) rotate(-135.7841)"><rect x="0" y="-17.941" width="55.7888" height="35.882" fill="url(#elBondG)"/></g><g><circle cx="130.0304" cy="132.1899" r="52.627" fill="url(#elAtomH)"/><circle cx="130.0304" cy="132.1899" r="52.627" fill="url(#elAtomRim)"/><ellipse cx="112.6635" cy="112.7179" rx="15.7881" ry="11.0517" fill="url(#elAtomSpec)" transform="rotate(-27 112.6635 112.7179)"/></g></g></g>
+</svg>

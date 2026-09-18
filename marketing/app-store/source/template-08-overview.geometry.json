@@ -1,0 +1,47 @@
+{
+ "id": "08",
+ "slug": "overview",
+ "label": "Home or Periodic Table",
+ "need": "Whichever single screen best sums the app up — usually the same capture as 01, or the periodic table.",
+ "headline": [
+  "Chemistry,",
+  "Made Clear"
+ ],
+ "sub": [
+  "A visual toolkit for exploring, building,",
+  "and understanding chemistry."
+ ],
+ "canvasW": 1320,
+ "canvasH": 2868,
+ "margin": 96,
+ "deviceX": 192.365,
+ "deviceY": 785,
+ "deviceW": 935.27,
+ "deviceH": 1946.1609090909092,
+ "deviceR": 112.491,
+ "deviceCX": 660,
+ "deviceCY": 1758.0804545454546,
+ "rot": 0,
+ "bezel": 36.635000000000005,
+ "scale": 0.8707070707070707,
+ "screenX": 229,
+ "screenY": 821.635,
+ "screenW": 862,
+ "screenH": 1872.8909090909092,
+ "screenR": 75.856,
+ "screenCX": 660,
+ "screenCY": 1758.0804545454546,
+ "uniformScale": 0.6530303030303031,
+ "background": "assets/backgrounds/08-overview.png",
+ "overlay": "assets/device/08-overview-overlay.png",
+ "output": "exports/iphone/08-overview.png",
+ "bounds": {
+  "minX": 192.365,
+  "maxX": 1127.635,
+  "minY": 785,
+  "maxY": 2731.160909090909
+ },
+ "copyTop": 236,
+ "copyBottom": 580.2990234375,
+ "copyX": 96
+}

@@ -1,0 +1,47 @@
+{
+ "id": "02",
+ "slug": "elements",
+ "label": "Periodic Table",
+ "need": "The full periodic table view, scrolled so the table fills the screen.",
+ "headline": [
+  "Explore Every",
+  "Element"
+ ],
+ "sub": [
+  "Browse the periodic table and open",
+  "any element for the full picture."
+ ],
+ "canvasW": 1320,
+ "canvasH": 2868,
+ "margin": 96,
+ "deviceX": 283.26,
+ "deviceY": 745,
+ "deviceW": 963.48,
+ "deviceH": 2004.8618181818183,
+ "deviceR": 115.88399999999999,
+ "deviceCX": 765,
+ "deviceCY": 1747.4309090909092,
+ "rot": -3.5,
+ "bezel": 37.74,
+ "scale": 0.896969696969697,
+ "screenX": 321,
+ "screenY": 782.74,
+ "screenW": 888,
+ "screenH": 1929.3818181818183,
+ "screenR": 78.14399999999999,
+ "screenCX": 765,
+ "screenCY": 1747.4309090909092,
+ "uniformScale": 0.6727272727272727,
+ "background": "assets/backgrounds/02-elements.png",
+ "overlay": "assets/device/02-elements-overlay.png",
+ "output": "exports/iphone/02-elements.png",
+ "bounds": {
+  "minX": 222.96159922365086,
+  "maxX": 1307.0384007763491,
+  "minY": 717.4602122780839,
+  "maxY": 2777.4016059037344
+ },
+ "copyTop": 236,
+ "copyBottom": 580.2990234375,
+ "copyX": 96
+}

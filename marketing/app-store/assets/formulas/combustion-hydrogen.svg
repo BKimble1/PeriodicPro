@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="120" viewBox="0 0 1100 120">
+  <defs>
+    <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
+
+  </defs>
+<text x="20" y="86" text-anchor="start" style="font-size:72px;font-weight:600;letter-spacing:0px" fill="#0E2039" fill-opacity="1">2H<tspan dy="14.4" style="font-size:44.64px">2</tspan><tspan dy="-14.4">&#8203;</tspan> + O<tspan dy="14.4" style="font-size:44.64px">2</tspan><tspan dy="-14.4">&#8203;</tspan> → 2H<tspan dy="14.4" style="font-size:44.64px">2</tspan><tspan dy="-14.4">&#8203;</tspan>O</text>
+</svg>

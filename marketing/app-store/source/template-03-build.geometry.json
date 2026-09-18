@@ -1,0 +1,47 @@
+{
+ "id": "03",
+ "slug": "build",
+ "label": "Build",
+ "need": "The Build screen showing a molecule that has actually been assembled.",
+ "headline": [
+  "Build Real",
+  "Molecules"
+ ],
+ "sub": [
+  "Create compounds visually and see",
+  "how atoms connect."
+ ],
+ "canvasW": 1320,
+ "canvasH": 2868,
+ "margin": 96,
+ "deviceX": 73.25999999999999,
+ "deviceY": 745,
+ "deviceW": 963.48,
+ "deviceH": 2004.8618181818183,
+ "deviceR": 115.88399999999999,
+ "deviceCX": 555,
+ "deviceCY": 1747.4309090909092,
+ "rot": 3.5,
+ "bezel": 37.74,
+ "scale": 0.896969696969697,
+ "screenX": 111,
+ "screenY": 782.74,
+ "screenW": 888,
+ "screenH": 1929.3818181818183,
+ "screenR": 78.14399999999999,
+ "screenCX": 555,
+ "screenCY": 1747.4309090909092,
+ "uniformScale": 0.6727272727272727,
+ "background": "assets/backgrounds/03-build.png",
+ "overlay": "assets/device/03-build-overlay.png",
+ "output": "exports/iphone/03-build.png",
+ "bounds": {
+  "minX": 12.961599223650865,
+  "maxX": 1097.0384007763491,
+  "minY": 717.4602122780839,
+  "maxY": 2777.4016059037344
+ },
+ "copyTop": 236,
+ "copyBottom": 580.2990234375,
+ "copyX": 96
+}

@@ -1,0 +1,47 @@
+{
+ "id": "04",
+ "slug": "element-detail",
+ "label": "Element Detail",
+ "need": "A single element detail screen — pick the most visually complete one (Carbon or Iron).",
+ "headline": [
+  "See More Than",
+  "Symbols"
+ ],
+ "sub": [
+  "Properties, structure, uses, and the",
+  "facts worth remembering."
+ ],
+ "canvasW": 1320,
+ "canvasH": 2868,
+ "margin": 96,
+ "deviceX": 144.625,
+ "deviceY": 700,
+ "deviceW": 1030.75,
+ "deviceH": 2144.840909090909,
+ "deviceR": 123.975,
+ "deviceCX": 660,
+ "deviceCY": 1772.4204545454545,
+ "rot": 0,
+ "bezel": 40.375,
+ "scale": 0.9595959595959596,
+ "screenX": 185,
+ "screenY": 740.375,
+ "screenW": 950,
+ "screenH": 2064.090909090909,
+ "screenR": 83.6,
+ "screenCX": 660,
+ "screenCY": 1772.4204545454545,
+ "uniformScale": 0.7196969696969697,
+ "background": "assets/backgrounds/04-element-detail.png",
+ "overlay": "assets/device/04-element-detail-overlay.png",
+ "output": "exports/iphone/04-element-detail.png",
+ "bounds": {
+  "minX": 144.625,
+  "maxX": 1175.375,
+  "minY": 700,
+  "maxY": 2844.840909090909
+ },
+ "copyTop": 236,
+ "copyBottom": 580.2990234375,
+ "copyX": 96
+}

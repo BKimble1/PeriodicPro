@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" viewBox="0 0 420 420">
+  <defs>
+    <style type="text/css"><![CDATA[text{font-family:'Inter','Segoe UI',Arial,sans-serif}]]></style>
+
+  <radialGradient id="elAtomN" cx="0.35" cy="0.30" r="0.76">
+    <stop offset="0"    stop-color="#A9C8F5"/>
+    <stop offset="0.36" stop-color="#4F87DA"/>
+    <stop offset="0.80" stop-color="#2C5696"/>
+    <stop offset="1"    stop-color="#22447A"/>
+  </radialGradient>
+
+  <radialGradient id="elAtomRim" cx="0.70" cy="0.76" r="0.60">
+    <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0"/>
+    <stop offset="0.88" stop-color="#FFFFFF" stop-opacity="0.16"/>
+    <stop offset="1"    stop-color="#FFFFFF" stop-opacity="0.34"/>
+  </radialGradient>
+
+  <radialGradient id="elAtomSpec" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0"    stop-color="#FFFFFF" stop-opacity="0.92"/>
+    <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.40"/>
+    <stop offset="1"    stop-color="#FFFFFF" stop-opacity="0"/>
+  </radialGradient>
+
+  <linearGradient id="elBondG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0"    stop-color="#A5B2C4"/>
+    <stop offset="0.14" stop-color="#D6DEE9"/>
+    <stop offset="0.36" stop-color="#EBEFF6"/>
+    <stop offset="0.66" stop-color="#BEC9D7"/>
+    <stop offset="0.88" stop-color="#9CAABD"/>
+    <stop offset="1"    stop-color="#8794A8"/>
+  </linearGradient>
+
+  <filter id="elMolShadow" x="-25%" y="-25%" width="160%" height="160%" color-interpolation-filters="sRGB">
+    <feDropShadow dx="7" dy="16" stdDeviation="17" flood-color="#22456F" flood-opacity="0.20"/>
+  </filter>
+  </defs>
+<g id="Molecule-N2"><g filter="url(#elMolShadow)"><g><circle cx="268.3818" cy="195.4438" r="72.3114" fill="url(#elAtomN)"/><circle cx="268.3818" cy="195.4438" r="72.3114" fill="url(#elAtomRim)"/><ellipse cx="244.519" cy="168.6886" rx="21.6934" ry="15.1854" fill="url(#elAtomSpec)" transform="rotate(-27 244.519 168.6886)"/></g><g transform="translate(273.8057 217.1978) rotate(166)"><rect x="0" y="-17.4947" width="60.8836" height="34.9894" fill="url(#elBondG)"/></g><g transform="translate(268.3818 195.4438) rotate(166)"><rect x="0" y="-17.4947" width="60.8836" height="34.9894" fill="url(#elBondG)"/></g><g transform="translate(262.9579 173.6898) rotate(166)"><rect x="0" y="-17.4947" width="60.8836" height="34.9894" fill="url(#elBondG)"/></g><g transform="translate(214.7306 231.9269) rotate(166)"><rect x="0" y="-17.9102" width="60.8836" height="35.8204" fill="url(#elBondG)"/></g><g transform="translate(209.3067 210.1729) rotate(166)"><rect x="0" y="-17.9102" width="60.8836" height="35.8204" fill="url(#elBondG)"/></g><g transform="translate(203.8828 188.4188) rotate(166)"><rect x="0" y="-17.9102" width="60.8836" height="35.8204" fill="url(#elBondG)"/></g><g><circle cx="150.2317" cy="224.9019" r="74.0288" fill="url(#elAtomN)"/><circle cx="150.2317" cy="224.9019" r="74.0288" fill="url(#elAtomRim)"/><ellipse cx="125.8022" cy="197.5113" rx="22.2086" ry="15.546" fill="url(#elAtomSpec)" transform="rotate(-27 125.8022 197.5113)"/></g></g></g>
+</svg>

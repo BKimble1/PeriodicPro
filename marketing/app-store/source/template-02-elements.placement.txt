@@ -1,0 +1,69 @@
+Elemora — App Store image 02  (elements)
+Explore Every Element
+Production placement data — measured from the finished composition. Pixels.
+
+CANVAS
+  W = 1320
+  H = 2868
+
+DEVICE
+  X        = 283.26          (unrotated top-left)
+  Y        = 745
+  W        = 963.48
+  H        = 2004.8618
+  Rotation = -3.5 deg    (about the device centre, 765, 1747.4309)
+  Centre   = 765, 1747.4309
+  Corner radius   = 115.884
+  Bezel thickness = 37.74 on every side
+  Scale vs the 888px campaign base opening = 0.897
+
+DEVICE ROTATED BOUNDING BOX
+  Left = 222.9616   Top = 717.4602
+  Right = 1307.0384  Bottom = 2777.4016
+  Off-canvas left   = none
+  Off-canvas right  = none
+  Off-canvas bottom = none
+
+SCREENSHOT  (place the real 1320x2868 Elemora capture here)
+  Wanted screen = Periodic Table
+  The full periodic table view, scrolled so the table fills the screen.
+
+  Centre X      = 765
+  Centre Y      = 1747.4309
+  Unrotated W   = 888
+  Unrotated H   = 1929.3818
+  Rotation      = -3.5 deg  (identical to the device — one rigid group)
+  Unrotated X,Y = 321, 782.74   (top-left before rotation)
+  Corner radius = 78.144   (the overlay rounds this for you)
+
+  Aspect ratio = 0.4602510460251046
+  Required     = 1320 / 2868 = 0.4602510460251046
+  Delta        = 0.000e+0
+  Uniform scale of the source screenshot = 0.6727272727
+  NEVER scale X and Y independently, and never rotate the screenshot separately
+  from the bezel — set the size first, then apply the single rotation above.
+
+SCREENSHOT AS CANVAS PERCENTAGES (unrotated box)
+  Left = 24.3182%   Top = 27.2922%
+  Width = 67.2727%  Height = 67.2727%
+
+TYPOGRAPHY
+  Family     = Inter (latin variable, embedded in the SVG)
+  Headline   = 122px / 119px, weight 800, tracking -3.4px
+  Supporting = 45px / 59px, weight 500, #425873 at 0.86
+  Left margin = 96px  (column 1128px)
+  Headline cap-top y = 236   Supporting baseline y = 510.499
+  Measured headline widths = 790.6, 470.7
+  Measured supporting widths = 753.8, 664.5
+  Widest line vs column = 790.6 / 1128
+
+COPY
+  Headline   = "Explore Every" + "Element"
+  Supporting = "Browse the periodic table and open" + "any element for the full picture."
+
+LAYER ORDER (bottom to top)
+  1. assets/backgrounds/02-elements.png       — 1320x2868, opaque
+  2. your real Elemora screenshot — sized + rotated exactly as above
+  3. assets/device/02-elements-overlay.png    — 1320x2868, transparent screen
+
+  python3 place_screenshot.py 02 screenshots/selected/<capture>.png
