@@ -78,6 +78,7 @@ struct AdvancedSessionView: View {
         .background(AppColor.canvas)
         .animation(reduceMotion ? nil : Theme.Motion.soft, value: index)
         .animation(reduceMotion ? nil : Theme.Motion.soft, value: outcome)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("advanced.session")
     }
 
@@ -213,6 +214,7 @@ struct AdvancedSessionView: View {
                     .padding(.top, 2)
             }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("advanced.solution")
     }
 

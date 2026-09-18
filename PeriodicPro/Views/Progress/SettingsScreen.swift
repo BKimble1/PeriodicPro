@@ -169,6 +169,7 @@ struct SettingsScreen: View {
                     .accessibilityIdentifier("settings.notifications.openSystem")
                 }
                 .padding(.vertical, 2)
+                .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("settings.notifications.blocked")
             }
 

@@ -285,6 +285,7 @@ struct ChemistryScannerScreen: View {
                 resumeButton
             }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("scanner.found")
     }
 
@@ -366,6 +367,7 @@ struct ChemistryScannerScreen: View {
             .frame(maxWidth: .infinity)
         }
         .scrollIndicators(.hidden)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("scanner.unavailable")
     }
 

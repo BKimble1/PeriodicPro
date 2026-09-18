@@ -67,6 +67,7 @@ struct SavedCompoundsScreen: View {
             }
         }
         .tint(AppColor.accent)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("saved.screen")
     }
 
@@ -106,6 +107,7 @@ struct SavedCompoundsScreen: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(AppColor.canvas)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("saved.list")
     }
 

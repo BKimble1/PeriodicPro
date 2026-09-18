@@ -174,6 +174,7 @@ struct MyQuizzesScreen: View {
                     .contentShape(Rectangle())
             }
             .accessibilityLabel("More actions for \(quiz.name)")
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("myQuizzes.more.\(quiz.id.uuidString)")
         }
         .padding(.vertical, Theme.Spacing.xs)

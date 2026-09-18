@@ -125,6 +125,11 @@ struct LearningPathCard: View {
                     }
                 }
             }
+            // A container, not one element with one name. Without this the
+            // card's identifier is applied to every element inside it, so all
+            // five path rows come back as "progress.learningPath" and the card
+            // itself is not there at all.
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("progress.learningPath")
         }
     }
@@ -242,6 +247,11 @@ struct FamilyMasteryCard: View {
                     }
                 }
             }
+            // As above: without `children: .contain` this name lands on all ten
+            // family rows and overwrites each row's own, which is how
+            // `progress.family.alkaliMetal` came back as "never appeared" from
+            // a screen it was on.
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("progress.byFamily")
         }
     }

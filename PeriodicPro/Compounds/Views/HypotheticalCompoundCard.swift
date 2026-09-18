@@ -123,6 +123,7 @@ struct UnverifiedCompositionCard: View {
                 .accessibilityIdentifier("compound.deleteComposition")
             }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("compound.unverifiedCard")
     }
 
@@ -169,6 +170,7 @@ struct UnverifiedCompositionCard: View {
                     .font(AppFont.caption.weight(.semibold))
                     .accessibilityIdentifier("compound.checkAgainRetry")
             }
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("compound.checkFailed")
 
         case .found(let matches):
