@@ -23,21 +23,6 @@ struct PeriodicTableScreen: View {
     @State private var path = NavigationPath()
     @State private var screenWidth: CGFloat = 0
     @State private var screenHeight: CGFloat = 0
-    /// The room between the navigation bar and the tab bar, and the window
-    /// size it was measured at.
-    ///
-    /// Latched at its smallest for a given window: the large navigation title
-    /// collapses as the page scrolls, and re-fitting the table to the room
-    /// that frees up would resize all 118 tiles under the learner's thumb. The
-    /// smallest reading is the one taken at rest, which is the state the table
-    /// has to open correctly in, so the latch settles on the first frame and
-    /// never moves again until the device is turned.
-    @State private var pageViewportHeight: CGFloat = 0
-    @State private var pageViewportKey: CGSize = .zero
-    /// The hint line and the families filter bar: what the table sits under
-    /// inside the page. Constant for a given width, and never a function of
-    /// the tile size, so feeding it back into the fit cannot oscillate.
-    @State private var tableHeaderHeight: CGFloat = 0
 
     /// 1 is every column on screen; up to 3.5× is a pinch away.
     @State private var zoom: CGFloat = 1
@@ -62,17 +47,12 @@ struct PeriodicTableScreen: View {
 
     /// The vertical room the table is fitted into.
     ///
-    /// Before the first layout pass, an assumption close enough that the
-    /// measurement replacing it does not move the tile on any phone the app
-    /// ships for — on those the eighteen columns bind first and the height
-    /// pass changes nothing at all.
+    /// A pure function of the window height, which changes when the device is
+    /// turned and at no other time. Nothing here is measured, so nothing a
+    /// scroll does to the navigation bar or the search field can resize the
+    /// tiles. See `TableZoomLayout.pageChromeAllowance`.
     private var availableTableHeight: CGFloat {
-        TableZoomLayout.availableTableHeight(
-            pageViewportHeight: pageViewportHeight > 0
-                ? pageViewportHeight
-                : TableZoomLayout.assumedPageViewportHeight(screenHeight: screenHeight > 0 ? screenHeight : 852),
-            headerHeight: tableHeaderHeight > 0 ? tableHeaderHeight : TableZoomLayout.assumedHeaderHeight
-        )
+        TableZoomLayout.availableTableHeight(screenHeight: screenHeight > 0 ? screenHeight : 852)
     }
 
     private var searchResults: [ChemicalElement] {
@@ -95,7 +75,6 @@ struct PeriodicTableScreen: View {
                         screenHeight: screenHeight > 0 ? screenHeight : 700,
                         availableTableHeight: availableTableHeight,
                         tableAnchor: Self.tableAnchor,
-                        headerHeight: $tableHeaderHeight,
                         zoom: $zoom,
                         tablePosition: $tablePosition,
                         savedTableOffset: $savedTableOffset,
@@ -112,25 +91,6 @@ struct PeriodicTableScreen: View {
                     )
                 }
                 .scrollIndicators(.hidden)
-                // What is actually visible between the bars: the scroll view
-                // spans the window and reports the navigation bar and the tab
-                // bar as safe-area insets.
-                .onGeometryChange(for: TablePageMetrics.self) { proxy in
-                    TablePageMetrics(
-                        window: proxy.size,
-                        visibleHeight: proxy.size.height
-                            - proxy.safeAreaInsets.top
-                            - proxy.safeAreaInsets.bottom
-                    )
-                } action: { metrics in
-                    guard metrics.visibleHeight > 0 else { return }
-                    if pageViewportKey != metrics.window {
-                        pageViewportKey = metrics.window
-                        pageViewportHeight = metrics.visibleHeight
-                    } else {
-                        pageViewportHeight = min(pageViewportHeight, metrics.visibleHeight)
-                    }
-                }
                 // The page must not scroll while two fingers are zooming the table.
                 .scrollDisabled(isPinching)
                 .scrollDismissesKeyboard(.immediately)
@@ -215,22 +175,6 @@ struct PeriodicTableScreen: View {
     }
 }
 
-// MARK: - Page metrics
-
-/// The window the page is laid out in, and the room visible inside it.
-///
-/// Rounded, so the stream of sub-pixel geometry updates a scroll produces
-/// collapses to the changes that can actually move a tile.
-struct TablePageMetrics: Equatable {
-    let window: CGSize
-    let visibleHeight: CGFloat
-
-    init(window: CGSize, visibleHeight: CGFloat) {
-        self.window = CGSize(width: window.width.rounded(), height: window.height.rounded())
-        self.visibleHeight = visibleHeight.rounded()
-    }
-}
-
 // MARK: - Scroll content
 
 /// Split out so it can read `\.isSearching`, which is only published to views
@@ -249,7 +193,6 @@ private struct TableScreenContent: View {
     let screenHeight: CGFloat
     let availableTableHeight: CGFloat
     let tableAnchor: String
-    @Binding var headerHeight: CGFloat
     @Binding var zoom: CGFloat
     @Binding var tablePosition: ScrollPosition
     @Binding var savedTableOffset: CGPoint
@@ -325,11 +268,6 @@ private struct TableScreenContent: View {
                     .padding(.horizontal, Theme.Spacing.screenMargin)
 
                 CategoryFilterBar(filter: $filter)
-            }
-            .onGeometryChange(for: CGFloat.self) { proxy in
-                (proxy.size.height + Theme.Spacing.l + Theme.Spacing.xs).rounded()
-            } action: { measured in
-                if headerHeight != measured { headerHeight = measured }
             }
 
             // No accessibility identifier on the grid itself, deliberately.

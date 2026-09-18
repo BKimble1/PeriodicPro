@@ -67,6 +67,18 @@ struct LaunchScreenView: View {
                     .padding(.top, Theme.Spacing.s)
             }
             .padding(.horizontal, Theme.Spacing.xl)
+
+            // The house mark, bottom middle, the way Idlery's other apps sign
+            // their loading screens. Inside the ZStack rather than in an
+            // overlay so it sits in the same coordinate space as the icon, and
+            // above the safe-area inset so it clears the home indicator.
+            VStack {
+                Spacer()
+                Text("Powered by Idlery")
+                    .font(AppFont.caption2)
+                    .foregroundStyle(AppColor.tertiaryText)
+                    .padding(.bottom, Theme.Spacing.xl)
+            }
         }
         // The element is created first and described afterwards. Applied the
         // other way round, the identifier attaches to the view underneath

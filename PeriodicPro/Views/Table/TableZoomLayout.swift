@@ -289,32 +289,46 @@ enum TableZoomLayout {
     /// behind it.
     static let tableRegionBreathingRoom: CGFloat = Theme.Spacing.s
 
+    /// Everything above and below the table on the Table screen, as a
+    /// constant rather than a measurement.
+    ///
+    /// Top to bottom: the status bar or Dynamic Island, the navigation bar
+    /// with its large title, the search field, the hint line, the families
+    /// filter bar, and the tab bar with the home indicator under it.
+    ///
+    /// **This is deliberately not measured.** It used to be, and the table
+    /// changed size while the learner scrolled. A large navigation title and
+    /// a `.searchable` field both collapse as the page scrolls, and both are
+    /// reported as safe-area insets — so the room "between the bars" grew by
+    /// something like fifty points on the way down and shrank again on the way
+    /// back up. Fitting the tiles to that meant all 118 of them resized under
+    /// the thumb, which is not something a periodic table should do. A
+    /// constant cannot move, so the table's size is now a pure function of the
+    /// window and the zoom, and nothing a finger does to the page can change
+    /// it.
+    ///
+    /// Measured across the screens the app ships for, the collapsing parts
+    /// (large title 96, search field 52) plus the page header (the hint line
+    /// and the families bar, 110) plus the window's own insets come to at most
+    /// about 352. 360 covers that with a little to spare.
+    ///
+    /// It is a slight over-estimate on purpose: too large costs a point of
+    /// tile on one device and nothing on any other — every phone and every
+    /// iPad in portrait is bound by its eighteen columns long before height
+    /// matters — while too small would let a row fall off the bottom.
+    /// `Tools/check_table_fit.py` proves the whole table still fits on every
+    /// screen, against each one's real chrome rather than this allowance.
+    static let pageChromeAllowance: CGFloat = 360
+
     /// How much vertical room the table has on the Table screen.
     ///
-    /// `pageViewportHeight` is what is visible between the navigation bar and
-    /// the tab bar; `headerHeight` is everything the table sits under inside
-    /// the page — the hint line, the families filter bar and the spacing
-    /// between them. Neither depends on the tile size, so feeding the result
-    /// back into `fittedTileSize` cannot oscillate.
-    static func availableTableHeight(pageViewportHeight: CGFloat, headerHeight: CGFloat) -> CGFloat {
-        guard pageViewportHeight > 0 else { return .greatestFiniteMagnitude }
+    /// A function of the window height alone. `screenHeight` changes when the
+    /// device is turned or the window is resized, and at no other time.
+    static func availableTableHeight(screenHeight: CGFloat) -> CGFloat {
+        guard screenHeight > 0 else { return .greatestFiniteMagnitude }
         return max(
             smallestTableRegion,
-            pageViewportHeight - max(0, headerHeight) - tableRegionBreathingRoom
+            screenHeight - pageChromeAllowance - tableRegionBreathingRoom
         )
-    }
-
-    /// The room to assume before the first layout pass has measured anything.
-    ///
-    /// Only a starting point: the measured value replaces it on the same
-    /// frame the screen appears. It is deliberately generous, because
-    /// guessing too little would open the table smaller than it needs to be
-    /// and then grow it, which is the visible jump worth avoiding.
-    static let assumedHeaderHeight: CGFloat = 120
-
-    static func assumedPageViewportHeight(screenHeight: CGFloat) -> CGFloat {
-        // Status bar, a large navigation title, the search field and the tab
-        // bar, measured across the phones the app ships for.
-        max(240, screenHeight - 300)
     }
 }

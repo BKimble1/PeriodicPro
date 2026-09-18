@@ -37,21 +37,28 @@ SMALLEST_TILE = 13.0
 SMALLEST_REGION = 170.0
 BREATHING_ROOM = SPACING_S
 
-# The screens the app ships for: display width, and the room the page has
-# between the navigation bar and the tab bar with the large title showing.
-# Heights are the conservative end of what each device gives a SwiftUI
-# ScrollView inside a NavigationStack inside a TabView.
+# The screens the app ships for: display width, display height, and the
+# chrome above and below the table on that device — the window's own safe
+# areas, the navigation bar with its large title, the search field and the
+# tab bar. Real per-device numbers, not the single allowance the app uses.
+#
+# The app cannot measure these without reintroducing the bug this gate now
+# guards: the large title and the search field collapse as the page scrolls,
+# so anything derived from a live safe-area inset changes size under the
+# learner's thumb. The app therefore budgets one constant,
+# TableZoomLayout.pageChromeAllowance, and this gate checks that constant
+# against what each device really gives up.
 DEVICES = [
-    ("iPhone SE (3rd generation)", 375, 450),
-    ("iPhone 16e",                 390, 540),
-    ("iPhone 17",                  393, 562),
-    ("iPhone 17 Pro",              402, 570),
-    ("iPhone 17 Pro Max",          440, 666),
-    ("iPad (A16) portrait",        820, 950),
-    ("iPad Pro 11 portrait",       834, 968),
-    ("iPad Pro 13 portrait",      1024, 1180),
-    ("iPad Pro 11 landscape",     1210, 592),
-    ("iPad Pro 13 landscape",     1366, 720),
+    ("iPhone SE (3rd generation)", 375, 667, 217),
+    ("iPhone 16e",                 390, 844, 304),
+    ("iPhone 17",                  393, 852, 290),
+    ("iPhone 17 Pro",              402, 874, 304),
+    ("iPhone 17 Pro Max",          440, 956, 290),
+    ("iPad (A16) portrait",        820, 1180, 230),
+    ("iPad Pro 11 portrait",       834, 1210, 242),
+    ("iPad Pro 13 portrait",      1024, 1366, 186),
+    ("iPad Pro 11 landscape",     1210, 834, 242),
+    ("iPad Pro 13 landscape",     1366, 1024, 242),
 ]
 
 # The hint line and the families filter bar, at their tallest (375 points,
@@ -109,10 +116,16 @@ def fitted_tile(width: float, available: float = math.inf) -> float:
     return tile if content_height(tile) <= available else width_fitted
 
 
-def available_height(visible: float, header: float) -> float:
-    if visible <= 0:
+def available_height(screen_height: float, allowance: float) -> float:
+    """What the app budgets: a function of the window height alone."""
+    if screen_height <= 0:
         return math.inf
-    return max(SMALLEST_REGION, visible - max(0.0, header) - BREATHING_ROOM)
+    return max(SMALLEST_REGION, screen_height - allowance - BREATHING_ROOM)
+
+
+def real_room(screen_height: float, chrome: float) -> float:
+    """What the device actually leaves for the table, chrome and header off."""
+    return screen_height - chrome - HEADER - BREATHING_ROOM
 
 
 def swift_constants() -> dict[str, float]:
@@ -121,7 +134,7 @@ def swift_constants() -> dict[str, float]:
         source = handle.read()
     found: dict[str, float] = {}
     for name in ("fittedSpacing", "largestSpacing", "smallestFittedTile",
-                 "smallestTableRegion"):
+                 "smallestTableRegion", "pageChromeAllowance"):
         match = re.search(rf"static let {name}: CGFloat = ([0-9.]+)", source)
         if match:
             found[name] = float(match.group(1))
@@ -141,6 +154,8 @@ def main() -> int:
         "smallestFittedTile": SMALLEST_TILE, "smallestTableRegion": SMALLEST_REGION,
         "columns": COLUMNS, "mainRows": MAIN_ROWS, "detachedRows": DETACHED_ROWS,
     }
+    # Read from the Swift rather than duplicated here: this is the number
+    # under test, so the gate has to use whatever the app actually ships.
     actual = swift_constants()
     for name, value in expected.items():
         if name not in actual:
@@ -149,23 +164,35 @@ def main() -> int:
             failures.append(
                 f"{name} is {actual[name]} in TableZoomLayout.swift and {value} here")
 
-    print(f"{'device':28}{'width':>7}{'room':>7}{'tile':>6}{'table w':>9}{'table h':>9}  fits")
-    for name, width, visible in DEVICES:
-        room = available_height(visible, HEADER)
+    allowance = actual.get("pageChromeAllowance", 0.0)
+
+    print(f"{'device':28}{'width':>7}{'budget':>8}{'real':>7}{'tile':>6}"
+          f"{'table w':>9}{'table h':>9}{'spare':>8}  fits")
+    for name, width, screen_height, chrome in DEVICES:
+        room = available_height(screen_height, allowance)
         tile = fitted_tile(width, room)
         height = content_height(tile)
         wide = content_width(tile)
+        # Two questions, not one. The budget is what the app fits the table
+        # into; the real room is what the device actually has. The table must
+        # fit the budget (or the app has miscounted its own layout) and the
+        # budget must fit the device (or a row falls off the bottom).
+        actual_room = real_room(screen_height, chrome)
         fits_width = wide <= width + 0.5
         fits_height = height <= room + 0.001
-        # A phone held sideways has no tile size that fits ten rows in the
-        # room it has; the table keeps a legible size there and the page
-        # scrolls. Every device listed above is one that must fit.
-        verdict = "yes" if (fits_width and fits_height) else "NO"
-        print(f"{name:28}{width:>7}{room:>7.0f}{tile:>6.0f}{wide:>9.1f}{height:>9.1f}  {verdict}")
+        on_screen = height <= actual_room + 0.001
+        verdict = "yes" if (fits_width and fits_height and on_screen) else "NO"
+        print(f"{name:28}{width:>7}{room:>8.0f}{actual_room:>7.0f}{tile:>6.0f}"
+              f"{wide:>9.1f}{height:>9.1f}{actual_room - height:>8.1f}  {verdict}")
         if not fits_width:
             failures.append(f"{name}: the table is {wide:.1f} points wide in {width}")
         if not fits_height:
             failures.append(f"{name}: the table needs {height:.1f} points and has {room:.0f}")
+        if not on_screen:
+            failures.append(
+                f"{name}: pageChromeAllowance {allowance:.0f} claims {room:.0f} points but the "
+                f"device leaves {actual_room:.0f}, so the table would run {height - actual_room:.1f} "
+                "points past the bottom")
         if tile < SMALLEST_TILE:
             failures.append(f"{name}: tile shrank to {tile}")
 

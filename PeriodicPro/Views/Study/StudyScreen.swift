@@ -39,6 +39,11 @@ struct StudyScreen: View {
     /// lesson as `paywallAfterSession`: asking to present a round, or to push
     /// a page, from a host that is still presenting does nothing at all.
     @State private var sharedQuizAction: SharedQuizAction?
+    /// Whether the round on screen is today's Daily Challenge. The challenge
+    /// is only spent when it is finished, so this is what the round's finish
+    /// callback consults — opening the challenge and backing out of it leaves
+    /// today's still to do.
+    @State private var activeRoundIsDailyChallenge = false
     @Namespace private var studyNamespace
 
     private var favorites: [ChemicalElement] {
@@ -134,6 +139,11 @@ struct StudyScreen: View {
                 }
             }
             .fullScreenCover(item: $activeRound) {
+                // Whatever the round was, it is over now. Without this a
+                // challenge that was opened and abandoned would still be armed
+                // when some later round finished, and that round would spend
+                // the day's challenge instead.
+                activeRoundIsDailyChallenge = false
                 // onDismiss runs after the cover has finished dismissing.
                 // Reacting to the binding going nil instead would fire at the
                 // *start* of the transition, and asking to present a sheet from
@@ -146,7 +156,12 @@ struct StudyScreen: View {
                 StudySessionContainer(
                     plan: plan,
                     catalog: catalog,
-                    onAllowanceSpent: { paywallAfterSession = .dailyLimit }
+                    onAllowanceSpent: { paywallAfterSession = .dailyLimit },
+                    onRoundFinished: {
+                        guard activeRoundIsDailyChallenge else { return }
+                        activeRoundIsDailyChallenge = false
+                        DailyChallengeRecord.markComplete()
+                    }
                 )
             }
             .sheet(item: $paywall) { context in
@@ -301,7 +316,9 @@ struct StudyScreen: View {
             compounds: compounds.allKnownCompounds
         )
         guard !questions.isEmpty else { return }
-        DailyChallengeRecord.markComplete()
+        // Marked complete when the round finishes, not here: opening the
+        // challenge and closing it again used to spend the day.
+        activeRoundIsDailyChallenge = true
         start(.quiz(QuizRoundDealer(
             configuration: QuizConfiguration(
                 difficulty: .mixed,

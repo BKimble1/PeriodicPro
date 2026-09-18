@@ -8,6 +8,9 @@ struct StudySessionContainer: View {
     /// The caller presents the paywall once this cover has gone — never over a
     /// round, which would discard the learner's position.
     var onAllowanceSpent: () -> Void = {}
+    /// Called when a round is actually finished — the last card rated, the
+    /// last question confirmed, the last pair matched. Never on dismissal.
+    var onRoundFinished: () -> Void = {}
 
     @Environment(\.dismiss) private var dismiss
     @Environment(ProgressStore.self) private var progress: ProgressStore
@@ -227,6 +230,7 @@ struct StudySessionContainer: View {
     private func finish(_ result: StudyResult) {
         self.result = result
         progress.recordCompletedRound()
+        onRoundFinished()
     }
 }
 
