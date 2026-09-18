@@ -11,23 +11,23 @@ DEVICE 1 of 1   role = build   layer = backmost
   Wanted screen = Build canvas
   The Build screen mid-assembly, with a molecule actually on the canvas, never an empty builder. The same capture continues off the right edge of frame 02. The leftmost seventh of the screen falls on that slide, so keep controls and the molecule itself away from the extreme left edge.
 
-  X        = -71.22          (unrotated top-left)
-  Y        = 762.87
+  X        = -74.01          (unrotated top-left)
+  Y        = 752.58
   W        = 976.5
   H        = 2031.9545
-  Rotation = 4.5 deg    (about the device centre, 417.03, 1778.8473)
+  Rotation = 6 deg    (about the device centre, 414.24, 1768.5573)
   Corner radius   = 117.45
   Bezel thickness = 38.25 on every side
 
   ROTATED BOUNDING BOX
-    Left = -149.4275   Top = 727.6943   Right = 983.4875   Bottom = 2830.0003
-    Off-canvas left 149.4px, right none, bottom none
+    Left = -177.5339   Top = 707.1096   Right = 1006.0139   Bottom = 2830.0049
+    Off-canvas left 177.5px, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 417.03, 1778.8473
-    Unrotated X,Y = -32.97, 801.12
+    Centre        = 414.24, 1768.5573
+    Unrotated X,Y = -35.76, 790.83
     Unrotated W,H = 900 x 1955.4545
-    Rotation      = 4.5 deg  (identical to the device, one rigid group)
+    Rotation      = 6 deg  (identical to the device, one rigid group)
     Corner radius = 79.2   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046

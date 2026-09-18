@@ -45,9 +45,9 @@ export default {
     { x: 520, y: 2740, r: 920, c: C.paleA, o: 0.48 },
   ],
   deco: () => [
-    periodicFragment({ x: -100, y: 2560, cell: 72, gap: 11, opacity: 0.10, fadeCX: 660, fadeR: 640 }),
-    orbits({ cx: 1245, cy: 880, r: 215, opacity: 0.042 }),
-    elementTile('C', { x: -46, y: 1320, w: 230, variant: 'soft', opacity: 0.048, rot: -4 }),
-    formula(EQUATIONS.saltFormation, { x: 96, y: 2840, size: 44, opacity: 0.028 }),
+    periodicFragment({ x: -100, y: 2560, cell: 72, gap: 11, opacity: 0.085, fadeCX: 660, fadeR: 640 }),
+    orbits({ cx: 1245, cy: 880, r: 215, opacity: 0.034 }),
+    elementTile('C', { x: -46, y: 1320, w: 230, variant: 'soft', opacity: 0.038, rot: -4 }),
+    formula(EQUATIONS.saltFormation, { x: 96, y: 2840, size: 44, opacity: 0.026 }),
   ],
 };

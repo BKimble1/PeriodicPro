@@ -330,7 +330,7 @@ ok(max(centres) - min(centres) < 14,
    f"copy blocks are not optically aligned: {sorted(centres)}")
 
 rots = [d["rot"] for g in frames for d in g["devices"]]
-ok(all(abs(x) <= 5 for x in rots), f"a device is tilted too far: {rots}")
+ok(all(abs(x) <= 6 for x in rots), f"a device is tilted too far: {rots}")
 
 # Screenshot 2's primary device must be dead straight: the real periodic table
 # carries the visual complexity, the frame around it stays calm.

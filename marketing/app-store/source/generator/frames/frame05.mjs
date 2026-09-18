@@ -34,9 +34,9 @@ export default {
     { x: 760, y: 2800, r: 900, c: C.paleA, o: 0.46 },
   ],
   deco: () => [
-    skeletal('naphthalene', { cx: 1280, cy: 980, scale: 165, rot: -14, opacity: 0.10, width: 9 }),
-    skeletal('acetone', { cx: 120, cy: 2680, scale: 96, opacity: 0.04, width: 7 }),
-    formula('C10H8', { x: 1224, y: 2840, size: 52, opacity: 0.045, anchor: 'end' }),
-    formula(EQUATIONS.haber, { x: 96, y: 624, size: 40, opacity: 0.028 }),
+    skeletal('naphthalene', { cx: 1280, cy: 980, scale: 165, rot: -14, opacity: 0.085, width: 9 }),
+    skeletal('acetone', { cx: 120, cy: 2680, scale: 96, opacity: 0.032, width: 7 }),
+    formula('C10H8', { x: 1224, y: 2840, size: 52, opacity: 0.035, anchor: 'end' }),
+    formula(EQUATIONS.haber, { x: 96, y: 624, size: 40, opacity: 0.026 }),
   ],
 };

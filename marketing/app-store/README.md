@@ -39,16 +39,16 @@ an exact pixel size, and verified programmatically.
 
 Six compositions, deliberately not one template repeated six times. Variety
 comes from scale, cropping, overlap and position rather than from steep angles;
-no device is tilted more than 4.5 degrees.
+no device is tilted more than 6 degrees.
 
 | # | file | headline | composition | devices |
 |---|---|---|---|---|
 | 1 | `01-hero.png` | Learn Chemistry Visually | one full straight device, centred, wide margins | 1 |
 | 2 | `02-elements.png` | Explore Every Element | full straight periodic table device, plus the lower left corner of slide 3's Build phone entering at the right | 2 |
 | 3 | `03-build.png` | Build Real Molecules | that same Build phone, now the hero, filling the lower two thirds. Nothing else | 1 |
-| 4 | `04-element-detail.png` | See More Than Symbols | one very large device, 1 degree, fully visible | 1 |
+| 4 | `04-element-detail.png` | See More Than Symbols | one very large device, 0.75 degrees, fully visible | 1 |
 | 5 | `05-study.png` | Study Smarter | two complete overlapping devices, rear high and left, front low and right | 2 |
-| 6 | `06-progress.png` | See Your Progress | one device, perfectly vertical, pushed right with a seventh of its width off the right edge | 1 |
+| 6 | `06-progress.png` | See Your Progress | one device, perfectly vertical, pushed right with an eighth of its width off the right edge | 1 |
 
 Frames 1 to 3 are designed as one mini campaign: a calm hero, a calm periodic
 table, then the layered Build composition. Every device is a complete phone
@@ -65,15 +65,18 @@ identical rotation, identical y, and an x differing by exactly one panel width.
 
 The Build phone is the hero of slide 3 and reaches back into slide 2 with its
 lower left corner only. It is sized and angled after CoreCredit's own spanning
-device: 74 percent of a panel's width at 4.5 degrees, and seated so its **bottom
+device: 74 percent of a panel's width at 6 degrees, and seated so its **bottom
 sits on the canvas** rather than running off it, which means slide 2 shows a real
 corner of the phone rather than an open-ended edge.
 
-Its top left corner clears the seam by 10px, so what appears on slide 2 is a
-wedge starting a little under a fifth of the way down and widening to 167px at
-the bottom left corner: 13.2 percent of the device. Only **4.3 percent of the
-Build screen area** falls on slide 2, and it is the bottom left corner of it, so
-nothing worth reading is split; the continuation is carried by the device body.
+Its top left corner clears the seam, so what appears on slide 2 is a wedge, and
+the angle is what decides that wedge's shape. At 4.5 degrees it began a fifth of
+the way down and read as a long thin strip; at 6 degrees the apex drops to 36
+percent down and the bottom corner widens to 178px, so the curved corner, the
+bezel and a band of screen all read as a phone arriving. The share is 15 percent,
+the top of the agreed range, leaving 85 percent on slide 3. Only **5.0 percent of
+the Build screen area** falls on slide 2, and it is the bottom left corner of it,
+so nothing worth reading is split.
 
 Each slide still works alone. Slide 2 reads as a calm periodic table with a
 device entering at the edge; slide 3 reads as a large Build phone arriving from
@@ -184,7 +187,7 @@ every line is measured in the real renderer at build time so the build fails if
 one exceeds it.
 
 **Variety.** Device widths run from 803px to 1042px across the set. Three frames
-carry more than one device, three carry one. Tilts stay between 0 and 4.5 degrees
+carry more than one device, three carry one. Tilts stay between 0 and 6 degrees
 and are rigid 2D rotations of the whole device group, never a perspective
 homography, which is why a real screenshot follows the bezel exactly. The QA pass
 fingerprints each frame by device count, scale band, horizontal placement and
@@ -199,8 +202,9 @@ inventory into each frame's geometry file and the QA pass enforces those bands,
 so no frame can drift back into uniformly faint wallpaper. The anchors are sized
 to pass *behind* the devices and surface again on the far side: a naphthalene ring
 system straddling frame 01's left bezel, an iron shell diagram wider than the
-phone in frame 04, a caffeine skeleton centred on frame 03's device, and period
-1-4 table fragments sliding under frames 02 and 06. Frame 02's fragment also
+phone in frame 04, a caffeine skeleton centred on frame 03's device, an orbit
+diagram centred on frame 06's, and a period 1-4 table fragment sliding under
+frame 02. Frame 02's fragment also
 dissolves toward the middle of the slide, so it reads as atmosphere rather than a
 band of squares. That occlusion is what
 seats the devices in the composition.

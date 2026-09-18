@@ -51,31 +51,31 @@
    "label": "Build canvas",
    "need": "The SAME Build capture used as the hero of frame 03. Only the lower left corner of the device reaches this slide, so almost no UI shows here; it is the device body that carries the eye into the next screenshot.",
    "bleed": true,
-   "masterX": 1248.78,
+   "masterX": 1245.99,
    "sfx": "-b",
-   "x": 1248.78,
-   "y": 762.87,
+   "x": 1245.99,
+   "y": 752.58,
    "w": 976.5,
    "h": 2031.9545454545455,
    "r": 117.44999999999999,
-   "rot": 4.5,
-   "cx": 1737.03,
-   "cy": 1778.8472727272729,
+   "rot": 6,
+   "cx": 1734.24,
+   "cy": 1768.557272727273,
    "bezel": 38.25,
    "scale": 0.9090909090909091,
-   "screenX": 1287.03,
-   "screenY": 801.12,
+   "screenX": 1284.24,
+   "screenY": 790.83,
    "screenW": 900,
    "screenH": 1955.4545454545455,
    "screenR": 79.19999999999999,
-   "screenCX": 1737.03,
-   "screenCY": 1778.8472727272729,
+   "screenCX": 1734.24,
+   "screenCY": 1768.557272727273,
    "uniformScale": 0.6818181818181818,
    "bounds": {
-    "minX": 1170.5724537065762,
-    "maxX": 2303.4875462934237,
-    "minY": 727.6942653774249,
-    "maxY": 2830.000280077121
+    "minX": 1142.466141553397,
+    "maxX": 2326.013858446603,
+    "minY": 707.1096076130248,
+    "maxY": 2830.004937841521
    },
    "overlay": "assets/device/02-elements-overlay-build.png"
   }
@@ -88,19 +88,19 @@
  "decoration": [
   {
    "kind": "Periodic",
-   "opacity": 0.1
+   "opacity": 0.085
   },
   {
    "kind": "Tile",
-   "opacity": 0.048
+   "opacity": 0.038
   },
   {
    "kind": "Orbits",
-   "opacity": 0.042
+   "opacity": 0.034
   },
   {
    "kind": "Formula",
-   "opacity": 0.028
+   "opacity": 0.026
   }
  ]
 }

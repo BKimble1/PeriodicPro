@@ -125,31 +125,31 @@
     "label": "Build canvas",
     "need": "The SAME Build capture used as the hero of frame 03. Only the lower left corner of the device reaches this slide, so almost no UI shows here; it is the device body that carries the eye into the next screenshot.",
     "bleed": true,
-    "masterX": 1248.78,
+    "masterX": 1245.99,
     "sfx": "-b",
-    "x": 1248.78,
-    "y": 762.87,
+    "x": 1245.99,
+    "y": 752.58,
     "w": 976.5,
     "h": 2031.9545454545455,
     "r": 117.44999999999999,
-    "rot": 4.5,
-    "cx": 1737.03,
-    "cy": 1778.8472727272729,
+    "rot": 6,
+    "cx": 1734.24,
+    "cy": 1768.557272727273,
     "bezel": 38.25,
     "scale": 0.9090909090909091,
-    "screenX": 1287.03,
-    "screenY": 801.12,
+    "screenX": 1284.24,
+    "screenY": 790.83,
     "screenW": 900,
     "screenH": 1955.4545454545455,
     "screenR": 79.19999999999999,
-    "screenCX": 1737.03,
-    "screenCY": 1778.8472727272729,
+    "screenCX": 1734.24,
+    "screenCY": 1768.557272727273,
     "uniformScale": 0.6818181818181818,
     "bounds": {
-     "minX": 1170.5724537065762,
-     "maxX": 2303.4875462934237,
-     "minY": 727.6942653774249,
-     "maxY": 2830.000280077121
+     "minX": 1142.466141553397,
+     "maxX": 2326.013858446603,
+     "minY": 707.1096076130248,
+     "maxY": 2830.004937841521
     },
     "overlay": "assets/device/02-elements-overlay-build.png"
    }
@@ -162,19 +162,19 @@
   "decoration": [
    {
     "kind": "Periodic",
-    "opacity": 0.1
+    "opacity": 0.085
    },
    {
     "kind": "Tile",
-    "opacity": 0.048
+    "opacity": 0.038
    },
    {
     "kind": "Orbits",
-    "opacity": 0.042
+    "opacity": 0.034
    },
    {
     "kind": "Formula",
-    "opacity": 0.028
+    "opacity": 0.026
    }
   ]
  },
@@ -199,31 +199,31 @@
     "label": "Build canvas",
     "need": "The Build screen mid-assembly, with a molecule actually on the canvas, never an empty builder. The same capture continues off the right edge of frame 02. The leftmost seventh of the screen falls on that slide, so keep controls and the molecule itself away from the extreme left edge.",
     "bleed": true,
-    "masterX": -71.22000000000003,
+    "masterX": -74.00999999999999,
     "sfx": "-a",
-    "x": -71.22000000000003,
-    "y": 762.87,
+    "x": -74.00999999999999,
+    "y": 752.58,
     "w": 976.5,
     "h": 2031.9545454545455,
     "r": 117.44999999999999,
-    "rot": 4.5,
-    "cx": 417.03,
-    "cy": 1778.8472727272729,
+    "rot": 6,
+    "cx": 414.24,
+    "cy": 1768.557272727273,
     "bezel": 38.25,
     "scale": 0.9090909090909091,
-    "screenX": -32.97000000000003,
-    "screenY": 801.12,
+    "screenX": -35.75999999999999,
+    "screenY": 790.83,
     "screenW": 900,
     "screenH": 1955.4545454545455,
     "screenR": 79.19999999999999,
-    "screenCX": 417.03,
-    "screenCY": 1778.8472727272729,
+    "screenCX": 414.24,
+    "screenCY": 1768.557272727273,
     "uniformScale": 0.6818181818181818,
     "bounds": {
-     "minX": -149.4275462934237,
-     "maxX": 983.4875462934236,
-     "minY": 727.6942653774249,
-     "maxY": 2830.000280077121
+     "minX": -177.53385844660295,
+     "maxX": 1006.013858446603,
+     "minY": 707.1096076130248,
+     "maxY": 2830.004937841521
     },
     "overlay": "assets/device/03-build-overlay.png"
    }
@@ -275,7 +275,7 @@
     "w": 1009.05,
     "h": 2099.6863636363637,
     "r": 121.365,
-    "rot": 1,
+    "rot": 0.75,
     "cx": 624.525,
     "cy": 1769.8431818181818,
     "bezel": 39.525000000000006,
@@ -289,10 +289,10 @@
     "screenCY": 1769.8431818181818,
     "uniformScale": 0.7045454545454546,
     "bounds": {
-     "minX": 101.75455169671989,
-     "maxX": 1147.29544830328,
-     "minY": 711.3547208438501,
-     "maxY": 2828.331642792514
+     "minX": 106.30120121739071,
+     "maxX": 1142.7487987826094,
+     "minY": 713.4859144066659,
+     "maxY": 2826.200449229698
     },
     "overlay": "assets/device/04-element-detail-overlay.png"
    }
@@ -405,19 +405,19 @@
   "decoration": [
    {
     "kind": "Skeletal",
-    "opacity": 0.1
+    "opacity": 0.085
    },
    {
     "kind": "Formula",
-    "opacity": 0.045
+    "opacity": 0.035
    },
    {
     "kind": "Skeletal",
-    "opacity": 0.04
+    "opacity": 0.032
    },
    {
     "kind": "Formula",
-    "opacity": 0.028
+    "opacity": 0.026
    }
   ]
  },
@@ -443,27 +443,27 @@
     "need": "The progress or mastery view, with enough real activity on it to look earned. The rightmost ninth of the screen runs off the canvas, so keep headline numbers and labels left of centre.",
     "bleed": true,
     "sfx": "-a",
-    "x": 429.4,
+    "x": 403.4,
     "y": 680,
     "w": 1041.6,
     "h": 2167.418181818182,
     "r": 125.28,
     "rot": 0,
-    "cx": 950.1999999999999,
+    "cx": 924.1999999999999,
     "cy": 1763.709090909091,
     "bezel": 40.800000000000004,
     "scale": 0.9696969696969697,
-    "screenX": 470.2,
+    "screenX": 444.2,
     "screenY": 720.8,
     "screenW": 960,
     "screenH": 2085.818181818182,
     "screenR": 84.47999999999999,
-    "screenCX": 950.2,
+    "screenCX": 924.2,
     "screenCY": 1763.709090909091,
     "uniformScale": 0.7272727272727273,
     "bounds": {
-     "minX": 429.4,
-     "maxX": 1471,
+     "minX": 403.4,
+     "maxX": 1445,
      "minY": 680,
      "maxY": 2847.418181818182
     },
@@ -477,16 +477,16 @@
   "copyX": 96,
   "decoration": [
    {
-    "kind": "Periodic",
-    "opacity": 0.09
+    "kind": "Orbits",
+    "opacity": 0.08
    },
    {
-    "kind": "Orbits",
-    "opacity": 0.045
+    "kind": "Periodic",
+    "opacity": 0.035
    },
    {
     "kind": "Formula",
-    "opacity": 0.04
+    "opacity": 0.03
    }
   ]
  }

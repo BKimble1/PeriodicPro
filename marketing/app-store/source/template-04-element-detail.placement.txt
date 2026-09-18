@@ -15,19 +15,19 @@ DEVICE 1 of 1   role = hero   layer = backmost
   Y        = 720
   W        = 1009.05
   H        = 2099.6864
-  Rotation = 1 deg    (about the device centre, 624.525, 1769.8432)
+  Rotation = 0.75 deg    (about the device centre, 624.525, 1769.8432)
   Corner radius   = 121.365
   Bezel thickness = 39.525 on every side
 
   ROTATED BOUNDING BOX
-    Left = 101.7546   Top = 711.3547   Right = 1147.2954   Bottom = 2828.3316
+    Left = 106.3012   Top = 713.4859   Right = 1142.7488   Bottom = 2826.2004
     Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
     Centre        = 624.525, 1769.8432
     Unrotated X,Y = 159.525, 759.525
     Unrotated W,H = 930 x 2020.6364
-    Rotation      = 1 deg  (identical to the device, one rigid group)
+    Rotation      = 0.75 deg  (identical to the device, one rigid group)
     Corner radius = 81.84   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046

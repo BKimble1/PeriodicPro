@@ -23,7 +23,7 @@ export default {
   sub: ['Explore properties, structures, uses,', 'and facts worth remembering.'],
   copy: { top: 236, align: 'start' },
   devices: [{
-    role: 'hero', label: 'Element Detail', screenW: 930, x: 120, y: 720, rot: 1,
+    role: 'hero', label: 'Element Detail', screenW: 930, x: 120, y: 720, rot: 0.75,
     need: 'One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.',
   }],
   light: [

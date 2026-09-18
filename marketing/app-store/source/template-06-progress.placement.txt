@@ -11,21 +11,21 @@ DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Progress
   The progress or mastery view, with enough real activity on it to look earned. The rightmost ninth of the screen runs off the canvas, so keep headline numbers and labels left of centre.
 
-  X        = 429.4          (unrotated top-left)
+  X        = 403.4          (unrotated top-left)
   Y        = 680
   W        = 1041.6
   H        = 2167.4182
-  Rotation = 0 deg    (about the device centre, 950.2, 1763.7091)
+  Rotation = 0 deg    (about the device centre, 924.2, 1763.7091)
   Corner radius   = 125.28
   Bezel thickness = 40.8 on every side
 
   ROTATED BOUNDING BOX
-    Left = 429.4   Top = 680   Right = 1471   Bottom = 2847.4182
-    Off-canvas left none, right 151.0px, bottom none
+    Left = 403.4   Top = 680   Right = 1445   Bottom = 2847.4182
+    Off-canvas left none, right 125.0px, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 950.2, 1763.7091
-    Unrotated X,Y = 470.2, 720.8
+    Centre        = 924.2, 1763.7091
+    Unrotated X,Y = 444.2, 720.8
     Unrotated W,H = 960 x 2085.8182
     Rotation      = 0 deg  (identical to the device, one rigid group)
     Corner radius = 84.48   (the overlay rounds this for you)

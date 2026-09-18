@@ -20,27 +20,27 @@
    "need": "The progress or mastery view, with enough real activity on it to look earned. The rightmost ninth of the screen runs off the canvas, so keep headline numbers and labels left of centre.",
    "bleed": true,
    "sfx": "-a",
-   "x": 429.4,
+   "x": 403.4,
    "y": 680,
    "w": 1041.6,
    "h": 2167.418181818182,
    "r": 125.28,
    "rot": 0,
-   "cx": 950.1999999999999,
+   "cx": 924.1999999999999,
    "cy": 1763.709090909091,
    "bezel": 40.800000000000004,
    "scale": 0.9696969696969697,
-   "screenX": 470.2,
+   "screenX": 444.2,
    "screenY": 720.8,
    "screenW": 960,
    "screenH": 2085.818181818182,
    "screenR": 84.47999999999999,
-   "screenCX": 950.2,
+   "screenCX": 924.2,
    "screenCY": 1763.709090909091,
    "uniformScale": 0.7272727272727273,
    "bounds": {
-    "minX": 429.4,
-    "maxX": 1471,
+    "minX": 403.4,
+    "maxX": 1445,
     "minY": 680,
     "maxY": 2847.418181818182
    },
@@ -54,16 +54,16 @@
  "copyX": 96,
  "decoration": [
   {
-   "kind": "Periodic",
-   "opacity": 0.09
+   "kind": "Orbits",
+   "opacity": 0.08
   },
   {
-   "kind": "Orbits",
-   "opacity": 0.045
+   "kind": "Periodic",
+   "opacity": 0.035
   },
   {
    "kind": "Formula",
-   "opacity": 0.04
+   "opacity": 0.03
   }
  ]
 }

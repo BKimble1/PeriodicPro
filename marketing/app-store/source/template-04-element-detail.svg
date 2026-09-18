@@ -107,7 +107,7 @@
     <text id="Supporting" class="el-sub" text-rendering="geometricPrecision"><tspan x="96" y="514.1367">Explore properties, structures, uses,</tspan><tspan x="96" y="578.1367">and facts worth remembering.</tspan></text>
   </g>
 
-  <g id="Device-Shadow-a"><g transform="rotate(1 624.525 1769.8432)">
+  <g id="Device-Shadow-a"><g transform="rotate(0.75 624.525 1769.8432)">
     <path d="M 256.3953 789.5152 H 992.6547 A 121.365 121.365 0 0 1 1114.0197 910.8802 V 2767.8365 A 121.365 121.365 0 0 1 992.6547 2889.2015 H 256.3953 A 121.365 121.365 0 0 1 135.0303 2767.8365 V 910.8802 A 121.365 121.365 0 0 1 256.3953 789.5152 Z"
           fill="#22456F" fill-opacity="0.19" filter="url(#elShadowA-a)"/>
     <path d="M 267.668 744.4242 H 981.382 A 121.365 121.365 0 0 1 1102.747 865.7892 V 2722.7456 A 121.365 121.365 0 0 1 981.382 2844.1106 H 267.668 A 121.365 121.365 0 0 1 146.303 2722.7456 V 865.7892 A 121.365 121.365 0 0 1 267.668 744.4242 Z"
@@ -116,7 +116,7 @@
           fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-a)"/></g>
   </g>
 
-  <g id="Screen-Placeholder-a"><g transform="rotate(1 624.525 1769.8432)">
+  <g id="Screen-Placeholder-a"><g transform="rotate(0.75 624.525 1769.8432)">
       <path d="M 241.365 759.525 H 1007.685 A 81.84 81.84 0 0 1 1089.525 841.365 V 2698.3214 A 81.84 81.84 0 0 1 1007.685 2780.1614 H 241.365 A 81.84 81.84 0 0 1 159.525 2698.3214 V 841.365 A 81.84 81.84 0 0 1 241.365 759.525 Z" fill="#F2F6FB"/>
       <text x="624.525" y="1769.8432" class="el-ph2" text-anchor="middle"
             style="font-size:37.7027px">Element Detail</text>
@@ -124,7 +124,7 @@
             style="font-size:24.0878px">replace &#183; 1320 &#215; 2868</text></g>
   </g>
 
-  <g id="Device-Overlay-a"><g transform="rotate(1 624.525 1769.8432)">
+  <g id="Device-Overlay-a"><g transform="rotate(0.75 624.525 1769.8432)">
       <rect id="Button-Action-a" x="115.7727" y="1190.3297" width="8.4545" height="98.6853" rx="3.7576" fill="#94A2B5"/>
       <rect id="Button-Volume-Up-a" x="115.7727" y="1362.504" width="8.4545" height="167.9749" rx="3.7576" fill="#94A2B5"/>
       <rect id="Button-Volume-Down-a" x="115.7727" y="1557.7749" width="8.4545" height="167.9749" rx="3.7576" fill="#94A2B5"/>

@@ -40,23 +40,23 @@ DEVICE 2 of 2   role = build   layer = in front of device 1
   Wanted screen = Build canvas
   The SAME Build capture used as the hero of frame 03. Only the lower left corner of the device reaches this slide, so almost no UI shows here; it is the device body that carries the eye into the next screenshot.
 
-  X        = 1248.78          (unrotated top-left)
-  Y        = 762.87
+  X        = 1245.99          (unrotated top-left)
+  Y        = 752.58
   W        = 976.5
   H        = 2031.9545
-  Rotation = 4.5 deg    (about the device centre, 1737.03, 1778.8473)
+  Rotation = 6 deg    (about the device centre, 1734.24, 1768.5573)
   Corner radius   = 117.45
   Bezel thickness = 38.25 on every side
 
   ROTATED BOUNDING BOX
-    Left = 1170.5725   Top = 727.6943   Right = 2303.4875   Bottom = 2830.0003
-    Off-canvas left none, right 983.5px, bottom none
+    Left = 1142.4661   Top = 707.1096   Right = 2326.0139   Bottom = 2830.0049
+    Off-canvas left none, right 1006.0px, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 1737.03, 1778.8473
-    Unrotated X,Y = 1287.03, 801.12
+    Centre        = 1734.24, 1768.5573
+    Unrotated X,Y = 1284.24, 790.83
     Unrotated W,H = 900 x 1955.4545
-    Rotation      = 4.5 deg  (identical to the device, one rigid group)
+    Rotation      = 6 deg  (identical to the device, one rigid group)
     Corner radius = 79.2   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
