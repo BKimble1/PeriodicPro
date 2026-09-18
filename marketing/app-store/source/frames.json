@@ -60,15 +60,11 @@
    },
    {
     "kind": "Tile",
-    "opacity": 0.048
-   },
-   {
-    "kind": "Tile",
-    "opacity": 0.04
+    "opacity": 0.035
    },
    {
     "kind": "Formula",
-    "opacity": 0.03
+    "opacity": 0.028
    }
   ]
  },
@@ -162,15 +158,15 @@
   "decoration": [
    {
     "kind": "Periodic",
-    "opacity": 0.085
+    "opacity": 0.095
    },
    {
     "kind": "Tile",
-    "opacity": 0.038
+    "opacity": 0.032
    },
    {
     "kind": "Orbits",
-    "opacity": 0.034
+    "opacity": 0.03
    },
    {
     "kind": "Formula",
@@ -309,7 +305,7 @@
    },
    {
     "kind": "Tile",
-    "opacity": 0.045
+    "opacity": 0.04
    },
    {
     "kind": "Skeletal",
@@ -405,15 +401,15 @@
   "decoration": [
    {
     "kind": "Skeletal",
-    "opacity": 0.085
+    "opacity": 0.09
    },
    {
     "kind": "Formula",
-    "opacity": 0.035
+    "opacity": 0.03
    },
    {
     "kind": "Skeletal",
-    "opacity": 0.032
+    "opacity": 0.028
    },
    {
     "kind": "Formula",
@@ -477,16 +473,16 @@
   "copyX": 96,
   "decoration": [
    {
-    "kind": "Orbits",
+    "kind": "Periodic",
     "opacity": 0.08
    },
    {
-    "kind": "Periodic",
+    "kind": "Formula",
     "opacity": 0.035
    },
    {
-    "kind": "Formula",
-    "opacity": 0.03
+    "kind": "Orbits",
+    "opacity": 0.025
    }
   ]
  }

@@ -86,15 +86,15 @@
  "decoration": [
   {
    "kind": "Skeletal",
-   "opacity": 0.085
+   "opacity": 0.09
   },
   {
    "kind": "Formula",
-   "opacity": 0.035
+   "opacity": 0.03
   },
   {
    "kind": "Skeletal",
-   "opacity": 0.032
+   "opacity": 0.028
   },
   {
    "kind": "Formula",

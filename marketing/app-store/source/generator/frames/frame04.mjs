@@ -32,8 +32,8 @@ export default {
     { x: 700, y: 2800, r: 880, c: C.paleA, o: 0.44 },
   ],
   deco: () => [
-    bohr('Fe', { cx: 624.5, cy: 1810, r: 880, opacity: 0.10 }),
-    elementTile('Fe', { x: 1112, y: 128, w: 208, variant: 'soft', opacity: 0.045, rot: 4 }),
+    bohr('Fe', { cx: 624.5, cy: 1810, r: 880, opacity: 0.10, width: 11, dotR: 33 }),
+    elementTile('Fe', { x: 1112, y: 128, w: 208, variant: 'soft', opacity: 0.04, rot: 4 }),
     skeletal('phenol', { cx: 196, cy: 44, scale: 72, rot: 12, opacity: 0.028, width: 6 }),
   ],
 };

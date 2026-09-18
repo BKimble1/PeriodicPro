@@ -88,15 +88,15 @@
  "decoration": [
   {
    "kind": "Periodic",
-   "opacity": 0.085
+   "opacity": 0.095
   },
   {
    "kind": "Tile",
-   "opacity": 0.038
+   "opacity": 0.032
   },
   {
    "kind": "Orbits",
-   "opacity": 0.034
+   "opacity": 0.03
   },
   {
    "kind": "Formula",

@@ -345,17 +345,20 @@ export function elementTile(sym, { x, y, w = 150, variant = 'ghost', opacity = 0
 
 /* ------------------------------------------------------------ Bohr diagram */
 export function bohr(sym, { cx, cy, r = 220, opacity = 0.07, stroke = C.accent,
-                            dot = C.accent, label = false } = {}) {
+                            dot = C.accent, label = false,
+                            width = null, dotR = null } = {}) {
   const e = ELEMENTS[sym];
   if (!e) throw new Error('unknown element: ' + sym);
   const sh = e.shells;
+  const sw = width === null ? r * 0.009 : width;
+  const dr = dotR === null ? r * 0.030 : dotR;
   let out2 = `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(r * 0.085)}" fill="${stroke}" fill-opacity="0.55"/>`;
   sh.forEach((count, i) => {
     const rr = r * (0.26 + (0.74 * (i + 1)) / sh.length);
-    out2 += `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(rr)}" fill="none" stroke="${stroke}" stroke-opacity="0.45" stroke-width="${n(r * 0.009)}"/>`;
+    out2 += `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(rr)}" fill="none" stroke="${stroke}" stroke-opacity="0.45" stroke-width="${n(sw)}"/>`;
     for (let k = 0; k < count; k++) {
       const a = (2 * Math.PI * k) / count - Math.PI / 2 + i * 0.28;
-      out2 += `<circle cx="${n(cx + rr * Math.cos(a))}" cy="${n(cy + rr * Math.sin(a))}" r="${n(r * 0.030)}" fill="${dot}" fill-opacity="0.9"/>`;
+      out2 += `<circle cx="${n(cx + rr * Math.cos(a))}" cy="${n(cy + rr * Math.sin(a))}" r="${n(dr)}" fill="${dot}" fill-opacity="0.9"/>`;
     }
   });
   if (label) {

@@ -54,16 +54,16 @@
  "copyX": 96,
  "decoration": [
   {
-   "kind": "Orbits",
+   "kind": "Periodic",
    "opacity": 0.08
   },
   {
-   "kind": "Periodic",
+   "kind": "Formula",
    "opacity": 0.035
   },
   {
-   "kind": "Formula",
-   "opacity": 0.03
+   "kind": "Orbits",
+   "opacity": 0.025
   }
  ]
 }

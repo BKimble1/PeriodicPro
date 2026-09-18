@@ -36,8 +36,8 @@ export default {
     { x: 1120, y: 2740, r: 900, c: C.paleA, o: 0.46 },
   ],
   deco: () => [
-    skeletal('caffeine', { cx: 930, cy: 1660, scale: 205, rot: -8, opacity: 0.10, width: 9 }),
-    formula('C8H10N4O2', { x: 1224, y: 2788, size: 62, opacity: 0.055, anchor: 'end' }),
+    skeletal('caffeine', { cx: 980, cy: 1660, scale: 238, rot: -8, opacity: 0.10, width: 10 }),
+    formula('C8H10N4O2', { x: 1224, y: 2782, size: 74, opacity: 0.055, anchor: 'end' }),
     elementTile('N', { x: 1140, y: 108, w: 168, opacity: 0.028, rot: 4 }),
   ],
 };

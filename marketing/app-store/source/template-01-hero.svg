@@ -89,24 +89,17 @@
 
   <g id="Chemistry-Decoration">
 <g id="Skeletal-C10H8" opacity="0.095">
-    <path d="M 350.3017 1855.299 L 206.4387 1695.5228 M 305.7139 1849.1563 L 207.887 1740.5085 M 206.4387 1695.5228 L -3.8631 1740.2239 M -3.8631 1740.2239 L -70.3017 1944.701 M 13.1112 1781.9094 L -32.0671 1920.9539 M -70.3017 1944.701 L 73.5613 2104.4772 M 73.5613 2104.4772 L 283.8631 2059.7761 M 101.175 2068.9343 L 244.1802 2038.5376 M 283.8631 2059.7761 L 350.3017 1855.299 M 206.4387 1695.5228 L 272.8773 1491.0457 M 272.8773 1491.0457 L 129.0142 1331.2696 M 228.2894 1484.903 L 130.4625 1376.2553 M 129.0142 1331.2696 L -81.2875 1375.9706 M -81.2875 1375.9706 L -147.7262 1580.4477 M -64.3133 1417.6561 L -109.4916 1556.7006 M -147.7262 1580.4477 L -3.8631 1740.2239" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 392.5806 1828.4379 L 226.6362 1644.138 M 341.149 1821.3524 L 228.3068 1696.0285 M 226.6362 1644.138 L -15.9444 1695.7001 M -15.9444 1695.7001 L -92.5806 1931.5621 M 3.6352 1743.7839 L -48.4774 1904.1701 M -92.5806 1931.5621 L 73.3638 2115.862 M 73.3638 2115.862 L 315.9444 2064.2999 M 105.2158 2074.8637 L 270.1706 2039.8015 M 315.9444 2064.2999 L 392.5806 1828.4379 M 226.6362 1644.138 L 303.2724 1408.276 M 303.2724 1408.276 L 137.328 1223.9761 M 251.8408 1401.1905 L 138.9987 1275.8665 M 137.328 1223.9761 L -105.2526 1275.5382 M -105.2526 1275.5382 L -181.8888 1511.4002 M -85.673 1323.622 L -137.7856 1484.0081 M -181.8888 1511.4002 L -15.9444 1695.7001" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
     
   </g>
-<g id="Tile-C" transform="rotate(4 1239 223.24)" opacity="0.048">
+<g id="Tile-C" transform="rotate(4 1239 223.24)" opacity="0.035">
     <path d="M 1175.81 120 H 1302.19 A 25.81 25.81 0 0 1 1328 145.81 V 300.67 A 25.81 25.81 0 0 1 1302.19 326.48 H 1175.81 A 25.81 25.81 0 0 1 1150 300.67 V 145.81 A 25.81 25.81 0 0 1 1175.81 120 Z" fill="none" stroke="#2F6BE8" stroke-opacity="0.85" stroke-width="2.314"/>
     <text x="1174.03" y="161.296" style="font-size:24.03px;font-weight:600" fill="#0E2039" fill-opacity="0.72">6</text>
     <text x="1239" y="232.5316" text-anchor="middle" style="font-size:71.2px;font-weight:650;letter-spacing:-1.424px" fill="#0E2039" fill-opacity="0.95">C</text>
     <text x="1239" y="267.6332" text-anchor="middle" style="font-size:19.224px;font-weight:500" fill="#0E2039" fill-opacity="0.72">Carbon</text>
     <text x="1239" y="296.5404" text-anchor="middle" style="font-size:17.8px;font-weight:500" fill="#0E2039" fill-opacity="0.62">12.011</text>
   </g>
-<g id="Tile-O" transform="rotate(-5 1270 2144.4)" opacity="0.04">
-    <path d="M 1206.1 2040 H 1333.9 A 26.1 26.1 0 0 1 1360 2066.1 V 2222.7 A 26.1 26.1 0 0 1 1333.9 2248.8 H 1206.1 A 26.1 26.1 0 0 1 1180 2222.7 V 2066.1 A 26.1 26.1 0 0 1 1206.1 2040 Z" fill="none" stroke="#2F6BE8" stroke-opacity="0.85" stroke-width="2.34"/>
-    <text x="1204.3" y="2081.76" style="font-size:24.3px;font-weight:600" fill="#0E2039" fill-opacity="0.72">8</text>
-    <text x="1270" y="2153.796" text-anchor="middle" style="font-size:72px;font-weight:650;letter-spacing:-1.44px" fill="#0E2039" fill-opacity="0.95">O</text>
-    <text x="1270" y="2189.292" text-anchor="middle" style="font-size:19.44px;font-weight:500" fill="#0E2039" fill-opacity="0.72">Oxygen</text>
-    <text x="1270" y="2218.524" text-anchor="middle" style="font-size:18px;font-weight:500" fill="#0E2039" fill-opacity="0.62">15.999</text>
-  </g>
-<text x="660" y="2848" text-anchor="middle" style="font-size:46px;font-weight:600;letter-spacing:0px" fill="#2F6BE8" fill-opacity="0.03">2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> + O<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> → 2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan>O</text>
+<text x="660" y="2848" text-anchor="middle" style="font-size:46px;font-weight:600;letter-spacing:0px" fill="#2F6BE8" fill-opacity="0.028">2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> + O<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> → 2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan>O</text>
   </g>
 
   <g id="Marketing-Copy">

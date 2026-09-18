@@ -195,16 +195,18 @@ rotation, and fails if the six do not produce at least five distinct signatures.
 It also fails if any frame's largest device drops below 63 percent of the canvas
 width, because the product has to stay the hero.
 
-**Background hierarchy.** Every frame carries exactly one anchor motif at 7 to 10
-percent, one to three secondary marks at 4 to 6 percent, and at least one ambient
-mark at 2 to 4 percent, with at most five marks in total. The build records the
+**Background hierarchy.** Every frame carries exactly one anchor motif at 8 to 10
+percent and one to three supporting marks at 2 to 4 percent, with at most five
+marks in total. The single exception is frame 03's molecular formula at 5.5
+percent, which is deliberately the clearest supporting detail in the set. The build records the
 inventory into each frame's geometry file and the QA pass enforces those bands,
 so no frame can drift back into uniformly faint wallpaper. The anchors are sized
 to pass *behind* the devices and surface again on the far side: a naphthalene ring
-system straddling frame 01's left bezel, an iron shell diagram wider than the
-phone in frame 04, a caffeine skeleton centred on frame 03's device, an orbit
-diagram centred on frame 06's, and a period 1-4 table fragment sliding under
-frame 02. Frame 02's fragment also
+system straddling frame 01's left bezel, an aromatic ring system entering frame
+05 from the top right, an iron shell diagram wider than the phone in frame 04, a
+caffeine skeleton centred on frame 03's device, and period 1-4 table fragments
+sliding under frames 02 and 06. Frame 02's fragment also dissolves toward the
+middle of the slide, so it reads as atmosphere rather than a band of squares. Frame 02's fragment also
 dissolves toward the middle of the slide, so it reads as atmosphere rather than a
 band of squares. That occlusion is what
 seats the devices in the composition.
@@ -331,14 +333,14 @@ everything else is derived.
   screen, not by its unrotated edge), and it never collides with the periodic
   table device
 - exactly one anchor motif per frame at 7 to 10 percent, every other mark at 6
-  percent or below, something ambient at 4 percent or below, no single mark above
-  11 percent, and no more than five decorative marks
+  percent or below, something at 4 percent or below, no single mark above 11
+  percent, and no more than five decorative marks
 - no fabricated app UI: every template still carries its screenshot placeholder
 - no 3D ball-and-stick renderer or assets
 - chemistry: derived formulas match their labels, no over-valent atoms, uniform
   bond lengths, shells sum to Z, weights match reference data, equations balance
 
-Current state: **520 checks, 0 failures, 0 warnings.**
+Current state: **519 checks, 0 failures, 0 warnings.**
 
 ## Relationship to CoreCredit
 

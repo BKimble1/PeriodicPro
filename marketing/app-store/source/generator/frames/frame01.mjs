@@ -5,7 +5,7 @@
                 about a third of it sits in the open margin and the rest
                 disappears behind the device, which is what gives the slide
                 depth rather than decoration
-     secondary  two element tiles, the right-hand one tucked behind the phone
+     secondary  one element tile in the top right
      ambient    a balanced equation along the bottom                          */
 import { C } from '../system.mjs';
 import { skeletal, elementTile, formula, EQUATIONS } from '../chemistry.mjs';
@@ -26,9 +26,8 @@ export default {
     { x: 660, y: 2780, r: 940, c: C.paleA, o: 0.50 },
   ],
   deco: () => [
-    skeletal('naphthalene', { cx: 140, cy: 1900, scale: 215, rot: 12, opacity: 0.095, width: 11 }),
-    elementTile('C', { x: 1150, y: 120, w: 178, opacity: 0.048, rot: 4 }),
-    elementTile('O', { x: 1180, y: 2040, w: 180, opacity: 0.04, rot: -5 }),
-    formula(EQUATIONS.combustionH2, { x: 660, y: 2848, size: 46, opacity: 0.03, anchor: 'middle' }),
+    skeletal('naphthalene', { cx: 150, cy: 1880, scale: 248, rot: 12, opacity: 0.095, width: 12 }),
+    elementTile('C', { x: 1150, y: 120, w: 178, opacity: 0.035, rot: 4 }),
+    formula(EQUATIONS.combustionH2, { x: 660, y: 2848, size: 46, opacity: 0.028, anchor: 'middle' }),
   ],
 };
