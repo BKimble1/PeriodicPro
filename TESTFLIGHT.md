@@ -428,15 +428,42 @@ Deployment target and simulator destination disagree. `IPHONEOS_DEPLOYMENT_TARGE
 is 18.0 in `Config/Shared.xcconfig`; the archive destination must be
 `generic/platform=iOS`.
 
-**`No profiles for 'com.idlery.periodicpro.widgets' were found`, or an App
-Group error, on the first Build 5 archive**
-The widget extension is new in Build 5 and needs two things registered under
-the team: its own App ID, and the App Group `group.com.idlery.periodicpro`.
-`-allowProvisioningUpdates` normally creates both on the first archive, but
-only if the API key has **App Manager** access rather than Developer. If it
-does not, create them by hand — *Certificates, Identifiers & Profiles →
-Identifiers*, add the App Group, then enable **App Groups** on both
-`com.idlery.periodicpro` and `com.idlery.periodicpro.widgets` — and re-run.
+**`Provisioning profile ... doesn't match the entitlements file's value for
+the com.apple.security.application-groups entitlement` — this is what the
+first Build 5 archive actually did**
+TestFlight run 61, build 5.0.0 (61), failed here in thirteen seconds, naming
+both targets:
+
+```
+Provisioning profile "iOS Team Provisioning Profile: com.idlery.periodicpro.widgets"
+doesn't match the entitlements file's value for the
+com.apple.security.application-groups entitlement.
+  (in target 'ElemoraWidgetsExtension')
+
+Provisioning profile "iOS Team Provisioning Profile: com.idlery.periodicpro"
+doesn't match the entitlements file's value for the
+com.apple.security.application-groups entitlement.
+  (in target 'PeriodicPro')
+```
+
+Read the second line: it stops the **app**, not only the widget. A shared
+container has to be declared by both processes that open it, so
+`Config/Elemora.entitlements` asks for the App Group too, and a profile without
+it no longer matches. Nothing uploads until the App Group exists.
+
+`-allowProvisioningUpdates` can regenerate a profile but cannot create an App
+Group identifier the team does not have; that needs an API key with **App
+Manager** access rather than Developer. Create them by hand instead, in
+*Certificates, Identifiers & Profiles*:
+
+1. **Identifiers → App Groups → +** → `group.com.idlery.periodicpro`.
+2. **Identifiers → App IDs → `com.idlery.periodicpro`** → tick **App Groups**
+   → *Edit* → tick that group → Save.
+3. The same for **`com.idlery.periodicpro.widgets`**, creating that App ID
+   first if it does not exist.
+4. Re-run the workflow. Nothing in the repository changes; the next archive
+   picks up the regenerated profiles.
+
 Nothing about the main app's identifier changes either way.
 
 If you would rather ship Build 5 without the widget than wait, revert the
