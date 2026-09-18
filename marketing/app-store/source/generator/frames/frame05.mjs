@@ -20,11 +20,11 @@ export default {
   copy: { top: 296, align: 'start' },
   devices: [
     {
-      role: 'back', label: 'Quiz or flashcard', screenW: 740, x: 96, y: 700, rot: -3,
+      role: 'back', label: 'Quiz or flashcard', screenW: 740, x: 96, y: 700, rot: -2,
       need: 'The second study surface: a quiz mid-question, or a flashcard. Fully visible, so nothing is cropped.',
     },
     {
-      role: 'front', label: 'Study overview', screenW: 810, x: 380, y: 900, rot: 3,
+      role: 'front', label: 'Study overview', screenW: 810, x: 380, y: 900, rot: 2,
       need: 'The Study home or dashboard, with real progress on it. The dominant device, fully visible.',
     },
   ],

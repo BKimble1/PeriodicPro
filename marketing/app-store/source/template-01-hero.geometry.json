@@ -18,6 +18,7 @@
    "role": "hero",
    "label": "Home",
    "need": "Home screen. The strongest top level introduction to Elemora, and the most important capture in the set.",
+   "bleed": false,
    "sfx": "-a",
    "x": 165.24,
    "y": 762,

@@ -19,6 +19,9 @@ an exact pixel size, and verified programmatically.
 | `exports/iphone/` | the six deliverables, `01-hero.png` to `06-progress.png` |
 | `exports/contact-sheet.png` | 3 x 2 review sheet |
 | `exports/contact-sheet-thumbnail.png` | the six at App Store browsing scale |
+| `exports/gallery-1-2-3.png` | slides 1 to 3 at gallery scale, the mini campaign |
+| `exports/pair-2-3-touching.png` | slides 2 and 3 edge to edge, the master reassembled |
+| `exports/pair-2-3-gallery.png` | the same pair with a realistic gallery gap |
 | `source/template-NN-slug.svg` | editable vector master for one frame |
 | `source/template-NN-slug.geometry.json` | that frame's device placement, read by the compositor |
 | `source/template-NN-slug.placement.txt` | the same placement, written out for a human |
@@ -41,29 +44,41 @@ no device is tilted more than 5 degrees.
 | # | file | headline | composition | devices |
 |---|---|---|---|---|
 | 1 | `01-hero.png` | Learn Chemistry Visually | one full straight device, centred, wide margins | 1 |
-| 2 | `02-elements.png` | Explore Every Element | full straight periodic table device, plus a small handoff device leaving the right edge | 2 |
-| 3 | `03-build.png` | Build Real Molecules | the handoff device arriving at the left edge, then two complete overlapping Build phones | 3 |
+| 2 | `02-elements.png` | Explore Every Element | full straight periodic table device, plus the lower left corner of slide 3's Build phone entering at the right | 2 |
+| 3 | `03-build.png` | Build Real Molecules | that same Build phone, now the hero, filling the lower two thirds. Nothing else | 1 |
 | 4 | `04-element-detail.png` | See More Than Symbols | one very large device, 1.5 degrees, fully visible | 1 |
 | 5 | `05-study.png` | Study Smarter | two complete overlapping devices, rear high and left, front low and right | 2 |
-| 6 | `06-progress.png` | See Your Progress | one complete device, small tilt, shifted right for an asymmetric close | 1 |
+| 6 | `06-progress.png` | See Your Progress | one device, perfectly vertical, pushed right with an eighth of its width off the right edge | 1 |
 
 Frames 1 to 3 are designed as one mini campaign: a calm hero, a calm periodic
 table, then the layered Build composition. Every device is a complete phone
 except the one handoff device described below.
 
-### The 2 to 3 handoff
+### Slides 2 and 3 are one composition
 
-One device crosses the gallery. It leaves the right edge of frame 02 showing its
-left side, and arrives at the left edge of frame 03 showing its right side, at
-the same screen width, the same rotation and the same y. Side by side the two
-frames read as one device continuing; on its own each frame still reads as a
-finished composition, because this is a shared device rather than one image cut
-in half. The QA pass checks that the two halves match and that each shows the
-same amount, currently 170px.
+Slides 2 and 3 are designed together on a **2640 x 2868 master canvas** and
+sliced at x = 1320. The Build device is defined once, in master coordinates, in
+`source/generator/frames/pair23.mjs`; each slide derives its own placement by
+subtracting its panel origin. The slice is therefore exact by construction, not
+by eye, and the QA pass asserts all four conditions: identical screen width,
+identical rotation, identical y, and an x differing by exactly one panel width.
 
-It is also the only device in the set permitted to leave the canvas. Everything
-else is a whole phone; the QA pass fails if any non-handoff device is clipped by
-the frame.
+The Build phone is the hero of slide 3 and reaches back into slide 2 with its
+lower left corner only. Its top left corner clears the seam by 12px, so what
+appears on slide 2 is a wedge starting about a third of the way down and widening
+to roughly 105px at the bottom: 8.8 percent of the device, enough to say
+"something continues" without reading as a second phone. Its screen begins just
+5px before the seam, so **essentially no Build UI is split**; the continuation is
+carried by the device body.
+
+Each slide still works alone. Slide 2 reads as a calm periodic table with a
+device entering at the edge; slide 3 reads as a large Build phone arriving from
+off-frame.
+
+Three devices are allowed to leave the canvas, and they are marked `bleed` in
+their frame definition: the Build phone on both slides, and the Progress phone on
+slide 6. Every other device is a whole phone, and the QA pass fails if one is
+clipped.
 
 ### Before you ship this copy
 
@@ -82,24 +97,23 @@ the rendered artwork.
 
 ## What is still needed
 
-**Eight** captures at **1320 x 2868** (iPhone 17 Pro Max or 16 Pro Max, or any
-device whose captures you can render at that size). Ten device slots, but the
-element detail capture fills three of them. Anything with a close aspect ratio is
+**Seven** captures at **1320 x 2868** (iPhone 17 Pro Max or 16 Pro Max, or any
+device whose captures you can render at that size). Eight device slots, but the
+Build capture fills two of them. Anything with a close aspect ratio is
 centre-cropped by a pixel or two rather than distorted.
 
 | capture | used by | make sure |
 |---|---|---|
 | Home | 01 hero | the strongest top level state; the most important image in the set |
 | Periodic Table | 02 main | scrolled so the grid fills the screen. Fully visible and straight on |
-| Element detail | 02 handoff, 03 handoff, 04 hero | the most visually complete element. Iron matches frame 04's shell diagram. In 02 only its left side shows and in 03 only its right, so keep the element tile and name off-centre-left |
-| Build canvas | 03 front | mid-assembly, with a molecule actually on the canvas. Never an empty builder |
-| Finished compound | 03 back | the result of a build: a compound sheet, or the 3D viewer if the app has one |
+| Build canvas | 02 build, 03 build | mid-assembly, with a molecule actually on the canvas, never an empty builder. Almost all of it lands on slide 3; only 5px of its left edge falls on slide 2 |
+| Element detail | 04 hero | the most visually complete element. Iron matches frame 04's shell diagram |
 | Study overview | 05 front | the Study home or dashboard, with real progress on it |
 | Quiz or flashcard | 05 back | a quiz mid-question, or a flashcard |
-| Progress | 06 hero | enough real activity to look earned |
+| Progress | 06 hero | enough real activity to look earned. The rightmost ninth runs off the canvas, so keep headline numbers and labels left of centre |
 
-Nothing but the handoff device is cropped, so every capture can be composed for
-its full frame.
+Only the Build and Progress captures meet a canvas edge, and both are noted
+above; everything else can be composed for its full frame.
 
 Populate the app with believable sample data first. Empty states sell nothing.
 
@@ -123,16 +137,15 @@ and for the two-device frames include the word `front` or `back` in the name:
 
 ```
 01-home.png
-02-main-periodic-table.png      02-handoff-element-detail.png
-03-front-build.png              03-back-compound.png
-03-handoff-element-detail.png
+02-main-periodic-table.png      02-build-canvas.png
+03-build-canvas.png
 04-element-detail.png
 05-front-study.png              05-back-quiz.png
 06-progress.png
 ```
 
-The three element detail entries are the same capture under three names; copy the
-file rather than taking three screenshots.
+The three Build entries are the same capture under three names; copy the file
+rather than taking three screenshots.
 
 ### Inserting a real screenshot
 
@@ -145,8 +158,8 @@ cd marketing/app-store
 python3 place_screenshot.py --all                         # everything it can find
 python3 place_screenshot.py 01 screenshots/selected/01-home.png
 python3 place_screenshot.py hero screenshots/selected/01-home.png      # slug works too
-python3 place_screenshot.py 03 handoff.png back.png front.png          # layer order
-python3 place_screenshot.py 03 --front build.png --back compound.png --handoff detail.png
+python3 place_screenshot.py 03 build.png                               # 03 is one device
+python3 place_screenshot.py 02 --main table.png --build build.png      # or by role
 ```
 
 Output overwrites `exports/iphone/NN-slug.png`. `--all` places what it finds and
@@ -293,12 +306,17 @@ everything else is derived.
   six headlines match the agreed sequence
 - decoration never exceeds 20 percent opacity
 - the six frames produce at least five distinct composition signatures, device
-  widths span more than 250px, exactly three frames carry more than one device,
+  widths span more than 250px, exactly two frames carry more than one device,
   and every frame's largest device is at least 63 percent of the canvas width
-- frame 02's periodic table device is exactly 0 degrees
-- only a handoff device leaves the canvas; every other device is complete
-- the 02 to 03 handoff carries the same screen width, rotation and y, exits right
-  in 02, enters left in 03, and shows the same amount in both
+- frame 02's periodic table device is exactly 0 degrees and fully visible
+- frame 06's device is exactly 0 degrees, leaves the canvas on the RIGHT ONLY,
+  and by 8 to 15 percent of its width
+- frame 03 carries exactly one device
+- only a device marked `bleed` leaves the canvas; every other device is complete
+- the 02 + 03 master slices exactly: same screen width, same rotation, same y,
+  x differing by exactly 1320. Between 8 and 15 percent of the Build device sits
+  on slide 2, its top left corner clears the seam, less than 3 percent of its
+  screen is split, and it never collides with the periodic table device
 - exactly one anchor motif per frame at 8 to 12 percent, something ambient at 6
   percent or below, and no more than five decorative marks
 - no fabricated app UI: every template still carries its screenshot placeholder
@@ -306,7 +324,7 @@ everything else is derived.
 - chemistry: derived formulas match their labels, no over-valent atoms, uniform
   bond lengths, shells sum to Z, weights match reference data, equations balance
 
-Current state: **519 checks, 0 failures, 0 warnings.**
+Current state: **513 checks, 0 failures, 0 warnings.**
 
 ## Relationship to CoreCredit
 

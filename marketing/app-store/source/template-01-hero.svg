@@ -83,6 +83,10 @@
     <rect width="1320" height="2868" fill="url(#elLight2)"/>
   </g>
 
+  <g id="Device-Glow-a">
+    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
+  </g>
+
   <g id="Chemistry-Decoration">
 <g id="Skeletal-C10H22" opacity="0.1">
     <path d="M 653.4633 2075.2854 L 789.4095 2138.6781 M 789.4095 2138.6781 L 912.2823 2052.6417 M 912.2823 2052.6417 L 1048.2285 2116.0344 M 1048.2285 2116.0344 L 1171.1013 2029.9979 M 1171.1013 2029.9979 L 1307.0474 2093.3907 M 1307.0474 2093.3907 L 1429.9202 2007.3542 M 1429.9202 2007.3542 L 1565.8664 2070.747 M 1565.8664 2070.747 L 1688.7392 1984.7105 M 1688.7392 1984.7105 L 1824.6854 2048.1032" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
@@ -108,10 +112,6 @@
   <g id="Marketing-Copy">
     <text id="Headline" class="el-headline" text-rendering="geometricPrecision"><tspan x="96" y="324.7598">Learn Chemistry</tspan><tspan x="96" y="443.7598">Visually</tspan></text>
     <text id="Supporting" class="el-sub" text-rendering="geometricPrecision"><tspan x="96" y="514.1367">Explore elements, build molecules, and</tspan><tspan x="96" y="578.1367">master chemistry, all in one app.</tspan></text>
-  </g>
-
-  <g id="Device-Glow-a">
-    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
   </g>
 
   <g id="Device-Shadow-a">

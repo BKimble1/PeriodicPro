@@ -83,6 +83,10 @@
     <rect width="1320" height="2868" fill="url(#elLight2)"/>
   </g>
 
+  <g id="Device-Glow-a">
+    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
+  </g>
+
   <g id="Chemistry-Decoration">
 <g id="Bohr-Fe" opacity="0.095"><circle cx="574.5" cy="1810" r="74.8" fill="#2F6BE8" fill-opacity="0.55"/><circle cx="574.5" cy="1810" r="391.6" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="574.5" cy="1418.4" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="2201.6" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="1810" r="554.4" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="727.7116" cy="1277.1909" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1059.5899" cy="1541.584" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1107.3091" cy="1963.2116" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="842.916" cy="2295.0899" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="421.2884" cy="2342.8091" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="89.4101" cy="2078.416" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="41.6909" cy="1656.7884" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="306.084" cy="1324.9101" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="1810" r="717.2" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="955.4667" cy="1202.3486" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1181.3892" cy="1427.8203" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1287.1098" cy="1728.9874" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1251.6894" cy="2046.2" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="1082.1432" cy="2316.6303" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="812.0521" cy="2486.7162" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="494.9109" cy="2522.7702" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="193.5333" cy="2417.6514" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-32.3892" cy="2192.1797" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-138.1098" cy="1891.0126" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-102.6894" cy="1573.8" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="66.8568" cy="1303.3697" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="336.9479" cy="1133.2838" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="654.0891" cy="1097.2298" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="574.5" cy="1810" r="880" fill="none" stroke="#2F6BE8" stroke-opacity="0.45" stroke-width="7.92"/><circle cx="1229.7859" cy="1222.6327" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/><circle cx="-80.7859" cy="2397.3673" r="26.4" fill="#2F6BE8" fill-opacity="0.9"/></g>
 <g id="Tile-Fe" transform="rotate(4 1216 248.64)" opacity="0.06">
@@ -101,10 +105,6 @@
   <g id="Marketing-Copy">
     <text id="Headline" class="el-headline" text-rendering="geometricPrecision"><tspan x="96" y="324.7598">See More Than</tspan><tspan x="96" y="443.7598">Symbols</tspan></text>
     <text id="Supporting" class="el-sub" text-rendering="geometricPrecision"><tspan x="96" y="514.1367">Explore properties, structures, uses,</tspan><tspan x="96" y="578.1367">and facts worth remembering.</tspan></text>
-  </g>
-
-  <g id="Device-Glow-a">
-    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
   </g>
 
   <g id="Device-Shadow-a"><g transform="rotate(1.5 574.525 1769.8432)">

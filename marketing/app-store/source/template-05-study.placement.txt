@@ -15,19 +15,19 @@ DEVICE 1 of 2   role = back   layer = backmost
   Y        = 700
   W        = 802.9
   H        = 1670.7182
-  Rotation = -3 deg    (about the device centre, 497.45, 1535.3591)
+  Rotation = -2 deg    (about the device centre, 497.45, 1535.3591)
   Corner radius   = 96.57
   Bezel thickness = 31.45 on every side
 
   ROTATED BOUNDING BOX
-    Left = 52.8309   Top = 680.1346   Right = 942.0691   Bottom = 2390.5836
+    Left = 67.0909   Top = 686.4985   Right = 927.8091   Bottom = 2384.2197
     Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
     Centre        = 497.45, 1535.3591
     Unrotated X,Y = 127.45, 731.45
     Unrotated W,H = 740 x 1607.8182
-    Rotation      = -3 deg  (identical to the device, one rigid group)
+    Rotation      = -2 deg  (identical to the device, one rigid group)
     Corner radius = 65.12   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
@@ -44,19 +44,19 @@ DEVICE 2 of 2   role = front   layer = in front of device 1
   Y        = 900
   W        = 878.85
   H        = 1828.7591
-  Rotation = 3 deg    (about the device centre, 819.425, 1814.3795)
+  Rotation = 2 deg    (about the device centre, 819.425, 1814.3795)
   Corner radius   = 105.705
   Bezel thickness = 34.425 on every side
 
   ROTATED BOUNDING BOX
-    Left = 332.7473   Top = 878.2554   Right = 1306.1027   Bottom = 2750.5037
+    Left = 348.3563   Top = 885.2213   Right = 1290.4937   Bottom = 2743.5378
     Off-canvas left none, right none, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
     Centre        = 819.425, 1814.3795
     Unrotated X,Y = 414.425, 934.425
     Unrotated W,H = 810 x 1759.9091
-    Rotation      = 3 deg  (identical to the device, one rigid group)
+    Rotation      = 2 deg  (identical to the device, one rigid group)
     Corner radius = 71.28   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046

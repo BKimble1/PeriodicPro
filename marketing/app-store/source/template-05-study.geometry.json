@@ -17,13 +17,14 @@
    "role": "back",
    "label": "Quiz or flashcard",
    "need": "The second study surface: a quiz mid-question, or a flashcard. Fully visible, so nothing is cropped.",
+   "bleed": false,
    "sfx": "-a",
    "x": 96,
    "y": 700,
    "w": 802.9,
    "h": 1670.7181818181818,
    "r": 96.57,
-   "rot": -3,
+   "rot": -2,
    "cx": 497.45,
    "cy": 1535.3590909090908,
    "bezel": 31.450000000000003,
@@ -37,10 +38,10 @@
    "screenCY": 1535.3590909090908,
    "uniformScale": 0.5606060606060606,
    "bounds": {
-    "minX": 52.83085644381282,
-    "maxX": 942.0691435561871,
-    "minY": 680.1345609678118,
-    "maxY": 2390.5836208503697
+    "minX": 67.090940654598,
+    "maxX": 927.8090593454019,
+    "minY": 686.4984752363154,
+    "maxY": 2384.2197065818664
    },
    "overlay": "assets/device/05-study-overlay-back.png"
   },
@@ -48,13 +49,14 @@
    "role": "front",
    "label": "Study overview",
    "need": "The Study home or dashboard, with real progress on it. The dominant device, fully visible.",
+   "bleed": false,
    "sfx": "-b",
    "x": 380,
    "y": 900,
    "w": 878.85,
    "h": 1828.759090909091,
    "r": 105.70500000000001,
-   "rot": 3,
+   "rot": 2,
    "cx": 819.425,
    "cy": 1814.3795454545455,
    "bezel": 34.425000000000004,
@@ -68,10 +70,10 @@
    "screenCY": 1814.3795454545455,
    "uniformScale": 0.6136363636363636,
    "bounds": {
-    "minX": 332.74728881011936,
-    "maxX": 1306.1027111898807,
-    "minY": 878.2553978161184,
-    "maxY": 2750.5036930929728
+    "minX": 348.35629990570857,
+    "maxX": 1290.4937000942914,
+    "minY": 885.2213039748859,
+    "maxY": 2743.537786934205
    },
    "overlay": "assets/device/05-study-overlay-front.png"
   }

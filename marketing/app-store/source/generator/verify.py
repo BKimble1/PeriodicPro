@@ -337,42 +337,80 @@ ok(all(abs(x) <= 5 for x in rots), f"a device is tilted too far: {rots}")
 f02 = next(g for g in frames if g["id"] == "02")
 main02 = next(d for d in f02["devices"] if d["role"] == "main")
 ok(main02["rot"] == 0, f"02: the periodic table device is rotated {main02['rot']} deg, must be 0")
+ok(main02["bounds"]["minX"] >= -2 and main02["bounds"]["maxX"] <= CW + 2,
+   "02: the periodic table device must be fully visible")
 
-# Only a device whose role is 'handoff' may leave the canvas. Every other device
-# has to read as a complete phone.
+# Screenshot 6 closes the set with a perfectly vertical device, pushed right,
+# cropped on the right edge alone.
+f06 = next(g for g in frames if g["id"] == "06")
+d06 = f06["devices"][0]
+ok(d06["rot"] == 0, f"06: the progress device is rotated {d06['rot']} deg, must be 0")
+off_r = d06["bounds"]["maxX"] - CW
+frac = off_r / d06["w"]
+ok(0.08 <= frac <= 0.15,
+   f"06: {100*frac:.1f}% of the device runs off the right edge, wanted 8 to 15%")
+ok(d06["bounds"]["minX"] > 0, "06: the device's left edge must stay on the canvas")
+ok(d06["bounds"]["minY"] > 0 and d06["bounds"]["maxY"] <= CH + 2,
+   "06: only the RIGHT side should leave the canvas")
+print(f"   06 progress: vertical, {100*frac:.1f}% off the right edge, "
+      f"left margin {d06['bounds']['minX']:.0f}px")
+
+# Only a device explicitly marked to bleed may leave the canvas. Everything
+# else has to read as a complete phone.
 for g in frames:
     for d in g["devices"]:
         b = d["bounds"]
         inside = (b["minX"] >= -2 and b["maxX"] <= CW + 2
                   and b["minY"] >= -2 and b["maxY"] <= CH + 2)
-        if d["role"] == "handoff":
-            ok(not inside, f"{g['id']}/{d['role']}: a handoff device should leave the canvas")
+        if d.get("bleed"):
+            ok(not inside, f"{g['id']}/{d['role']}: marked bleed but sits wholly on canvas")
         else:
             ok(inside,
                f"{g['id']}/{d['role']}: device is cut by the canvas "
                f"(x {b['minX']:.0f}..{b['maxX']:.0f}, y {b['minY']:.0f}..{b['maxY']:.0f}); "
-               f"only a handoff device may do that")
+               f"only a device marked bleed may do that")
 
-# The cross-screen handoff: frames 02 and 03 must carry the SAME device, so the
-# gallery reads as continuous when they sit side by side.
-h2 = next((d for d in f02["devices"] if d["role"] == "handoff"), None)
+# Slide 3 is one device and one device only: the continuation is the idea.
 f03 = next(g for g in frames if g["id"] == "03")
-h3 = next((d for d in f03["devices"] if d["role"] == "handoff"), None)
-if ok(h2 and h3, "the 02 -> 03 handoff device is missing from one of the frames"):
-    ok(abs(h2["screenW"] - h3["screenW"]) < 0.5,
-       f"handoff screen widths differ: {h2['screenW']} vs {h3['screenW']}")
-    ok(h2["rot"] == h3["rot"], f"handoff rotations differ: {h2['rot']} vs {h3['rot']}")
-    ok(abs(h2["y"] - h3["y"]) < 0.5, f"handoff y differs: {h2['y']} vs {h3['y']}")
-    # 02 shows its left side on the way out, 03 shows its right side arriving
-    vis2 = CW - h2["bounds"]["minX"]
-    vis3 = h3["bounds"]["maxX"]
-    ok(h2["bounds"]["maxX"] > CW, "02's handoff should exit the right edge")
-    ok(h3["bounds"]["minX"] < 0, "03's handoff should enter from the left edge")
-    ok(abs(vis2 - vis3) < 40,
-       f"the handoff shows {vis2:.0f}px in 02 but {vis3:.0f}px in 03; "
-       f"the continuation will not read")
-    print(f"   02 -> 03 handoff: same device, {vis2:.0f}px visible leaving 02, "
-          f"{vis3:.0f}px arriving in 03")
+ok(len(f03["devices"]) == 1,
+   f"03 carries {len(f03['devices'])} devices; the Build phone should stand alone")
+
+# The 2 + 3 master composition. Both slides derive the Build device from one
+# 2640 x 2868 master, so the slice at x = 1320 must be exact: identical screen
+# width, rotation and y, and an x that differs by exactly one panel.
+b2 = next((d for d in f02["devices"] if d["role"] == "build"), None)
+b3 = next((d for d in f03["devices"] if d["role"] == "build"), None)
+if ok(b2 and b3, "the Build device is missing from frame 02 or 03"):
+    ok(abs(b2["screenW"] - b3["screenW"]) < 1e-9,
+       f"build screen widths differ: {b2['screenW']} vs {b3['screenW']}")
+    ok(b2["rot"] == b3["rot"], f"build rotations differ: {b2['rot']} vs {b3['rot']}")
+    ok(abs(b2["y"] - b3["y"]) < 1e-9, f"build y differs: {b2['y']} vs {b3['y']}")
+    ok(abs((b2["x"] - b3["x"]) - CW) < 1e-9,
+       f"build x differs by {b2['x'] - b3['x']:.4f}, must be exactly {CW} for the slice")
+    # most of it lives on slide 3, only a corner reaches back into slide 2
+    on2 = CW - b2["bounds"]["minX"]
+    total = b2["bounds"]["maxX"] - b2["bounds"]["minX"]
+    share = on2 / total
+    ok(0.07 <= share <= 0.16,
+       f"the Build device puts {100*share:.1f}% of itself on slide 2, wanted 8 to 15%")
+    ok(b3["bounds"]["maxX"] <= CW + 2, "the Build device should not also leave slide 3 at the right")
+    # its top left corner clears the seam, so what crosses is a lower corner
+    a = math.radians(b2["rot"])
+    tl_x = b2["cx"] + (-b2["w"] / 2) * math.cos(a) - (-b2["h"] / 2) * math.sin(a)
+    ok(tl_x >= CW,
+       f"the Build device's top left corner is at x {tl_x:.0f}, it should clear the seam "
+       f"at {CW} so only a LOWER corner reaches slide 2")
+    # and essentially no Build UI is split by the seam
+    ui_on2 = max(0.0, CW - (b2["x"] + b2["bezel"]))
+    ok(ui_on2 < 0.03 * b2["screenW"],
+       f"{ui_on2:.0f}px of the Build screen falls on slide 2; the seam should cross "
+       f"device body, not app UI")
+    # the two devices on slide 2 must not collide
+    ok(b2["bounds"]["minX"] > main02["bounds"]["maxX"],
+       "02: the Build sliver overlaps the periodic table device")
+    print(f"   02 + 03 master: one device, slice exact at x={CW}, "
+          f"{100*share:.1f}% on slide 2, {ui_on2:.0f}px of screen split, "
+          f"top-left corner clears by {tl_x - CW:.0f}px")
 
 # Background hierarchy: one clear anchor per frame, a couple of secondaries,
 # the rest ambient, and never more than a handful of marks in total.
@@ -407,7 +445,7 @@ ok(len(sig) >= 5,
 widths = sorted({round(d["w"]) for g in frames for d in g["devices"]})
 ok(max(widths) - min(widths) > 250, f"device scales barely vary: {widths}")
 multi = [g["id"] for g in frames if len(g["devices"]) > 1]
-ok(len(multi) == 3, f"expected three multi-device frames, got {multi}")
+ok(len(multi) == 2, f"expected two multi-device frames, got {multi}")
 # the product has to stay the hero: every main device big enough to inspect
 for g in frames:
     biggest = max(d["w"] for d in g["devices"])

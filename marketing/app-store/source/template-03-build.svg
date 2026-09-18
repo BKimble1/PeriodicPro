@@ -35,13 +35,13 @@
     <stop offset="0.74" stop-color="#DDEBFA" stop-opacity="0.0704"/>
     <stop offset="1"    stop-color="#DDEBFA" stop-opacity="0"/>
   </radialGradient>
-  <radialGradient id="elLight2" cx="940" cy="2780" r="900" gradientUnits="userSpaceOnUse">
+  <radialGradient id="elLight2" cx="1120" cy="2740" r="900" gradientUnits="userSpaceOnUse">
     <stop offset="0"    stop-color="#EAF3FD" stop-opacity="0.46"/>
     <stop offset="0.40" stop-color="#EAF3FD" stop-opacity="0.2392"/>
     <stop offset="0.74" stop-color="#EAF3FD" stop-opacity="0.0736"/>
     <stop offset="1"    stop-color="#EAF3FD" stop-opacity="0"/>
   </radialGradient>
-  <linearGradient id="elRim-a" x1="-502.7" y1="0" x2="170" y2="0" gradientUnits="userSpaceOnUse">
+  <linearGradient id="elRim-a" x1="-47.5" y1="0" x2="1037.5" y2="0" gradientUnits="userSpaceOnUse">
     <stop offset="0"    stop-color="#C6D0DE"/>
     <stop offset="0.028" stop-color="#F8FAFD"/>
     <stop offset="0.10" stop-color="#B2BFD0"/>
@@ -51,7 +51,7 @@
     <stop offset="0.972" stop-color="#EEF2F7"/>
     <stop offset="1"    stop-color="#AEBBCC"/>
   </linearGradient>
-  <linearGradient id="elBody-a" x1="-502.7" y1="0" x2="170" y2="0" gradientUnits="userSpaceOnUse">
+  <linearGradient id="elBody-a" x1="-47.5" y1="0" x2="1037.5" y2="0" gradientUnits="userSpaceOnUse">
     <stop offset="0"    stop-color="#1B2231"/>
     <stop offset="0.05" stop-color="#0C1119"/>
     <stop offset="0.5"  stop-color="#070A11"/>
@@ -59,83 +59,17 @@
     <stop offset="1"    stop-color="#1D2534"/>
   </linearGradient>
   <filter id="elShadowA-a" x="-45%" y="-35%" width="190%" height="180%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="48.8485"/>
+    <feGaussianBlur stdDeviation="78.7879"/>
   </filter>
   <filter id="elShadowB-a" x="-40%" y="-30%" width="180%" height="170%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="16.2828"/>
+    <feGaussianBlur stdDeviation="26.2626"/>
   </filter>
   <filter id="elShadowC-a" x="-25%" y="-20%" width="150%" height="140%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="4.3838"/>
+    <feGaussianBlur stdDeviation="7.0707"/>
   </filter>
-  <radialGradient id="elGlow-a" cx="-166.35" cy="1879.8955" r="811.8787"
+  <radialGradient id="elGlow-a" cx="495" cy="1828.8636" r="1309.4818"
                   gradientUnits="userSpaceOnUse"
-                  gradientTransform="translate(-166.35 1879.8955) scale(1 1.9144) translate(166.35 -1879.8955)">
-    <stop offset="0"    stop-color="#D6EAF7" stop-opacity="0.17"/>
-    <stop offset="0.55" stop-color="#DDEBFA" stop-opacity="0.07"/>
-    <stop offset="1"    stop-color="#DDEBFA" stop-opacity="0"/>
-  </radialGradient>
-  <linearGradient id="elRim-b" x1="480" y1="0" x2="1239.5" y2="0" gradientUnits="userSpaceOnUse">
-    <stop offset="0"    stop-color="#C6D0DE"/>
-    <stop offset="0.028" stop-color="#F8FAFD"/>
-    <stop offset="0.10" stop-color="#B2BFD0"/>
-    <stop offset="0.34" stop-color="#A9B6C7"/>
-    <stop offset="0.66" stop-color="#9FADC0"/>
-    <stop offset="0.90" stop-color="#7E8DA2"/>
-    <stop offset="0.972" stop-color="#EEF2F7"/>
-    <stop offset="1"    stop-color="#AEBBCC"/>
-  </linearGradient>
-  <linearGradient id="elBody-b" x1="480" y1="0" x2="1239.5" y2="0" gradientUnits="userSpaceOnUse">
-    <stop offset="0"    stop-color="#1B2231"/>
-    <stop offset="0.05" stop-color="#0C1119"/>
-    <stop offset="0.5"  stop-color="#070A11"/>
-    <stop offset="0.95" stop-color="#0C1119"/>
-    <stop offset="1"    stop-color="#1D2534"/>
-  </linearGradient>
-  <filter id="elShadowA-b" x="-45%" y="-35%" width="190%" height="180%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="55.1515"/>
-  </filter>
-  <filter id="elShadowB-b" x="-40%" y="-30%" width="180%" height="170%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="18.3838"/>
-  </filter>
-  <filter id="elShadowC-b" x="-25%" y="-20%" width="150%" height="140%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="4.9495"/>
-  </filter>
-  <radialGradient id="elGlow-b" cx="859.75" cy="1550.2045" r="916.6373"
-                  gradientUnits="userSpaceOnUse"
-                  gradientTransform="translate(859.75 1550.2045) scale(1 1.9144) translate(-859.75 -1550.2045)">
-    <stop offset="0"    stop-color="#D6EAF7" stop-opacity="0.17"/>
-    <stop offset="0.55" stop-color="#DDEBFA" stop-opacity="0.07"/>
-    <stop offset="1"    stop-color="#DDEBFA" stop-opacity="0"/>
-  </radialGradient>
-  <linearGradient id="elRim-c" x1="250" y1="0" x2="1118" y2="0" gradientUnits="userSpaceOnUse">
-    <stop offset="0"    stop-color="#C6D0DE"/>
-    <stop offset="0.028" stop-color="#F8FAFD"/>
-    <stop offset="0.10" stop-color="#B2BFD0"/>
-    <stop offset="0.34" stop-color="#A9B6C7"/>
-    <stop offset="0.66" stop-color="#9FADC0"/>
-    <stop offset="0.90" stop-color="#7E8DA2"/>
-    <stop offset="0.972" stop-color="#EEF2F7"/>
-    <stop offset="1"    stop-color="#AEBBCC"/>
-  </linearGradient>
-  <linearGradient id="elBody-c" x1="250" y1="0" x2="1118" y2="0" gradientUnits="userSpaceOnUse">
-    <stop offset="0"    stop-color="#1B2231"/>
-    <stop offset="0.05" stop-color="#0C1119"/>
-    <stop offset="0.5"  stop-color="#070A11"/>
-    <stop offset="0.95" stop-color="#0C1119"/>
-    <stop offset="1"    stop-color="#1D2534"/>
-  </linearGradient>
-  <filter id="elShadowA-c" x="-45%" y="-35%" width="190%" height="180%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="63.0303"/>
-  </filter>
-  <filter id="elShadowB-c" x="-40%" y="-30%" width="180%" height="170%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="21.0101"/>
-  </filter>
-  <filter id="elShadowC-c" x="-25%" y="-20%" width="150%" height="140%" color-interpolation-filters="sRGB">
-    <feGaussianBlur stdDeviation="5.6566"/>
-  </filter>
-  <radialGradient id="elGlow-c" cx="684" cy="1843.0909" r="1047.5855"
-                  gradientUnits="userSpaceOnUse"
-                  gradientTransform="translate(684 1843.0909) scale(1 1.9144) translate(-684 -1843.0909)">
+                  gradientTransform="translate(495 1828.8636) scale(1 1.9144) translate(-495 -1828.8636)">
     <stop offset="0"    stop-color="#D6EAF7" stop-opacity="0.17"/>
     <stop offset="0.55" stop-color="#DDEBFA" stop-opacity="0.07"/>
     <stop offset="1"    stop-color="#DDEBFA" stop-opacity="0"/>
@@ -149,22 +83,22 @@
     <rect width="1320" height="2868" fill="url(#elLight2)"/>
   </g>
 
+  <g id="Device-Glow-a">
+    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
+  </g>
+
   <g id="Chemistry-Decoration">
 <g id="Skeletal-C8H10N4O2" opacity="0.1">
-    <path d="M 1049.9266 2492.0827 L 1035.5583 2594.318 M 1035.5583 2594.318 L 1116.9126 2657.8788 M 1188.5391 2667.9453 L 1284.2616 2629.2709 M 1284.2616 2629.2709 L 1304.4417 2485.682 M 1306.8749 2609.021 L 1320.5973 2511.3806 M 1304.4417 2485.682 L 1190.1801 2396.4111 M 1190.1801 2396.4111 L 1094.4576 2435.0855 M 1202.1985 2398.1002 L 1216.5667 2295.8649 M 1178.1617 2394.7221 L 1192.5299 2292.4868 M 1031.0119 2583.0652 L 935.2895 2621.7396 M 1040.1048 2605.5707 L 944.3823 2644.2451 M 1304.4417 2485.682 L 1406.1132 2467.7546 M 1466.8439 2497.3749 L 1515.3122 2588.5305 M 1515.3122 2588.5305 L 1443.5956 2662.7951 M 1489.7564 2586.8149 L 1440.9892 2637.3148 M 1377.0531 2674.5284 L 1284.2616 2629.2709 M 1022.8311 2425.0191 L 941.4769 2361.4582 M 1144.008 2724.9425 L 1129.6398 2827.1777 M 1465.5452 2422.9694 L 1510.8026 2330.1779" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="1055.7384" y="2471.0291" text-anchor="middle" style="font-size:58px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1149.8199" y="2703.8889" text-anchor="middle" style="font-size:58px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1447.2388" y="2480.8031" text-anchor="middle" style="font-size:58px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1414.5867" y="2713.1347" text-anchor="middle" style="font-size:58px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1210.3602" y="2273.1223" text-anchor="middle" style="font-size:58px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">O</text><text x="901.1167" y="2668.9359" text-anchor="middle" style="font-size:58px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">O</text>
+    <path d="M 962.6624 1577.2118 L 943.8351 1711.1753 M 943.8351 1711.1753 L 1050.4372 1794.4619 M 1144.2926 1807.6525 L 1269.722 1756.9757 M 1269.722 1756.9757 L 1296.1649 1568.8247 M 1299.3533 1730.4413 L 1317.3344 1602.4987 M 1296.1649 1568.8247 L 1146.4429 1451.8491 M 1146.4429 1451.8491 L 1021.0135 1502.5258 M 1162.1911 1454.0623 L 1181.0185 1320.0989 M 1130.6947 1449.6358 L 1149.522 1315.6723 M 937.8777 1696.4302 L 812.4483 1747.107 M 949.7924 1725.9203 L 824.363 1776.597 M 1296.1649 1568.8247 L 1429.3897 1545.3336 M 1508.9679 1584.1465 L 1572.478 1703.5916 M 1572.478 1703.5916 L 1478.5046 1800.9039 M 1538.9912 1701.3436 L 1475.0893 1767.516 M 1391.3109 1816.2785 L 1269.722 1756.9757 M 927.158 1489.3353 L 820.5559 1406.0486 M 1085.9416 1882.3384 L 1067.1142 2016.3019 M 1507.2661 1486.6496 L 1566.5689 1365.0607" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="970.278" y="1549.6243" text-anchor="middle" style="font-size:76px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1093.5571" y="1854.7509" text-anchor="middle" style="font-size:76px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1483.2784" y="1562.4316" text-anchor="middle" style="font-size:76px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1440.4929" y="1866.8662" text-anchor="middle" style="font-size:76px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">N</text><text x="1172.8858" y="1290.2981" text-anchor="middle" style="font-size:76px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">O</text><text x="767.6701" y="1808.9505" text-anchor="middle" style="font-size:76px;font-weight:600" fill="#2F6BE8" fill-opacity="0.95">O</text>
   </g>
-<g id="Tile-N" transform="rotate(4 1224 205.44)" opacity="0.055">
+<text x="1224" y="2792" text-anchor="end" style="font-size:54px;font-weight:600;letter-spacing:0px" fill="#2F6BE8" fill-opacity="0.05">C<tspan dy="10.8" style="font-size:33.48px">8</tspan><tspan dy="-10.8">&#8203;</tspan>H<tspan dy="10.8" style="font-size:33.48px">1</tspan><tspan dy="-10.8">&#8203;</tspan>0N<tspan dy="10.8" style="font-size:33.48px">4</tspan><tspan dy="-10.8">&#8203;</tspan>O<tspan dy="10.8" style="font-size:33.48px">2</tspan><tspan dy="-10.8">&#8203;</tspan></text>
+<g id="Tile-N" transform="rotate(4 1224 205.44)" opacity="0.03">
     <path d="M 1164.36 108 H 1283.64 A 24.36 24.36 0 0 1 1308 132.36 V 278.52 A 24.36 24.36 0 0 1 1283.64 302.88 H 1164.36 A 24.36 24.36 0 0 1 1140 278.52 V 132.36 A 24.36 24.36 0 0 1 1164.36 108 Z" fill="none" stroke="#2F6BE8" stroke-opacity="0.85" stroke-width="2.184"/>
     <text x="1162.68" y="146.976" style="font-size:22.68px;font-weight:600" fill="#0E2039" fill-opacity="0.72">7</text>
     <text x="1224" y="214.2096" text-anchor="middle" style="font-size:67.2px;font-weight:650;letter-spacing:-1.344px" fill="#0E2039" fill-opacity="0.95">N</text>
     <text x="1224" y="247.3392" text-anchor="middle" style="font-size:18.144px;font-weight:500" fill="#0E2039" fill-opacity="0.72">Nitrogen</text>
     <text x="1224" y="274.6224" text-anchor="middle" style="font-size:16.8px;font-weight:500" fill="#0E2039" fill-opacity="0.62">14.007</text>
-  </g>
-<text x="96" y="2842" text-anchor="start" style="font-size:46px;font-weight:600;letter-spacing:0px" fill="#2F6BE8" fill-opacity="0.05">CH<tspan dy="9.2" style="font-size:28.52px">4</tspan><tspan dy="-9.2">&#8203;</tspan> + 2O<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> → CO<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan> + 2H<tspan dy="9.2" style="font-size:28.52px">2</tspan><tspan dy="-9.2">&#8203;</tspan>O</text>
-<g id="Skeletal-C6H6" opacity="0.032">
-    <path d="M 40 662 L -62.191 721 M 31.6144 685.2358 L -37.8754 725.3558 M -62.191 721 L -62.191 839 M -62.191 839 L 40 898 M -37.8754 834.6442 L 31.6144 874.7642 M 40 898 L 142.191 839 M 142.191 839 L 142.191 721 M 126.261 820.12 L 126.261 739.88 M 142.191 721 L 40 662" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    
   </g>
   </g>
 
@@ -173,109 +107,37 @@
     <text id="Supporting" class="el-sub" text-rendering="geometricPrecision"><tspan x="96" y="514.1367">Create compounds visually and see</tspan><tspan x="96" y="578.1367">how atoms connect.</tspan></text>
   </g>
 
-  <g id="Device-Glow-a">
-    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
-  </g>
-
-  <g id="Device-Shadow-a">
-    <path d="M -411.7698 1226.3434 H 79.0698 A 80.91 80.91 0 0 1 159.9798 1307.2534 V 2545.2243 A 80.91 80.91 0 0 1 79.0698 2626.1343 H -411.7698 A 80.91 80.91 0 0 1 -492.6798 2545.2243 V 1307.2534 A 80.91 80.91 0 0 1 -411.7698 1226.3434 Z"
+  <g id="Device-Shadow-a"><g transform="rotate(3 495 1828.8636)">
+    <path d="M 99.1616 774.7475 H 890.8384 A 130.5 130.5 0 0 1 1021.3384 905.2475 V 2901.9747 A 130.5 130.5 0 0 1 890.8384 3032.4747 H 99.1616 A 130.5 130.5 0 0 1 -31.3384 2901.9747 V 905.2475 A 130.5 130.5 0 0 1 99.1616 774.7475 Z"
           fill="#22456F" fill-opacity="0.19" filter="url(#elShadowA-a)"/>
-    <path d="M -404.2546 1196.2828 H 71.5546 A 80.91 80.91 0 0 1 152.4646 1277.1928 V 2515.1637 A 80.91 80.91 0 0 1 71.5546 2596.0737 H -404.2546 A 80.91 80.91 0 0 1 -485.1646 2515.1637 V 1277.1928 A 80.91 80.91 0 0 1 -404.2546 1196.2828 Z"
+    <path d="M 111.2828 726.2626 H 878.7172 A 130.5 130.5 0 0 1 1009.2172 856.7626 V 2853.4899 A 130.5 130.5 0 0 1 878.7172 2983.9899 H 111.2828 A 130.5 130.5 0 0 1 -19.2172 2853.4899 V 856.7626 A 130.5 130.5 0 0 1 111.2828 726.2626 Z"
           fill="#22456F" fill-opacity="0.15" filter="url(#elShadowB-a)"/>
-    <path d="M -418.6587 1185.6364 H 85.9587 A 80.91 80.91 0 0 1 166.8687 1266.5464 V 2504.5173 A 80.91 80.91 0 0 1 85.9587 2585.4273 H -418.6587 A 80.91 80.91 0 0 1 -499.5687 2504.5173 V 1266.5464 A 80.91 80.91 0 0 1 -418.6587 1185.6364 Z"
-          fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-a)"/>
+    <path d="M 88.0505 709.0909 H 901.9495 A 130.5 130.5 0 0 1 1032.4495 839.5909 V 2836.3182 A 130.5 130.5 0 0 1 901.9495 2966.8182 H 88.0505 A 130.5 130.5 0 0 1 -42.4495 2836.3182 V 839.5909 A 130.5 130.5 0 0 1 88.0505 709.0909 Z"
+          fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-a)"/></g>
   </g>
 
-  <g id="Screen-Placeholder-a">
-      <path d="M -421.79 1206.35 H 89.09 A 54.56 54.56 0 0 1 143.65 1260.91 V 2498.8809 A 54.56 54.56 0 0 1 89.09 2553.4409 H -421.79 A 54.56 54.56 0 0 1 -476.35 2498.8809 V 1260.91 A 54.56 54.56 0 0 1 -421.79 1206.35 Z" fill="#F2F6FB"/>
-      <text x="-166.35" y="1879.8955" class="el-ph2" text-anchor="middle"
-            style="font-size:25.1351px">Element detail</text>
-      <text x="-166.35" y="1910.6162" class="el-ph3" text-anchor="middle"
-            style="font-size:16.0586px">replace &#183; 1320 &#215; 2868</text>
+  <g id="Screen-Placeholder-a"><g transform="rotate(3 495 1828.8636)">
+      <path d="M 83 742.5 H 907 A 88 88 0 0 1 995 830.5 V 2827.2273 A 88 88 0 0 1 907 2915.2273 H 83 A 88 88 0 0 1 -5 2827.2273 V 830.5 A 88 88 0 0 1 83 742.5 Z" fill="#F2F6FB"/>
+      <text x="495" y="1828.8636" class="el-ph2" text-anchor="middle"
+            style="font-size:40.5405px">Build canvas</text>
+      <text x="495" y="1878.4132" class="el-ph3" text-anchor="middle"
+            style="font-size:25.9009px">replace &#183; 1320 &#215; 2868</text></g>
   </g>
 
-  <g id="Device-Overlay-a">
-      <rect id="Button-Action-a" x="-505.5182" y="1493.5532" width="5.6364" height="65.7902" rx="2.5051" fill="#94A2B5"/>
-      <rect id="Button-Volume-Up-a" x="-505.5182" y="1608.336" width="5.6364" height="111.9833" rx="2.5051" fill="#94A2B5"/>
-      <rect id="Button-Volume-Down-a" x="-505.5182" y="1738.5166" width="5.6364" height="111.9833" rx="2.5051" fill="#94A2B5"/>
-      <rect id="Button-Power-a" x="167.1818" y="1650.3297" width="5.6364" height="197.3705" rx="2.5051" fill="#94A2B5"/>
+  <g id="Device-Overlay-a"><g transform="rotate(3 495 1828.8636)">
+      <rect id="Button-Action-a" x="-52.0455" y="1205.7309" width="9.0909" height="106.1132" rx="4.0404" fill="#94A2B5"/>
+      <rect id="Button-Volume-Up-a" x="-52.0455" y="1390.8645" width="9.0909" height="180.6182" rx="4.0404" fill="#94A2B5"/>
+      <rect id="Button-Volume-Down-a" x="-52.0455" y="1600.8332" width="9.0909" height="180.6182" rx="4.0404" fill="#94A2B5"/>
+      <rect id="Button-Power-a" x="1032.9545" y="1458.5964" width="9.0909" height="318.3395" rx="4.0404" fill="#94A2B5"/>
       <path id="Device-Rim-a" fill-rule="evenodd" fill="url(#elRim-a)"
-            d="M -421.79 1180 H 89.09 A 80.91 80.91 0 0 1 170 1260.91 V 2498.8809 A 80.91 80.91 0 0 1 89.09 2579.7909 H -421.79 A 80.91 80.91 0 0 1 -502.7 2498.8809 V 1260.91 A 80.91 80.91 0 0 1 -421.79 1180 Z M -421.79 1206.35 H 89.09 A 54.56 54.56 0 0 1 143.65 1260.91 V 2498.8809 A 54.56 54.56 0 0 1 89.09 2553.4409 H -421.79 A 54.56 54.56 0 0 1 -476.35 2498.8809 V 1260.91 A 54.56 54.56 0 0 1 -421.79 1206.35 Z"/>
+            d="M 83 700 H 907 A 130.5 130.5 0 0 1 1037.5 830.5 V 2827.2273 A 130.5 130.5 0 0 1 907 2957.7273 H 83 A 130.5 130.5 0 0 1 -47.5 2827.2273 V 830.5 A 130.5 130.5 0 0 1 83 700 Z M 83 742.5 H 907 A 88 88 0 0 1 995 830.5 V 2827.2273 A 88 88 0 0 1 907 2915.2273 H 83 A 88 88 0 0 1 -5 2827.2273 V 830.5 A 88 88 0 0 1 83 742.5 Z"/>
       <path id="Device-Body-a" fill-rule="evenodd" fill="url(#elBody-a)"
-            d="M -421.79 1191.78 H 89.09 A 69.13 69.13 0 0 1 158.22 1260.91 V 2498.8809 A 69.13 69.13 0 0 1 89.09 2568.0109 H -421.79 A 69.13 69.13 0 0 1 -490.92 2498.8809 V 1260.91 A 69.13 69.13 0 0 1 -421.79 1191.78 Z M -421.79 1206.35 H 89.09 A 54.56 54.56 0 0 1 143.65 1260.91 V 2498.8809 A 54.56 54.56 0 0 1 89.09 2553.4409 H -421.79 A 54.56 54.56 0 0 1 -476.35 2498.8809 V 1260.91 A 54.56 54.56 0 0 1 -421.79 1206.35 Z"/>
-      <path id="Device-Edge-Light-a" fill="none" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="0.9394"
-            d="M -421.79 1180.75 H 89.09 A 80.16 80.16 0 0 1 169.25 1260.91 V 2498.8809 A 80.16 80.16 0 0 1 89.09 2579.0409 H -421.79 A 80.16 80.16 0 0 1 -501.95 2498.8809 V 1260.91 A 80.16 80.16 0 0 1 -421.79 1180.75 Z"/>
-      <path id="Screen-Edge-a" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="0.8768"
-            d="M -421.79 1207.05 H 89.09 A 53.86 53.86 0 0 1 142.95 1260.91 V 2498.8809 A 53.86 53.86 0 0 1 89.09 2552.7409 H -421.79 A 53.86 53.86 0 0 1 -475.65 2498.8809 V 1260.91 A 53.86 53.86 0 0 1 -421.79 1207.05 Z"/>
-      <rect id="Dynamic-Island" x="-254.4182" y="1221.85"
-        width="176.1364" height="51.6667" rx="25.8333" fill="#05070C"/>
-  </g>
-
-  <g id="Device-Shadow-b"><g transform="rotate(-3 859.75 1550.2045)">
-    <path d="M 582.6631 812.3232 H 1136.8369 A 91.35 91.35 0 0 1 1228.1869 903.6732 V 2301.3823 A 91.35 91.35 0 0 1 1136.8369 2392.7323 H 582.6631 A 91.35 91.35 0 0 1 491.3131 2301.3823 V 903.6732 A 91.35 91.35 0 0 1 582.6631 812.3232 Z"
-          fill="#22456F" fill-opacity="0.19" filter="url(#elShadowA-b)"/>
-    <path d="M 591.148 778.3838 H 1128.352 A 91.35 91.35 0 0 1 1219.702 869.7338 V 2267.4429 A 91.35 91.35 0 0 1 1128.352 2358.7929 H 591.148 A 91.35 91.35 0 0 1 499.798 2267.4429 V 869.7338 A 91.35 91.35 0 0 1 591.148 778.3838 Z"
-          fill="#22456F" fill-opacity="0.15" filter="url(#elShadowB-b)"/>
-    <path d="M 574.8854 766.3636 H 1144.6146 A 91.35 91.35 0 0 1 1235.9646 857.7136 V 2255.4227 A 91.35 91.35 0 0 1 1144.6146 2346.7727 H 574.8854 A 91.35 91.35 0 0 1 483.5354 2255.4227 V 857.7136 A 91.35 91.35 0 0 1 574.8854 766.3636 Z"
-          fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-b)"/></g>
-  </g>
-
-  <g id="Screen-Placeholder-b"><g transform="rotate(-3 859.75 1550.2045)">
-      <path d="M 571.35 789.75 H 1148.15 A 61.6 61.6 0 0 1 1209.75 851.35 V 2249.0591 A 61.6 61.6 0 0 1 1148.15 2310.6591 H 571.35 A 61.6 61.6 0 0 1 509.75 2249.0591 V 851.35 A 61.6 61.6 0 0 1 571.35 789.75 Z" fill="#F2F6FB"/>
-      <text x="859.75" y="1550.2045" class="el-ph2" text-anchor="middle"
-            style="font-size:28.3784px">Finished compound</text>
-      <text x="859.75" y="1584.8892" class="el-ph3" text-anchor="middle"
-            style="font-size:18.1306px">replace &#183; 1320 &#215; 2868</text></g>
-  </g>
-
-  <g id="Device-Overlay-b"><g transform="rotate(-3 859.75 1550.2045)">
-      <rect id="Button-Action-b" x="476.8182" y="1114.0116" width="6.3636" height="74.2792" rx="2.8283" fill="#94A2B5"/>
-      <rect id="Button-Volume-Up-b" x="476.8182" y="1243.6052" width="6.3636" height="126.4327" rx="2.8283" fill="#94A2B5"/>
-      <rect id="Button-Volume-Down-b" x="476.8182" y="1390.5832" width="6.3636" height="126.4327" rx="2.8283" fill="#94A2B5"/>
-      <rect id="Button-Power-b" x="1236.3182" y="1291.0175" width="6.3636" height="222.8377" rx="2.8283" fill="#94A2B5"/>
-      <path id="Device-Rim-b" fill-rule="evenodd" fill="url(#elRim-b)"
-            d="M 571.35 760 H 1148.15 A 91.35 91.35 0 0 1 1239.5 851.35 V 2249.0591 A 91.35 91.35 0 0 1 1148.15 2340.4091 H 571.35 A 91.35 91.35 0 0 1 480 2249.0591 V 851.35 A 91.35 91.35 0 0 1 571.35 760 Z M 571.35 789.75 H 1148.15 A 61.6 61.6 0 0 1 1209.75 851.35 V 2249.0591 A 61.6 61.6 0 0 1 1148.15 2310.6591 H 571.35 A 61.6 61.6 0 0 1 509.75 2249.0591 V 851.35 A 61.6 61.6 0 0 1 571.35 789.75 Z"/>
-      <path id="Device-Body-b" fill-rule="evenodd" fill="url(#elBody-b)"
-            d="M 571.35 773.3 H 1148.15 A 78.05 78.05 0 0 1 1226.2 851.35 V 2249.0591 A 78.05 78.05 0 0 1 1148.15 2327.1091 H 571.35 A 78.05 78.05 0 0 1 493.3 2249.0591 V 851.35 A 78.05 78.05 0 0 1 571.35 773.3 Z M 571.35 789.75 H 1148.15 A 61.6 61.6 0 0 1 1209.75 851.35 V 2249.0591 A 61.6 61.6 0 0 1 1148.15 2310.6591 H 571.35 A 61.6 61.6 0 0 1 509.75 2249.0591 V 851.35 A 61.6 61.6 0 0 1 571.35 789.75 Z"/>
-      <path id="Device-Edge-Light-b" fill="none" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="1.0606"
-            d="M 571.35 760.75 H 1148.15 A 90.6 90.6 0 0 1 1238.75 851.35 V 2249.0591 A 90.6 90.6 0 0 1 1148.15 2339.6591 H 571.35 A 90.6 90.6 0 0 1 480.75 2249.0591 V 851.35 A 90.6 90.6 0 0 1 571.35 760.75 Z"/>
-      <path id="Screen-Edge-b" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="0.9899"
-            d="M 571.35 790.45 H 1148.15 A 60.9 60.9 0 0 1 1209.05 851.35 V 2249.0591 A 60.9 60.9 0 0 1 1148.15 2309.9591 H 571.35 A 60.9 60.9 0 0 1 510.45 2249.0591 V 851.35 A 60.9 60.9 0 0 1 571.35 790.45 Z"/>
-      <rect id="Dynamic-Island" x="760.3182" y="807.25"
-        width="198.8636" height="58.3333" rx="29.1667" fill="#05070C"/></g>
-  </g>
-
-  <g id="Device-Shadow-c"><g transform="rotate(2 684 1843.0909)">
-    <path d="M 367.3293 999.798 H 1000.6707 A 104.4 104.4 0 0 1 1105.0707 1104.198 V 2701.5798 A 104.4 104.4 0 0 1 1000.6707 2805.9798 H 367.3293 A 104.4 104.4 0 0 1 262.9293 2701.5798 V 1104.198 A 104.4 104.4 0 0 1 367.3293 999.798 Z"
-          fill="#22456F" fill-opacity="0.19" filter="url(#elShadowA-c)"/>
-    <path d="M 377.0263 961.0101 H 990.9737 A 104.4 104.4 0 0 1 1095.3737 1065.4101 V 2662.7919 A 104.4 104.4 0 0 1 990.9737 2767.1919 H 377.0263 A 104.4 104.4 0 0 1 272.6263 2662.7919 V 1065.4101 A 104.4 104.4 0 0 1 377.0263 961.0101 Z"
-          fill="#22456F" fill-opacity="0.15" filter="url(#elShadowB-c)"/>
-    <path d="M 358.4404 947.2727 H 1009.5596 A 104.4 104.4 0 0 1 1113.9596 1051.6727 V 2649.0545 A 104.4 104.4 0 0 1 1009.5596 2753.4545 H 358.4404 A 104.4 104.4 0 0 1 254.0404 2649.0545 V 1051.6727 A 104.4 104.4 0 0 1 358.4404 947.2727 Z"
-          fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-c)"/></g>
-  </g>
-
-  <g id="Screen-Placeholder-c"><g transform="rotate(2 684 1843.0909)">
-      <path d="M 354.4 974 H 1013.6 A 70.4 70.4 0 0 1 1084 1044.4 V 2641.7818 A 70.4 70.4 0 0 1 1013.6 2712.1818 H 354.4 A 70.4 70.4 0 0 1 284 2641.7818 V 1044.4 A 70.4 70.4 0 0 1 354.4 974 Z" fill="#F2F6FB"/>
-      <text x="684" y="1843.0909" class="el-ph2" text-anchor="middle"
-            style="font-size:32.4324px">Build canvas</text>
-      <text x="684" y="1882.7305" class="el-ph3" text-anchor="middle"
-            style="font-size:20.7207px">replace &#183; 1320 &#215; 2868</text></g>
-  </g>
-
-  <g id="Device-Overlay-c"><g transform="rotate(2 684 1843.0909)">
-      <rect id="Button-Action-c" x="246.3636" y="1344.5847" width="7.2727" height="84.8905" rx="3.2323" fill="#94A2B5"/>
-      <rect id="Button-Volume-Up-c" x="246.3636" y="1492.6916" width="7.2727" height="144.4945" rx="3.2323" fill="#94A2B5"/>
-      <rect id="Button-Volume-Down-c" x="246.3636" y="1660.6665" width="7.2727" height="144.4945" rx="3.2323" fill="#94A2B5"/>
-      <rect id="Button-Power-c" x="1114.3636" y="1546.8771" width="7.2727" height="254.6716" rx="3.2323" fill="#94A2B5"/>
-      <path id="Device-Rim-c" fill-rule="evenodd" fill="url(#elRim-c)"
-            d="M 354.4 940 H 1013.6 A 104.4 104.4 0 0 1 1118 1044.4 V 2641.7818 A 104.4 104.4 0 0 1 1013.6 2746.1818 H 354.4 A 104.4 104.4 0 0 1 250 2641.7818 V 1044.4 A 104.4 104.4 0 0 1 354.4 940 Z M 354.4 974 H 1013.6 A 70.4 70.4 0 0 1 1084 1044.4 V 2641.7818 A 70.4 70.4 0 0 1 1013.6 2712.1818 H 354.4 A 70.4 70.4 0 0 1 284 2641.7818 V 1044.4 A 70.4 70.4 0 0 1 354.4 974 Z"/>
-      <path id="Device-Body-c" fill-rule="evenodd" fill="url(#elBody-c)"
-            d="M 354.4 955.2 H 1013.6 A 89.2 89.2 0 0 1 1102.8 1044.4 V 2641.7818 A 89.2 89.2 0 0 1 1013.6 2730.9818 H 354.4 A 89.2 89.2 0 0 1 265.2 2641.7818 V 1044.4 A 89.2 89.2 0 0 1 354.4 955.2 Z M 354.4 974 H 1013.6 A 70.4 70.4 0 0 1 1084 1044.4 V 2641.7818 A 70.4 70.4 0 0 1 1013.6 2712.1818 H 354.4 A 70.4 70.4 0 0 1 284 2641.7818 V 1044.4 A 70.4 70.4 0 0 1 354.4 974 Z"/>
-      <path id="Device-Edge-Light-c" fill="none" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="1.2121"
-            d="M 354.4 940.75 H 1013.6 A 103.65 103.65 0 0 1 1117.25 1044.4 V 2641.7818 A 103.65 103.65 0 0 1 1013.6 2745.4318 H 354.4 A 103.65 103.65 0 0 1 250.75 2641.7818 V 1044.4 A 103.65 103.65 0 0 1 354.4 940.75 Z"/>
-      <path id="Screen-Edge-c" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="1.1313"
-            d="M 354.4 974.7 H 1013.6 A 69.7 69.7 0 0 1 1083.3 1044.4 V 2641.7818 A 69.7 69.7 0 0 1 1013.6 2711.4818 H 354.4 A 69.7 69.7 0 0 1 284.7 2641.7818 V 1044.4 A 69.7 69.7 0 0 1 354.4 974.7 Z"/>
-      <rect id="Dynamic-Island" x="570.3636" y="994"
-        width="227.2727" height="66.6667" rx="33.3333" fill="#05070C"/></g>
+            d="M 83 719 H 907 A 111.5 111.5 0 0 1 1018.5 830.5 V 2827.2273 A 111.5 111.5 0 0 1 907 2938.7273 H 83 A 111.5 111.5 0 0 1 -28.5 2827.2273 V 830.5 A 111.5 111.5 0 0 1 83 719 Z M 83 742.5 H 907 A 88 88 0 0 1 995 830.5 V 2827.2273 A 88 88 0 0 1 907 2915.2273 H 83 A 88 88 0 0 1 -5 2827.2273 V 830.5 A 88 88 0 0 1 83 742.5 Z"/>
+      <path id="Device-Edge-Light-a" fill="none" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="1.5152"
+            d="M 83 700.75 H 907 A 129.75 129.75 0 0 1 1036.75 830.5 V 2827.2273 A 129.75 129.75 0 0 1 907 2956.9773 H 83 A 129.75 129.75 0 0 1 -46.75 2827.2273 V 830.5 A 129.75 129.75 0 0 1 83 700.75 Z"/>
+      <path id="Screen-Edge-a" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="1.4141"
+            d="M 83 743.2 H 907 A 87.3 87.3 0 0 1 994.3 830.5 V 2827.2273 A 87.3 87.3 0 0 1 907 2914.5273 H 83 A 87.3 87.3 0 0 1 -4.3 2827.2273 V 830.5 A 87.3 87.3 0 0 1 83 743.2 Z"/>
+      <rect id="Dynamic-Island" x="352.9545" y="767.5"
+        width="284.0909" height="83.3333" rx="41.6667" fill="#05070C"/></g>
   </g>
 </svg>

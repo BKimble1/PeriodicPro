@@ -2,24 +2,22 @@
    the real periodic table screen carries plenty of visual information on its
    own and the frame around it should stay calm.
 
-   A much smaller secondary device sits at the right edge and is the only thing
-   in this frame allowed to leave the canvas. It is the first half of the
-   handoff into frame 03: same screen width, same rotation, same y, and it shows
-   its LEFT side here because it is on its way out to the right. Frame 03 picks
-   the same device up at its left edge showing its RIGHT side. The two frames
-   still read correctly on their own.
+   The second device is the Build phone, which lives almost entirely on slide 03
+   and reaches back across the seam with its lower left corner only. See
+   pair23.mjs: both slides derive it from one master composition, so the slice
+   lines up exactly.
 
    Background hierarchy
      anchor     a period 1-4 table fragment sliding under the phone and out
                 both sides
-     secondary  an orbit diagram off the top right, one oversized carbon tile
-                half hidden behind the phone
+     secondary  an orbit diagram off the top right, partly hidden by the Build
+                phone, and one oversized carbon tile half behind the main phone
      ambient    a balanced equation along the bottom                          */
 import { C } from '../system.mjs';
 import { elementTile, periodicFragment, orbits, formula, EQUATIONS } from '../chemistry.mjs';
+import { buildOn } from './pair23.mjs';
 
-/* shared with frame 03: the handoff device must match on all three */
-export const HANDOFF = { screenW: 620, rot: 0, y: 1180 };
+const build = buildOn(0);
 
 export default {
   id: '02', slug: 'elements',
@@ -29,13 +27,15 @@ export default {
   copy: { top: 236, align: 'start' },
   devices: [
     {
-      role: 'handoff', label: 'Element detail',
-      screenW: HANDOFF.screenW, x: 1150, y: HANDOFF.y, rot: HANDOFF.rot,
-      need: 'An element detail screen, the same capture used at the left edge of frame 03 and as frame 04. Only its left side shows here, so keep the element tile and name in the left half.',
+      role: 'main', label: 'Periodic Table', screenW: 900, x: 120, y: 740, rot: 0,
+      need: 'The full periodic table, scrolled so the grid fills the screen. Straight on and fully visible, so nothing is cropped.',
     },
     {
-      role: 'main', label: 'Periodic Table', screenW: 900, x: 120, y: 740, rot: 0,
-      need: 'The full periodic table, scrolled so the grid fills the screen. Fully visible and straight on, so nothing is cropped.',
+      role: 'build', label: 'Build canvas',
+      screenW: build.screenW, x: build.x, y: build.y, rot: build.rot,
+      bleed: true, glow: true, masterX: build.x,
+      hideLabel: true,
+      need: 'The SAME Build capture used as the hero of frame 03. Only the lower left corner of the device reaches this slide, so almost no UI shows here; it is the device body that carries the eye into the next screenshot.',
     },
   ],
   light: [

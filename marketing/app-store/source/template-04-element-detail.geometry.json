@@ -18,6 +18,7 @@
    "role": "hero",
    "label": "Element Detail",
    "need": "One element detail screen, the most visually complete you have. Iron matches the shell diagram behind it; Carbon also reads well. Fully visible, so nothing is cropped.",
+   "bleed": false,
    "sfx": "-a",
    "x": 70,
    "y": 720,

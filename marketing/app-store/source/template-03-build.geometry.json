@@ -12,100 +12,40 @@
  "canvasW": 1320,
  "canvasH": 2868,
  "margin": 96,
- "deviceCount": 3,
+ "deviceCount": 1,
  "devices": [
   {
-   "role": "handoff",
-   "label": "Element detail",
-   "need": "The SAME element detail capture used at the right edge of frame 02. Only its right side shows here, which is what makes the two frames read as one continuous device.",
-   "sfx": "-a",
-   "x": -502.69999999999993,
-   "y": 1180,
-   "w": 672.7,
-   "h": 1399.790909090909,
-   "r": 80.91,
-   "rot": 0,
-   "cx": -166.3499999999999,
-   "cy": 1879.8954545454544,
-   "bezel": 26.35,
-   "scale": 0.6262626262626263,
-   "screenX": -476.3499999999999,
-   "screenY": 1206.35,
-   "screenW": 620,
-   "screenH": 1347.090909090909,
-   "screenR": 54.559999999999995,
-   "screenCX": -166.3499999999999,
-   "screenCY": 1879.8954545454544,
-   "uniformScale": 0.4696969696969697,
-   "bounds": {
-    "minX": -502.69999999999993,
-    "maxX": 170.0000000000001,
-    "minY": 1180,
-    "maxY": 2579.790909090909
-   },
-   "overlay": "assets/device/03-build-overlay-handoff.png"
-  },
-  {
-   "role": "back",
-   "label": "Finished compound",
-   "need": "The result of a build: a completed compound sheet, or the 3D viewer if the app has one. Fully visible, so nothing is cropped.",
-   "sfx": "-b",
-   "x": 480,
-   "y": 760,
-   "w": 759.5,
-   "h": 1580.409090909091,
-   "r": 91.35,
-   "rot": -3,
-   "cx": 859.75,
-   "cy": 1550.2045454545455,
-   "bezel": 29.750000000000004,
-   "scale": 0.7070707070707071,
-   "screenX": 509.75,
-   "screenY": 789.75,
-   "screenW": 700,
-   "screenH": 1520.909090909091,
-   "screenR": 61.599999999999994,
-   "screenCX": 859.75,
-   "screenCY": 1550.2045454545455,
-   "uniformScale": 0.5303030303030303,
-   "bounds": {
-    "minX": 439.16432366306617,
-    "maxX": 1280.3356763369338,
-    "minY": 741.2083684830653,
-    "maxY": 2359.2007224260255
-   },
-   "overlay": "assets/device/03-build-overlay-back.png"
-  },
-  {
-   "role": "front",
+   "role": "build",
    "label": "Build canvas",
-   "need": "The Build screen mid-assembly, with a molecule actually on the canvas. Never an empty builder. Fully visible and dominant.",
-   "sfx": "-c",
-   "x": 250,
-   "y": 940,
-   "w": 868,
-   "h": 1806.1818181818182,
-   "r": 104.39999999999999,
-   "rot": 2,
-   "cx": 684,
-   "cy": 1843.090909090909,
-   "bezel": 34,
-   "scale": 0.8080808080808081,
-   "screenX": 284,
-   "screenY": 974,
-   "screenW": 800,
-   "screenH": 1738.1818181818182,
-   "screenR": 70.39999999999999,
-   "screenCX": 684,
-   "screenCY": 1843.090909090909,
-   "uniformScale": 0.6060606060606061,
+   "need": "The Build screen mid-assembly, with a molecule actually on the canvas, never an empty builder. The same capture continues off the right edge of frame 02. The leftmost seventh of the screen falls on that slide, so keep controls and the molecule itself away from the extreme left edge.",
+   "bleed": true,
+   "masterX": -47.5,
+   "sfx": "-a",
+   "x": -47.5,
+   "y": 700,
+   "w": 1085,
+   "h": 2257.7272727272725,
+   "r": 130.5,
+   "rot": 3,
+   "cx": 495,
+   "cy": 1828.8636363636363,
+   "bezel": 42.5,
+   "scale": 1.0101010101010102,
+   "screenX": -5,
+   "screenY": 742.5,
+   "screenW": 1000,
+   "screenH": 2172.7272727272725,
+   "screenR": 88,
+   "screenCX": 495,
+   "screenCY": 1828.8636363636363,
+   "uniformScale": 0.7575757575757576,
    "bounds": {
-    "minX": 218.74696286983567,
-    "maxX": 1149.2530371301643,
-    "minY": 925.4037570122329,
-    "maxY": 2760.7780611695853
+    "minX": -105.83668048133404,
+    "maxX": 1095.836680481334,
+    "minY": 673.1548121186647,
+    "maxY": 2984.572460608608
    },
-   "overlay": "assets/device/03-build-overlay-front.png"
+   "overlay": "assets/device/03-build-overlay.png"
   }
  ],
  "background": "assets/backgrounds/03-build.png",
@@ -119,16 +59,12 @@
    "opacity": 0.1
   },
   {
-   "kind": "Tile",
-   "opacity": 0.055
-  },
-  {
    "kind": "Formula",
    "opacity": 0.05
   },
   {
-   "kind": "Skeletal",
-   "opacity": 0.032
+   "kind": "Tile",
+   "opacity": 0.03
   }
  ]
 }

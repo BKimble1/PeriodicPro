@@ -18,8 +18,8 @@ export default {
   sub: ['Track mastery, activity, and what', 'to review next.'],
   copy: { top: 236, align: 'start' },
   devices: [{
-    role: 'hero', label: 'Progress', screenW: 880, x: 320, y: 720, rot: 2.5,
-    need: 'The progress or mastery view, with enough real activity on it to look earned. Fully visible, so nothing is cropped.',
+    role: 'hero', label: 'Progress', screenW: 960, x: 403.4, y: 680, rot: 0, bleed: true,
+    need: 'The progress or mastery view, with enough real activity on it to look earned. The rightmost ninth of the screen runs off the canvas, so keep headline numbers and labels left of centre.',
   }],
   light: [
     { x: 420, y: 1700, r: 1160, c: C.paleC, o: 0.54 },
@@ -27,8 +27,8 @@ export default {
     { x: 180, y: 2680, r: 900, c: C.paleA, o: 0.48 },
   ],
   deco: () => [
-    periodicFragment({ x: -100, y: 1500, cell: 72, gap: 11, opacity: 0.10 }),
-    formula(EQUATIONS.combustionH2, { x: 96, y: 2848, size: 48, opacity: 0.055 }),
-    elementTile('Fe', { x: 150, y: 2300, w: 176, opacity: 0.03, rot: -5 }),
+    periodicFragment({ x: -160, y: 1500, cell: 72, gap: 11, opacity: 0.10 }),
+    formula(EQUATIONS.combustionH2, { x: 96, y: 2846, size: 48, opacity: 0.05 }),
+    elementTile('Fe', { x: 44, y: 912, w: 182, opacity: 0.03, rot: -5 }),
   ],
 };

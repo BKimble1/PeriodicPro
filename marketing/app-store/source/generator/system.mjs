@@ -281,15 +281,15 @@ export function deviceOverlay(d, sfx = '') {
    real screenshot is placed. */
 export function screenPlaceholder(d, label, sfx = '') {
   const s = d.screen, k = d.screen.w / 888;
-  const { text, dx = 0, dy = 0 } = typeof label === 'string' ? { text: label } : label;
+  const { text, dx = 0, dy = 0, hide = false } = typeof label === 'string' ? { text: label } : label;
   const lx = s.cx + dx, ly = s.cy + dy;
   return `
   <g id="Screen-Placeholder${sfx}">${rigid(d, `
-      <path d="${roundRect(s.x, s.y, s.w, s.h, s.r)}" fill="${C.screen}"/>
+      <path d="${roundRect(s.x, s.y, s.w, s.h, s.r)}" fill="${C.screen}"/>${hide ? '' : `
       <text x="${n(lx)}" y="${n(ly)}" class="el-ph2" text-anchor="middle"
             style="font-size:${n(36 * k)}px">${esc(text)}</text>
       <text x="${n(lx)}" y="${n(ly + 44 * k)}" class="el-ph3" text-anchor="middle"
-            style="font-size:${n(23 * k)}px">replace &#183; 1320 &#215; 2868</text>`)}
+            style="font-size:${n(23 * k)}px">replace &#183; 1320 &#215; 2868</text>`}`)}
   </g>`;
 }
 
@@ -403,15 +403,20 @@ export const SFX = ['-a', '-b', '-c'];
    the front device's soft shadow, which is what makes an overlap read as depth
    rather than as collage; the glow is confined to the backmost device where it
    cannot tint a screenshot. */
-export function composeFrame({ title, devices, copy, light, deco = '', decoDefs = '', labels }) {
+export function composeFrame({ title, devices, copy, light, deco = '', decoDefs = '',
+                               labels, glow }) {
   const N = devices.length;
   const allDefs = baseDefs(light) + decoDefs +
     devices.map((d, i) => deviceDefs(d, SFX[i])).join('');
 
-  const under = [background(light), deco, copy.svg];
-  const seat = (i) => [deviceGlow(devices[i], SFX[i]), deviceShadow(devices[i], SFX[i])];
-  /* only the backmost device gets a glow; the rest get shadow alone */
-  const seatFront = (i) => [deviceShadow(devices[i], SFX[i])];
+  const wants = devices.map((_, i) => (glow ? !!glow[i] : i === 0));
+  const glows = devices
+    .map((d, i) => (wants[i] ? deviceGlow(d, SFX[i]) : ''))
+    .filter(Boolean).join('\n');
+
+  const under = [background(light), glows, deco, copy.svg];
+  const seat = (i) => [deviceShadow(devices[i], SFX[i])];
+  const seatFront = seat;
 
   const bgBody = [...under, ...seat(0), screenWell(devices[0], SFX[0])];
 

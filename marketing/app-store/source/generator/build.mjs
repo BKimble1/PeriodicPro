@@ -165,7 +165,9 @@ function buildFrame(f) {
   const out = composeFrame({
     title: f.title, devices, copy: cp, light: f.light,
     deco: `\n  <g id="Chemistry-Decoration">\n${decoSvg}\n  </g>`,
-    decoDefs: D.defs(), labels: f.devices.map((s) => ({ text: s.label, dx: s.labelDX || 0, dy: s.labelDY || 0 })),
+    decoDefs: D.defs(),
+    labels: f.devices.map((s) => ({ text: s.label, dx: s.labelDX || 0, dy: s.labelDY || 0, hide: !!s.hideLabel })),
+    glow: f.devices.map((s, i) => (s.glow === undefined ? i === 0 : s.glow)),
   });
 
   const stem = `template-${f.id}-${f.slug}`;
@@ -177,6 +179,7 @@ function buildFrame(f) {
     deviceCount: devices.length,
     devices: devices.map((d, i) => ({
       role: f.devices[i].role, label: f.devices[i].label, need: f.devices[i].need,
+      bleed: !!f.devices[i].bleed, masterX: f.devices[i].masterX,
       sfx: SFX[i],
       x: d.x, y: d.y, w: d.w, h: d.h, r: d.r, rot: d.rot,
       cx: d.cx, cy: d.cy, bezel: d.bezel, scale: d.scale,
@@ -306,12 +309,53 @@ sheet.save(out)
   console.log('  contact sheets written to exports/');
 }
 
+/* The 2 + 3 pair, and the first three at gallery scale, so the continuation can
+   be judged both edge to edge and with the gap the App Store actually puts
+   between cards. */
+function previews(geoms) {
+  const by = Object.fromEntries(geoms.map((g) => [g.id, p(g.output)]));
+  execFileSync('python3', ['-c', `
+import sys
+from PIL import Image
+two, three, one, out2, out3, out4 = sys.argv[1:7]
+W, H = 620, 1347
+
+def card(path):
+    return Image.open(path).convert('RGB').resize((W, H), Image.LANCZOS)
+
+# a) edge to edge: the master composition, reassembled
+touch = Image.new('RGB', (2*W, H), (255, 255, 255))
+touch.paste(card(two), (0, 0)); touch.paste(card(three), (W, 0))
+touch.save(out2)
+
+# b) with the gap a gallery really shows
+gap, pad = 34, 30
+gal = Image.new('RGB', (2*W + gap + 2*pad, H + 2*pad), (247, 248, 251))
+gal.paste(card(two), (pad, pad)); gal.paste(card(three), (pad + W + gap, pad))
+gal.save(out3)
+
+# c) slides 1, 2, 3 as the store lists them
+w2, h2 = 420, 913
+g2, p2 = 24, 26
+row = Image.new('RGB', (3*w2 + 2*g2 + 2*p2, h2 + 2*p2), (247, 248, 251))
+for i, f in enumerate([one, two, three]):
+    row.paste(Image.open(f).convert('RGB').resize((w2, h2), Image.LANCZOS),
+              (p2 + i*(w2+g2), p2))
+row.save(out4)
+`, by['02'], by['03'], by['01'],
+     p('exports', 'pair-2-3-touching.png'),
+     p('exports', 'pair-2-3-gallery.png'),
+     p('exports', 'gallery-1-2-3.png')], { stdio: ['ignore', 'inherit', 'pipe'] });
+  console.log('  pair and gallery previews written to exports/');
+}
+
 /* ------------------------------------------------------------------- main -- */
 
 console.log(`Elemora App Store build: ${CANVAS.W} x ${CANVAS.H}, ${FRAMES.length} frames`);
 const geoms = FRAMES.map(buildFrame);
 buildAssets();
 contactSheet(geoms);
+previews(geoms);
 write(p('source', 'frames.json'), JSON.stringify(geoms, null, 1) + '\n');
 
 /* The drawn skeletal graphs, exported so the QA pass can re-derive each

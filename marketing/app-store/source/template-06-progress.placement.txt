@@ -9,30 +9,30 @@ CANVAS
 
 DEVICE 1 of 1   role = hero   layer = backmost
   Wanted screen = Progress
-  The progress or mastery view, with enough real activity on it to look earned. Fully visible, so nothing is cropped.
+  The progress or mastery view, with enough real activity on it to look earned. The rightmost ninth of the screen runs off the canvas, so keep headline numbers and labels left of centre.
 
-  X        = 320          (unrotated top-left)
-  Y        = 720
-  W        = 954.8
-  H        = 1986.8
-  Rotation = 2.5 deg    (about the device centre, 797.4, 1713.4)
-  Corner radius   = 114.84
-  Bezel thickness = 37.4 on every side
+  X        = 403.4          (unrotated top-left)
+  Y        = 680
+  W        = 1041.6
+  H        = 2167.4182
+  Rotation = 0 deg    (about the device centre, 924.2, 1763.7091)
+  Corner radius   = 125.28
+  Bezel thickness = 40.8 on every side
 
   ROTATED BOUNDING BOX
-    Left = 277.1229   Top = 700.1216   Right = 1317.6771   Bottom = 2726.6784
-    Off-canvas left none, right none, bottom none
+    Left = 403.4   Top = 680   Right = 1445   Bottom = 2847.4182
+    Off-canvas left none, right 125.0px, bottom none
 
   SCREENSHOT  (place the real 1320x2868 capture here)
-    Centre        = 797.4, 1713.4
-    Unrotated X,Y = 357.4, 757.4
-    Unrotated W,H = 880 x 1912
-    Rotation      = 2.5 deg  (identical to the device, one rigid group)
-    Corner radius = 77.44   (the overlay rounds this for you)
+    Centre        = 924.2, 1763.7091
+    Unrotated X,Y = 444.2, 720.8
+    Unrotated W,H = 960 x 2085.8182
+    Rotation      = 0 deg  (identical to the device, one rigid group)
+    Corner radius = 84.48   (the overlay rounds this for you)
     Aspect ratio  = 0.4602510460251046
     Required      = 1320 / 2868 = 0.4602510460251046
     Delta         = 0.000e+0
-    Uniform scale of the source screenshot = 0.6666666667
+    Uniform scale of the source screenshot = 0.7272727273
     NEVER scale X and Y independently, and never rotate the screenshot
     separately from the bezel. Set the size first, then apply the rotation.
 

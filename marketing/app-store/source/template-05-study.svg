@@ -116,6 +116,10 @@
     <rect width="1320" height="2868" fill="url(#elLight2)"/>
   </g>
 
+  <g id="Device-Glow-a">
+    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
+  </g>
+
   <g id="Chemistry-Decoration">
 <g id="Skeletal-C10H8" opacity="0.1">
     <path d="M 1440.0988 1019.9171 L 1394.6186 861.3089 M 1411.4099 1000.6796 L 1380.4834 892.8261 M 1394.6186 861.3089 L 1234.5198 821.3918 M 1234.5198 821.3918 L 1119.9012 940.0829 M 1232.2041 855.8559 L 1154.2635 936.5658 M 1119.9012 940.0829 L 1165.3814 1098.6911 M 1165.3814 1098.6911 L 1325.4802 1138.6082 M 1196.386 1083.4645 L 1305.2532 1110.6081 M 1325.4802 1138.6082 L 1440.0988 1019.9171 M 1394.6186 861.3089 L 1509.2373 742.6179 M 1509.2373 742.6179 L 1463.7571 584.0097 M 1480.5483 723.3804 L 1449.6218 615.5268 M 1463.7571 584.0097 L 1303.6583 544.0926 M 1303.6583 544.0926 L 1189.0397 662.7836 M 1301.3426 578.5567 L 1223.4019 659.2666 M 1189.0397 662.7836 L 1234.5198 821.3918" fill="none" stroke="#2F6BE8" stroke-opacity="0.9" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
@@ -134,11 +138,7 @@
     <text id="Supporting" class="el-sub" text-rendering="geometricPrecision"><tspan x="96" y="455.1367">Practice with focused tools that</tspan><tspan x="96" y="519.1367">make chemistry stick.</tspan></text>
   </g>
 
-  <g id="Device-Glow-a">
-    <rect width="1320" height="2868" fill="url(#elGlow-a)"/>
-  </g>
-
-  <g id="Device-Shadow-a"><g transform="rotate(-3 497.45 1535.3591)">
+  <g id="Device-Shadow-a"><g transform="rotate(-2 497.45 1535.3591)">
     <path d="M 204.5296 755.3131 H 790.3704 A 96.57 96.57 0 0 1 886.9404 851.8831 V 2329.4613 A 96.57 96.57 0 0 1 790.3704 2426.0313 H 204.5296 A 96.57 96.57 0 0 1 107.9596 2329.4613 V 851.8831 A 96.57 96.57 0 0 1 204.5296 755.3131 Z"
           fill="#22456F" fill-opacity="0.19" filter="url(#elShadowA-a)"/>
     <path d="M 213.4993 719.4343 H 781.4007 A 96.57 96.57 0 0 1 877.9707 816.0043 V 2293.5825 A 96.57 96.57 0 0 1 781.4007 2390.1525 H 213.4993 A 96.57 96.57 0 0 1 116.9293 2293.5825 V 816.0043 A 96.57 96.57 0 0 1 213.4993 719.4343 Z"
@@ -147,7 +147,7 @@
           fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-a)"/></g>
   </g>
 
-  <g id="Screen-Placeholder-a"><g transform="rotate(-3 497.45 1535.3591)">
+  <g id="Screen-Placeholder-a"><g transform="rotate(-2 497.45 1535.3591)">
       <path d="M 192.57 731.45 H 802.33 A 65.12 65.12 0 0 1 867.45 796.57 V 2274.1482 A 65.12 65.12 0 0 1 802.33 2339.2682 H 192.57 A 65.12 65.12 0 0 1 127.45 2274.1482 V 796.57 A 65.12 65.12 0 0 1 192.57 731.45 Z" fill="#F2F6FB"/>
       <text x="497.45" y="1535.3591" class="el-ph2" text-anchor="middle"
             style="font-size:30px">Quiz or flashcard</text>
@@ -155,7 +155,7 @@
             style="font-size:19.1667px">replace &#183; 1320 &#215; 2868</text></g>
   </g>
 
-  <g id="Device-Overlay-a"><g transform="rotate(-3 497.45 1535.3591)">
+  <g id="Device-Overlay-a"><g transform="rotate(-2 497.45 1535.3591)">
       <rect id="Button-Action-a" x="92.6364" y="1074.2409" width="6.7273" height="78.5238" rx="2.9899" fill="#94A2B5"/>
       <rect id="Button-Volume-Up-a" x="92.6364" y="1211.2398" width="6.7273" height="133.6575" rx="2.9899" fill="#94A2B5"/>
       <rect id="Button-Volume-Down-a" x="92.6364" y="1366.6166" width="6.7273" height="133.6575" rx="2.9899" fill="#94A2B5"/>
@@ -172,7 +172,7 @@
         width="210.2273" height="61.6667" rx="30.8333" fill="#05070C"/></g>
   </g>
 
-  <g id="Device-Shadow-b"><g transform="rotate(3 819.425 1814.3795)">
+  <g id="Device-Shadow-b"><g transform="rotate(2 819.425 1814.3795)">
     <path d="M 498.7959 960.5455 H 1140.0541 A 105.705 105.705 0 0 1 1245.7591 1066.2505 V 2683.5995 A 105.705 105.705 0 0 1 1140.0541 2789.3045 H 498.7959 A 105.705 105.705 0 0 1 393.0909 2683.5995 V 1066.2505 A 105.705 105.705 0 0 1 498.7959 960.5455 Z"
           fill="#22456F" fill-opacity="0.19" filter="url(#elShadowA-b)"/>
     <path d="M 508.6141 921.2727 H 1130.2359 A 105.705 105.705 0 0 1 1235.9409 1026.9777 V 2644.3268 A 105.705 105.705 0 0 1 1130.2359 2750.0318 H 508.6141 A 105.705 105.705 0 0 1 402.9091 2644.3268 V 1026.9777 A 105.705 105.705 0 0 1 508.6141 921.2727 Z"
@@ -181,7 +181,7 @@
           fill="#22456F" fill-opacity="0.17" filter="url(#elShadowC-b)"/></g>
   </g>
 
-  <g id="Screen-Placeholder-b"><g transform="rotate(3 819.425 1814.3795)">
+  <g id="Screen-Placeholder-b"><g transform="rotate(2 819.425 1814.3795)">
       <path d="M 485.705 934.425 H 1153.145 A 71.28 71.28 0 0 1 1224.425 1005.705 V 2623.0541 A 71.28 71.28 0 0 1 1153.145 2694.3341 H 485.705 A 71.28 71.28 0 0 1 414.425 2623.0541 V 1005.705 A 71.28 71.28 0 0 1 485.705 934.425 Z" fill="#F2F6FB"/>
       <text x="819.425" y="1814.3795" class="el-ph2" text-anchor="middle"
             style="font-size:32.8378px">Study overview</text>
@@ -189,7 +189,7 @@
             style="font-size:20.9797px">replace &#183; 1320 &#215; 2868</text></g>
   </g>
 
-  <g id="Device-Overlay-b"><g transform="rotate(3 819.425 1814.3795)">
+  <g id="Device-Overlay-b"><g transform="rotate(2 819.425 1814.3795)">
       <rect id="Button-Action-b" x="376.3182" y="1309.642" width="7.3636" height="85.9517" rx="3.2727" fill="#94A2B5"/>
       <rect id="Button-Volume-Up-b" x="376.3182" y="1459.6003" width="7.3636" height="146.3007" rx="3.2727" fill="#94A2B5"/>
       <rect id="Button-Volume-Down-b" x="376.3182" y="1629.6749" width="7.3636" height="146.3007" rx="3.2727" fill="#94A2B5"/>
