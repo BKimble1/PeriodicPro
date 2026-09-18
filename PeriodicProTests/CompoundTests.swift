@@ -37,6 +37,67 @@ struct CompoundCatalogTests {
         #expect(matches.count == 2, "a formula must never resolve to the first hit")
     }
 
+    @Test("A misspelled name still finds its compound")
+    func searchForgivesATypo() {
+        // Measured against the bundled catalog before any of this was written:
+        // thirteen of these fifteen found nothing at all, though every one of
+        // the compounds was sitting in the file.
+        let cases = [
+            ("caffiene", "Caffeine"),
+            ("asprin", "Aspirin"),
+            ("acetic asid", "Acetic acid"),
+            ("amonia", "Ammonia"),
+            ("glucse", "Glucose"),
+            ("sodium chlordie", "Sodium chloride"),
+            ("hydrogne peroxide", "Hydrogen peroxide"),
+            ("ethanl", "Ethanol"),
+            ("carbon dioxde", "Carbon dioxide"),
+            ("nitric asid", "Nitric acid"),
+        ]
+        for (typed, expected) in cases {
+            let first = catalog.search(typed).first?.preferredName
+            #expect(first == expected, "\(typed) should find \(expected); found \(first ?? "nothing")")
+        }
+    }
+
+    @Test("British spelling finds the American name")
+    func searchFoldsSpelling() {
+        #expect(catalog.search("sulfuric acid").first?.preferredName == "Sulfuric acid")
+        #expect(catalog.search("sulfur dioxide").first?.preferredName == "Sulfur dioxide")
+        // And the fold is symmetric: the spelling the catalog uses still works.
+        #expect(catalog.search("sulfuric acid").first?.preferredName == "Sulfuric acid")
+    }
+
+    @Test("Nonsense still finds nothing")
+    func searchDoesNotGuessWildly() {
+        // The forgiving pass runs only when nothing matched as written, and it
+        // is bounded — otherwise every query would drag back some compound and
+        // the empty state would never be seen again.
+        for query in ["zzzzzz", "qqqq", "xyzzy", "12345", "zzzzzzzzzz", "aaaa"] {
+            #expect(catalog.search(query).isEmpty, "\(query) should find nothing")
+        }
+    }
+
+    @Test("A short query is never treated as a misspelling")
+    func shortQueriesAreTakenLiterally() {
+        // At four characters or fewer one edit is the distance between two
+        // real compounds, so the allowance is zero there.
+        #expect(CompoundCatalog.editTolerance(for: 3) == 0)
+        #expect(CompoundCatalog.editTolerance(for: 4) == 0)
+        #expect(CompoundCatalog.editTolerance(for: 5) == 1)
+        #expect(CompoundCatalog.editTolerance(for: 12) == 2)
+    }
+
+    @Test("A swapped pair of letters is one edit, not two")
+    func transpositionIsOneEdit() {
+        #expect(CompoundCatalog.editDistance("hydrogne", "hydrogen", cap: 2) == 1)
+        #expect(CompoundCatalog.editDistance("caffiene", "caffeine", cap: 2) == 1)
+        #expect(CompoundCatalog.editDistance("water", "water", cap: 2) == 0)
+        // And the cap really stops it: far-apart strings report past the cap
+        // rather than their true distance.
+        #expect(CompoundCatalog.editDistance("water", "benzene", cap: 2) > 2)
+    }
+
     @Test("Search ranks an exact formula and an exact name first")
     func searchRanking() {
         #expect(catalog.search("H2O").first?.preferredName == "Water")

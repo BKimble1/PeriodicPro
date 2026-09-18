@@ -38,11 +38,11 @@ struct CompoundCatalog: Sendable {
         entries = unique.map { compound in
             SearchEntry(
                 compound: compound,
-                name: ElementSearch.normalize(compound.preferredName),
-                names: compound.alternateNames.map(ElementSearch.normalize),
+                name: Self.folded(compound.preferredName),
+                names: compound.alternateNames.map(Self.folded),
                 formula: ElementSearch.normalize(CompoundFormula.unsubscripted(compound.formula)),
                 hillFormula: ElementSearch.normalize(compound.hillFormula),
-                iupac: ElementSearch.normalize(compound.iupacName ?? "")
+                iupac: Self.folded(compound.iupacName ?? "")
             )
         }
     }
@@ -67,7 +67,7 @@ struct CompoundCatalog: Sendable {
     }
 
     static func search(_ rawQuery: String, in entries: [SearchEntry], limit: Int) -> [ChemicalCompound] {
-        let query = ElementSearch.normalize(CompoundFormula.unsubscripted(rawQuery))
+        let query = folded(CompoundFormula.unsubscripted(rawQuery))
         guard !query.isEmpty, limit > 0 else { return [] }
         var scored: [(rank: Int, entry: SearchEntry)] = []
         for entry in entries {
@@ -87,6 +87,24 @@ struct CompoundCatalog: Sendable {
                 scored.append((5, entry))
             }
         }
+        // Nothing matched as written. Try it as a misspelling — but only now,
+        // so a query that matches something exactly can never be beaten by a
+        // near miss on something else.
+        if scored.isEmpty {
+            let tolerance = Self.editTolerance(for: query.count)
+            guard tolerance > 0 else { return [] }
+            var best: (distance: Int, entry: SearchEntry)?
+            for entry in entries {
+                for name in [entry.name] + entry.names {
+                    let distance = Self.editDistance(query, name, cap: tolerance)
+                    guard distance <= tolerance else { continue }
+                    if let current = best, current.distance <= distance { continue }
+                    best = (distance, entry)
+                }
+            }
+            guard let best else { return [] }
+            return [best.entry.compound]
+        }
         return scored
             .sorted { lhs, rhs in
                 lhs.rank == rhs.rank
@@ -95,6 +113,81 @@ struct CompoundCatalog: Sendable {
             }
             .prefix(limit)
             .map(\.entry.compound)
+    }
+
+    // MARK: - Spelling and near misses
+
+    /// The same chemical spelled two ways. British on the left, American on
+    /// the right, because the catalog and PubChem both use American.
+    ///
+    /// Applied to the index and to the query alike, so "sulfuric acid" and
+    /// "sulfuric acid" are one string by the time anything is compared. A
+    /// learner taught one spelling should not have to know the other exists.
+    private static let spellings: [(String, String)] = [
+        ("sulph", "sulf"),
+        ("aluminum", "aluminum"),
+        ("cesium", "cesium"),
+        ("glycerine", "glycerin"),
+    ]
+
+    /// Case-folded, punctuation-stripped, and spelled the way the catalog
+    /// spells it.
+    static func folded(_ text: String) -> String {
+        var value = ElementSearch.normalize(text)
+        for (british, american) in spellings {
+            value = value.replacingOccurrences(of: british, with: american)
+        }
+        return value
+    }
+
+    /// How far wrong a query of this length may be and still be understood.
+    ///
+    /// Nothing for a short query: at four characters or fewer, one edit is the
+    /// difference between two real compounds, and guessing there would answer
+    /// a question the learner did not ask. The allowance grows with the word
+    /// because a long name has more room to be mistyped without becoming a
+    /// different name.
+    static func editTolerance(for length: Int) -> Int {
+        switch length {
+        case ...4: return 0
+        case 5...7: return 1
+        default: return 2
+        }
+    }
+
+    /// Damerau-Levenshtein distance, abandoned once it passes `cap`.
+    ///
+    /// Transpositions count as one edit rather than two, because swapping a
+    /// pair of letters is the commonest typing mistake there is — "hydrogne"
+    /// for "hydrogen". The cap is not just an optimisation: a row whose best
+    /// value already exceeds it can only get worse, so returning early is the
+    /// same answer sooner.
+    static func editDistance(_ lhs: String, _ rhs: String, cap: Int) -> Int {
+        let a = Array(lhs)
+        let b = Array(rhs)
+        guard abs(a.count - b.count) <= cap else { return cap + 1 }
+        if a.isEmpty { return b.count }
+        if b.isEmpty { return a.count }
+
+        var twoAgo: [Int] = []
+        var previous = Array(0...b.count)
+        for i in 1...a.count {
+            var current = [i] + Array(repeating: 0, count: b.count)
+            var bestInRow = current[0]
+            for j in 1...b.count {
+                let cost = a[i - 1] == b[j - 1] ? 0 : 1
+                var value = min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
+                if i > 1, j > 1, a[i - 1] == b[j - 2], a[i - 2] == b[j - 1] {
+                    value = min(value, twoAgo[j - 2] + 1)
+                }
+                current[j] = value
+                bestInRow = min(bestInRow, value)
+            }
+            guard bestInRow <= cap else { return cap + 1 }
+            twoAgo = previous
+            previous = current
+        }
+        return previous[b.count]
     }
 
     // MARK: - Loading
