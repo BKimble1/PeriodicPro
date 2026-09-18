@@ -332,8 +332,10 @@ struct FittedTableTests {
             )
             let height = TableZoomLayout.contentHeight(forTileSize: tile)
             #expect(height <= Self.realRoom(device),
-                    "\(device.name): the table needs \(height) points and the screen leaves "
-                    + "\(Self.realRoom(device))")
+                    """
+                    \(device.name): the table needs \(height) points and the screen \
+                    leaves \(Self.realRoom(device))
+                    """)
         }
     }
 
