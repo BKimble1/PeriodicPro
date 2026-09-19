@@ -170,6 +170,27 @@ is inside the ZIP rather than the template. Without the Team ID nothing is
 written, because a placeholder association file is worse than none: Apple's CDN
 caches it for hours.
 
+> ### The committed `elemora-netlify.zip` has no association file
+>
+> It is built with `--without-universal-links`, on purpose. The association
+> file carries the Apple Team ID, and this repository does not commit signing
+> identifiers — not in the entitlement, not in the template, and not smuggled
+> inside a binary either. `Tools/check_website.py` enforces that for the files
+> it can read; this note is the part it cannot.
+>
+> **So the committed ZIP is not the one to deploy.** Build the real one first:
+>
+> ```sh
+> APPLE_TEAM_ID=XXXXXXXXXX ./website/scripts/make_zip.sh
+> ```
+>
+> That overwrites `elemora-netlify.zip` in place with the association file
+> included. Deploy that, and do not commit it: `git checkout --
+> elemora-netlify.zip` puts the committed build back afterwards. Everything
+> else in the two archives is byte-for-byte the same, and
+> `Tools/check_website.py` fails if a ZIP carrying a Team ID is ever
+> committed.
+
 ## Deploying
 
 Nothing here deploys on its own.

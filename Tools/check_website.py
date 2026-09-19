@@ -16,10 +16,12 @@ cookies, no analytics, and nothing loaded from a third-party domain.
 """
 from __future__ import annotations
 
+import io
 import os
 import re
 import struct
 import sys
+import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(ROOT, "website", "site")
@@ -277,6 +279,45 @@ def check_pages(errors: list[str]) -> None:
                 errors.append(f"{STYLESHEET} loads {reference} from outside the site")
 
 
+def check_committed_zip(errors: list[str]) -> None:
+    """The committed deployment ZIP must not smuggle in the Team ID.
+
+    `website/site/.well-known/apple-app-site-association` is git-ignored and
+    generated at package time, so the source tree never carries a signing
+    identifier. A ZIP is a binary, and `git diff` shows nothing useful about
+    one — which makes it exactly the place a Team ID would slip in unnoticed.
+
+    This reads what is *committed* rather than what is on disk, so building
+    the real ZIP to deploy it is fine; committing that build is not.
+    """
+    import subprocess
+
+    try:
+        blob = subprocess.run(
+            ["git", "show", "HEAD:elemora-netlify.zip"],
+            cwd=ROOT, capture_output=True, check=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return                       # no git, or no committed ZIP: nothing to say
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(blob)) as archive:
+            names = archive.namelist()
+    except zipfile.BadZipFile as error:
+        errors.append(f"the committed elemora-netlify.zip is not a ZIP: {error}")
+        return
+
+    for name in names:
+        if name.endswith("apple-app-site-association"):
+            errors.append(
+                "the committed elemora-netlify.zip contains "
+                f"{name}, which carries the Apple Team ID. Build it with "
+                "--without-universal-links before committing; see website/README.md"
+            )
+    if not any(n == "index.html" for n in names):
+        errors.append("the committed elemora-netlify.zip has no index.html at its root")
+
+
 def check_quiz_page(errors: list[str]) -> None:
     """The shared-quiz landing page is the half of sharing a browser sees."""
     path = os.path.join(SITE, "quiz", "index.html")
@@ -319,6 +360,7 @@ def main() -> int:
     check_share_card(errors)
     check_pages(errors)
     check_quiz_page(errors)
+    check_committed_zip(errors)
 
     for error in errors:
         print(f"error: {error}")
