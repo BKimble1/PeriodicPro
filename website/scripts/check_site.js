@@ -12,6 +12,8 @@
  *   - a tap target under 44x44 CSS px
  *   - an internal link that does not resolve to a file, redirect, or 404 page
  *   - an <img> with no alt attribute at all
+ *   - an apple-app-site-association that is missing, redirected, not JSON, or
+ *     served as anything other than application/json
  */
 
 const http = require('http');
@@ -45,6 +47,21 @@ function parseRedirects(dir) {
 }
 
 const REDIRECTS = parseRedirects(ROOT);
+
+/* Netlify matches a trailing /* as a prefix, and a rule with status 200 is a
+   rewrite: the file at `to` is served and the address bar keeps `from`. That
+   distinction is the whole of how a shared quiz works, so the dev server has
+   to honour it rather than approximate it. */
+function matchRule(urlPath) {
+  const bare = urlPath.replace(/\/$/, '');
+  return REDIRECTS.find((r) => (r.from.endsWith('/*')
+    ? urlPath.startsWith(r.from.slice(0, -1))
+    : r.from === urlPath || r.from === bare));
+}
+
+/* A real encoded payload, produced by Tools/check_share_link.py, so the quiz
+   page is exercised at the length and shape a shared link actually has. */
+const SAMPLE_PAYLOAD = process.env.ELEMORA_SAMPLE_PAYLOAD || '1TU9Nb4MwDP0ryOdMKjC2lSvdtJ13nHoIiQmRkpiRpFJV9b_PFJB2s5_fh98NFLQ3UOQnykF_WJdwjgvUU9A2mM7JGJGRn7MACu76LS-ooR2kiyggSfO43QV7hIQhQcvSNAIDOSby3Wb9dVqIMOVejeifji8VU_atqepnOO-Sd4eenVbFUZSvom5EU4tKlAdRvjFP22GwKrt05TiP2mbPbrjq_pVQMqGh2e4FzEx52uYJZ0t6X0a5teQmvxljshQ6_pv7VAcBUdGEnLU-yFlxzMPgFkmaM7Io8PVTOjIYYiGDLgL1Dgvz8BVwgba8_wE';
 
 /* Netlify's _headers, so the checks run under the same CSP the deploy serves. */
 function parseHeaders(dir) {
@@ -91,10 +108,21 @@ function serve() {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
       const urlPath = req.url.split('?')[0];
-      const hit = REDIRECTS.find((r) => r.from === urlPath || r.from === urlPath.replace(/\/$/, ''));
+      const hit = matchRule(urlPath);
       if (hit && !resolveFile(urlPath)) {
-        res.writeHead(hit.status, { Location: hit.to });
-        return res.end();
+        if (hit.status === 200) {
+          const rewritten = resolveFile(hit.to);
+          if (rewritten) {
+            res.writeHead(200, {
+              'Content-Type': TYPES[path.extname(rewritten).toLowerCase()] || 'text/html; charset=utf-8',
+              ...headersFor(urlPath),
+            });
+            return fs.createReadStream(rewritten).pipe(res);
+          }
+        } else {
+          res.writeHead(hit.status, { Location: hit.to });
+          return res.end();
+        }
       }
       const file = resolveFile(urlPath);
       if (!file) {
@@ -119,6 +147,9 @@ const PAGES = [
   { url: '/support/', name: 'support' },
   { url: '/privacy/', name: 'privacy' },
   { url: '/terms/', name: 'terms' },
+  // The shared-quiz page as a recipient without the app reaches it: a real
+  // payload on the real path, served through the /quiz/* rewrite.
+  { url: `/quiz/${SAMPLE_PAYLOAD}`, name: 'quiz' },
   { url: '/does-not-exist', name: '404' },
 ];
 
@@ -283,9 +314,22 @@ const VIEWPORTS = [
     const ctx = await browser.newContext();
     const api = await ctx.request;
     for (const r of REDIRECTS) {
-      const res = await api.get(base + r.from, { maxRedirects: 0 });
+      const from = r.from.endsWith('/*') ? `${r.from.slice(0, -1)}${SAMPLE_PAYLOAD}` : r.from;
+      const res = await api.get(base + from, { maxRedirects: 0 });
       if (res.status() !== r.status) {
-        note(`redirects: ${r.from} returned ${res.status()}, expected ${r.status}`);
+        note(`redirects: ${from} returned ${res.status()}, expected ${r.status}`);
+        continue;
+      }
+      if (r.status === 200) {
+        // A rewrite: the payload must survive, so there must be no Location at
+        // all, and the body must be the landing page rather than the 404.
+        if (res.headers().location) {
+          note(`redirects: ${from} is a rewrite but sent a Location header`);
+        }
+        const body = await res.text();
+        if (!/Someone shared an Elemora quiz/.test(body)) {
+          note(`redirects: ${from} did not serve the shared-quiz page`);
+        }
         continue;
       }
       const loc = res.headers().location;
@@ -296,6 +340,51 @@ const VIEWPORTS = [
       }
     }
     console.log(`  checked ${REDIRECTS.length} redirect rule(s)`);
+    await ctx.close();
+  }
+
+  // The Apple app-site-association: iOS fetches it over HTTPS, follows no
+  // redirect, and parses it as JSON. Anything else and Universal Links are off.
+  {
+    const ctx = await browser.newContext();
+    const api = ctx.request;
+    const url = '/.well-known/apple-app-site-association';
+    const res = await api.get(base + url, { maxRedirects: 0 });
+    if (res.status() !== 200) {
+      note(`aasa: ${res.status()} — it must be 200 with no redirect (run website/scripts/build_aasa.py)`);
+    } else {
+      const type = res.headers()['content-type'] || '';
+      if (!type.startsWith('application/json')) {
+        note(`aasa: Content-Type is ${type || '(none)'}; iOS needs application/json`);
+      }
+      let data = null;
+      try {
+        data = JSON.parse(await res.text());
+      } catch (e) {
+        note(`aasa: not valid JSON — ${e.message}`);
+      }
+      if (data) {
+        const details = (data.applinks && data.applinks.details) || [];
+        const appIDs = details.flatMap((d) => d.appIDs || []);
+        const paths = details.flatMap((d) => (d.components || []).map((c) => c['/']));
+        if (appIDs.length === 0) note('aasa: no appIDs');
+        for (const id of appIDs) {
+          if (!/^[A-Z0-9]{10}\.com\.idlery\.periodicpro$/.test(id)) {
+            note(`aasa: ${id} is not <TeamID>.com.idlery.periodicpro`);
+          }
+        }
+        if (JSON.stringify(paths) !== JSON.stringify(['/quiz/*'])) {
+          note(`aasa: components are ${JSON.stringify(paths)}, expected ["/quiz/*"]`);
+        }
+      }
+      console.log('  checked the apple-app-site-association');
+    }
+
+    // And the ordinary pages must NOT be claimed by the app.
+    for (const ordinary of ['/', '/support/', '/privacy/', '/terms/']) {
+      const page = await api.get(base + ordinary, { maxRedirects: 0 });
+      if (page.status() !== 200) note(`routing: ${ordinary} returned ${page.status()}`);
+    }
     await ctx.close();
   }
 

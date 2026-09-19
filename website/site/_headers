@@ -8,6 +8,23 @@
   Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'self'; base-uri 'self'
 
+# Apple fetches this over HTTPS, follows no redirect, and parses it as JSON.
+# Netlify serves an extensionless file as application/octet-stream by default,
+# which iOS rejects outright, so the type is set here. No authentication, no
+# redirect, no cookie: Apple's CDN has to be able to read it anonymously.
+/.well-known/apple-app-site-association
+  Content-Type: application/json
+  Cache-Control: public, max-age=3600
+
+# A shared-quiz URL carries the whole quiz in its path. Encoding is not
+# encryption, so the least this site can do is not repeat the payload anywhere
+# it does not have to: no Referer to anyone, nothing kept in a shared cache,
+# and no search index. The page itself is identical for every payload.
+/quiz/*
+  Referrer-Policy: no-referrer
+  Cache-Control: no-store
+  X-Robots-Tag: noindex
+
 # Asset names carry no content hash, so keep this conservative: an hour at the
 # edge, revalidated by the browser. Raise it only if you start hashing names.
 /assets/*

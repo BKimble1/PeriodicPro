@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /quiz/
-
-Sitemap: https://elemora.idlery.com/sitemap.xml

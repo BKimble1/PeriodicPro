@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A shared quiz — Elemora</title>
+<meta name="description" content="Someone shared an Elemora quiz with you. Open the link on an iPhone with Elemora installed and the quiz saves itself to My Quizzes.">
+<link rel="canonical" href="https://elemora.idlery.com/quiz/">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#f7f6f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1516" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+
+<!-- A link-preview service fetches this page, not the quiz: the site is static
+     and the quiz lives inside the URL, so every shared quiz gets the same
+     branded Elemora card here. Inside iOS, the app attaches its own preview
+     with the quiz's real title (QuizShareCard), which is what the sender and
+     recipient actually see in Messages and Mail. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Elemora">
+<meta property="og:title" content="A shared Elemora quiz">
+<meta property="og:description" content="Someone shared an Elemora quiz with you. Open it in Elemora to save it to My Quizzes and play it.">
+<meta property="og:url" content="https://elemora.idlery.com/quiz/">
+<meta property="og:image" content="https://elemora.idlery.com/assets/img/og-quiz.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Elemora app icon on a warm off-white card, with the line: a shared quiz.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A shared Elemora quiz">
+<meta name="twitter:description" content="Someone shared an Elemora quiz with you. Open it in Elemora to save it to My Quizzes and play it.">
+<meta name="twitter:image" content="https://elemora.idlery.com/assets/img/og-quiz.png">
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Elemora, home">
+      <img src="/assets/img/elemora-icon-64.png" width="32" height="32" alt="">
+      <span>Elemora</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="/#explore">Explore</a></li>
+        <li><a href="/#study">Study</a></li>
+        <li><a href="/#build">Build</a></li>
+        <li><a href="/support/">Support</a></li>
+        <li><a class="nav-cta" href="/#get">Get Elemora</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ====================================================== shared quiz -- -->
+  <section class="quiz-top">
+    <div class="wrap">
+      <img class="quiz-icon" src="/assets/img/elemora-icon-256.png" width="96" height="96"
+           alt="" fetchpriority="high">
+      <p class="eyebrow">Shared quiz</p>
+      <h1>Someone shared an Elemora quiz with you.</h1>
+      <p class="lede lede-center">
+        Explore the elements, test your knowledge, and save this quiz straight into
+        Elemora. The quiz travels inside the link itself — there is nothing to sign up
+        for and nothing to download from this page.
+      </p>
+
+      <!-- APPSTORE:CTA:START -->
+          <div class="cta-row cta-center">
+            <span class="status-pill"><span class="dot" aria-hidden="true"></span>Coming to the App Store</span>
+            <a class="btn btn-secondary" href="#open">Already have Elemora?</a>
+          </div>
+          <p class="cta-note">
+            Elemora is not on the App Store yet. Email
+            <a href="mailto:support@idlery.com?subject=Tell%20me%20when%20Elemora%20is%20available">support@idlery.com</a>
+            and we will tell you when it is.
+          </p>
+          <!-- APPSTORE:CTA:END -->
+    </div>
+  </section>
+
+  <!-- ==================================================== open the quiz -- -->
+  <section class="band band-alt" id="open">
+    <div class="wrap quiz-wrap">
+      <div class="section-head">
+        <h2>Already have Elemora?</h2>
+        <p class="lede">
+          Go back to the message, email or note the link arrived in and tap it there.
+          Elemora opens, checks the quiz and saves it to <strong>My Quizzes</strong>.
+        </p>
+      </div>
+      <ol class="steps">
+        <li>
+          <h3>Tap the link where you received it</h3>
+          <p>
+            Opening it from Messages, Mail, Notes or AirDrop hands the link to Elemora
+            directly. If you are reading this page, the link opened in a browser instead —
+            which is what happens when Elemora is not installed yet, or when you have
+            previously chosen to open elemora.idlery.com in Safari.
+          </p>
+        </li>
+        <li>
+          <h3>Or touch and hold the link, then choose Open in Elemora</h3>
+          <p>
+            iOS offers that on a link it knows belongs to an installed app. It is the
+            reliable way back into the app once a link has already opened in a browser.
+          </p>
+        </li>
+        <li>
+          <h3>Elemora does the rest</h3>
+          <p>
+            The quiz is checked, saved under My Quizzes, and a confirmation appears with
+            its title, what it covers, and buttons to start it or to see it in My Quizzes.
+            Opening the same link twice does not create a second copy.
+          </p>
+        </li>
+      </ol>
+      <p class="quiz-note">
+        A browser cannot force a link to open in an app, so there is no button here that
+        can do it for you. The link stays valid for as long as you keep the message — it
+        does not expire, and it does not have to be re-sent.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================== after install -- -->
+  <section class="band" id="install">
+    <div class="wrap quiz-wrap">
+      <div class="section-head">
+        <h2>Just installed Elemora?</h2>
+        <p class="lede">
+          <strong>Return to this message and tap the shared link again.</strong> Installing
+          an app does not hand it the link you tapped beforehand, so that one tap is the
+          whole of it.
+        </p>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3v12m0 0 4.2-4.2M12 15l-4.2-4.2" stroke="currentColor"
+                    stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 17v2.2A1.8 1.8 0 0 0 5.8 21h12.4A1.8 1.8 0 0 0 20 19.2V17"
+                    stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>1. Install Elemora</h3>
+          <p>Get the app on your iPhone or iPad from the App Store.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon amber" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M9 5.5 4.5 10a2.5 2.5 0 0 0 0 3.6l6 6a2.5 2.5 0 0 0 3.6 0l4.4-4.5"
+                    stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                    stroke-linejoin="round"/>
+              <path d="M15 3.2 12.4 8l5.3-.8L15 12" stroke="currentColor" stroke-width="1.9"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>2. Tap the link again</h3>
+          <p>Go back to the original message and tap the same link. Nothing has to be re-sent.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="m5 12.6 4.4 4.4L19 7.4" stroke="currentColor" stroke-width="2.1"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>3. The quiz is saved</h3>
+          <p>Elemora opens on the confirmation, with the quiz already in My Quizzes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== what is in this link -- -->
+  <section class="band band-alt">
+    <div class="wrap quiz-wrap">
+      <div class="section-head">
+        <h2>What is actually in this link</h2>
+      </div>
+      <dl class="rows">
+        <div>
+          <dt>The quiz, and nothing else</dt>
+          <dd>
+            A shared link carries the quiz's name and its settings — which elements or
+            compounds it draws from, how many questions, and the question types. That is
+            all. No study history, no favourites, no scores, and nothing that identifies
+            the sender or their device.
+          </dd>
+        </div>
+        <div>
+          <dt>Nothing is stored on this website</dt>
+          <dd>
+            There is no Elemora account and no quiz database. The quiz is encoded into the
+            address itself, which is why it works without anyone signing in — and why the
+            same link opens the same quiz on any device.
+          </dd>
+        </div>
+        <div>
+          <dt>Encoded is not encrypted</dt>
+          <dd>
+            Treat a shared quiz link like any other link you send: whoever receives or
+            forwards the message can open it, and it can appear in browser history, in the
+            logs of the services that carry it, and in link-preview fetches. Share it with
+            people you mean to share it with.
+          </dd>
+        </div>
+      </dl>
+      <p class="quiz-note">
+        More detail is in the <a href="/privacy/#sharing">Privacy Policy</a>.
+        This page loads no scripts, sets no cookies and sends the quiz nowhere.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/">What Elemora does</a>
+        <a class="btn btn-secondary" href="/support/">Contact support</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="footer-brand" href="/">
+          <img src="/assets/img/elemora-icon-64.png" width="30" height="30" alt="">
+          <span>Elemora</span>
+        </a>
+        <p class="footer-blurb">
+          A periodic table for iPhone that explains what the elements actually do.
+          Published by Idlery Services LLC.
+        </p>
+      </div>
+      <div>
+        <h2>Elemora</h2>
+        <ul>
+          <li><a href="/#explore">Explore</a></li>
+          <li><a href="/#study">Study</a></li>
+          <li><a href="/#build">Build</a></li>
+          <li><a href="/#progress">Progress</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Company</h2>
+        <ul>
+          <li><a href="/support/">Support</a></li>
+          <li><a href="/privacy/">Privacy Policy</a></li>
+          <li><a href="/terms/">Terms of Use</a></li>
+          <li><a href="mailto:support@idlery.com">support@idlery.com</a></li>
+          <li><a href="https://idlery.com">Idlery Services LLC</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="legal">
+      <p>&copy; 2026 Idlery Services LLC. All rights reserved.</p>
+      <p>
+        Apple, the Apple logo, iPhone, iPad and App Store are trademarks of Apple Inc.,
+        registered in the U.S. and other countries and regions. Elemora is not affiliated
+        with, endorsed by, or sponsored by Apple Inc.
+      </p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

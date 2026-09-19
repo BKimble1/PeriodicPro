@@ -44,42 +44,73 @@ REDIRECT_RE = re.compile(
 
 MAILTO = "mailto:support@idlery.com?subject=Tell%20me%20when%20Elemora%20is%20available"
 
-# The secondary button differs per page, so it is keyed by file. Keeping the
-# variants here means the pre-release and on-sale markup stay in step.
-SECONDARY = {
-    "index.html":     ('<a class="btn btn-secondary" href="#explore">See what it does</a>', 0),
-    "index.html#get": ('<a class="btn btn-secondary" href="/support/">Contact support</a>', 1),
+# Each marked call-to-action block, keyed by its file's path under site/ and by
+# its index within that file. A block carries its own row class, its own
+# secondary button and its own wording, so the pre-release and on-sale markup
+# stay in step on every page -- including /quiz/, whose secondary button points
+# at its own "Already have Elemora?" section rather than at the product page.
+BLOCKS = {
+    ("index.html", 0): (
+        "cta-row",
+        '<a class="btn btn-secondary" href="#explore">See what it does</a>',
+        "waiting",
+    ),
+    ("index.html", 1): (
+        "cta-row",
+        '<a class="btn btn-secondary" href="/support/">Contact support</a>',
+        "closing",
+    ),
+    ("quiz/index.html", 0): (
+        "cta-row cta-center",
+        '<a class="btn btn-secondary" href="#open">Already have Elemora?</a>',
+        "closing",
+    ),
 }
+# A page that grows a CTA block without an entry above still gets correct
+# markup, just without a secondary button -- and says so.
+FALLBACK = ("cta-row", "", "closing")
 
 
-def cta_prerelease(secondary: str, closing: bool) -> str:
-    note = (
+def block_spec(relative: str, index: int) -> tuple[str, str, str]:
+    try:
+        return BLOCKS[(relative, index)]
+    except KeyError:
+        print(
+            f"warning: no BLOCKS entry for {relative} block {index}; "
+            "using the default markup",
+            file=sys.stderr,
+        )
+        return FALLBACK
+
+
+def cta_prerelease(row_class: str, secondary: str, note: str) -> str:
+    body = (
         "            Elemora is not on the App Store yet. Email\n"
         f'            <a href="{MAILTO}">support@idlery.com</a>\n'
         "            and we will tell you when it is.\n"
-        if closing else
+        if note == "closing" else
         "            Want to know the moment it lands? Email\n"
         f'            <a href="{MAILTO}">support@idlery.com</a>.\n'
     )
     return (
         "\n"
-        '          <div class="cta-row">\n'
+        f'          <div class="{row_class}">\n'
         '            <span class="status-pill"><span class="dot" aria-hidden="true"></span>'
         "Coming to the App Store</span>\n"
         f"            {secondary}\n"
         "          </div>\n"
         '          <p class="cta-note">\n'
-        f"{note}"
+        f"{body}"
         "          </p>\n"
         "          "
     )
 
 
-def cta_released(url: str, secondary: str) -> str:
+def cta_released(url: str, row_class: str, secondary: str) -> str:
     """Apple's badge, used unmodified and at its documented minimum height."""
     return (
         "\n"
-        '          <div class="cta-row">\n'
+        f'          <div class="{row_class}">\n'
         f'            <a class="appstore-badge" href="{url}">\n'
         '              <img src="/assets/img/apple-download-badge.svg" width="156" height="52"\n'
         '                   alt="Download Elemora on the App Store">\n'
@@ -109,11 +140,12 @@ def apply(check: bool) -> int:
         blocks = list(CTA_RE.finditer(text))
         if not blocks:
             continue
+        relative = path.relative_to(SITE).as_posix()
         # Rebuild back to front so earlier spans stay valid.
         for i, m in reversed(list(enumerate(blocks))):
-            key = f"{path.name}#get" if i else path.name
-            secondary = SECONDARY.get(key, SECONDARY.get(path.name, ("", 0)))[0]
-            body = cta_released(url, secondary) if url else cta_prerelease(secondary, bool(i))
+            row_class, secondary, note = block_spec(relative, i)
+            body = (cta_released(url, row_class, secondary) if url
+                    else cta_prerelease(row_class, secondary, note))
             text = text[: m.start("body")] + body + text[m.end("body") :]
         if text != original:
             changed.append(path)

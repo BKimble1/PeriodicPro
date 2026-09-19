@@ -58,7 +58,7 @@
       language. It applies to the Elemora iOS application and to this website.
     </p>
     <ul class="doc-meta">
-      <li><strong>Version</strong> 1.0</li>
+      <li><strong>Version</strong> 1.1</li>
       <li><strong>Effective</strong> 19 September 2026</li>
       <li><strong>Publisher</strong> Idlery Services LLC</li>
       <li><strong>Canonical location</strong> https://elemora.idlery.com/privacy</li>
@@ -71,7 +71,9 @@
         <li><a href="#no-account">No account, no sign-in</a></li>
         <li><a href="#on-device">What Elemora stores on your device</a></li>
         <li><a href="#chemistry">The chemistry data inside Elemora</a></li>
+        <li><a href="#pubchem">Compound lookups and PubChem</a></li>
         <li><a href="#camera">Camera</a></li>
+        <li><a href="#sharing">Sharing a quiz</a></li>
         <li><a href="#leaves">What leaves your device</a></li>
         <li><a href="#purchases">Subscriptions and Apple</a></li>
         <li><a href="#analytics">Analytics, tracking and advertising</a></li>
@@ -97,7 +99,9 @@
         history, streak and mastery are stored on your iPhone by the app. Idlery Services
         LLC does not run a server that holds your studying, does not build a profile of
         you, and does not sell or share your information. Deleting Elemora removes what it
-        stored, along with the app.
+        stored, along with the app. The one thing Elemora sends out on its own is a
+        compound name or formula to <a href="#pubchem">PubChem</a>, the public chemistry
+        database, when you look a compound up that is not already on your device.
       </p>
     </div>
     <p>
@@ -163,14 +167,65 @@
     <p>
       The element data, the written explanations, the structure diagrams and the compound
       catalogue that Elemora matches your builds against are part of the app itself: they
-      are installed with it and read from your device. Looking up an element, searching the
-      table, or having a compound recognised by name does not require an account and does
-      not depend on us knowing what you looked at.
+      are installed with it and read from your device. Every one of the 118 elements is
+      bundled, so browsing the table, opening an element and studying make no network
+      request of any kind, and none of it requires an account.
+    </p>
+    <p>
+      Compounds are the exception: the catalogue inside the app is a selection, not all of
+      chemistry, so a compound it does not have is looked up at PubChem. That is described
+      in the next section.
     </p>
     <p>
       Elemora is an educational reference. It is not a laboratory instrument, a safety
       authority or a source of medical or professional advice — see the
       <a href="/terms/#accuracy">Terms of Use</a> on how far its data should be relied on.
+    </p>
+
+    <h2 id="pubchem">Compound lookups and PubChem</h2>
+    <p>
+      The Build tab and the compound half of search can ask
+      <a href="https://pubchem.ncbi.nlm.nih.gov" rel="noopener">PubChem</a> — the public
+      chemistry database run by the U.S. National Library of Medicine — for a compound
+      Elemora does not have bundled. This is the only outbound connection Elemora makes on
+      its own.
+    </p>
+    <dl class="rows">
+      <div>
+        <dt>What is sent</dt>
+        <dd>The compound name you typed, the formula you assembled in the builder, or a
+            PubChem compound identifier when a record is opened. Nothing else: no name for
+            you, no identifier for you or your device, no progress, no favourites and no
+            history.</dd>
+      </div>
+      <div>
+        <dt>When</dt>
+        <dd>Only when you search for a compound or look one up, after you have stopped
+            typing or changing the formula, and only if nothing already on your device
+            answers it. Elements, the table and studying never cause a request.</dd>
+      </div>
+      <div>
+        <dt>How</dt>
+        <dd>A plain HTTPS request straight to PubChem's public service. There is no API
+            key, and no server of ours in between — Idlery Services LLC does not see these
+            lookups at all.</dd>
+      </div>
+      <div>
+        <dt>What comes back</dt>
+        <dd>Cached on your device so the compound keeps working offline afterwards. It is
+            never sent anywhere else.</dd>
+      </div>
+      <div>
+        <dt>Offline</dt>
+        <dd>Bundled and previously fetched compounds keep working, and Elemora says when it
+            cannot reach PubChem rather than pretending a lookup found nothing.</dd>
+      </div>
+    </dl>
+    <p>
+      What PubChem does with the requests it receives is covered by the NIH's own privacy
+      policy at <a href="https://www.nlm.nih.gov/web_policies.html" rel="noopener">nlm.nih.gov</a>,
+      not by this one. Elemora shows “Data source: PubChem” and the compound identifier on
+      every record that came from it.
     </p>
 
     <h2 id="camera">Camera</h2>
@@ -182,16 +237,68 @@
     </p>
     <p>
       What the camera sees is used on your device for that feature while it is on screen.
-      Elemora does not upload camera images to Idlery Services LLC and does not add them to
-      a photo library on its own. Elemora never asks for your location, your contacts, your
-      microphone, your health data or your calendar.
+      Camera frames are analysed on your device by iOS itself; Elemora keeps no image,
+      writes none to disk and uploads none anywhere, and it does not add anything to a
+      photo library on its own. The only thing that can leave the device is the text that
+      was recognised — a chemical name, a formula or a structure identifier — and only when
+      neither the bundled catalogue nor your device's cache already answers it, in which
+      case it goes to <a href="#pubchem">PubChem</a> exactly like a typed search. An element
+      never leaves the device at all: all 118 are bundled. Elemora never asks for your
+      location, your contacts, your microphone, your health data or your calendar, and it
+      does not request photo library access.
+    </p>
+
+    <h2 id="sharing">Sharing a quiz</h2>
+    <p>
+      A quiz you have saved can be shared from <strong>My Quizzes → Share</strong>. It
+      becomes an ordinary https link under
+      <strong>https://elemora.idlery.com/quiz/…</strong>, which you send yourself through
+      Messages, Mail, AirDrop or anything else you choose.
+    </p>
+    <p>
+      <strong>The quiz travels inside the link.</strong> Its name and its settings — what it
+      draws from, how many questions, and the question types — are compressed and encoded
+      into the address itself. Nothing is uploaded, there is no Elemora account and no quiz
+      database, and there is nothing on a server for us to keep or delete. When someone
+      opens the link with Elemora installed, the app decodes it, checks it and saves the
+      quiz on their device. When they open it without Elemora, they get an ordinary page on
+      this website that says a quiz was shared; the page never decodes or displays the
+      quiz, and the quiz is not sent to us.
+    </p>
+    <p>
+      <strong>What is not in the link:</strong> no progress, no favourites, no study
+      history, no scores, no name, and no identifier of the sender or their device.
+    </p>
+    <div class="callout amber">
+      <p>
+        <strong>Encoded is not encrypted.</strong> A shared quiz link is a normal web
+        address, so treat it like one. Anyone who receives or forwards the message can open
+        it, and it can appear in browser history, in the records of the services that carry
+        the message, and in the link-preview fetches those services make. If you would not
+        want a quiz seen by whoever the message might reach, do not share it as a link.
+      </p>
+    </div>
+    <p>
+      Requests for <strong>/quiz/</strong> pages on this website are sent with no referrer,
+      are not stored in shared caches and are not offered to search engines. Like the rest
+      of the site, the page runs no scripts and loads nothing from a third party, so the
+      encoded quiz is not passed to any analytics or tracking service.
     </p>
 
     <h2 id="leaves">What leaves your device</h2>
     <p>
-      Two things can cause information to leave your iPhone, and both are ones you start:
+      Four things can cause information to leave your iPhone, and every one of them is
+      something you start:
     </p>
     <ul>
+      <li>
+        <strong>Looking up a compound.</strong> A compound name or formula goes to PubChem,
+        as described under <a href="#pubchem">Compound lookups and PubChem</a>.
+      </li>
+      <li>
+        <strong>Sharing a quiz.</strong> The quiz goes wherever you send the link, as
+        described under <a href="#sharing">Sharing a quiz</a>.
+      </li>
       <li>
         <strong>Buying or restoring a subscription.</strong> That is a conversation between
         your device and Apple. It is described below.
@@ -207,7 +314,7 @@
     </ul>
     <p>
       Elemora does not send your favourites, saved compounds, study history, mastery,
-      streak or settings anywhere.
+      streak or settings anywhere, and none of them is included in a shared quiz link.
     </p>
 
     <h2 id="purchases">Subscriptions and Apple</h2>
@@ -239,7 +346,8 @@
       because there is nothing in the app that would justify asking. It does not build an
       advertising or marketing profile of you, and it does not sell or share personal
       information — including within the meaning given to “sale” and “sharing” under
-      California law.
+      California law. There is no analytics, attribution or crash-reporting SDK inside
+      Elemora at all: the only network requests it makes are the PubChem lookups above.
     </p>
 
     <h2 id="diagnostics">Crashes and diagnostics</h2>
@@ -254,10 +362,13 @@
 
     <h2 id="thirdparty">Third parties</h2>
     <p>
-      Apple is the only third party involved in the normal use of Elemora, in the two roles
-      described above: it distributes the app and it processes any purchase. Beyond that,
-      Idlery Services LLC does not pass your information to advertisers, data brokers,
-      analytics vendors or anyone else.
+      Two third parties are involved in the normal use of Elemora. <strong>Apple</strong>
+      distributes the app and processes any purchase, in the two roles described above.
+      <strong>PubChem</strong>, run by the U.S. National Library of Medicine, answers
+      compound lookups, as described under
+      <a href="#pubchem">Compound lookups and PubChem</a>. Beyond those two, Idlery Services
+      LLC does not pass your information to advertisers, data brokers, analytics vendors or
+      anyone else — and neither of them receives anything that identifies you.
     </p>
     <p>
       We may disclose information if the law requires it — a valid subpoena, court order or

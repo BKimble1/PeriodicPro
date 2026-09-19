@@ -6,6 +6,13 @@
 # support/index.html, so only genuine aliases belong here. Anything unmatched
 # falls through to 404.html.
 
+# A shared quiz is https://elemora.idlery.com/quiz/<encoded-payload>. The payload
+# IS the quiz -- nothing about it is stored on this site -- so it has to survive
+# untouched. This is a 200 rewrite, not a redirect: the address bar keeps the
+# URL the sender actually sent, which is the URL Apple's Universal Link matching
+# and the app both read. A 301 here would rewrite the quiz out of the link.
+/quiz/*          /quiz/index.html    200
+
 # Legacy .html paths, in case anything ever linked to them. There is no rule
 # for /index.html: Netlify serves an existing file ahead of a redirect, so it
 # could never fire, and Netlify normalises /index.html to / by itself.

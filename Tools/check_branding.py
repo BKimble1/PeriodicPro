@@ -176,12 +176,16 @@ RETAINED_IDENTIFIERS = {
     "Tools/build_pubchem_fixtures.py": "writes PeriodicProTests/Fixtures",
 
     # --- The website, which has to name the signed app ID Apple matches ---
-    "Website/site/.well-known/apple-app-site-association.template":
+    "website/site/.well-known/apple-app-site-association.template":
         "the app ID <TeamID>.com.idlery.periodicpro that iOS matches for Universal Links",
-    "Website/scripts/build.sh":
-        "prints the app ID shape it wrote, without the Team ID",
-    "Website/README.md":
+    "website/scripts/build_aasa.py":
+        "substitutes the Team ID into that app ID, and validates the result",
+    "website/site/_redirects":
+        "keeps the legacy /periodicpro path pointing at the product page",
+    "website/README.md":
         "documents the app ID and the repository paths the site is kept in step with",
+    "website/CLAIMS-TO-VERIFY.md":
+        "records which app-source files each claim on the site was checked against",
 
     # --- Documentation, which has to explain the split to a human ---
     "README.md": "documents which identifiers are retained and why",

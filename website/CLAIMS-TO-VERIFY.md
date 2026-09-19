@@ -5,16 +5,18 @@ submitted to App Store Connect.**
 
 ## Why this file exists
 
-The Elemora website was built inside `BKimble1/PeriodicPro`, but **that
-repository does not contain the Elemora iOS application.** At the time this site
-was written the repository held exactly nine files: eight marketing images and a
-one-line `README.md`. There is no Xcode project, no Swift source, no
-`Info.plist`, no `.storekit` file, no entitlements file, and no privacy manifest
-anywhere in it — and no other repository on the account contains them either.
+The Elemora website was built inside `BKimble1/PeriodicPro` at a time when that
+branch held nine files — eight marketing images and a one-line `README.md` —
+and no iOS source at all. So the normal order of work, audit the code and then
+write the policy, could only be half-done, and this file recorded which claims
+were grounded in what.
 
-So the normal order of work — audit the code, then write the policy — could only
-be half-done. Everything on the site is grounded in something real, but the
-grounding differs in strength, and this file says which is which.
+**That is no longer the situation.** The app now sits beside the site in this
+branch: `PeriodicPro/` (Swift source), `PeriodicPro.xcodeproj`, `Config/`
+(`Info.plist`, `Elemora.entitlements`, `PeriodicPro.storekit`),
+`PeriodicPro/PrivacyInfo.xcprivacy`, and a test target. Section **C** below has
+been walked against that source; each line now says what was found and where.
+**One claim was wrong and has been corrected** — see *Compound lookups* below.
 
 | Confidence | What it means | Action |
 |---|---|---|
@@ -80,114 +82,113 @@ Independent of Elemora's code; no verification needed.
 
 ---
 
-## C — Assumed, and NOT confirmed against the app's source
+## C — Checked against the app's source
 
-**Each line below is a statement the live site makes. Confirm or correct it.**
+Every line below was a statement the site makes. Each now names the file the
+check was made against. `[x]` means confirmed; a correction says what changed.
 
 ### `/privacy` — "No account, no sign-in"
 
-- [ ] Elemora never asks for a name, email, password, phone number or date of
-      birth, and has no "sign in with" button anywhere.
-      *Basis: no sign-in appears in any of the seven screenshots, and Progress is
-      presented as device-local. Not proven across every screen.*
-      → Confirm there is no account, no CloudKit, and no developer backend.
-      **This claim also appears on the home page**, in the "Your studying belongs
-      on your device" band (`site/index.html`, the `.privacy-band` section) —
-      correct both if it is wrong.
+- [x] No account, no sign-in, no CloudKit, no developer backend.
+      *Checked:* no `CloudKit` / `NSPersistentCloudKitContainer` anywhere in
+      `PeriodicPro/`; persistence is SwiftData in a local container
+      (`PeriodicPro/Persistence/`), and the project has no Swift package
+      dependencies at all (`packageProductDependencies` is absent from
+      `PeriodicPro.xcodeproj/project.pbxproj`).
 
 ### `/privacy` — "What Elemora stores on your device"
 
-- [ ] Favourites, saved compounds, study history, mastery, streak, daily
-      challenge state and settings are written to Elemora's own app container.
-      *Basis: all are displayed as per-device values.*
-      → Confirm the storage layer (SwiftData / Core Data / `UserDefaults` /
-      files) is local and that **no** iCloud or CloudKit sync is enabled. If
-      CloudKit *is* on, this section and "Device backups" both need rewriting,
-      and the App Privacy answers change.
+- [x] Favourites, saved compounds, study history, mastery, streak, daily
+      challenge state and settings are written to the app's own container.
+      *Checked:* `PeriodicPro/Persistence/ProgressStore.swift`,
+      `PeriodicPro/StudyEngine/SavedQuiz.swift`, both SwiftData-backed and local.
+      No iCloud or CloudKit sync is configured.
 
 ### `/privacy` — "The chemistry data inside Elemora"
 
-- [ ] The element data, explanations, structures and the compound catalogue ship
-      inside the app and are read from the device.
-      *Basis: "Matched in the Elemora catalog" in `IMG_2845` reads as a bundled
-      catalogue.*
-      → **Confirm no network call is made** for compound lookup, "Details", or
-      "Explore in 3D". Search the source for `URLSession`, `URLRequest`,
-      `NWConnection`, `pubchem`, `rest/pug`, `cactus.nci.nih.gov`, `wikipedia`.
-      **If Elemora queries PubChem or any other external service, the privacy
-      policy is wrong as written** and must gain a section naming the service,
-      what is sent (typically the formula or compound name), and a link to that
-      service's own privacy policy.
+- [!] **This was wrong and has been corrected.** The site said the chemistry data
+      is bundled and that a lookup makes no network call. Elements are indeed all
+      bundled, but **compounds are not**: a shipped build creates
+      `PubChemClient()` over `URLSessionTransport`
+      (`PeriodicPro/Compounds/Data/CompoundStore.swift:31`,
+      `PeriodicPro/Compounds/Networking/NetworkTransport.swift`) and queries
+      `https://pubchem.ncbi.nlm.nih.gov/rest/pug`
+      (`PeriodicPro/Compounds/Networking/PubChemClient.swift:124`).
+      `isOnlineLookupEnabled` defaults to `true` and is turned off only for UI
+      tests (`PeriodicPro/App/PeriodicProApp.swift:149-167`).
+      → `/privacy` now carries a **Compound lookups and PubChem** section, and
+      *What leaves your device*, *Third parties* and *The short version* name it.
+      The wording is taken from the app's own `PRIVACY.md`, which had it right
+      all along; the website was simply written before that source was available.
+      **The App Store Connect privacy answers must match this** — see the
+      remaining-work list at the end of this file.
 
 ### `/privacy` — "Camera"
 
-- [ ] Elemora has a camera feature; iOS prompts for permission; declining leaves
-      the rest of the app working; images are used on device and are not
-      uploaded or written to a photo library.
-      *Basis: a camera/viewfinder button is visible at the top right of the table
-      screen in `IMG_2838`. **What it does is unknown.***
-      → Confirm what the button does, that `NSCameraUsageDescription` exists and
-      reads sensibly, and that no image bytes leave the device. If there is no
-      camera feature, **delete this section**. If it uses the photo library too,
-      add `NSPhotoLibraryUsageDescription` to it.
-- [ ] Elemora never requests location, contacts, microphone, health or calendar.
-      → Confirm against `Info.plist`: no other `NS*UsageDescription` keys.
+- [x] There is a camera feature (Scan Chemistry), `NSCameraUsageDescription`
+      exists and reads sensibly
+      (`PeriodicPro.xcodeproj/project.pbxproj`, `INFOPLIST_KEY_NSCameraUsageDescription`),
+      recognition runs on device, and no image is uploaded or written to a photo
+      library. *Checked:* `PeriodicPro/Scanner/`.
+      → The page now also says that **recognised text** can go to PubChem, which
+      is what `PRIVACY.md` says and what the scanner actually does.
+- [x] No other `NS*UsageDescription` key exists: camera is the only permission.
 
 ### `/privacy` — "What leaves your device"
 
-- [ ] Only a purchase/restore and an email to support cause anything to leave the
-      device; favourites, progress, mastery, streak and settings are never sent.
-      → Follows from the networking check above. Re-confirm with it.
+- [!] Corrected from two causes to four: a PubChem lookup and a shared quiz link
+      join a purchase and an email.
 
 ### `/privacy` — "Subscriptions and Apple"
 
-- [ ] Elemora stores only a local entitlement flag and runs no
-      receipt-validation server of its own.
-      → Confirm StoreKit 2 on-device verification and no server round-trip.
+- [x] StoreKit 2, verified on device, no receipt server.
+      *Checked:* `PeriodicPro/Store/SubscriptionManager.swift`,
+      `PeriodicPro/Store/ProEntitlement.swift`.
 
 ### `/privacy` — "Analytics, tracking and advertising"
 
-- [ ] No advertising, no advertising identifier, no cross-app tracking, no ATT
-      prompt, no profile, no sale or sharing of personal information.
-      → **This is the highest-risk claim on the site.** Search the source and the
-      package graph for Firebase, Crashlytics, Sentry, Amplitude, Mixpanel,
-      Segment, PostHog, TelemetryDeck, AppsFlyer, Adjust, Branch, Bugsnag,
-      `ASIdentifierManager`, `ATTrackingManager`, `AppTrackingTransparency`.
-      Check `packageProductDependencies` on every target. Confirm
-      `NSPrivacyTracking` is `false` and `NSPrivacyTrackingDomains` is empty in
-      `PrivacyInfo.xcprivacy`. **If any analytics or attribution SDK is present,
-      this section is false and must be rewritten before publishing**, and the
-      App Store Connect privacy answers change with it.
+- [x] No analytics, attribution or crash-reporting SDK of any kind. *Checked:*
+      the project has no package dependencies, and no Firebase / Crashlytics /
+      Sentry / Amplitude / Mixpanel / Segment / PostHog / TelemetryDeck /
+      AppsFlyer / Adjust / Branch / Bugsnag / `ASIdentifierManager` /
+      `ATTrackingManager` symbol appears in any Swift file.
+      `PeriodicPro/PrivacyInfo.xcprivacy` declares `NSPrivacyTracking` false,
+      `NSPrivacyTrackingDomains` empty and `NSPrivacyCollectedDataTypes` empty.
 
 ### `/privacy` — "Crashes and diagnostics"
 
-- [ ] The only crash/performance data reaching Idlery is Apple's own, via App
-      Store Connect.
-      → Confirm no third-party crash reporter is linked.
+- [x] No third-party crash reporter is linked. Follows from the check above.
 
 ### `/privacy` — "Third parties"
 
-- [ ] Apple is the only third party involved in normal use.
-      → Follows from the two checks above.
+- [!] Corrected: Apple **and** PubChem (U.S. National Library of Medicine).
 
 ### `/privacy` and `/support` — "Deleting your information" / settings paths
 
-- [ ] Elemora's settings are reached from the gear at the top right of the
-      Progress tab. *(Seen — `IMG_2853`.)*
-- [ ] Those settings contain a **version number**, **Restore Purchases**, and an
-      option to **reset progress or clear stored data**.
-      *Basis: expected, not seen — the settings screen is not among the
-      screenshots.*
-      → Confirm all three exist and are worded as the support page describes. If
-      "Restore Purchases" lives elsewhere, correct `/support#subscriptions` and
-      `/terms#restore`. If there is no reset option, correct
-      `/privacy#deleting`.
+- [x] Settings is the gear at the top right of the Progress tab, and it contains
+      the version number, **Restore Purchases** and **Reset progress**.
+      *Checked:* `PeriodicPro/Views/Progress/SettingsScreen.swift` lines 63, 77,
+      107 and 306.
+
+### `/privacy` — "Sharing a quiz"
+
+- [x] A shared link carries the schema version, the quiz name and the quiz
+      configuration, and nothing else. *Checked:*
+      `PeriodicPro/StudyEngine/QuizShareLink.swift` (`QuizSharePayload` has three
+      fields) and asserted in `PeriodicProTests/SavedQuizTests.swift`, which
+      decodes a real link and checks the key set.
+- [x] The website page never decodes or displays the payload, runs no script and
+      makes no third-party request. *Checked:* `website/site/quiz/index.html` is
+      static HTML with no `<script>`, and `_headers` sets `script-src 'none'`
+      plus `Referrer-Policy: no-referrer` and `Cache-Control: no-store` on
+      `/quiz/*`.
 
 ### `/privacy` — "This website"
 
 - [x] No cookies, no analytics, no tracking pixels, no third-party fonts or
-      scripts, no forms. **Verified** — the deployed site is static HTML and one
-      stylesheet, and `_headers` sets `script-src 'none'`.
+      scripts, no forms. The only `<script>` on the site is the JSON-LD block on
+      the home page, which is data rather than code, and
+      `Tools/check_website.py` fails the build on any other one.
 
 ### `/support` — response time
 
@@ -236,25 +237,51 @@ Independent of Elemora's code; no verification needed.
 
 ---
 
-## The app's own legal links — not updated
+## The app's own legal links — checked
 
 The brief asked for the iOS project's privacy / terms / support URLs to be
-re-pointed at `elemora.idlery.com`, and for the app's tests to be run afterwards.
-**Neither was possible: there is no iOS source in this repository to change, and
-no test target to run.**
+re-pointed at `elemora.idlery.com`. With the app source now in this branch, that
+has been checked rather than deferred.
 
-When the Elemora app source is available, search it for and re-point:
+| Address | Where it lives in the app | State |
+|---|---|---|
+| `https://elemora.idlery.com` | `ElemoraLinks.websiteString` | correct |
+| `https://elemora.idlery.com/privacy` | `ElemoraLinks.privacyString` | correct |
+| `https://elemora.idlery.com/terms` | `ElemoraLinks.termsString` | correct |
+| `https://elemora.idlery.com/support` | `ElemoraLinks.supportString` | correct |
+| `https://elemora.idlery.com/quiz/` | `ElemoraLinks.quizBaseString` | correct |
+| `support@idlery.com` | `ElemoraLinks.supportEmailAddress` | correct |
 
-| Look for | Should become |
-|---|---|
-| any privacy-policy URL | `https://elemora.idlery.com/privacy` |
-| any terms / EULA URL | `https://elemora.idlery.com/terms` |
-| any support URL | `https://elemora.idlery.com/support` |
-| any marketing / publisher URL | `https://elemora.idlery.com` |
-| old Periodic Pro URLs, GitHub Pages URLs, `example.com`, placeholders | the above |
-| any other support email | `support@idlery.com` |
+`Tools/check_website.py` now asserts each of those against a file in
+`website/site/`, so the two halves cannot drift apart silently. There is no
+GitHub Pages URL, no `example.com` and no placeholder left in the app.
 
-Also check, in the same pass: the bundle identifier (it may still carry a legacy
-Periodic Pro name — discover it, do not guess it), `PrivacyInfo.xcprivacy`, any
-legal documents bundled inside the app, and the Associated Domains entitlement.
-Then run the app's test suite.
+The bundle identifier is **`com.idlery.periodicpro`**
+(`Config/Shared.xcconfig`, `PRODUCT_BUNDLE_IDENTIFIER_BASE`) — discovered, not
+guessed. It keeps the original spelling on purpose: App Store Connect records
+and provisioning profiles are bound to it and it cannot be changed after a
+build has been uploaded. `Tools/check_branding.py` holds the line between that
+identifier and the name people read, which is Elemora everywhere.
+
+The Associated Domains entitlement (`Config/Elemora.entitlements`) claims
+`applinks:elemora.idlery.com`, and is wired into both build configurations
+(`CODE_SIGN_ENTITLEMENTS` in `PeriodicPro.xcodeproj/project.pbxproj`).
+`website/site/.well-known/apple-app-site-association` — generated at package
+time by `website/scripts/build_aasa.py` — names
+`<TeamID>.com.idlery.periodicpro` and the single path `/quiz/*`.
+
+The Swift test suite needs macOS and could not be run from the Linux environment
+this pass was done in. The Python checks in `Tools/verify.sh` were run, and
+`Tools/check_share_link.py` reproduces the share-link format independently of
+Swift — reading the limits out of the Swift source so it cannot drift — so the
+encoder's rules are exercised here too.
+
+---
+
+## Still yours to decide
+
+- [ ] **App Store Connect privacy answers.** They must now account for the
+      PubChem lookups. Nothing collected is linked to a user or used for
+      tracking, but a lookup does send a compound name or formula to a third
+      party, and the answers should say so.
+- [ ] Everything under **D** above.

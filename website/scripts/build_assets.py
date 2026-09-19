@@ -222,6 +222,76 @@ def build_og() -> None:
     log(p)
 
 
+def build_quiz_card() -> None:
+    """The 1200x630 card a link-preview service gets for /quiz/<payload>.
+
+    The site is static and the quiz lives inside the URL, so this card is the
+    same for every shared quiz: branded, and honest about being generic. Inside
+    iOS the app attaches its own preview carrying the quiz's real title, which
+    is what Messages and Mail actually show.
+    """
+    W, H = 1200, 630
+    card = Image.new("RGB", (W, H), CANVAS)
+    d = ImageDraw.Draw(card)
+
+    # The same tile motif as the main social card, dropped to the bottom-right
+    # so the two cards read as a set rather than as a duplicate. It stays well
+    # clear of the type: nothing here is allowed to sit behind a word.
+    cell, gap = 46, 10
+    for row in range(4):
+        for col in range(6):
+            x = W - 252 + col * (cell + gap)
+            y = H - 242 + row * (cell + gap)
+            if (row + col) % 3 == 0:
+                continue
+            colour = AMBER if (row, col) == (1, 3) else TEAL
+            fade = 0.10 + 0.05 * (3 - row)
+            blend = tuple(
+                round(c * fade + b * (1 - fade)) for c, b in zip(colour, CANVAS)
+            )
+            d.rounded_rectangle((x, y, x + cell, y + cell), radius=11, fill=blend)
+
+    if FONT.exists():
+        f_title = ImageFont.truetype(str(FONT), 80)
+        f_sub = ImageFont.truetype(str(FONT), 34)
+        f_chip = ImageFont.truetype(str(FONT), 27)
+        f_pub = ImageFont.truetype(str(FONT), 25)
+    else:  # pragma: no cover
+        f_title = f_sub = f_chip = f_pub = ImageFont.load_default()
+
+    icon = Image.open(ICON_SRC).convert("RGB").resize((132, 132), Image.LANCZOS)
+    icon = icon.convert("RGBA")
+    icon.putalpha(rounded_mask(132))
+    ring = Image.new("RGBA", (132, 132), (0, 0, 0, 0))
+    ImageDraw.Draw(ring).rounded_rectangle(
+        (0, 0, 131, 131), radius=int(132 * 0.2237),
+        outline=(0x1B, 0x80, 0x8C, 46), width=2,
+    )
+    icon.alpha_composite(ring)
+    card.paste(icon, (84, 92), icon)
+
+    # The chip, beside the icon, so the card says what it is at thumbnail size.
+    label = "ELEMORA QUIZ"
+    box = d.textbbox((0, 0), label, font=f_chip)
+    pad_x, pad_y = 24, 13
+    chip_w = box[2] - box[0] + pad_x * 2
+    chip_h = box[3] - box[1] + pad_y * 2
+    chip_x, chip_y = 248, 92 + (132 - chip_h) // 2
+    d.rounded_rectangle((chip_x, chip_y, chip_x + chip_w, chip_y + chip_h),
+                        radius=chip_h / 2, fill=TEAL)
+    d.text((chip_x + pad_x - box[0], chip_y + pad_y - box[1]), label,
+           font=f_chip, fill=(255, 255, 255))
+
+    d.text((84, 272), "A shared quiz", font=f_title, fill=INK)
+    d.text((84, 388), "Someone shared an Elemora quiz with you.", font=f_sub, fill=MUTED)
+    d.text((84, 434), "Open it in Elemora to save and play it.", font=f_sub, fill=MUTED)
+    d.text((84, 512), "Idlery Services LLC", font=f_pub, fill=TEAL)
+
+    p = OUT / "og-quiz.png"
+    card.save(p, optimize=True)
+    log(p)
+
+
 if __name__ == "__main__":
     print("icons")
     build_icons()
@@ -229,4 +299,6 @@ if __name__ == "__main__":
     build_screens()
     print("social card")
     build_og()
+    print("shared-quiz card")
+    build_quiz_card()
     print("\ndone")

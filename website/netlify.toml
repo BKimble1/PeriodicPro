@@ -1,11 +1,18 @@
 # Only used if this repository is connected to Netlify for continuous deploys.
 # The ZIP workflow (scripts/make_zip.sh) does not read this file — for a drag
-# and drop deploy, Netlify reads site/_redirects and site/_headers instead.
+# and drop deploy, Netlify reads site/_redirects and site/_headers instead, and
+# the ZIP already contains the generated association file.
 
 [build]
-  # The site is plain static files. There is nothing to compile.
-  command = ""
+  # The pages are plain static files; there is nothing to compile. The one
+  # generated file is the Apple app-site-association, which carries the Team ID
+  # and so is never committed. APPLE_TEAM_ID must be set under
+  # Site settings -> Environment variables, or this build fails on purpose:
+  # serving a placeholder association file is worse than serving none, because
+  # Apple's CDN caches it for hours.
+  command = "python3 website/scripts/build_aasa.py"
   publish = "website/site"
 
 [build.environment]
   NODE_VERSION = "22"
+  PYTHON_VERSION = "3.11"

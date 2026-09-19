@@ -32,6 +32,7 @@ run "Branding (Elemora)"     python3 Tools/check_branding.py
 run "App icon"               python3 Tools/check_app_icon.py
 run "Artwork and structure routing" python3 Tools/check_visual_routing.py
 run "Website and universal links" python3 Tools/check_website.py
+run "Shared-quiz wire format"  python3 Tools/check_share_link.py
 run "The whole table fits"     python3 Tools/check_table_fit.py
 run "Table layout at three device widths" python3 Tools/preview_table.py
 run "Study layout at three device widths" python3 Tools/preview_study.py
