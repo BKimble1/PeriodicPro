@@ -31,21 +31,39 @@ PubChem. Those two are items 6 and 7 under *Remaining blockers*.
 
 **Two things a learner reported cannot be fixed in the repository.**
 
-*Shared quiz links open the website instead of the app.* Everything the app
-and the site control is already correct and gated by `check_website.py`: the
-association template names `com.idlery.periodicpro`, matches `/quiz/*` and
-nothing else, `_headers` serves it as `application/json`, `_redirects`
-rewrites `/quiz/*` with a 200 so the path survives, and the app claims
-`applinks:elemora.idlery.com` and imports a payload from either. A Universal
-Link reaches an app only once Apple has fetched
+*Shared quiz links open the website instead of the app.* **The app half of
+this has been correct since Build 4, and Build 7 is signed for it.** The site
+half is now built too; what is left is one deploy.
+
+The app side, verified against the build that is actually on TestFlight:
+`Config/Elemora.entitlements` claims `applinks:elemora.idlery.com`, it is wired
+in as `CODE_SIGN_ENTITLEMENTS` for both configurations, and Build 7's archive
+step read the entitlement back out of the **signed** `.app` with
+`codesign -d --entitlements` and required `associated-domains` to be in it.
+That step passed, `altool --validate-app` passed, and the upload succeeded — so
+the App ID `com.idlery.periodicpro` has the Associated Domains capability
+enabled in the developer portal, the provisioning profile carries it, and the
+binary on TestFlight is signed with it. Nothing about Universal Links needs a
+new build.
+
+The site side, gated by `check_website.py`: the association template names
+`com.idlery.periodicpro`, matches `/quiz/*` and nothing else, `_headers` serves
+it as `application/json`, `_redirects` rewrites `/quiz/*` with a 200 so the
+payload survives, and `website/site/quiz/index.html` is the branded page a
+recipient without the app lands on.
+
+A Universal Link reaches an app only once Apple has fetched
 `https://elemora.idlery.com/.well-known/apple-app-site-association` and found
-the bundle in it — so until the site is deployed with `APPLE_TEAM_ID`
-substituted (blocker 1, and `website/README.md` → *Universal Links and the
-shared quiz*), the system correctly
-believes no app claims those links and opens the page. There is no app-side
-change that fixes this; a private URL scheme was tried and reverted, because
-the site is deliberately script-free and a static page cannot read the payload
-out of its own URL to hand one off.
+the app ID in it. So the one thing standing between a shared link and the app
+is **deploying the site** (blocker 1). There is no app-side change that fixes
+it; a private URL scheme was tried and reverted, because the site is
+deliberately script-free and a static page cannot read the payload out of its
+own URL to hand one off.
+
+One operational note for after the deploy: a device that already has Elemora
+installed asked Apple's CDN for that file when it installed the build, was
+told there was none, and caches that. Delete Elemora and reinstall it from
+TestFlight — or install the next build — and the check runs again.
 
 *The Home Screen widget is not offered.* It is not in the build — see below.
 
@@ -197,11 +215,28 @@ to change with them.
 
 Nothing in the repository. Everything below needs a person.
 
-1. **Deploy the website** and confirm all four URLs answer 200 over HTTPS.
+1. **Deploy the website.** Build the archive with the Team ID —
+   `APPLE_TEAM_ID=XXXXXXXXXX ./website/scripts/make_zip.sh` — and upload
+   `elemora-netlify.zip` to Netlify. The committed ZIP is deliberately built
+   without the association file; see `website/README.md`. Then confirm, over
+   HTTPS:
+   - `/`, `/support`, `/privacy` and `/terms` answer 200;
+   - `/quiz/<any payload>` answers 200 and serves the shared-quiz page with the
+     URL unchanged in the address bar — a 301 here would destroy the quiz;
+   - `/.well-known/apple-app-site-association` answers 200 with
+     `Content-Type: application/json`, no redirect and no authentication, and
+     names `<TeamID>.com.idlery.periodicpro` for `/quiz/*`.
+
+   `elemora.idlery.com` also has to resolve: at the time of writing it does
+   not, so the DNS record for the subdomain is part of this item.
 2. **Set the Privacy Policy URL and Support URL** on the App Store Connect
    record.
-3. **Re-read the App Privacy answers** against `PRIVACY.md` now that the app
-   has a camera feature.
+3. **Re-read the App Privacy answers** against `PRIVACY.md`, for two reasons:
+   the app has a camera feature, and the compound lookups send a chemical name
+   or formula to PubChem. Nothing collected is linked to a user and nothing is
+   used for tracking, but a lookup does reach a third party and the answers
+   should say so. The website's privacy policy was corrected to match
+   `PRIVACY.md`; see `website/CLAIMS-TO-VERIFY.md`.
 4. **Confirm both subscription products are Ready to Submit** in the
    `periodicpro.pro` group.
 5. **Upload screenshots** for every device size the listing requires. CI
@@ -211,7 +246,13 @@ Nothing in the repository. Everything below needs a person.
    cannot run live text recognition, so the recognition core is unit-tested
    against text fixtures and the camera path is not exercised by CI. The
    TestFlight notes list the exact cases to try.
-7. **Run the live PubChem smoke suite** (`python3 Tools/smoke_pubchem.py`) from
+7. **Test a shared quiz on two real devices**, once the site is live: share a
+   quiz from My Quizzes on one, open the link from Messages on the other, and
+   check the app opens on the confirmation rather than Safari. Then repeat with
+   Elemora deleted from the second device, to see the landing page. This is the
+   one part of the shared-quiz flow no simulator can prove — the rest is
+   covered by `SharedQuizLinkUITests`, which drives everything after the tap.
+8. **Run the live PubChem smoke suite** (`python3 Tools/smoke_pubchem.py`) from
    a machine that can reach the internet. It is not in CI on purpose, and it
    has not been run from the environment that wrote this build — PubChem is
    unreachable from there, which the tool reports as unreachable rather than
