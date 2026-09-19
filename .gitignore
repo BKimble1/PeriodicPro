@@ -1,0 +1,14 @@
+# Node — only ever installed for website/scripts/check_site.js
+node_modules/
+package-lock.json
+package.json
+
+# Checker output
+website/.preview/
+
+# elemora-netlify.zip is NOT ignored: it is committed as a ready-to-upload
+# deployment artifact. Rebuild it with website/scripts/make_zip.sh after any
+# change under website/site/.
+
+# macOS
+.DS_Store

@@ -1,0 +1,17 @@
+# Netlify response headers for elemora.idlery.com
+# Docs: https://docs.netlify.com/routing/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; font-src 'self'; form-action 'none'; frame-ancestors 'self'; base-uri 'self'
+
+# Asset names carry no content hash, so keep this conservative: an hour at the
+# edge, revalidated by the browser. Raise it only if you start hashing names.
+/assets/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=86400

@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "The one place the App Store listing is configured. Nothing else in the site",
+    "hard-codes an App Store URL or ID. After editing this file, run:",
+    "    python3 website/scripts/apply_config.py",
+    "which rewrites the marked call-to-action blocks in site/*.html and the marked",
+    "block in site/_redirects, then rebuild the ZIP with scripts/make_zip.sh.",
+    "",
+    "Set appStoreId to the numeric Apple ID from App Store Connect (digits only,",
+    "no leading 'id'), and appStoreUrl to the full listing URL. Leave both null",
+    "while Elemora is pre-release: the site then shows a 'Coming to the App Store'",
+    "state with a working mailto, and no dead links."
+  ],
+  "appStoreId": null,
+  "appStoreUrl": null,
+  "supportEmail": "support@idlery.com",
+  "canonicalOrigin": "https://elemora.idlery.com",
+  "publisher": "Idlery Services LLC"
+}

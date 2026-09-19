@@ -1,0 +1,11 @@
+# Only used if this repository is connected to Netlify for continuous deploys.
+# The ZIP workflow (scripts/make_zip.sh) does not read this file — for a drag
+# and drop deploy, Netlify reads site/_redirects and site/_headers instead.
+
+[build]
+  # The site is plain static files. There is nothing to compile.
+  command = ""
+  publish = "website/site"
+
+[build.environment]
+  NODE_VERSION = "22"
