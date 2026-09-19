@@ -346,7 +346,7 @@ set them.
 Information because the app sells a subscription. Elemora hosts its own pages
 and the paywall links to them, so use the same two URLs here:
 `https://elemora.idlery.com/privacy` and `https://elemora.idlery.com/terms`.
-`PRIVACY.md` is the source text for the privacy page, and `Website/site/` holds
+`PRIVACY.md` is the source text for the privacy page, and `website/site/` holds
 both pages ready to deploy.
 
 **Export compliance** — handled automatically. `Config/Info.plist` sets

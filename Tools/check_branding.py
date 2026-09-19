@@ -174,6 +174,8 @@ RETAINED_IDENTIFIERS = {
     "Tools/build_compounds.py": "writes PeriodicPro/Data/compounds.json",
     "Tools/validate_compounds.py": "reads PeriodicPro/Data/compounds.json",
     "Tools/build_pubchem_fixtures.py": "writes PeriodicProTests/Fixtures",
+    "Tools/check_share_link.py":
+        "reads the share-link constants out of the PeriodicPro Swift sources",
 
     # --- The website, which has to name the signed app ID Apple matches ---
     "website/site/.well-known/apple-app-site-association.template":
@@ -184,6 +186,8 @@ RETAINED_IDENTIFIERS = {
         "keeps the legacy /periodicpro path pointing at the product page",
     "website/README.md":
         "documents the app ID and the repository paths the site is kept in step with",
+    "website/scripts/check_site.js":
+        "asserts the association file names <TeamID>.com.idlery.periodicpro",
     "website/CLAIMS-TO-VERIFY.md":
         "records which app-source files each claim on the site was checked against",
 

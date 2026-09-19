@@ -343,3 +343,212 @@ struct QuizSharePreviewTests {
         #expect(image.size.height == QuizShareCard.size.height)
     }
 }
+
+/// The cases a shared quiz meets once it has left the sender: a payload that
+/// arrived damaged, the same link opened over and over, and the one thing the
+/// whole feature is for — the recipient ending up with the quiz that was sent.
+@MainActor
+@Suite("Shared quizzes in the wild")
+struct SharedQuizJourneyTests {
+    private let catalog = TestCatalog.shared
+
+    /// A quiz that uses every corner of the format: both kinds of content, a
+    /// custom selection, four filter sets, both atomic-number bounds, a timer,
+    /// and shuffling turned off. If anything in the wire format drops a field,
+    /// this is the quiz that notices.
+    private func elaborateConfiguration() -> QuizConfiguration {
+        var configuration = QuizConfiguration.standard
+        configuration.content = .both
+        configuration.scope = .custom
+        configuration.customElementIDs = [1, 2, 8, 9, 17, 79]
+        configuration.customCompoundIDs = ["pubchem-962", "pubchem-5234", "pubchem-702"]
+        configuration.elementFilters.categories = [.nobleGas, .halogen]
+        configuration.elementFilters.phases = [.gas]
+        configuration.elementFilters.periods = [1, 2]
+        configuration.elementFilters.groups = [17, 18]
+        configuration.elementFilters.minimumAtomicNumber = 1
+        configuration.elementFilters.maximumAtomicNumber = 54
+        configuration.compoundFilters.bondingClasses = [.molecular]
+        configuration.compoundFilters.tags = [.inorganic]
+        configuration.compoundFilters.onlySaved = true
+        configuration.difficulty = .hard
+        configuration.questionCount = 20
+        configuration.timerSeconds = 30
+        configuration.shuffles = false
+        return configuration
+    }
+
+    @Test("The recipient ends up with the configuration the sender sent, field for field")
+    func fidelity() throws {
+        let sent = elaborateConfiguration()
+        let sender = SavedQuizStore(container: nil)
+        let original = sender.create(name: "Everything at once", configuration: sent)
+        let url = try sender.shareURL(for: original)
+
+        let container = try #require(PersistenceController.makeInMemoryContainer())
+        let recipient = SavedQuizStore(container: container)
+        #expect(recipient.open(shareURL: url, catalog: catalog))
+        guard case .saved(let received) = recipient.lastImportOutcome else {
+            Issue.record("a valid link should save, got \(String(describing: recipient.lastImportOutcome))")
+            return
+        }
+
+        #expect(received.name == original.name)
+        #expect(received.configuration == original.configuration)
+        // Spelled out as well as compared, so a failure says which field went.
+        let configuration = received.configuration
+        #expect(configuration.content == .both)
+        #expect(configuration.scope == .custom)
+        #expect(configuration.customElementIDs == sent.customElementIDs)
+        #expect(configuration.customCompoundIDs == sent.customCompoundIDs)
+        #expect(configuration.elementFilters.categories == [.nobleGas, .halogen])
+        #expect(configuration.elementFilters.phases == [.gas])
+        #expect(configuration.elementFilters.periods == [1, 2])
+        #expect(configuration.elementFilters.groups == [17, 18])
+        #expect(configuration.elementFilters.minimumAtomicNumber == 1)
+        #expect(configuration.elementFilters.maximumAtomicNumber == 54)
+        #expect(configuration.compoundFilters.bondingClasses == [.molecular])
+        #expect(configuration.compoundFilters.tags == [.inorganic])
+        #expect(configuration.compoundFilters.onlySaved)
+        #expect(configuration.difficulty == .hard)
+        #expect(configuration.questionCount == 20)
+        #expect(configuration.timerSeconds == 30)
+        #expect(!configuration.shuffles)
+
+        // And it is still there after the app has been closed and reopened.
+        let relaunched = SavedQuizStore(container: container)
+        let reloaded = try #require(relaunched.quiz(id: received.id))
+        #expect(reloaded.name == original.name)
+        #expect(reloaded.configuration == original.configuration)
+    }
+
+    @Test("An imported quiz deals a real round")
+    func imported_quiz_is_playable() throws {
+        let store = SavedQuizStore(container: nil)
+        let url = try QuizShareLink.url(name: "Shared sample", configuration: .sharedQuizSample)
+        #expect(store.open(shareURL: url, catalog: catalog))
+        guard case .saved(let quiz) = store.lastImportOutcome else {
+            Issue.record("the sample should save, got \(String(describing: store.lastImportOutcome))")
+            return
+        }
+
+        let pool = QuizPoolBuilder.subjects(
+            for: quiz.configuration,
+            catalog: catalog,
+            compounds: TestCompounds.catalog.compounds,
+            elementSnapshots: [:],
+            compoundSnapshots: [:]
+        )
+        #expect(pool.count >= QuizPoolBuilder.minimumPool,
+                "the sample the UI tests share must produce a playable round")
+        #expect(QuizPoolBuilder.unavailableReason(for: quiz.configuration,
+                                                  poolCount: pool.count) == nil)
+    }
+
+    @Test("No prefix of a link is ever mistaken for a quiz")
+    func truncation() throws {
+        let encoded = try QuizShareLink.encode(name: "Halogens", configuration: elaborateConfiguration())
+        // Every prefix but the whole thing. A message that clipped the URL, a
+        // link that lost its tail to a line break — none of it may produce a
+        // quiz, and none of it may produce anything but a refusal.
+        for length in 0..<encoded.count {
+            let truncated = String(encoded.prefix(length))
+            #expect(throws: (any Error).self) {
+                _ = try QuizShareLink.decode(truncated, catalog: catalog)
+            }
+        }
+        // And the whole thing still works, so the loop above was not vacuous.
+        #expect(try QuizShareLink.decode(encoded, catalog: catalog).name == "Halogens")
+    }
+
+    @Test("A truncated link saves nothing and reports itself")
+    func truncated_link_is_reported() throws {
+        let store = SavedQuizStore(container: nil)
+        let url = try QuizShareLink.url(name: "Halogens", configuration: .sharedQuizSample)
+        let clipped = try #require(URL(string: String(url.absoluteString.dropLast(40))))
+
+        #expect(store.open(shareURL: clipped, catalog: catalog), "it is one of ours, just broken")
+        guard case .failed(let message) = store.lastImportOutcome else {
+            Issue.record("a truncated link must be reported, not saved")
+            return
+        }
+        #expect(!message.isEmpty)
+        #expect(store.quizzes.isEmpty)
+    }
+
+    @Test("A payload listing more items than a quiz can hold is refused")
+    func tooManyItems() throws {
+        var configuration = QuizConfiguration.standard
+        configuration.scope = .custom
+        // Past the cap, but all real elements, so it is the count that refuses
+        // it rather than an element that does not exist.
+        configuration.customElementIDs = (0..<(QuizConfiguration.maximumCustomItems + 1))
+            .map { ($0 % 118) + 1 }
+        let payload = QuizSharePayload(name: "Too many", configuration: configuration)
+        let json = try JSONEncoder().encode(payload)
+        let compressed = try (json as NSData).compressed(using: .zlib) as Data
+        let encoded = "1" + QuizShareLink.base64URLEncoded(compressed)
+
+        #expect(throws: QuizLinkError.tooManyItems) {
+            _ = try QuizShareLink.decode(encoded, catalog: catalog)
+        }
+    }
+
+    @Test("Opening the same link five times leaves one quiz")
+    func repeated_imports() throws {
+        let container = try #require(PersistenceController.makeInMemoryContainer())
+        let store = SavedQuizStore(container: container)
+        let url = try QuizShareLink.url(name: "Forwarded again", configuration: .sharedQuizSample)
+
+        for attempt in 1...5 {
+            store.lastImportOutcome = nil
+            #expect(store.open(shareURL: url, catalog: catalog))
+            switch (attempt, store.lastImportOutcome) {
+            case (1, .saved): break
+            case (_, .alreadySaved): break
+            default:
+                Issue.record("open \(attempt) gave \(String(describing: store.lastImportOutcome))")
+            }
+            #expect(store.quizzes.count == 1, "after \(attempt) open(s)")
+        }
+
+        // And a relaunch still finds exactly the one.
+        #expect(SavedQuizStore(container: container).quizzes.count == 1)
+    }
+
+    @Test("A quiz URL with no payload is not one of ours")
+    func empty_payload() throws {
+        let store = SavedQuizStore(container: nil)
+        for text in [ElemoraLinks.quizBaseString,
+                     ElemoraLinks.websiteString,
+                     ElemoraLinks.privacyString,
+                     ElemoraLinks.supportString,
+                     ElemoraLinks.termsString,
+                     "https://elemora.idlery.com/.well-known/apple-app-site-association"] {
+            let url = try #require(URL(string: text))
+            #expect(!store.open(shareURL: url, catalog: catalog), "\(text) must be left alone")
+            #expect(store.lastImportOutcome == nil)
+        }
+        #expect(store.quizzes.isEmpty)
+    }
+
+    @Test("The sample the UI tests share is a real, shareable quiz")
+    func sample_round_trips() throws {
+        let url = try QuizShareLink.url(name: "Shared sample", configuration: .sharedQuizSample)
+        #expect(url.absoluteString.hasPrefix(ElemoraLinks.quizBaseString))
+        let payload = try #require(try QuizShareLink.payload(from: url, catalog: catalog))
+        #expect(payload.name == "Shared sample")
+        #expect(payload.configuration == QuizConfiguration.sharedQuizSample.sanitized())
+    }
+
+    @Test("The entitlement, the app's links and the association file name the same host")
+    func host_agreement() {
+        // The three have to agree exactly or a shared link opens a browser on a
+        // device that has Elemora installed. Two of them are checked here; the
+        // third, website/site/.well-known/apple-app-site-association, is
+        // checked by Tools/check_website.py, which reads this same source.
+        #expect(ElemoraLinks.host == "elemora.idlery.com")
+        #expect(ElemoraLinks.quizBaseString == "https://\(ElemoraLinks.host)\(ElemoraLinks.quizPathPrefix)")
+        #expect(ElemoraLinks.quizPathPrefix == "/quiz/")
+    }
+}

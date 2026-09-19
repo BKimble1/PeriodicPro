@@ -40,7 +40,8 @@ rewrites `/quiz/*` with a 200 so the path survives, and the app claims
 Link reaches an app only once Apple has fetched
 `https://elemora.idlery.com/.well-known/apple-app-site-association` and found
 the bundle in it — so until the site is deployed with `APPLE_TEAM_ID`
-substituted (blocker 1, and `Website/README.md` step 2), the system correctly
+substituted (blocker 1, and `website/README.md` → *Universal Links and the
+shared quiz*), the system correctly
 believes no app claims those links and opens the page. There is no app-side
 change that fixes this; a private URL scheme was tried and reverted, because
 the site is deliberately script-free and a static page cannot read the payload
@@ -94,7 +95,7 @@ a product that is not yet approved shows the unavailable state to reviewers.
 | Privacy policy covers notifications | **PASS** | `PRIVACY.md` → *Notifications*; website → *Notifications* |
 
 **MANUAL ACTION — website host:** this repository contains the site's source
-under `Website/site/`. Deploying it is external to the build, and nothing here
+under `website/site/`. Deploying it is external to the build, and nothing here
 can verify that `https://elemora.idlery.com/privacy` currently answers over
 HTTPS. Before submitting, open all four URLs in a browser and confirm each
 returns 200 over HTTPS with the updated text:

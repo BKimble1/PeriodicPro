@@ -72,6 +72,29 @@ enum RuntimeFlags {
     /// it. With this the launch screen stays, so it can be photographed and
     /// asserted on deterministically.
     static let holdsLaunchScreen = ProcessInfo.processInfo.arguments.contains("-holdLaunchScreen")
+
+    /// Set alongside `-uiTesting` to deliver a shared-quiz link at launch:
+    /// `-incomingQuizLink <value>`.
+    ///
+    /// XCUITest cannot hand the app a Universal Link without driving Safari,
+    /// which is slow, flaky and tests Safari. This carries the link in instead,
+    /// and `RootView` routes it through exactly the same handler `onOpenURL`
+    /// uses — so the cold-start path a recipient actually takes is the path
+    /// under test, rather than an imitation of it.
+    ///
+    /// A value beginning with `https://` is used as it stands, which is how the
+    /// malformed, truncated and not-ours cases are driven. Anything else is
+    /// read as a quiz name, and the app builds a real link for it with
+    /// `QuizShareLink`, so the happy path goes through the actual encoder
+    /// rather than a string somebody pasted into a test.
+    static let incomingQuizLink: String? = {
+        guard isUITesting else { return nil }
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let flag = arguments.firstIndex(of: "-incomingQuizLink"),
+              arguments.index(after: flag) < arguments.endIndex else { return nil }
+        let value = arguments[arguments.index(after: flag)]
+        return value.isEmpty ? nil : value
+    }()
 }
 
 /// Environment storage for the bundled dataset.

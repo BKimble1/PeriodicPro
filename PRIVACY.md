@@ -250,7 +250,7 @@ displays the encoded quiz.
 
 The pages at `https://elemora.idlery.com` are plain static files with no
 cookies, no analytics and no third-party embeds of any kind. The hosted privacy
-policy at `/privacy` is the same statement as this document, and `Website/` in
+policy at `/privacy` is the same statement as this document, and `website/` in
 this repository is its source; the two are kept in step deliberately, because
 the App Store listing points at the hosted one and the app's Settings links to
 it.

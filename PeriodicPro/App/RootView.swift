@@ -54,10 +54,15 @@ struct RootView: View {
         // Messages, Notes or anywhere else. It is validated and saved before
         // anything is shown, and the Study tab presents the result. A URL
         // that is not one of ours is left alone.
-        .onOpenURL { url in
-            guard savedQuizzes.open(shareURL: url, catalog: catalog) else { return }
-            selection = .study
-        }
+        //
+        // This fires for every way a link can arrive: a cold launch, a resume
+        // from the background, and a tap while Elemora is already on screen —
+        // SwiftUI delivers all three here.
+        .onOpenURL { receive($0) }
+        // The same handler, for a UI test's `-incomingQuizLink`. `task` runs
+        // once this view is on screen, which is the same moment a cold-launch
+        // Universal Link arrives. Inert in a shipping build.
+        .task { receiveTestLink() }
         // A tapped notification lands where it said it would. Every
         // destination is a tab this app already has; nothing here can open
         // anything a learner could not reach themselves.
@@ -66,6 +71,29 @@ struct RootView: View {
             selection = destination.tab
         }
         .preferredColorScheme(appearance.colorScheme)
+    }
+
+    /// Handles a URL the system handed the app.
+    ///
+    /// The store does the validating and the saving; all that is left here is
+    /// to move to the tab that shows the result. A URL that is not one of ours
+    /// changes nothing, so a link to the privacy policy still opens a browser.
+    private func receive(_ url: URL) {
+        guard savedQuizzes.open(shareURL: url, catalog: catalog) else { return }
+        selection = .study
+    }
+
+    /// A shared quiz handed in by a UI test, through the same route.
+    ///
+    /// `https://…` is used as it stands; anything else is a quiz name, and a
+    /// real link is built for it with the app's own encoder.
+    private func receiveTestLink() {
+        guard let value = RuntimeFlags.incomingQuizLink else { return }
+        let url = value.hasPrefix("https://")
+            ? URL(string: value)
+            : try? QuizShareLink.url(name: value, configuration: .sharedQuizSample)
+        guard let url else { return }
+        receive(url)
     }
 
     private var shouldShowOnboarding: Binding<Bool> {

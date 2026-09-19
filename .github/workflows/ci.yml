@@ -93,6 +93,13 @@ jobs:
       - name: Check the website and the universal-link plumbing
         run: python3 Tools/check_website.py
 
+      # The share-link format, re-implemented from the Swift source's own
+      # constants. The Swift tests cover it properly, but they need macOS and
+      # they are forty minutes away; this fails in seconds when a limit, a
+      # refusal or the URL routing changes without its other half.
+      - name: Check the shared-quiz wire format
+        run: python3 Tools/check_share_link.py
+
       - name: Check spelling is normalized
         run: |
           set -euo pipefail

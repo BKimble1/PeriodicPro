@@ -228,6 +228,21 @@ struct QuizConfiguration: Codable, Hashable, Sendable {
 
     /// The defaults the setup screen opens with.
     static let standard = QuizConfiguration()
+
+    /// A small, fully specified quiz used by the UI tests that drive an
+    /// incoming shared link. It names three elements and two compounds that
+    /// are all in the bundled data, so the round it deals is the same on every
+    /// machine, and its pool is comfortably over `QuizPoolBuilder.minimumPool`.
+    static let sharedQuizSample: QuizConfiguration = {
+        var configuration = QuizConfiguration()
+        configuration.content = .both
+        configuration.scope = .custom
+        configuration.customElementIDs = [1, 8, 79]
+        configuration.customCompoundIDs = ["pubchem-962", "pubchem-5234"]
+        configuration.difficulty = .medium
+        configuration.questionCount = 5
+        return configuration
+    }()
 }
 
 /// The thing a question is about.

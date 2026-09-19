@@ -21,7 +21,7 @@ been walked against that source; each line now says what was found and where.
 | Confidence | What it means | Action |
 |---|---|---|
 | **A — Seen** | Visible in an approved screenshot at the repository root | None; re-check only if a screenshot is replaced |
-| **B — Platform** | Apple's documented behaviour, independent of Elemora's code | None |
+| **B — Platform** | Apple's documented behavior, independent of Elemora's code | None |
 | **C — Assumed** | Consistent with the app's visible design, **not confirmed against its source** | **Confirm before publishing** |
 | **D — Decision** | Needs a business or legal answer, not a code answer | **Decide before publishing** |
 
@@ -47,7 +47,7 @@ These are safe. Each one is visible in the images at the repository root.
 | Atomic number, atomic mass, electron configuration | `IMG_2840` |
 | Quick Facts: Category, State at 25 °C, Group, Period; "More properties" | `IMG_2849` |
 | "About <element>" prose and "Common Uses" tiles | `IMG_2849` |
-| Favourite (heart) on an element | `IMG_2840`, `IMG_2849` |
+| Favorite (heart) on an element | `IMG_2840`, `IMG_2849` |
 | Build: formula, Hill formula, molar mass, atom count | `IMG_2845` |
 | "Matched in the Elemora catalog" | `IMG_2845` |
 | Caffeine = C₈H₁₀N₄O₂, 194.19 g/mol, 24 atoms, "Molecular (covalent)" | `IMG_2845` |
@@ -58,12 +58,12 @@ These are safe. Each one is visible in the images at the repository root.
 | Identify drill: "Which element has this atomic number?", 10-card sets, flip, "I knew this" / "Review again" | `IMG_2851` |
 | Progress: mastery ring "x of 118", compounds studied, recent accuracy | `IMG_2853` |
 | Ranks "Periodic Pathfinder" → "Pattern Reader" | `IMG_2853` |
-| Activity: day streak, cards answered, elements started, favourites saved | `IMG_2853` |
+| Activity: day streak, cards answered, elements started, favorites saved | `IMG_2853` |
 | A settings gear at the top right of the Progress tab | `IMG_2853` |
 
 ---
 
-## B — Apple platform behaviour
+## B — Apple platform behavior
 
 Independent of Elemora's code; no verification needed.
 
@@ -98,7 +98,7 @@ check was made against. `[x]` means confirmed; a correction says what changed.
 
 ### `/privacy` — "What Elemora stores on your device"
 
-- [x] Favourites, saved compounds, study history, mastery, streak, daily
+- [x] Favorites, saved compounds, study history, mastery, streak, daily
       challenge state and settings are written to the app's own container.
       *Checked:* `PeriodicPro/Persistence/ProgressStore.swift`,
       `PeriodicPro/StudyEngine/SavedQuiz.swift`, both SwiftData-backed and local.
@@ -130,7 +130,7 @@ check was made against. `[x]` means confirmed; a correction says what changed.
       (`PeriodicPro.xcodeproj/project.pbxproj`, `INFOPLIST_KEY_NSCameraUsageDescription`),
       recognition runs on device, and no image is uploaded or written to a photo
       library. *Checked:* `PeriodicPro/Scanner/`.
-      → The page now also says that **recognised text** can go to PubChem, which
+      → The page now also says that **recognized text** can go to PubChem, which
       is what `PRIVACY.md` says and what the scanner actually does.
 - [x] No other `NS*UsageDescription` key exists: camera is the only permission.
 
@@ -232,8 +232,13 @@ check was made against. `[x]` means confirmed; a correction says what changed.
       19 September 2026. Move them to the actual publication date if it differs.
 - [ ] **App Store URL.** Not known, and deliberately not invented. See
       `website/config.json` — it is the only place it is configured.
-- [ ] **Universal Links.** Not configured. See the README for exactly what is
-      needed if you want them.
+- [ ] **Associated Domains in the Apple Developer portal.** The entitlement and
+      the association file are both in this repository, but the
+      `com.idlery.periodicpro` identifier must have **Associated Domains**
+      enabled at developer.apple.com, and the provisioning profiles regenerated
+      after that. No change to this site can substitute for it.
+- [ ] **`APPLE_TEAM_ID`.** Needed to generate the association file before the
+      ZIP is packaged, and to sign the app. Never committed.
 
 ---
 

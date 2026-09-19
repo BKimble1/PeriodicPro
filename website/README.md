@@ -16,9 +16,14 @@ website/
     support/index.html       support and contact
     privacy/index.html       privacy policy
     terms/index.html         terms of use
+    quiz/index.html          a shared quiz, for a recipient without the app
     404.html                 served by Netlify for unmatched paths
-    _redirects               Netlify redirect rules
-    _headers                 Netlify response headers (CSP and caching)
+    _redirects               Netlify redirect rules, incl. the /quiz/* rewrite
+    _headers                 Netlify response headers (CSP, caching, JSON type)
+    .well-known/
+      apple-app-site-association.template    the Universal Links file, minus
+                                             the Team ID
+      apple-app-site-association             generated; git-ignored
     robots.txt  sitemap.xml  favicon.ico
     assets/css/site.css      the entire stylesheet
     assets/img/              optimized images, all generated (see below)
@@ -27,6 +32,7 @@ website/
   src-assets/                fonts and Apple's badge; never served directly
   scripts/build_assets.py    regenerates every file in site/assets/img
   scripts/apply_config.py    turns config.json into the call-to-action markup
+  scripts/build_aasa.py      writes the association file from APPLE_TEAM_ID
   scripts/check_site.js      Chromium checks at eight widths, light and dark
   scripts/make_zip.sh        builds elemora-netlify.zip from site/
   CLAIMS-TO-VERIFY.md        every factual claim on the site, and its source
@@ -40,6 +46,8 @@ website/
 | Support | `https://elemora.idlery.com/support` |
 | Privacy Policy | `https://elemora.idlery.com/privacy` |
 | Terms of Use | `https://elemora.idlery.com/terms` |
+| A shared quiz | `https://elemora.idlery.com/quiz/<encoded payload>` |
+| Universal Links | `https://elemora.idlery.com/.well-known/apple-app-site-association` |
 | Support email | `support@idlery.com` |
 | Publisher | `https://idlery.com` |
 
@@ -125,23 +133,42 @@ npm install playwright        # only dependency, and only for the checker
 node scripts/check_site.js site .preview
 ```
 
-Loads all four pages plus the 404 at 320, 390, 430, 820, 1180, 1280, 1440 and
+Loads all five pages plus the 404 at 320, 390, 430, 820, 1180, 1280, 1440 and
 1920 px, in light mode, plus dark mode at 390 px and 1440 px — under the same
-`Content-Security-Policy` that `_headers` deploys. It fails on a console error,
-a failed request, a broken image, horizontal overflow, a tap target under 44 px,
-a dead internal link, an `<img>` with no `alt`, a `mailto:` that is not
-`support@idlery.com`, or a `_redirects` rule that does not fire. Full-page
+`Content-Security-Policy` that `_headers` deploys. The shared-quiz page is
+loaded through the `/quiz/*` rewrite with a real encoded payload, so what is
+checked is the URL a recipient actually opens.
+
+It fails on a console error, a failed request, a broken image, horizontal
+overflow, a tap target under 44 px, a dead internal link, an `<img>` with no
+`alt`, a `mailto:` that is not `support@idlery.com`, a `_redirects` rule that
+does not fire, or an `apple-app-site-association` that is missing, redirected,
+not JSON, or served as anything other than `application/json`. Full-page
 screenshots land in `.preview/`.
+
+Generate the association file first, or that last check fails as it should:
+
+```sh
+APPLE_TEAM_ID=XXXXXXXXXX python3 scripts/build_aasa.py
+```
 
 ### Package it
 
 ```sh
-./website/scripts/make_zip.sh          # writes ./elemora-netlify.zip at the repo root
+APPLE_TEAM_ID=XXXXXXXXXX ./website/scripts/make_zip.sh   # -> ./elemora-netlify.zip
 ```
 
 The contents of `site/` go in at the **ZIP root**, so `index.html` is at the top
 level with no wrapper folder. That is what Netlify's manual deploy expects, and
 it is what makes `_redirects` and `_headers` take effect.
+
+A drag-and-drop deploy runs no build command, so the one generated file —
+`.well-known/apple-app-site-association` — has to be generated before packaging.
+`make_zip.sh` does that itself, refuses to run without `APPLE_TEAM_ID`, checks
+the site still matches `config.json`, and then proves the real association file
+is inside the ZIP rather than the template. Without the Team ID nothing is
+written, because a placeholder association file is worse than none: Apple's CDN
+caches it for hours.
 
 ## Deploying
 
@@ -165,7 +192,10 @@ stays available to roll back to.
 configuration and cannot verify either.
 
 A `netlify.toml` is included for the git-connected case (`publish =
-"website/site"`, no build command). The ZIP workflow does not read it.
+"website/site"`, `command = "python3 website/scripts/build_aasa.py"`). Set
+`APPLE_TEAM_ID` under **Site configuration → Environment variables** if you
+deploy that way; the build fails without it, on purpose. The ZIP workflow does
+not read `netlify.toml` at all.
 
 ## Apple's badge
 
@@ -177,42 +207,72 @@ not recreate, recolour, rotate, or animate it. It is only referenced once
 `config.json` has a real `appStoreUrl` — a badge that links nowhere would breach
 those guidelines.
 
-## Universal Links
+## Universal Links and the shared quiz
 
-**Not configured, deliberately.** A `.well-known/apple-app-site-association`
-file is not included, because publishing one requires facts this repository does
-not contain: the app's Team ID, its bundle identifier, the Associated Domains
-entitlement (`applinks:elemora.idlery.com`), and the paths the app can actually
-route. Shipping an AASA that claims paths the app cannot handle breaks links
-rather than enabling them.
+Elemora shares a saved quiz as an ordinary https link:
 
-To add it later you need, in one change:
+```
+https://elemora.idlery.com/quiz/<encoded payload>
+```
 
-1. In Xcode — the **Associated Domains** capability on the app target, with
-   `applinks:elemora.idlery.com`.
-2. In the app — a handler for `NSUserActivity` /
-   `onContinueUserActivity(NSUserActivityTypeBrowsingWeb)` that routes each
-   claimed path.
-3. Here — `site/.well-known/apple-app-site-association`, served as
-   `application/json` with **no** `.json` extension, listing
-   `TEAMID.bundle.identifier` and only the paths step 2 handles. Add a
-   `/.well-known/*` block to `_headers` setting
-   `Content-Type: application/json`.
+The quiz is *inside* the link — its name and settings, compressed and base64url
+encoded. There is no account, no database and nothing stored on this site, which
+is why the same link opens the same quiz on any device and why there is nothing
+here to delete.
+
+Three pieces have to agree, and all three are in this repository:
+
+| Piece | Where |
+|---|---|
+| The entitlement: `applinks:elemora.idlery.com` | `Config/Elemora.entitlements`, wired in as `CODE_SIGN_ENTITLEMENTS` for both configurations |
+| The association file: `<TeamID>.com.idlery.periodicpro`, path `/quiz/*` | `site/.well-known/apple-app-site-association.template` + `scripts/build_aasa.py` |
+| The routing: `/quiz/* -> /quiz/index.html` with a **200** | `site/_redirects` |
+
+`Tools/check_website.py` asserts that agreement on every run, and
+`Tools/check_share_link.py` exercises the link format itself.
+
+**The rewrite is a 200, never a 301.** A redirect would change the URL, and the
+URL is the quiz. A 200 rewrite leaves the address bar exactly as the sender sent
+it, which is also what Apple's Universal Link matching reads.
+
+**Only `/quiz/*` is claimed.** The home page, `/support`, `/privacy` and
+`/terms` stay ordinary web pages, so a tap on the privacy policy opens a
+browser, not the app.
+
+### The Team ID
+
+The ten-character Apple Team ID is a signing identifier and is never committed.
+`site/.well-known/apple-app-site-association` is git-ignored and written by
+`scripts/build_aasa.py` from `APPLE_TEAM_ID` — the same value as the
+repository's `APPLE_TEAM_ID` GitHub secret. The script validates the shape of
+the ID, parses the JSON it produced, checks the app ID and the claimed path, and
+refuses to write a placeholder.
+
+### What this repository cannot do for you
+
+Serving the association file is necessary, not sufficient. On the Apple side,
+`developer.apple.com` → Certificates, Identifiers & Profiles → the
+`com.idlery.periodicpro` identifier must have **Associated Domains** enabled,
+and the provisioning profiles used to sign must be regenerated afterwards.
+A build signed without that entitlement will not pick up a shared link no matter
+what this site serves.
 
 ## Content rules
 
-Every product claim on these pages is limited to behaviour visible in the
+Every product claim on these pages is limited to behavior visible in the
 approved marketing screenshots at the repository root, and each one is traced to
 its source in [`CLAIMS-TO-VERIFY.md`](CLAIMS-TO-VERIFY.md). The pages carry no
 ratings, download counts, testimonials, awards, or prices — prices live in the
 App Store, where they can change without this repository knowing.
 
-> **Read `CLAIMS-TO-VERIFY.md` before publishing.** The Elemora iOS source is
-> not in this repository, so the privacy policy's statements about networking,
-> analytics, crash reporting and third-party SDKs were written from the app's
-> observable behaviour rather than from an audit of its code. That file lists
-> each one, with the exact page and heading, so they can be confirmed against
-> the app in a single pass.
+> **Read `CLAIMS-TO-VERIFY.md` before publishing.** The privacy policy's
+> statements about networking, analytics, crash reporting and third-party SDKs
+> were originally written from the app's observable behavior, because the
+> Elemora iOS source was not in this repository at the time. It is now, and that
+> file records what each claim was checked against — including the one that was
+> wrong: the site said Elemora makes no network request for a compound, and it
+> does, to PubChem. The policy has been corrected from the app's own
+> `PRIVACY.md`. **The App Store Connect privacy answers need to match.**
 
 No secrets, keys, tokens or internal hostnames appear anywhere in this
 directory.
