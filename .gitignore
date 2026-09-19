@@ -49,5 +49,17 @@ fastlane/test_output
 # Tools/preview_detail.py; only the combined sheets are tracked.
 Design/detail-[A-Z]*.png
 
+# Node — only ever installed for website/scripts/check_site.js
+node_modules/
+package-lock.json
+package.json
+
+# Checker output
+website/.preview/
+
+# elemora-netlify.zip is NOT ignored: it is committed as a ready-to-upload
+# deployment artifact. Rebuild it with website/scripts/make_zip.sh after any
+# change under website/site/.
+
 # Generated at deploy time from the template, with the Apple Team ID injected.
-Website/site/.well-known/apple-app-site-association
+website/site/.well-known/apple-app-site-association

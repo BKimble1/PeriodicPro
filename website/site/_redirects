@@ -1,0 +1,36 @@
+# Netlify redirect rules for elemora.idlery.com
+# Format: <from>  <to>  <status>
+# Docs: https://docs.netlify.com/routing/redirects/
+#
+# Netlify already normalises trailing slashes and serves /support/ from
+# support/index.html, so only genuine aliases belong here. Anything unmatched
+# falls through to 404.html.
+
+# Legacy .html paths, in case anything ever linked to them. There is no rule
+# for /index.html: Netlify serves an existing file ahead of a redirect, so it
+# could never fire, and Netlify normalises /index.html to / by itself.
+/privacy.html    /privacy/   301
+/terms.html      /terms/     301
+/support.html    /support/   301
+
+# Words people actually type
+/help            /support/   301
+/contact         /support/   301
+/faq             /support/   301
+/legal           /terms/     301
+/privacy-policy  /privacy/   301
+/terms-of-use    /terms/     301
+/tos             /terms/     301
+/eula            /terms/     301
+
+# The legacy project name, so any old link lands on the product page
+/periodicpro     /           301
+/periodic-pro    /           301
+
+# A short link for the download call to action. While Elemora is pre-release
+# this points at the page section; scripts/apply_config.py rewrites it to the
+# App Store URL once website/config.json has one.
+# APPSTORE:REDIRECT:START
+/download        /#get       302
+/app             /#get       302
+# APPSTORE:REDIRECT:END
