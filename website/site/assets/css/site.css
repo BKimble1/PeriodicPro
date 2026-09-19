@@ -173,6 +173,9 @@ a:hover { color: var(--teal); }
   position: sticky;
   top: 0;
   z-index: 50;
+  /* Solid first, so a browser without color-mix() still gets a legible bar
+     rather than a transparent one. */
+  background: var(--canvas);
   background: color-mix(in srgb, var(--canvas) 86%, transparent);
   backdrop-filter: saturate(180%) blur(16px);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
