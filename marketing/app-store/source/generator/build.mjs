@@ -351,6 +351,18 @@ row.save(out4)
 
 /* ------------------------------------------------------------------- main -- */
 
+/* --sheets refreshes the contact sheets and previews from whatever is already
+   in exports/iphone, which is what you want after dropping real captures in:
+   a full build would overwrite those composites with blank templates again. */
+if (process.argv.includes('--sheets')) {
+  const existing = JSON.parse(fs.readFileSync(p('source', 'frames.json'), 'utf8'));
+  console.log('Refreshing contact sheets from exports/iphone');
+  contactSheet(existing);
+  previews(existing);
+  console.log('done.');
+  process.exit(0);
+}
+
 console.log(`Elemora App Store build: ${CANVAS.W} x ${CANVAS.H}, ${FRAMES.length} frames`);
 const geoms = FRAMES.map(buildFrame);
 buildAssets();
