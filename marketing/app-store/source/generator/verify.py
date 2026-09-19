@@ -321,6 +321,94 @@ for g in frames:
     os.remove(out)
 os.remove(tmp)
 
+# ------------------------------------------------------------------ status bar
+# The reconstructed iOS status bar has to land on every prepared capture, at the
+# positions measured off the raw captures, reading the same state everywhere. A
+# marketing set whose phones disagree about the time is the classic tell.
+print("== status bar ==")
+
+# capture px on a 1170 x 2532 screen, with the ink threshold each element needs.
+# The battery outline and nub are drawn at 35 percent, the way iOS draws them,
+# so they need a looser threshold than the solid clock, bars and Wi-Fi.
+SB_ELEMENTS = {
+    "clock":   (139, 243, 57, 97, 200),
+    "signal":  (856, 913, 59, 95, 200),
+    "wifi":    (936, 986, 59, 95, 200),
+    "battery": (1009, 1090, 57, 97, 620),
+}
+SB_STRIP_H = 132
+
+selected = sorted(glob.glob(r("screenshots", "selected", "*.png")))
+ok(len(selected) >= 6, f"only {len(selected)} prepared captures in screenshots/selected")
+
+def solid_ink(px, x0, x1, y0, y1, thr=200):
+    """Pixels dark enough to be status bar ink, not an anti-aliased edge."""
+    return {(x, y) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1)
+            if sum(px[x, y][:3]) < thr}
+
+sb_masks, sb_clock = {}, {}
+for f in selected:
+    tag = os.path.basename(f)
+    im = Image.open(f).convert("RGB")
+    ok(im.size == (1170, 2532), f"{tag}: unexpected capture size {im.size}")
+    px = im.load()
+    for name, (x0, x1, y0, y1, thr) in SB_ELEMENTS.items():
+        ink = solid_ink(px, x0, x1, y0, y1, thr)
+        ok(len(ink) > 40, f"{tag}: status bar {name} is missing or too faint")
+        xs = [p[0] for p in ink] or [0]
+        ys = [p[1] for p in ink] or [0]
+        # the element has to fill its measured slot, not drift inside it
+        ok(min(xs) <= x0 + 8 and max(xs) >= x1 - 8,
+           "{}: status bar {} sits at x {}..{}, expected about {}..{}".format(
+               tag, name, min(xs), max(xs), x0, x1))
+        ok(min(ys) <= y0 + 6 and max(ys) >= y1 - 6,
+           "{}: status bar {} sits at y {}..{}, expected about {}..{}".format(
+               tag, name, min(ys), max(ys), y0, y1))
+    sb_masks[tag] = frozenset(solid_ink(px, 840, 1100, 40, 110))
+    c = solid_ink(px, 100, 320, 40, 110)
+    sb_clock[tag] = (min(p[0] for p in c), max(p[0] for p in c),
+                     min(p[1] for p in c), max(p[1] for p in c))
+
+# one time, one signal state, one battery state across the whole set
+clocks = set(sb_clock.values())
+ok(len(clocks) == 1,
+   "captures disagree about the clock: " + ", ".join(
+       "{} {}".format(k, v) for k, v in sorted(sb_clock.items())
+       if v != max(set(sb_clock.values()), key=list(sb_clock.values()).count)))
+sizes = {len(m) for m in sb_masks.values()}
+ok(max(sizes) - min(sizes) <= 60,
+   f"the right-hand status icons differ between captures by up to "
+   f"{max(sizes) - min(sizes)} px of ink; they should be the same state")
+
+# the strip must clear the template's Dynamic Island, which is drawn over it
+for g in frames:
+    for d in g["devices"]:
+        k = d["screenW"] / CW                       # canvas px per 1320-space unit
+        # island in capture px: 375 x 110 at y 33, centred, mapped back through
+        # the cover fit the compositor uses
+        sc = d["screenH"] / 2532
+        isl_x0 = (d["screenW"] - 375 * k) / 2 / sc
+        isl_x1 = isl_x0 + 375 * k / sc
+        ok(SB_ELEMENTS["clock"][1] < isl_x0,
+           f"{g['id']} {d['role']}: the clock runs under the Dynamic Island")
+        ok(SB_ELEMENTS["signal"][0] > isl_x1,
+           f"{g['id']} {d['role']}: the signal bars run under the Dynamic Island")
+        ok(110 * k / sc <= SB_STRIP_H + 2,
+           f"{g['id']} {d['role']}: the Dynamic Island reaches past the rebuilt strip")
+
+bar = r("assets", "status-bar.png")
+ok(os.path.exists(bar), "assets/status-bar.png is missing")
+if os.path.exists(bar):
+    b = Image.open(bar)
+    ok(b.mode == "RGBA", f"status-bar.png must keep its alpha, got {b.mode}")
+    ok(b.size == (1170, SB_STRIP_H), f"status-bar.png is {b.size}, expected (1170, {SB_STRIP_H})")
+    ok(b.getextrema()[3][0] == 0,
+       "status-bar.png has no transparent pixels; it would paste as a band")
+print("   {} captures carry the same bar: clock x {}..{}, "
+      "signal, Wi-Fi and battery at the measured positions".format(
+          len(selected), sb_clock[os.path.basename(selected[0])][0],
+          sb_clock[os.path.basename(selected[0])][1]))
+
 # ------------------------------------------------------------ set consistency
 print("== set consistency ==")
 tops = {round(g["copyTop"]) for g in frames}

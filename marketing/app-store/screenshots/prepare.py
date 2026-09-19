@@ -4,13 +4,20 @@
 
 Two surgical edits per capture, and nothing else:
 
-1. The iOS status bar is removed. Each capture was taken at a different moment,
-   so they carry different clocks (7:14 through 7:50) and different battery
-   levels, several of them yellow from Low Power Mode. Rather than fake a
-   marketing status bar, the strip is filled with the app's own background,
-   sampled per column from the first clean row below it. That is what the app
-   actually draws up there, so the result reads as a real screen, and the
-   template's Dynamic Island sits on it naturally.
+1. The iOS status bar is rebuilt. Each capture was taken at a different moment,
+   so they carry different clocks (7:14 through 7:50), weak-signal bars and
+   different battery levels, several of them yellow from Low Power Mode. The
+   strip is first cleared by extending the app's own background upward, sampled
+   per column from the first clean row below it, then the reconstructed status
+   bar in assets/status-bar.png is composited on top.
+
+   That strip is drawn by source/generator/statusbar.mjs at the exact positions
+   measured off these captures, so the clock, bars, Wi-Fi and battery land
+   within a pixel of where the device itself drew them. Only the state changes:
+   the canonical 9:41, full signal, full Wi-Fi and a full battery. Because the
+   background underneath is the app's own, the bar sits on the screen rather
+   than on a pasted-in band, and the template's Dynamic Island covers the gap
+   between the clock and the icons exactly as it does on a real phone.
 
 2. The content clipped under the floating tab bar is removed. Elemora's tab bar
    floats over a scrolling list, so every capture ends with a sliver of a half
@@ -30,6 +37,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(HERE, "raw")
 OUT = os.path.join(HERE, "selected")
+STATUS_BAR = os.path.join(HERE, os.pardir, "assets", "status-bar.png")
 
 # Measured from the captures themselves, all 1170 x 2532:
 #   status bar glyphs are gone by y = 120; sample the app background at 132
@@ -56,18 +64,26 @@ def lerp(a, b, t):
     return tuple(round(a[i] + (b[i] - a[i]) * t) for i in range(3))
 
 
-def clean(src, tabbar):
+def clean(src, tabbar, statusbar):
     im = src.convert("RGB")
     W, H = im.size
     px = im.load()
     out = im.copy()
     op = out.load()
 
-    # ---- 1. status bar: extend the app's own background upward
+    # ---- 1a. status bar: extend the app's own background upward
     for x in range(W):
         fill = px[x, STATUS_H]
         for y in range(STATUS_H):
             op[x, y] = fill
+
+    # ---- 1b. composite the reconstructed bar over that clean background
+    if statusbar is not None:
+        if statusbar.size != (W, STATUS_H):
+            raise SystemExit(
+                "status bar is %dx%d but the capture needs %dx%d"
+                % (statusbar.size + (W, STATUS_H)))
+        out.paste(statusbar, (0, 0), statusbar)
 
     # ---- 2. below the tab bar: refill and fade into the page background
     if tabbar:
@@ -93,6 +109,11 @@ def clean(src, tabbar):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
+    if not os.path.exists(STATUS_BAR):
+        raise SystemExit(
+            "assets/status-bar.png is missing; run "
+            "`node source/generator/build.mjs --status-bar` first")
+    bar = Image.open(STATUS_BAR).convert("RGBA")
     made = 0
     for raw, name, tabbar in PLAN:
         p = os.path.join(RAW, raw)
@@ -100,8 +121,8 @@ def main():
             print(f"  missing {raw}, skipped")
             continue
         img = Image.open(p)
-        clean(img, tabbar).save(os.path.join(OUT, name))
-        print(f"  {raw} -> selected/{name}   status bar cleared 0..{STATUS_H}" +
+        clean(img, tabbar, bar).save(os.path.join(OUT, name))
+        print(f"  {raw} -> selected/{name}   status bar rebuilt 0..{STATUS_H}" +
               (f", tab-bar debris cleared {PILL_BOTTOM}..{img.size[1]}" if tabbar else ""))
         made += 1
     print(f"{made} captures prepared into screenshots/selected/")

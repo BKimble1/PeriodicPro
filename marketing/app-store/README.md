@@ -33,6 +33,8 @@ an exact pixel size, and verified programmatically.
 | `assets/skeletal/`, `element-tiles/`, `orbital/`, `formulas/` | the decoration library as standalone SVGs |
 | `screenshots/raw/` | captures straight off the simulator |
 | `screenshots/selected/` | the chosen, prepared capture per device |
+| `screenshots/prepare.py` | clears the status strip and tab-bar debris, composites the rebuilt bar |
+| `assets/status-bar.png` | the reconstructed iOS status bar, 1170 x 132 RGBA |
 | `place_screenshot.py` | drops real captures into the frames |
 | `source/generator/` | the generator: design system, chemistry library, per-frame composition, build and QA |
 
@@ -144,13 +146,14 @@ Raw captures go in `screenshots/raw/`. `screenshots/prepare.py` writes the
 cleaned files into `screenshots/selected/` under the names the compositor looks
 for. It makes exactly two edits per capture and asserts that it made no others:
 
-1. **The status bar is removed.** The shipped captures were taken across a
-   36 minute window, so they carried seven different clocks and several yellow
-   Low Power Mode batteries. Rather than fake a marketing status bar, the top
-   132px is filled per column with the app's own background sampled from the
-   first clean row below it. That is what the app actually draws up there, so
-   the result reads as a real screen and the template's Dynamic Island sits on
-   it naturally.
+1. **The status bar is rebuilt.** The shipped captures were taken across a
+   36 minute window, so they carried seven different clocks, weak-signal bars
+   and several yellow Low Power Mode batteries. The top 132px is first cleared
+   by filling it per column with the app's own background sampled from the
+   first clean row below it, then the reconstructed bar in
+   `assets/status-bar.png` is composited over that. Because the background
+   underneath is the app's own, the bar sits on the screen rather than on a
+   pasted-in band. See **[The status bar](#the-status-bar)**.
 2. **The debris under the floating tab bar is removed.** Elemora's tab bar floats
    over a scrolling list, so most captures end in a sliver of a half cut row. The
    band below the pill is refilled from the row just under it and faded into the
@@ -162,8 +165,43 @@ written, and the script exits rather than write a capture whose app content it
 changed. It never edits in place and is safe to re-run.
 
 ```sh
+node source/generator/build.mjs --status-bar   # only if the bar itself changed
 python3 screenshots/prepare.py
 ```
+
+### The status bar
+
+`source/generator/statusbar.mjs` draws the bar as SVG and rasterises it through
+the same headless Chromium path as everything else, into a 1170 x 132 RGBA strip
+at `assets/status-bar.png`. It embeds the same Inter face the marketing copy uses.
+
+Every coordinate in it was measured off the seven raw captures, which agree to
+within a few pixels, so the reconstruction lands where the device itself drew
+each element and reads as native rather than pasted on:
+
+| element | capture px | detail |
+|---|---|---|
+| clock | centred on x 190, ink y 60 to 95 | iOS centres it in the left ear; 36px cap height, weight 600 |
+| signal | x 856 to 913, y 59 to 95 | four bars, width 10, pitch 16, heights 14 / 21 / 29 / 37 |
+| Wi-Fi | x 936 to 986, y 59 to 95 | two arcs of r 14.5 and r 27 about (961, 89.5), plus the dot |
+| battery | x 1009 to 1090, y 57 to 97 | 75 x 41 body, 35 percent outline, solid fill, 4 x 11 nub |
+
+Only the **state** differs from the captures: the canonical **9:41**, full
+signal, full Wi-Fi and a full battery. That is the treatment Apple ships on its
+own App Store screenshots, and a solid battery reads better than a percentage at
+App Store browsing size. The outline and nub stay at 35 percent so they blend
+with whatever the app draws behind them, exactly as iOS does; that is why the
+strip keeps its alpha instead of being baked flat.
+
+The bar clears the template's Dynamic Island on both sides by construction. The
+island projects to capture x 419 to 751, the clock ends at x 243 and the signal
+bars start at x 856, so the island covers the empty middle the way it does on a
+real phone. QA enforces that clearance for every device in the set.
+
+One device meets a canvas edge: slide 06 bleeds 12 percent off the right, which
+cuts the battery at about 72 percent of its width. The clock, signal and Wi-Fi
+are untouched, and the cut is the canvas edge itself, the same way a bleeding
+device is cropped in the reference campaigns.
 
 To swap in a new capture, drop it in `screenshots/raw/`, point its row in
 `PLAN` at the new filename, re-run `prepare.py`, then re-run the compositor.
@@ -305,6 +343,7 @@ shells are cross-checked the same way, and every equation is parsed and balanced
 ```sh
 cd marketing/app-store
 node source/generator/build.mjs             # all six frames, assets and sheets
+python3 screenshots/prepare.py              # clean captures + rebuild status bars
 python3 place_screenshot.py --all           # put the real screens back in
 node source/generator/build.mjs --sheets    # refresh the sheets from the exports
 python3 source/generator/verify.py          # full QA sweep
@@ -363,8 +402,12 @@ everything else is derived.
 - no 3D ball-and-stick renderer or assets
 - chemistry: derived formulas match their labels, no over-valent atoms, uniform
   bond lengths, shells sum to Z, weights match reference data, equations balance
+- status bar: every prepared capture carries the clock, signal, Wi-Fi and battery
+  at their measured positions; all captures read the same clock and the same
+  signal and battery state; the bar clears the Dynamic Island on every device;
+  and `status-bar.png` keeps its alpha so it never composites as a flat band
 
-Current state: **519 checks, 0 failures, 0 warnings.**
+Current state: **655 checks, 0 failures, 0 warnings.**
 
 ## Relationship to CoreCredit
 

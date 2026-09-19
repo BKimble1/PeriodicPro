@@ -31,6 +31,7 @@ import {
 import { rasterize } from './render.mjs';
 import { measureCopy } from './measure.mjs';
 import { FRAMES } from './frames/index.mjs';
+import { statusBarSVG, STRIP } from './statusbar.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');            // marketing/app-store
@@ -351,6 +352,22 @@ row.save(out4)
 
 /* ------------------------------------------------------------------- main -- */
 
+/* --status-bar renders only the reconstructed iOS status bar strip that
+   prepare.py composites onto each capture. Kept separate from the frame build
+   so it can be regenerated without touching exports/iphone. */
+function buildStatusBar() {
+  const out = p('assets', 'status-bar.png');
+  rasterize(statusBarSVG(), out, STRIP.w, STRIP.h);
+  write(p('assets', 'status-bar.svg'), statusBarSVG());
+  console.log(`  status bar strip ${STRIP.w}x${STRIP.h} written to assets/status-bar.png`);
+}
+
+if (process.argv.includes('--status-bar')) {
+  buildStatusBar();
+  console.log('done.');
+  process.exit(0);
+}
+
 /* --sheets refreshes the contact sheets and previews from whatever is already
    in exports/iphone, which is what you want after dropping real captures in:
    a full build would overwrite those composites with blank templates again. */
@@ -366,6 +383,7 @@ if (process.argv.includes('--sheets')) {
 console.log(`Elemora App Store build: ${CANVAS.W} x ${CANVAS.H}, ${FRAMES.length} frames`);
 const geoms = FRAMES.map(buildFrame);
 buildAssets();
+buildStatusBar();
 contactSheet(geoms);
 previews(geoms);
 write(p('source', 'frames.json'), JSON.stringify(geoms, null, 1) + '\n');
